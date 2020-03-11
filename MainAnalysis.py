@@ -13,11 +13,12 @@ from SignalExtraction import signalExtraction
 
 plot = Plot(True)
 
-# K = 50
-# path = plot.path + 'Phantoms/Large turning ellipse/'
-# namex = 'Phantom'
-# namey = 'Phantom'
-# shape = (101, 101)
+K = 50
+path = plot.path + 'Walking rectangles/'
+morphosrc = 'Phantom'
+sigsrc = []
+shape = (101, 101)
+T = None
 
 # K = 159
 # path = 'C:\\Work\\UniBE2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\'
@@ -39,13 +40,13 @@ plot = Plot(True)
 # shape = (358, 358)
 # T = 2620
 
-K = 5 # 250
-path = 'C:\\Work\\UniBE2\\Guillaume\\Example_Data\\GBD_sensors + actin\\Expt_01\\'
-morphosrc = 'w14TIRF-GFP_s2\R52_LA-GFP_FN5_mCh-rGBD_02_w14TIRF-GFP_s2_t'
-sigsrc = [morphosrc,
-          'w24TIRF-mCherry_s2\\R52_LA-GFP_FN5_mCh-rGBD_02_w24TIRF-mCherry_s2_t']
-shape = (716, 716)
-T = 165
+# K = 5 # 250
+# path = 'C:\\Work\\UniBE2\\Guillaume\\Example_Data\\GBD_sensors + actin\\Expt_01\\'
+# morphosrc = 'w14TIRF-GFP_s2\R52_LA-GFP_FN5_mCh-rGBD_02_w14TIRF-GFP_s2_t'
+# sigsrc = [morphosrc,
+#           'w24TIRF-mCherry_s2\\R52_LA-GFP_FN5_mCh-rGBD_02_w24TIRF-mCherry_s2_t']
+# shape = (716, 716)
+# T = 165
 
 pdf = PdfPages(plot.path + "Edge.pdf")
 
@@ -61,6 +62,7 @@ displacement = np.zeros((ncurv, K - 1)) # Projection of the displacement vectors
 signal = np.zeros((len(sigsrc), ncurv, K)) # Signals from the outer sampling windows
 
 # Main loop on frames
+deltat = 0
 for k in range(kstart, K):
     print(k)
     x = imread(path + morphosrc + str(k + 1) + '.tif').astype(dtype=np.uint16) # Input image
@@ -68,9 +70,11 @@ for k in range(kstart, K):
     s = fitSpline(c) # Smoothed spline curve following the contour
     c = rasterizeCurve(x.shape, s) # Representation of the contour as a grayscale image
     # Positions of the displacement vectors along the splines
-    t0 = 0.5 / ncurv + np.linspace(0, 1, ncurv, endpoint=False) # Parameters of the startpoints of the displacement vectors
     if kstart < k:
+        t0 = deltat + 0.5 / ncurv + np.linspace(0, 1, ncurv, endpoint=False)  # Parameters of the startpoints of the displacement vectors
         t = mapContours(s0, s, t0) # Parameters of the endpoints of the displacement vectors
+        # deltat += t[0] - t0[0]
+        c[-1 < c] = np.mod(c[-1 < c] - deltat, 1)
     w = window(c, ncurv, nrad) # Binary masks for the sampling windows
     wl[k] = labelWindows(w) # Sampling windows labeled with unique intensity levels
     b[k] = find_boundaries(wl[k]) # Boundaries of the sampling windows
@@ -97,8 +101,8 @@ for k in range(kstart, K):
 
     # Plot edge structures (spline curves, displacement vectors, sampling windows)
     if kstart < k:
-        plot.plotopen('Frame ' + str(k), 1)
-        plotMap(b[k-1], s0, s, t0, t) # w0[0, 0].astype(dtype=np.uint8)
+        plot.plotopen('Frame ' + str(k) + ' - deltat = ' + str(deltat), 1)
+        plotMap(w0[0, 0].astype(dtype=np.uint8), s0, s, t0, t) # b[k-1]
         plot.plotclose(False)
         pdf.savefig(plt.gcf())
         # plot.show()

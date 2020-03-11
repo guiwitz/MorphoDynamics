@@ -121,7 +121,7 @@ def rasterizeCurve(shape, s):
     delta = np.inf * np.ones(shape)
     tau = - np.ones(shape)
     t = np.linspace(0, 1, 10001)
-    p = np.asarray(splev(t, s))
+    p = np.asarray(splev(np.mod(t, 1), s))
     pr = np.round(p)
     pi = pr.astype(dtype=np.int)
     for n in range(10001):
