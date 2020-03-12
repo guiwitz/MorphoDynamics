@@ -3,6 +3,7 @@ from scipy.ndimage.morphology import distance_transform_edt
 from scipy.ndimage.morphology import binary_fill_holes
 from skimage.segmentation import find_boundaries
 from skimage.color import label2rgb
+from skimage.external.tifffile import imread, imsave
 from Segmentation import segment
 from ArtifactGenerator import Plot
 
@@ -58,6 +59,20 @@ def labelWindows(windows):
     tiles = np.zeros([windows.shape[2], windows.shape[3]], dtype=np.uint16)
     for i in range(windows.shape[0]):
         # for j in range(windows.shape[1]):
-        for j in [0]:
+        for j in range(windows.shape[1]):
             tiles[windows[i, j]] = 1 + windows.shape[1]*i + j
     return tiles
+
+def extractSignals(path, sigsrc, k, w):
+    # Extract signals
+    M = len(sigsrc)
+    signal = np.zeros((M, w.shape[0], w.shape[1]))
+    for m in range(M):
+        y = imread(path + sigsrc[m](k+1) + '.tif')
+        for i in range(w.shape[0]):
+            for j in range(w.shape[1]):
+                if np.any(w[i, j]):
+                    signal[m, i, j] = np.mean(y[w[i, j]])
+                else:
+                    signal[m, i, j] = np.nan
+    return signal

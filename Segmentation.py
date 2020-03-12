@@ -10,7 +10,7 @@ import numpy as np
 from skimage.external.tifffile import imread, imsave
 from ArtifactGenerator import Plot
 
-p = Plot(True)
+p = Plot(not True)
 
 def segment(x, m0=None):
     if m0 == None:

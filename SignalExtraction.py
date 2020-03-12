@@ -1,3 +1,4 @@
+import dill
 import pickle
 import matplotlib
 import numpy as np
@@ -12,7 +13,8 @@ def signalExtraction():
 
    plot = Plot(True)
 
-   data = pickle.load(open(plot.path + "Signals.pkl", "rb"))
+   # data = pickle.load(open(plot.path + "Signals.pkl", "rb"))
+   data = dill.load(open(plot.path + "Signals.pkl", "rb"))
 
    pdf = PdfPages(plot.path + "Signals.pdf")
 
@@ -32,14 +34,18 @@ def signalExtraction():
    # plt.show()
 
    for m in range(len(data['sigsrc'])):
-      plot.plotopen('Signal: ' + data['sigsrc'][m], 1)
-      plt.imshow(data['signal'][m], cmap='plasma')
-      plt.colorbar(label='Signal')
-      plt.axis('auto')
-      plt.xlabel('Frame index')
-      plt.ylabel('Window index')
-      # plt.xticks(range(0, signal.shape[1], 5))
-      plot.plotclose(False)
-      pdf.savefig()
+      for j in range(data['signal'].shape[3]):
+         plot.plotopen('Signal: ' + data['sigsrc'][m](0)[0:25] + ' - Layer: ' + str(j), 1)
+         plt.imshow(np.transpose(data['signal'][:, m, :, j]), cmap='plasma')
+         plt.colorbar(label='Signal')
+         plt.axis('auto')
+         plt.xlabel('Frame index')
+         plt.ylabel('Window index')
+         # plt.xticks(range(0, signal.shape[1], 5))
+         plot.plotclose(False)
+         pdf.savefig()
 
    pdf.close()
+
+# morphosrc = 'w16TIRF-CFP\\RhoA_OP_his_02_w16TIRF-CFP_t'
+# signalExtraction()

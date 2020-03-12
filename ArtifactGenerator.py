@@ -5,7 +5,8 @@ class Plot:
     def __init__(self, debug):
         self.n = 0
         self.debug = debug
-        self.path = 'C:/Work/UniBE2/Code/Output/'
+        # self.path = 'C:/Work/UniBE2/Code/Output/'
+        self.path = './'
 
     def imshow(self, title, image, nfig=None, cmap=None, cbar=False):
         if self.debug:

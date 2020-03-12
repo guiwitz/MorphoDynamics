@@ -6,15 +6,20 @@ from skimage.external.tifffile import imread, imsave
 # from scipy.interpolate import UnivariateSpline
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.cm import get_cmap
+from scipy.ndimage.measurements import center_of_mass
 # from scipy.signal import argrelmin
 from scipy.interpolate import splprep, splev
 from scipy.optimize import least_squares
 import numpy as np
 # import math
 from numpy.linalg import norm
+from skimage.segmentation import find_boundaries
+
 from Segmentation import segment
 from FunctionalDefinition import Functional
 from ArtifactGenerator import Plot
+from Windowing import labelWindows
 
 plot = Plot(not True)
 
@@ -57,30 +62,50 @@ def mapContours(s1, s2, t1):
 
     return t2
 
-def plotMap(x, tck1, tck2, p, o,):
+def plotMap(x, w, s1, s2, t1, t2, d, d1):
     # Evaluate splines at various points
-    c1 = splev(np.mod(p, 1), tck1)
-    c2 = splev(np.mod(o, 1), tck2)
-    # c2a = splev(p, tck2)
-    c1p = splev(np.linspace(0, 1, 10001), tck1)
-    c2p = splev(np.linspace(0, 1, 10001), tck2)
+    c1 = splev(np.mod(t1, 1), s1)
+    c2 = splev(np.mod(t2, 1), s2)
+    c1p = splev(np.linspace(0, 1, 10001), s1)
+    c2p = splev(np.linspace(0, 1, 10001), s2)
+
+    # Calculate window centers
+    p = np.zeros((w.shape[0], 2))
+    for i in range(w.shape[0]):
+        p[i] = center_of_mass(w[i, 0])
+
+    # Interpolate displacements
+    # d = 0.5 + 0.5 * d / np.max(np.abs(d))
+    d = np.interp(np.linspace(0, 1, 10001), t1, d, period=1)
+    dmax = np.max(np.abs(d))
 
     # Plot results
     # matplotlib.use('PDF')
     lw = 1
     s = 1
-
-    plt.imshow(x, cmap='gray')
-    plt.plot(c1p[0], c1p[1], 'g', zorder=50, lw=lw)
-    plt.plot(c2p[0], c2p[1], 'b', zorder=100, lw=lw)
-    for j in range(len(o)):
-        # plt.arrow(c1[0][j], c1[1][j], c2a[0][j] - c1[0][j], c2a[1][j] - c1[1][j], color='c', zorder=200, lw=lw)
-        plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='r', zorder=200, lw=lw)
-        # plt.arrow(c1[0][j], c1[1][j], s * d1[0][j], s * d1[1][j], color='r', zorder=200, lw=lw)
+    plt.imshow(x, cmap='gray', vmin=0, vmax=2)
+    # plt.plot(c1p[0], c1p[1], 'g', zorder=50, lw=lw)
+    # plt.plot(c2p[0], c2p[1], 'b', zorder=100, lw=lw)
+    plt.colorbar(plt.scatter(c1p[0], c1p[1], c=d, cmap=get_cmap("bwr"), vmin=-dmax, vmax=dmax, zorder=50, s=lw))
+    # plt.scatter(c2p[0], c2p[1], 'b', zorder=100, lw=lw)
+    for j in range(len(t2)):
+        plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='g', zorder=200, lw=lw)
+        # plt.arrow(c1[0][j], c1[1][j], s * d1[0][j], s * d1[1][j], color='y', zorder=200, lw=lw)
     plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw)
+    for i in range(w.shape[0]):
+        plt.text(p[i,1], p[i,0], str(i), color='yellow', fontsize=4, horizontalalignment='center', verticalalignment='center')
+
+    # plot.plotopen('Test')
+    # from matplotlib import cm
+    # tmp = np.asarray(splev(np.linspace(0, 1, 10001), s))
+    # cmap = cm.get_cmap("Spectral")
+    # plt.scatter(tmp[0], tmp[1], c=cmap(1. * tmp[1] / max(tmp[1])))
+    # plot.plotclose()
+    # plt.show()
+
 
 def discretizeCurve(tck, o):
-    # Convert a continuous spline to a discrete contour
+    """ DEPRECATED - Convert a continuous spline to a discrete contour. """
     K = 10001
     cp = splev(np.mod(np.linspace(o, o + 1, K), 1), tck)
     cp = [np.round(cp[0]).astype(np.int), np.round(cp[1]).astype(np.int)]
