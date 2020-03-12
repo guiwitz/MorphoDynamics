@@ -1,15 +1,16 @@
 from skimage.external.tifffile import imread
 import matplotlib.pyplot as plt
 from skimage.exposure import histogram
-from skimage.filters import gaussian
+from skimage.filters import gaussian, threshold_otsu
 from skimage.measure import find_contours, label
 from scipy.interpolate import UnivariateSpline
 from scipy.signal import argrelmin
 from scipy.ndimage.morphology import binary_fill_holes
 import numpy as np
+from skimage.external.tifffile import imread, imsave
 from ArtifactGenerator import Plot
 
-p = Plot(not True)
+p = Plot(True)
 
 def segment(x, m0=None):
     if m0 == None:
@@ -69,5 +70,27 @@ def drawContourOld(shape, c):
         n += 1
     return x
 
+def calibrateBleaching(filename, K, shape):
+    x = np.zeros((K,) + shape, dtype=np.uint16)
+    c = np.zeros((K,) + shape + (3,), dtype=np.uint8)
+    I = np.zeros((K,))
+    for k in range(K):
+        x[k, :, :] = imread(filename + str(k + 1) + '.tif') # Input image
+    xmax = np.max(x)
+    for k in range(K):
+        c[k, :, :, 1] = 255. * x[k, :, :] / xmax
+        m = threshold_otsu(x[k, :, :]) < x[k, :, :]
+        c[k, :, :, 0] = 255 * m
+        I[k] = np.mean(x[k][m])
+        # p.imshow('Segmentation', c[k, :, :, :])
+        # p.show()
+    imsave(p.path + 'Segmentation.tif', c)
+    p.plotopen('Average intensity in segmented region')
+    plt.plot(I)
+    p.plotclose()
+
 # x = imread('C:\\Work\\UniBE 2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\w16TIRF-CFP\\RhoA_OP_his_02_w16TIRF-CFP_t53.tif')
 # segment(x)
+
+# calibrateBleaching('C:/Work/UniBE2/Guillaume/Example_Data/FRET_sensors + actin/Histamine/Expt2/w16TIRF-CFP/RhoA_OP_his_02_w16TIRF-CFP_t', 159, (358, 358))
+# calibrateBleaching(r'C:\Work\UniBE2\Guillaume\Example_Data\FRET_sensors + actin\PDGF\RhoA_multipoint_0.5fn_s3_good\w34TIRF-mCherry\RhoA_multipoint_0.5fn_01_w34TIRF-mCherry_s3_t', 750, (358, 358))

@@ -18,17 +18,8 @@ from ArtifactGenerator import Plot
 
 plot = Plot(not True)
 
-# # Load images
-# path = 'C:\\Work\\UniBE 2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\w16TIRF-CFP\\'
-# x1 = imread(path + 'RhoA_OP_his_02_w16TIRF-CFP_t71.tif')
-# x2 = imread(path + 'RhoA_OP_his_02_w16TIRF-CFP_t131.tif')
-#
-# # Segment images
-# c1, mask1 = segment(x1)
-# c2, mask2 = segment(x2)
-
 def fitSpline(c):
-    # Fit spline to contour
+    """" Fit spline to contour specified as list of pixels. """
     # s = 0
     s = 1e2
     # s = 1e3
@@ -36,47 +27,35 @@ def fitSpline(c):
     tck, u = splprep([c[:, 1], c[:, 0]], s=s, per=c.shape[0])
     return tck
 
-def convolve(x, y):
+def correlate(x, y):
+    """ Compute the correlation between two signals with periodic boundary conditions. """
     z = np.real(np.fft.ifft(np.fft.fft(x) * np.fft.fft(y[::-1])))
     return z
 
-def mapContours(tck1, tck2, p):
-    # t = np.linspace(0, 1, 10000, endpoint=False)
-    # s1 = np.asarray(splev(t, tck1))
-    # s2 = np.asarray(splev(t, tck2))
-    # s1m = np.mean(s1, axis=1)
-    # s2m = np.mean(s2, axis=1)
-    # t0 = t[np.argmax(convolve(s1[0]-s1m[0], s2[0]-s2m[0]) + convolve(s1[1]-s1m[1], s2[1]-s2m[1]))]
-    # print(t0)
-    #
-    # p = p - t0
-    # # o = np.mod(p - t0, 1)
-
+def mapContours(s1, s2, t1):
+    """ Compute displacement vectors between two consecutive contours. """
     # Positions of the velocity arrows
-    n = len(p)
-    o = p
+    N = len(t1)
+    t2 = t1
 
     # Weight for the cost function
     # w = 0
-    w = np.sum((np.concatenate(splev(o, tck2)) - np.concatenate(splev(p, tck1)))**2) / (n-1)
-    # w = np.sum(1 / (np.concatenate(splev(o, tck2)) - np.concatenate(splev(p, tck1)))**2) * (n-1)
+    w = np.sum((np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2) / (N - 1)
+    # w = np.sum(1 / (np.concatenate(splev(t2, tck2)) - np.concatenate(splev(t1, s1)))**2) * (N-1)
     # w = 1e6
 
     # Lower and upper bounds for the least-squares problem
-    lb = np.zeros((n+1,))
+    lb = np.zeros((N+1,))
     lb[0] = -np.inf
-    lb[n] = -1
-    ub = np.inf * np.ones((n+1,))
+    lb[N] = -1
+    ub = np.inf * np.ones((N+1,))
 
     # Solve least-squares problem
-    functional = Functional(tck1, tck2, p, w)
-    result = least_squares(functional.f, functional.transform(o), bounds=(lb,ub), ftol=1e-3)
-    o = functional.inversetransform(result.x)
-    # o = p
+    functional = Functional(s1, s2, t1, w)
+    result = least_squares(functional.f, functional.transform(t2), bounds=(lb,ub), ftol=1e-3)
+    t2 = functional.inversetransform(result.x)
 
-    return o
-
-# def alignOrigins(s0, s)
+    return t2
 
 def plotMap(x, tck1, tck2, p, o,):
     # Evaluate splines at various points
@@ -131,4 +110,13 @@ def rasterizeCurve(shape, s):
             tau[pi[1, n], pi[0, n]] = t[n]
     return tau
 
+# # Load images
+# path = 'C:\\Work\\UniBE 2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\w16TIRF-CFP\\'
+# x1 = imread(path + 'RhoA_OP_his_02_w16TIRF-CFP_t71.tif')
+# x2 = imread(path + 'RhoA_OP_his_02_w16TIRF-CFP_t131.tif')
+#
+# # Segment images
+# c1, mask1 = segment(x1)
+# c2, mask2 = segment(x2)
+#
 # mapContours(x1, c1, c2)

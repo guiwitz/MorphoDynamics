@@ -13,22 +13,22 @@ from SignalExtraction import signalExtraction
 
 plot = Plot(True)
 
-K = 50
-path = plot.path + 'Walking rectangles/'
-morphosrc = 'Phantom'
-sigsrc = []
-shape = (101, 101)
-T = None
-
-# K = 159
-# path = 'C:\\Work\\UniBE2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\'
-# morphosrc = 'w16TIRF-CFP\\RhoA_OP_his_02_w16TIRF-CFP_t'
-# sigsrc = [morphosrc,
-#           'w26TIRFFRETacceptor\\RhoA_OP_his_02_w26TIRFFRETacceptor_t',
-#           'w26TIRFFRETacceptor_corr\\RhoA_OP_his_02_w26TIRFFRETacceptor_t',
-#           'w34TIRF-mCherry\\RhoA_OP_his_02_w34TIRF-mCherry_t']
-# shape = (358, 358)
+# K = 50
+# path = plot.path + 'Walking rectangles/'
+# morphosrc = 'Phantom'
+# sigsrc = []
+# shape = (101, 101)
 # T = None
+
+K = 159
+path = 'C:\\Work\\UniBE2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\'
+morphosrc = 'w16TIRF-CFP\\RhoA_OP_his_02_w16TIRF-CFP_t'
+sigsrc = [morphosrc,
+          'w26TIRFFRETacceptor\\RhoA_OP_his_02_w26TIRFFRETacceptor_t',
+          'w26TIRFFRETacceptor_corr\\RhoA_OP_his_02_w26TIRFFRETacceptor_t',
+          'w34TIRF-mCherry\\RhoA_OP_his_02_w34TIRF-mCherry_t']
+shape = (358, 358)
+T = None
 
 # K = 750
 # path = 'C:\\Work\\UniBE2\\Guillaume\\Example_Data\\FRET_sensors + actin\PDGF\\RhoA_multipoint_0.5fn_s3_good\\'
