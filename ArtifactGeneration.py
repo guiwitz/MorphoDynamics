@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 from skimage.external.tifffile import imsave
 
-class Plot:
+class FigureHelper:
+    """ Helper class for generating figures, when in debug mode. """
     def __init__(self, debug):
         self.n = 0
         self.debug = debug
@@ -9,6 +10,7 @@ class Plot:
         self.path = './'
 
     def imshow(self, title, image, nfig=None, cmap=None, cbar=False):
+        """ A replacement for matplotlib.pyplot.imshow that takes care of titles, saving figures, etc. """
         if self.debug:
             if nfig == None:
                 self.n += 1
@@ -22,30 +24,27 @@ class Plot:
                 plt.colorbar()
             imsave(self.path + str(self.n) + ' ' + title + '.tif', image, compress=6)
             plt.savefig(self.path + str(self.n) + ' ' + title + '.pdf')
-            # plt.savefig(self.path + str(self.n) + ' ' + title + '.svg')
-            # plt.savefig(self.path + str(self.n) + ' ' + title + '.eps')
             # plt.get_current_fig_manager().window.move(960, -1080)
             plt.get_current_fig_manager().window.showMaximized()
 
-    def plotopen(self, title, nfig=None):
+    def openFigure(self, title, nfig=None, figsize=(16, 9)):
+        """ Initialize a new figure. """
         if nfig == None:
             self.n += 1
         else:
             self.n = nfig
         self.title = title
-        plt.figure(self.n)
-        plt.clf()
-        plt.gcf().suptitle(title)
-
-    def plotclose(self, save=True):
-        if save:
-            plt.savefig(self.path + str(self.n) + ' ' + self.title + '.pdf')
-            # plt.savefig(self.path + str(self.n) + ' ' + self.title + '.svg')
-            # plt.savefig(self.path + str(self.n) + ' ' + self.title + '.eps')
-        # px = plt.get_current_fig_manager().canvas.width()
-        # py = plt.get_current_fig_manager().canvas.height()
-        # plt.get_current_fig_manager().window.move(960, -1080)
+        plt.figure(self.n).set_size_inches(figsize)
         plt.get_current_fig_manager().window.showMaximized()
+        plt.clf()
+        # plt.gcf().suptitle(title)
+        plt.gca().set_title(title)
+        plt.tight_layout()
+
+    def closeFigure(self):
+        """ Save a figure. """
+        if self.debug:
+            plt.savefig(self.path + str(self.n) + ' ' + self.title + '.pdf')
 
     def show(self):
         if self.debug:

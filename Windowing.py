@@ -1,62 +1,52 @@
 import numpy as np
-from scipy.ndimage.morphology import distance_transform_edt
-from scipy.ndimage.morphology import binary_fill_holes
+from scipy.ndimage.morphology import distance_transform_edt, binary_fill_holes
+from scipy.ndimage.measurements import center_of_mass
+import matplotlib.pyplot as plt
 from skimage.segmentation import find_boundaries
 from skimage.color import label2rgb
 from skimage.external.tifffile import imread, imsave
 from Segmentation import segment
-from ArtifactGenerator import Plot
+from ArtifactGeneration import FigureHelper
 
-plot = Plot(not True)
+plot = FigureHelper(not True)
 
-def window(c, ncurv, nrad):
-    mask = binary_fill_holes(-1 < c)  # Binary mask including the inside of the contour
+def createWindows(c, I, J):
+    """ Generate binary masks that represent the sampling windows. """
 
     # Compute the distance transform of the contour
     # (note that the contour must be represented as zeros in an array of ones)
-    # d = np.ones(c.shape) #
-    # for p in c:
-    #     d[p[1], p[0]] = 0
     D, F = distance_transform_edt(-1==c, return_indices=True) # We perform both the distance transform and the so-called feature transform
 
-    # # Construct an image that stores the cumulative length of the contour, along the contour
-    # l = np.zeros(c.shape)
-    # q = c[0]
-    # L = 0
-    # for p in c:
-    #     L += np.linalg.norm(p-q)
-    #     l[p[1], p[0]] = L
-    #     q = p
-
     # Fill array with cumulative lengths of closest points on the contour
-    circ = np.zeros(c.shape)
+    L = np.zeros(c.shape)
     for i in range(c.shape[0]):
         for j in range(c.shape[1]):
-            circ[i, j] = c[F[0, i, j], F[1, i, j]]
+            L[i, j] = c[F[0, i, j], F[1, i, j]]
 
     # Create sampling windows
-    # windows = np.zeros((ncurv, nrad, c.shape[0], c.shape[1]), dtype=np.bool)
-    windows = np.zeros((nrad,ncurv)+c.shape, dtype=np.bool)
-    b = np.linspace(0, np.amax(D * mask), nrad + 1) # Radial coordinate
-    for j in range(nrad):
-        s = np.linspace(0, 1, int(ncurv / 2**j) + 1) # "Curvilinear" coordinate
-        for i in range(int(ncurv/2**j)):
-            windows[j, i] = mask & (s[i] <= circ) & (circ < s[i+1]) & (b[j] <= D) & (D < b[j+1])
+    m = binary_fill_holes(-1 < c)  # Binary mask corresponding to the contour and its interior
+    w = np.zeros((J, I) + c.shape, dtype=np.bool)
+    b = np.linspace(0, np.amax(D * m), J + 1) # Radial coordinate
+    for j in range(J):
+        s = np.linspace(0, 1, int(I / 2 ** j) + 1) # "Curvilinear" coordinate
+        for i in range(int(I / 2 ** j)):
+            w[j, i] = m & (s[i] <= L) & (L < s[i+1]) & (b[j] <= D) & (D < b[j+1])
 
     # Artifact generation
     plot.imshow('Contour', c)
-    plot.imshow('Mask', mask.astype(np.int))
+    plot.imshow('Mask', m.astype(np.int))
     plot.imshow('Distance transform', D)
     # plot.imshow('Contour length', l)
-    plot.imshow('Sectors', circ)
+    plot.imshow('Sectors', L)
     # plot.imshow('Windows', windows)
     # plot.imshow('Labeled windows', label2rgb(windows))
     # plot.imshow('Window boundaries', boundaries.astype(np.uint8))
     plot.show()
 
-    return windows
+    return w
 
 def labelWindows(windows):
+    """ Create an image where the sampling windows are shown as regions with unique gray levels. """
     tiles = np.zeros(windows.shape[2:4], dtype=np.uint16)
     n = 1
     for j in range(windows.shape[0]):
@@ -66,9 +56,19 @@ def labelWindows(windows):
     return tiles
 
 def extractSignals(y, w):
+    """ Extract the mean values of an image over the sampling windows. """
     signal = np.nan * np.ones(w.shape[0:2])
     for j in range(w.shape[0]):
         for i in range(w.shape[1]):
             if np.any(w[j, i]):
                 signal[j, i] = np.mean(y[w[j, i]])
     return signal
+
+def showWindows(w, b):
+    """ Display the sampling-window boundaries and indices. """
+    plt.imshow(b, cmap='gray', vmin=0, vmax=2)
+    for j in range(w.shape[0]):
+        for i in range(int(w.shape[1]/2**j)):
+            if np.any(w[j, i]):
+                p = center_of_mass(w[j, i]) # Window centers
+                plt.text(p[1], p[0], str(i), color='yellow', fontsize=4, horizontalalignment='center', verticalalignment='center')

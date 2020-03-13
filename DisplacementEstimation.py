@@ -1,35 +1,25 @@
-from skimage.external.tifffile import imread, imsave
-# from skimage.exposure import histogram
-# from skimage.filters import gaussian
-# from skimage.segmentation import find_boundaries
-# from skimage.measure import find_contours
-# from scipy.interpolate import UnivariateSpline
-import matplotlib
 import matplotlib.pyplot as plt
-from scipy.ndimage.measurements import center_of_mass
-# from scipy.signal import argrelmin
 from scipy.interpolate import splprep, splev
 from scipy.optimize import least_squares
 import numpy as np
-# import math
 from numpy.linalg import norm
-from skimage.segmentation import find_boundaries
 
-from Segmentation import segment
 from FunctionalDefinition import Functional
-from ArtifactGenerator import Plot
-from Windowing import labelWindows
+from ArtifactGeneration import FigureHelper
 
-plot = Plot(not True)
+plot = FigureHelper(not True)
 
 def fitSpline(c):
-    """" Fit spline to contour specified as list of pixels. """
-    # s = 0
-    s = 1e2
-    # s = 1e3
-    # tck, u = splprep([[0, 50, 50, 0], [0, 0, 100, 100]], s=0, per=4)
-    tck, u = splprep([c[:, 1], c[:, 0]], s=s, per=c.shape[0])
-    return tck
+    """" Fit a spline to a contour specified as a list of pixels. """
+    # Smoothing parameter
+    # lambd = 0
+    lambd = 1e2
+    # lambd = 1e3
+
+    # Fitting with periodic boundary conditions
+    s, u = splprep([c[:, 1], c[:, 0]], s=lambd, per=c.shape[0])
+
+    return s
 
 def correlate(x, y):
     """ Compute the correlation between two signals with periodic boundary conditions. """
@@ -38,6 +28,7 @@ def correlate(x, y):
 
 def mapContours(s1, s2, t1):
     """ Compute displacement vectors between two consecutive contours. """
+
     # Positions of the velocity arrows
     N = len(t1)
     t2 = t1
@@ -61,17 +52,14 @@ def mapContours(s1, s2, t1):
 
     return t2
 
-def showEdge(k, x, w, s1, s2, t1, t2, d, d1, ncurv, pdf):
+def showEdge(s1, s2, t1, t2, d, u):
+    """ Draw the cell-edge contour and the displacement vectors. """
+
     # Evaluate splines at various points
     c1 = splev(np.mod(t1, 1), s1)
     c2 = splev(np.mod(t2, 1), s2)
     c1p = splev(np.linspace(0, 1, 10001), s1)
     c2p = splev(np.linspace(0, 1, 10001), s2)
-
-    # Calculate window centers
-    p = np.zeros((w.shape[1], 2))
-    for i in range(w.shape[1]):
-        p[i] = center_of_mass(w[0, i])
 
     # Interpolate displacements
     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
@@ -81,44 +69,18 @@ def showEdge(k, x, w, s1, s2, t1, t2, d, d1, ncurv, pdf):
     # Plot results
     # matplotlib.use('PDF')
     lw = 1
-    s = 1
-    plot.plotopen('Frame ' + str(k), 1)
-    plt.imshow(x, cmap='gray', vmin=0, vmax=2)
+    s = 1 # Scaling factor for the vectors
+
     # plt.plot(c1p[0], c1p[1], 'g', zorder=50, lw=lw)
     # plt.plot(c2p[0], c2p[1], 'b', zorder=100, lw=lw)
     plt.colorbar(plt.scatter(c1p[0], c1p[1], c=d, cmap='bwr', vmin=-dmax, vmax=dmax, zorder=50, s=lw), label='Displacement [pixels]')
-    # plt.scatter(c2p[0], c2p[1], 'b', zorder=100, lw=lw)
     for j in range(len(t2)):
         plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='g', zorder=200, lw=lw)
-        # plt.arrow(c1[0][j], c1[1][j], s * d1[0][j], s * d1[1][j], color='y', zorder=200, lw=lw)
+        # plt.arrow(c1[0][j], c1[1][j], s * u[0][j], s * u[1][j], color='y', zorder=200, lw=lw)
     plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw)
-    for j in range(w.shape[0]):
-        for i in range(int(ncurv/2**j)):
-            if np.any(w[j, i]):
-                p = center_of_mass(w[j, i])
-                plt.text(p[1], p[0], str(i), color='yellow', fontsize=4, horizontalalignment='center', verticalalignment='center')
-    plot.plotclose(False)
-    # plot.show()
-
-
-def discretizeCurve(tck, o):
-    """ DEPRECATED - Convert a continuous spline to a discrete contour. """
-    K = 10001
-    cp = splev(np.mod(np.linspace(o, o + 1, K), 1), tck)
-    cp = [np.round(cp[0]).astype(np.int), np.round(cp[1]).astype(np.int)]
-    c = [np.asarray([cp[0][0], cp[1][0]])]
-    n = 0
-    for k in range(1, K):
-        p = np.asarray([cp[0][k], cp[1][k]])
-        if 0 < norm(c[n]-p):
-            c.append(p)
-            n += 1
-    c.pop()
-    c = np.asarray(c)
-    return c
 
 def rasterizeCurve(shape, s):
-    # Construct a mapping from edge pixels to spline arguments
+    """ Construct a mapping from edge pixels to spline arguments. """
     delta = np.inf * np.ones(shape)
     tau = - np.ones(shape)
     t = np.linspace(0, 1, 10001)

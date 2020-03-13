@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import convolve2d
 from skimage.external.tifffile import imread
 import math
-from ArtifactGenerator import Plot
+from ArtifactGeneration import FigureHelper
 # from cython.hello import fc
 
 # Small tests
@@ -110,7 +110,7 @@ def fc(b, x):
             #     f[j0,j1] += b[i0,i1]
     return f
 
-p = Plot(True)
+p = FigureHelper(True)
 
 # Image without deformation
 c = np.zeros((2,) + b.shape)
@@ -126,10 +126,10 @@ c = y / np.amax(y) * 5
 g0 = g(c, x)
 f = fc(b, g0)
 g0 = x - g0
-p.plotopen('Deformation field')
+p.openFigure('Deformation field')
 plt.quiver(g0[0], -g0[1])
 plt.axis('image')
 plt.gca().invert_yaxis()
-p.plotclose()
+p.closeFigure()
 p.imshow('With deformation', f)
 p.show()

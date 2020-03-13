@@ -1,9 +1,9 @@
 import math
 import numpy as np
 from skimage.external.tifffile import imread, imsave
-from ArtifactGenerator import Plot
+from ArtifactGeneration import FigureHelper
 
-plot = Plot(False)
+plot = FigureHelper(False)
 
 def pumpingEllipse(k):
     x[k][i ** 2 + 4 * j ** 2 < (25 + 10 * math.sin(k)) ** 2] = 255

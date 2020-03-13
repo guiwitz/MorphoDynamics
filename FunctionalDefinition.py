@@ -10,6 +10,7 @@ class Functional:
         self.w = w
 
     def transform(self, o):
+        """ Change of variable that is necessary to express the constraints of the optimization problem as simple inequalities. """
         n = len(o)
         r = np.zeros((n+1,))
         r[0] = o[0]
@@ -19,6 +20,7 @@ class Functional:
         return r
 
     def inversetransform(self, r):
+        """ Inverse of the change of variable. """
         n = len(r)-1
         o = np.zeros((n,))
         o[0] = r[0]
@@ -27,6 +29,9 @@ class Functional:
         return o
 
     def f(self, r):
+        """ The functional to be minimized, adapted from the following paper:
+        Ma Dagliyan Hahn Danuser - Profiling cellular morphodynamics by spatiotemporal spectrum decomposition
+        Note that here periodic boundary conditions are enforced. """
         o = self.inversetransform(r)
         n = len(o)
         f = np.zeros((3*n,))

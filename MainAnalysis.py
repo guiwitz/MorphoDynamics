@@ -3,14 +3,13 @@ from skimage.external.tifffile import imread, imsave
 from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 import dill
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 from Metadata import loadMetadata
-from ArtifactGenerator import Plot
+from ArtifactGeneration import FigureHelper
 from Segmentation import segment
 from DisplacementEstimation import fitSpline, mapContours, showEdge, rasterizeCurve
-from Windowing import window, extractSignals, labelWindows
+from Windowing import createWindows, extractSignals, labelWindows, showWindows
 from SignalExtraction import showSignals
 
 # dataset = 'Synthetic'
@@ -26,8 +25,8 @@ I = 48 # Number of sampling windows in the outer layer (along the curve)
 J = 5 # Number of "radial" sampling windows
 
 # Figures and other artifacts
-plot = Plot(True)
-pdf = PdfPages(plot.path + "Edge.pdf")
+fh = FigureHelper(not True)
+pp = PdfPages(fh.path + "Edge.pdf")
 
 # Array allocations
 displacement = np.zeros((I, K - 1)) # Projection of the displacement vectors
@@ -46,21 +45,23 @@ for k in range(k0, K):
         t = mapContours(s0, s, t0) # Parameters of the endpoints of the displacement vectors
         deltat += t[0] - t0[0] # Translation of the origin of the spline curve
         c[-1 < c] = np.mod(c[-1 < c] - deltat, 1) # Modification of the contour image to reflect the translation
-    w = window(c, I, J) # Binary masks for the sampling windows
+    w = createWindows(c, I, J) # Binary masks representing the sampling windows
     for m in range(len(sigsrc)):
         signal[k, m] = extractSignals(imread(path + sigsrc[m](k + 1) + '.tif'), w) # Signals extracted from various imaging channels
 
     # Compute projection of displacement vectors onto normal of contour
     if k0 < k:
-        u = np.asarray(splev(np.mod(t0, 1), s0, der=1)) # Obain a vector that is tangent to the contour
+        u = np.asarray(splev(np.mod(t0, 1), s0, der=1)) # Get a vector that is tangent to the contour
         u = np.asarray([u[1], -u[0]]) / np.linalg.norm(u, axis=0) # Derive an orthogonal vector with unit norm
         displacement[:, k - k0 - 1] = np.sum((np.asarray(splev(np.mod(t, 1), s)) - np.asarray(splev(np.mod(t0, 1), s0))) * u, axis=0) # Compute scalar product with displacement vector
 
     # Artifact generation
     if k0 < k:
-        # Plot edge structures (spline curves, displacement vectors, sampling windows)
-        showEdge(k, find_boundaries(labelWindows(w0)), w0, s0, s, t0, t, displacement[:, k - k0 - 1], u, I, pdf) # w0[0, 0].astype(dtype=np.uint8)
-        pdf.savefig()
+        fh.openFigure('Frame ' + str(k), 1, (12, 9))
+        showWindows(w, find_boundaries(labelWindows(w0))) # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
+        showEdge(s0, s, t0, t, displacement[:, k - k0 - 1], u) # Show edge structures (spline curves, displacement vectors, sampling windows)
+        pp.savefig()
+        fh.show()
     # imsave(plot.path + 'Tiles.tif', 255 * np.asarray(w), compress=6)
 
     # Keep variables for the next iteration
@@ -68,8 +69,6 @@ for k in range(k0, K):
     w0 = w
 
 # Artifact generation
-pdf.close()
-with open(plot.path + 'Signals.pkl', 'wb') as f:
-    # pickle.dump({'morphosrc': morphosrc, 'sigsrc': sigsrc, 'displacement': displacement, 'signal': signal}, f)
-    dill.dump({'morphosrc': morphosrc, 'sigsrc': sigsrc, 'displacement': displacement, 'signal': signal}, f) # Save analysis results to disk
+pp.close()
+dill.dump({'morphosrc': morphosrc, 'sigsrc': sigsrc, 'displacement': displacement, 'signal': signal}, open(fh.path + 'Signals.pkl', 'wb')) # Save analysis results to disk
 showSignals()
