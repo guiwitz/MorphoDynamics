@@ -6,7 +6,6 @@ from skimage.external.tifffile import imread, imsave
 # from scipy.interpolate import UnivariateSpline
 import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.cm import get_cmap
 from scipy.ndimage.measurements import center_of_mass
 # from scipy.signal import argrelmin
 from scipy.interpolate import splprep, splev
@@ -62,7 +61,7 @@ def mapContours(s1, s2, t1):
 
     return t2
 
-def plotMap(x, w, s1, s2, t1, t2, d, d1, ncurv):
+def showEdge(k, x, w, s1, s2, t1, t2, d, d1, ncurv, pdf):
     # Evaluate splines at various points
     c1 = splev(np.mod(t1, 1), s1)
     c2 = splev(np.mod(t2, 1), s2)
@@ -83,6 +82,7 @@ def plotMap(x, w, s1, s2, t1, t2, d, d1, ncurv):
     # matplotlib.use('PDF')
     lw = 1
     s = 1
+    plot.plotopen('Frame ' + str(k), 1)
     plt.imshow(x, cmap='gray', vmin=0, vmax=2)
     # plt.plot(c1p[0], c1p[1], 'g', zorder=50, lw=lw)
     # plt.plot(c2p[0], c2p[1], 'b', zorder=100, lw=lw)
@@ -97,14 +97,8 @@ def plotMap(x, w, s1, s2, t1, t2, d, d1, ncurv):
             if np.any(w[j, i]):
                 p = center_of_mass(w[j, i])
                 plt.text(p[1], p[0], str(i), color='yellow', fontsize=4, horizontalalignment='center', verticalalignment='center')
-
-    # plot.plotopen('Test')
-    # from matplotlib import cm
-    # tmp = np.asarray(splev(np.linspace(0, 1, 10001), s))
-    # cmap = cm.get_cmap("Spectral")
-    # plt.scatter(tmp[0], tmp[1], c=cmap(1. * tmp[1] / max(tmp[1])))
-    # plot.plotclose()
-    # plt.show()
+    plot.plotclose(False)
+    # plot.show()
 
 
 def discretizeCurve(tck, o):

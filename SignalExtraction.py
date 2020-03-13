@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from ArtifactGenerator import Plot
 
-def signalExtraction():
+def showSignals():
    # print(matplotlib.get_configdir())
    # print(matplotlib.matplotlib_fname())
    # quit()
