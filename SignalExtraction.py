@@ -34,9 +34,9 @@ def signalExtraction():
    # plt.show()
 
    for m in range(len(data['sigsrc'])):
-      for j in range(data['signal'].shape[3]):
+      for j in range(data['signal'].shape[2]):
          plot.plotopen('Signal: ' + data['sigsrc'][m](0)[0:25] + ' - Layer: ' + str(j), 1)
-         plt.imshow(np.transpose(data['signal'][:, m, :, j]), cmap='plasma')
+         plt.imshow(np.transpose(data['signal'][:, m, j, 0:int(48/2**j)]), cmap='plasma')
          plt.colorbar(label='Signal')
          plt.axis('auto')
          plt.xlabel('Frame index')

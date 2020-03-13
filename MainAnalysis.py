@@ -54,14 +54,14 @@ pdf = PdfPages(plot.path + "Edge.pdf")
 
 # Analysis parameters
 kstart = 0 # Index of first frame to be analyzed
-ncurv = 40 # Number of sampling windows along the curve
+ncurv = 48 # Number of sampling windows along the curve
 nrad = 5 # Number of "radial" sampling windows
 
 # Array allocations
 # wl = np.zeros((K,) + shape, dtype=np.uint16) # Labeled windows
 # b = np.zeros((K,) + shape, dtype=np.uint8) # Boundaries of the sampling windows
 displacement = np.zeros((ncurv, K - 1)) # Projection of the displacement vectors
-signal = np.zeros((K, len(sigsrc), ncurv, nrad)) # Signals from the outer sampling windows
+signal = np.zeros((K, len(sigsrc), nrad, ncurv)) # Signals from the outer sampling windows
 
 # Main loop on frames
 deltat = 0
@@ -79,7 +79,8 @@ for k in range(kstart, K):
         c[-1 < c] = np.mod(c[-1 < c] - deltat, 1)
     w = window(c, ncurv, nrad) # Binary masks for the sampling windows
     # imsave(plot.path + 'Tiles.tif', 255 * np.asarray(w), compress=6)
-    signal[k] = extractSignals(path, sigsrc, k, w) # Signals extracted from various imaging channels
+    for m in range(len(sigsrc)):
+        signal[k, m] = extractSignals(imread(path + sigsrc[m](k + 1) + '.tif'), w) # Signals extracted from various imaging channels
 
     # Compute projection of displacement vectors onto normal of contour
     if kstart < k:
@@ -91,10 +92,10 @@ for k in range(kstart, K):
     # Plot edge structures (spline curves, displacement vectors, sampling windows)
     if kstart < k:
         plot.plotopen('Frame ' + str(k), 1)
-        plotMap(find_boundaries(labelWindows(w0)), w0, s0, s, t0, t, displacement[:, k-kstart-1], d1) # w0[0, 0].astype(dtype=np.uint8)
+        plotMap(find_boundaries(labelWindows(w0)), w0, s0, s, t0, t, displacement[:, k-kstart-1], d1, ncurv) # w0[0, 0].astype(dtype=np.uint8)
         plot.plotclose(False)
-        pdf.savefig(plt.gcf())
         # plot.show()
+        pdf.savefig(plt.gcf())
 
     # Keep variables for the next iteration
     s0 = s

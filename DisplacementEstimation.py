@@ -62,7 +62,7 @@ def mapContours(s1, s2, t1):
 
     return t2
 
-def plotMap(x, w, s1, s2, t1, t2, d, d1):
+def plotMap(x, w, s1, s2, t1, t2, d, d1, ncurv):
     # Evaluate splines at various points
     c1 = splev(np.mod(t1, 1), s1)
     c2 = splev(np.mod(t2, 1), s2)
@@ -70,9 +70,9 @@ def plotMap(x, w, s1, s2, t1, t2, d, d1):
     c2p = splev(np.linspace(0, 1, 10001), s2)
 
     # Calculate window centers
-    p = np.zeros((w.shape[0], 2))
-    for i in range(w.shape[0]):
-        p[i] = center_of_mass(w[i, 0])
+    p = np.zeros((w.shape[1], 2))
+    for i in range(w.shape[1]):
+        p[i] = center_of_mass(w[0, i])
 
     # Interpolate displacements
     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
@@ -86,14 +86,17 @@ def plotMap(x, w, s1, s2, t1, t2, d, d1):
     plt.imshow(x, cmap='gray', vmin=0, vmax=2)
     # plt.plot(c1p[0], c1p[1], 'g', zorder=50, lw=lw)
     # plt.plot(c2p[0], c2p[1], 'b', zorder=100, lw=lw)
-    plt.colorbar(plt.scatter(c1p[0], c1p[1], c=d, cmap=get_cmap("bwr"), vmin=-dmax, vmax=dmax, zorder=50, s=lw))
+    plt.colorbar(plt.scatter(c1p[0], c1p[1], c=d, cmap='bwr', vmin=-dmax, vmax=dmax, zorder=50, s=lw), label='Displacement [pixels]')
     # plt.scatter(c2p[0], c2p[1], 'b', zorder=100, lw=lw)
     for j in range(len(t2)):
         plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='g', zorder=200, lw=lw)
         # plt.arrow(c1[0][j], c1[1][j], s * d1[0][j], s * d1[1][j], color='y', zorder=200, lw=lw)
     plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw)
-    for i in range(w.shape[0]):
-        plt.text(p[i,1], p[i,0], str(i), color='yellow', fontsize=4, horizontalalignment='center', verticalalignment='center')
+    for j in range(w.shape[0]):
+        for i in range(int(ncurv/2**j)):
+            if np.any(w[j, i]):
+                p = center_of_mass(w[j, i])
+                plt.text(p[1], p[0], str(i), color='yellow', fontsize=4, horizontalalignment='center', verticalalignment='center')
 
     # plot.plotopen('Test')
     # from matplotlib import cm

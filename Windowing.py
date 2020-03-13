@@ -35,12 +35,13 @@ def window(c, ncurv, nrad):
             circ[i, j] = c[F[0, i, j], F[1, i, j]]
 
     # Create sampling windows
-    s = np.linspace(0, 1, ncurv+1) # "Curvilinear" coordinate
-    b = np.linspace(0, np.amax(D*mask), nrad+1) # Radial coordinate
-    windows = np.zeros((ncurv, nrad, c.shape[0], c.shape[1]), dtype=np.bool)
-    for i in range(ncurv):
-        for j in range(nrad):
-            windows[i, j] = mask & (s[i] <= circ) & (circ < s[i+1]) & (b[j] <= D) & (D < b[j+1])
+    # windows = np.zeros((ncurv, nrad, c.shape[0], c.shape[1]), dtype=np.bool)
+    windows = np.zeros((nrad,ncurv)+c.shape, dtype=np.bool)
+    b = np.linspace(0, np.amax(D * mask), nrad + 1) # Radial coordinate
+    for j in range(nrad):
+        s = np.linspace(0, 1, int(ncurv / 2**j) + 1) # "Curvilinear" coordinate
+        for i in range(int(ncurv/2**j)):
+            windows[j, i] = mask & (s[i] <= circ) & (circ < s[i+1]) & (b[j] <= D) & (D < b[j+1])
 
     # Artifact generation
     plot.imshow('Contour', c)
@@ -56,23 +57,18 @@ def window(c, ncurv, nrad):
     return windows
 
 def labelWindows(windows):
-    tiles = np.zeros([windows.shape[2], windows.shape[3]], dtype=np.uint16)
-    for i in range(windows.shape[0]):
-        # for j in range(windows.shape[1]):
-        for j in range(windows.shape[1]):
-            tiles[windows[i, j]] = 1 + windows.shape[1]*i + j
+    tiles = np.zeros(windows.shape[2:4], dtype=np.uint16)
+    n = 1
+    for j in range(windows.shape[0]):
+        for i in range(windows.shape[1]):
+            tiles[windows[j, i]] = n
+            n += 1
     return tiles
 
-def extractSignals(path, sigsrc, k, w):
-    # Extract signals
-    M = len(sigsrc)
-    signal = np.zeros((M, w.shape[0], w.shape[1]))
-    for m in range(M):
-        y = imread(path + sigsrc[m](k+1) + '.tif')
-        for i in range(w.shape[0]):
-            for j in range(w.shape[1]):
-                if np.any(w[i, j]):
-                    signal[m, i, j] = np.mean(y[w[i, j]])
-                else:
-                    signal[m, i, j] = np.nan
+def extractSignals(y, w):
+    signal = np.nan * np.ones(w.shape[0:2])
+    for j in range(w.shape[0]):
+        for i in range(w.shape[1]):
+            if np.any(w[j, i]):
+                signal[j, i] = np.mean(y[w[j, i]])
     return signal
