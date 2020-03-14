@@ -39,12 +39,11 @@ for k in range(k0, K):
     x = imread(path + morphosrc + str(k + 1) + '.tif').astype(dtype=np.uint16) # Input image
     c = segment(x, T) # Discrete cell contour
     s = fitSpline(c) # Smoothed spline curve following the contour
-    c = rasterizeCurve(x.shape, s) # Representation of the contour as a grayscale image
     if k0 < k:
         t0 = deltat + 0.5 / I + np.linspace(0, 1, I, endpoint=False)  # Parameters of the startpoints of the displacement vectors
         t = mapContours(s0, s, t0) # Parameters of the endpoints of the displacement vectors
         deltat += t[0] - t0[0] # Translation of the origin of the spline curve
-        c[-1 < c] = np.mod(c[-1 < c] - deltat, 1) # Modification of the contour image to reflect the translation
+    c = rasterizeCurve(x.shape, s, deltat) # Representation of the contour as a grayscale image
     w = createWindows(c, I, J) # Binary masks representing the sampling windows
     for m in range(len(sigsrc)):
         signal[k, m] = extractSignals(imread(path + sigsrc[m](k + 1) + '.tif'), w) # Signals extracted from various imaging channels

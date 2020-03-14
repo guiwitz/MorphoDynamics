@@ -7,7 +7,7 @@ from numpy.linalg import norm
 from FunctionalDefinition import Functional
 from ArtifactGeneration import FigureHelper
 
-plot = FigureHelper(not True)
+fh = FigureHelper(not True)
 
 def fitSpline(c):
     """" Fit a spline to a contour specified as a list of pixels. """
@@ -79,16 +79,15 @@ def showEdge(s1, s2, t1, t2, d, u):
         # plt.arrow(c1[0][j], c1[1][j], s * u[0][j], s * u[1][j], color='y', zorder=200, lw=lw)
     plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw)
 
-def rasterizeCurve(shape, s):
+def rasterizeCurve(shape, s, deltat):
     """ Construct a mapping from edge pixels to spline arguments. """
     delta = np.inf * np.ones(shape)
     tau = - np.ones(shape)
-    t = np.linspace(0, 1, 10001)
-    p = np.asarray(splev(np.mod(t, 1), s))
-    pr = np.round(p)
-    pi = pr.astype(dtype=np.int)
+    t = np.mod(np.linspace(0, 1, 10001) - deltat, 1)
+    p = np.asarray(splev(t, s))
+    pi = np.round(p).astype(dtype=np.int)
     for n in range(10001):
-        d0 = np.linalg.norm(p[:,n]-pr[:,n])
+        d0 = np.linalg.norm(p[:,n]-pi[:,n])
         if d0 < delta[pi[1,n], pi[0,n]]:
             delta[pi[1, n], pi[0, n]] = d0
             tau[pi[1, n], pi[0, n]] = t[n]
