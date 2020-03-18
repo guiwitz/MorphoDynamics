@@ -26,9 +26,12 @@ J = 5 # Number of sampling windows in the "radial" direction
 
 # Figures and other artifacts
 fh = FigureHelper(not True)
-pp = PdfPages(fh.path + "Edge.pdf")
+pp = PdfPages(fh.path + "Windows.pdf")
 
-# Array allocations
+# Structures that will be saved to disk
+spline = []
+param0 = []
+param = []
 displacement = np.zeros((I, K - 1)) # Projection of the displacement vectors
 signal = np.zeros((K, len(sigsrc), J, I)) # Signals from the outer sampling windows
 
@@ -55,19 +58,33 @@ for k in range(k0, K):
         displacement[:, k - k0 - 1] = np.sum((np.asarray(splev(np.mod(t, 1), s)) - np.asarray(splev(np.mod(t0, 1), s0))) * u, axis=0) # Compute scalar product with displacement vector
 
     # Artifact generation
-    if k0 < k:
-        fh.openFigure('Frame ' + str(k), 1, (12, 9))
-        showWindows(w, find_boundaries(labelWindows(w0))) # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
-        showEdge(s0, s, t0, t, displacement[:, k - k0 - 1], u) # Show edge structures (spline curves, displacement vectors, sampling windows)
-        pp.savefig()
-        fh.show()
+    # if k0 < k:
+    fh.openFigure('Frame ' + str(k), 1, (12, 9))
+    showWindows(w, find_boundaries(labelWindows(w))) # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
+    # showEdge(s0, s, t0, t, displacement[:, k - k0 - 1]) # Show edge structures (spline curves, displacement vectors, sampling windows)
+    pp.savefig()
+    fh.show()
     # imsave(plot.path + 'Tiles.tif', 255 * np.asarray(w), compress=6)
 
     # Keep variables for the next iteration
     s0 = s
     w0 = w
 
+    # Save variables for archival
+    spline.append(s)
+    if k0 < k:
+        param0.append(t0)
+        param.append(t)
+
 # Artifact generation
 pp.close()
-dill.dump({'morphosrc': morphosrc, 'sigsrc': sigsrc, 'displacement': displacement, 'signal': signal}, open(fh.path + 'Signals.pkl', 'wb')) # Save analysis results to disk
+dic = {'path': path,
+       'morphosrc': morphosrc,
+       'sigsrc': sigsrc,
+        'displacement': displacement,
+        'signal': signal,
+        'spline': spline,
+        'param0': param0,
+        'param': param}
+dill.dump(dic, open(fh.path + 'Signals.pkl', 'wb')) # Save analysis results to disk
 showSignals()

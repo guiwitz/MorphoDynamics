@@ -52,10 +52,10 @@ def mapContours(s1, s2, t1):
 
     return t2
 
-def showEdge(s1, s2, t1, t2, d, u):
+def showEdge(s1, s2, t1, t2, d, dmax=None):
     """ Draw the cell-edge contour and the displacement vectors. """
 
-    # Evaluate splines at various points
+    # Evaluate splines at window locations and on fine-resolution grid
     c1 = splev(np.mod(t1, 1), s1)
     c2 = splev(np.mod(t2, 1), s2)
     c1p = splev(np.linspace(0, 1, 10001), s1)
@@ -64,7 +64,8 @@ def showEdge(s1, s2, t1, t2, d, u):
     # Interpolate displacements
     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
     d = np.interp(np.linspace(0, 1, 10001), t1, d, period=1)
-    dmax = np.max(np.abs(d))
+    if dmax == None:
+        dmax = np.max(np.abs(d))
 
     # Plot results
     # matplotlib.use('PDF')
@@ -76,7 +77,7 @@ def showEdge(s1, s2, t1, t2, d, u):
     plt.colorbar(plt.scatter(c1p[0], c1p[1], c=d, cmap='bwr', vmin=-dmax, vmax=dmax, zorder=50, s=lw), label='Displacement [pixels]')
     for j in range(len(t2)):
         plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='g', zorder=200, lw=lw)
-        # plt.arrow(c1[0][j], c1[1][j], s * u[0][j], s * u[1][j], color='y', zorder=200, lw=lw)
+        # plt.arrow(c1[0][j], c1[1][j], s * u[0][j], s * u[1][j], color='y', zorder=200, lw=lw) # Show normal to curve
     plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw)
 
 def rasterizeCurve(shape, s, deltat):
