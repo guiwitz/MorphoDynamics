@@ -17,12 +17,12 @@ dataset = 'FRET_sensors + actinHistamineExpt2'
 # dataset = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
 # dataset = 'GBD_sensors + actinExpt_01'
 path, morphosrc, sigsrc, K, T = loadMetadata(dataset)
-K = 3
+K = 10
 
 # Analysis parameters
 k0 = 0 # Index of first frame to be analyzed
 I = 48 # Number of sampling windows in the outer layer (along the curve)
-J = 5 # Number of "radial" sampling windows
+J = 5 # Number of sampling windows in the "radial" direction
 
 # Figures and other artifacts
 fh = FigureHelper(not True)

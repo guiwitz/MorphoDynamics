@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from skimage.external.tifffile import imsave
+import time
 
 class FigureHelper:
     """ Helper class for generating figures, when in debug mode. """
@@ -37,9 +38,8 @@ class FigureHelper:
         plt.figure(self.n).set_size_inches(figsize)
         plt.get_current_fig_manager().window.showMaximized()
         plt.clf()
-        # plt.gcf().suptitle(title)
-        plt.gca().set_title(title)
         plt.tight_layout()
+        plt.gca().set_title(title)
 
     def closeFigure(self):
         """ Save a figure. """
@@ -49,3 +49,15 @@ class FigureHelper:
     def show(self):
         if self.debug:
             plt.show()
+
+class Timer(object):
+    def __init__(self, name=None):
+        self.name = name
+
+    def __enter__(self):
+        self.tstart = time.time()
+
+    def __exit__(self, type, value, traceback):
+        if self.name:
+            print('[%s]' % self.name,)
+        print('Elapsed: %s' % (time.time() - self.tstart))
