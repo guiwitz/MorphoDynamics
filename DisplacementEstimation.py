@@ -1,3 +1,4 @@
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.interpolate import splprep, splev
 from scipy.optimize import least_squares
@@ -52,8 +53,9 @@ def mapContours(s1, s2, t1):
 
     return t2
 
-def showEdge(s1, s2, t1, t2, d, dmax=None):
-    """ Draw the cell-edge contour and the displacement vectors. """
+def showEdgeScatter(s1, s2, t1, t2, d, dmax=None):
+    """ Draw the cell-edge contour and the displacement vectors.
+    The contour is drawn using a scatter plot to color-code the displacements. """
 
     # Evaluate splines at window locations and on fine-resolution grid
     c1 = splev(np.mod(t1, 1), s1)
@@ -79,6 +81,18 @@ def showEdge(s1, s2, t1, t2, d, dmax=None):
         plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='g', zorder=200, lw=lw)
         # plt.arrow(c1[0][j], c1[1][j], s * u[0][j], s * u[1][j], color='y', zorder=200, lw=lw) # Show normal to curve
     plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw)
+
+def showEdgeLine(s):
+    """ Draw the cell-edge contour using a colored line. """
+
+    # Evaluate splines at window locations and on fine-resolution grid
+    K = len(s)
+    cmap = plt.cm.get_cmap('jet')
+    lw = 0.1
+    for k in range(K):
+        c = splev(np.linspace(0, 1, 10001), s[k])
+        plt.plot(c[0], c[1], color=cmap(k/(K-1)), zorder=50, lw=lw)
+    plt.gcf().colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(vmin=0, vmax=K-1), cmap=cmap), label=('Frame index'))
 
 def rasterizeCurve(shape, s, deltat):
     """ Construct a mapping from edge pixels to spline arguments. """

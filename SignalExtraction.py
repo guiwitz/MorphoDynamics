@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from skimage.external.tifffile import imread
 from ArtifactGeneration import FigureHelper
-from DisplacementEstimation import showEdge
+from DisplacementEstimation import showEdgeScatter, showEdgeLine
 from Windowing import showWindows
 
 def showSignals():
@@ -12,20 +12,29 @@ def showSignals():
 
    fh = FigureHelper(not True)
 
-   data = dill.load(open(fh.path + "Signals.pkl", "rb"))
+   data = dill.load(open(fh.path + "Data.pkl", "rb"))
 
-   pp = PdfPages(fh.path + "Edge.pdf")
+   pp = PdfPages(fh.path + "Edge overview.pdf")
+   fh.openFigure('Edges', 1, (12, 9))
+   plt.imshow(imread(data['path'] + data['morphosrc'] + '1.tif'), cmap='gray')
+   showEdgeLine(data['spline'])
+   pp.savefig()
+   fh.show()
+   pp.close()
+
+   pp = PdfPages(fh.path + "Edge animation.pdf")
    K = len(data['spline'])
    dmax = np.max(np.abs(data['displacement']))
    for k in range(K-1):
       fh.openFigure('Frame ' + str(k) + ' to frame ' + str(k+1), 1, (12, 9))
       plt.imshow(imread(data['path'] + data['morphosrc'] + str(k + 1) + '.tif'), cmap='gray')
       # showWindows(w, find_boundaries(labelWindows(w0)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
-      showEdge(data['spline'][k], data['spline'][k+1], data['param0'][k], data['param'][k], data['displacement'][:, k], dmax)  # Show edge structures (spline curves, displacement vectors, sampling windows)
-      # plt.savefig('Edge ' + str(k) + '.tif')
+      showEdgeScatter(data['spline'][k], data['spline'][k + 1], data['param0'][k], data['param'][k], data['displacement'][:, k], dmax)  # Show edge structures (spline curves, displacement vectors, sampling windows)
+      plt.savefig('Edge ' + str(k) + '.tif')
       pp.savefig()
       fh.show()
    pp.close()
+   # quit()
 
    pp = PdfPages(fh.path + "Displacement.pdf")
    fh.openFigure('Displacement', 1)
@@ -35,6 +44,20 @@ def showSignals():
    plt.ylabel('Window index')
    plt.colorbar(label='Displacement [pixels]')
    cmax = np.max(np.abs(data['displacement']))
+   plt.clim(-cmax, cmax)
+   # plt.xticks(range(0, velocity.shape[1], 5))
+   pp.savefig()
+   fh.show()
+   fh.closeFigure()
+
+   fh.openFigure('Cumulative displacement', 1)
+   ds = np.cumsum(data['displacement'], axis=1)
+   plt.imshow(ds, cmap='bwr')
+   plt.axis('auto')
+   plt.xlabel('Frame index')
+   plt.ylabel('Window index')
+   plt.colorbar(label='Displacement [pixels]')
+   cmax = np.max(np.abs(ds))
    plt.clim(-cmax, cmax)
    # plt.xticks(range(0, velocity.shape[1], 5))
    pp.savefig()
@@ -57,5 +80,4 @@ def showSignals():
          fh.closeFigure()
    pp.close()
 
-# morphosrc = 'w16TIRF-CFP\\RhoA_OP_his_02_w16TIRF-CFP_t'
 # showSignals()

@@ -8,7 +8,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from Metadata import loadMetadata
 from ArtifactGeneration import FigureHelper
 from Segmentation import segment
-from DisplacementEstimation import fitSpline, mapContours, showEdge, rasterizeCurve
+from DisplacementEstimation import fitSpline, mapContours, showEdgeScatter, rasterizeCurve
 from Windowing import createWindows, extractSignals, labelWindows, showWindows
 from SignalExtraction import showSignals
 
@@ -17,7 +17,7 @@ dataset = 'FRET_sensors + actinHistamineExpt2'
 # dataset = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
 # dataset = 'GBD_sensors + actinExpt_01'
 path, morphosrc, sigsrc, K, T = loadMetadata(dataset)
-K = 10
+# K = 10
 
 # Analysis parameters
 k0 = 0 # Index of first frame to be analyzed
@@ -86,5 +86,5 @@ dic = {'path': path,
         'spline': spline,
         'param0': param0,
         'param': param}
-dill.dump(dic, open(fh.path + 'Signals.pkl', 'wb')) # Save analysis results to disk
+dill.dump(dic, open(fh.path + 'Data.pkl', 'wb')) # Save analysis results to disk
 showSignals()
