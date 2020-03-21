@@ -3,7 +3,7 @@ import numpy as np
 from skimage.external.tifffile import imread, imsave
 from ArtifactGeneration import FigureHelper
 
-plot = FigureHelper(False)
+fh = FigureHelper(False)
 
 def pumpingEllipse(k):
     x[k][i ** 2 + 4 * j ** 2 < (25 + 10 * math.sin(k)) ** 2] = 255
@@ -22,6 +22,16 @@ def walkingRectangles(k):
     x[k][(np.abs(i-20)<10) & (np.abs(j)<20)] = 255
     x[k][(np.abs(i+20)<10) & (np.abs(j)<20+5*math.sin(k/2))] = 255
 
+def tri(t):
+    tabs = np.abs(t)
+    return (tabs < 1) * (1 - tabs)
+
+def protrudingEllipse(k):
+    x[k][i ** 2 + 4 * j ** 2 < (25 + 10 * tri((k-25)/15)) ** 2] = 255
+
+def signalEllipse(k):
+    x[k][i ** 2 + 4 * j ** 2 < (25 + 10 * tri((k-25)/15)) ** 2] = 255 * tri((k-15)/15)
+
 K = 50
 L = 50
 i, j = np.meshgrid(range(-L, L+1), range(-L, L+1))
@@ -30,5 +40,7 @@ for k in range(K):
     # pumpingEllipse(k)
     # largeTurningEllipse(k)
     # turningSquare(k)
-    walkingRectangles(k)
-    imsave(plot.path + 'Phantom' + str(k + 1) + '.tif', x[k])
+    # walkingRectangles(k)
+    # protrudingEllipse(k)
+    signalEllipse(k)
+    imsave(fh.path + 'Phantom' + str(k + 1) + '.tif', x[k])

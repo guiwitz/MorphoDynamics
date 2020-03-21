@@ -29,6 +29,13 @@ def loadMetadata(dataset):
         K = 250
         shape = (716, 716)
         T = 165
+    elif dataset == 'Phantom':
+        path = 'C:/Work/UniBE2/Code/Output 1/'
+        morphosrc = 'protrudingEllipse/Phantom'
+        sigsrc = [lambda k: 'signalEllipse/Phantom' + str(k)]
+        K = 50
+        shape = (101, 101)
+        T = None
     else:
         path = 'Walking rectangles/'
         morphosrc = 'Phantom'

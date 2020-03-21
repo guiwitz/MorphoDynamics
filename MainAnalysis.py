@@ -13,9 +13,10 @@ from Windowing import createWindows, extractSignals, labelWindows, showWindows
 from SignalExtraction import showSignals
 
 # dataset = 'Synthetic'
-dataset = 'FRET_sensors + actinHistamineExpt2'
+# dataset = 'FRET_sensors + actinHistamineExpt2'
 # dataset = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
 # dataset = 'GBD_sensors + actinExpt_01'
+dataset = 'Phantom'
 path, morphosrc, sigsrc, K, T = loadMetadata(dataset)
 # K = 10
 
