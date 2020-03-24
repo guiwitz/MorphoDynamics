@@ -39,8 +39,8 @@ def segment(x, T=None):
     fh.show()
 
     # Segment image by thresholding
-    # y = gaussian(x, sigma=2, preserve_range=True) # Smooth input image with a Gaussian
-    y = x
+    y = gaussian(x, sigma=2, preserve_range=True) # Smooth input image with a Gaussian
+    # y = x
     z = T < y # Threshold smoothed input
 
     # Keep only the largest region

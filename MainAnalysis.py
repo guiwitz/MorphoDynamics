@@ -10,13 +10,13 @@ from ArtifactGeneration import FigureHelper
 from Segmentation import segment
 from DisplacementEstimation import fitSpline, mapContours, showEdgeScatter, rasterizeCurve
 from Windowing import createWindows, extractSignals, labelWindows, showWindows
-from SignalExtraction import showSignals
+# from SignalExtraction import showSignals
 
 # dataset = 'Synthetic'
 # dataset = 'FRET_sensors + actinHistamineExpt2'
 # dataset = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
-# dataset = 'GBD_sensors + actinExpt_01'
-dataset = 'Phantom'
+dataset = 'GBD_sensors + actinExpt_01'
+# dataset = 'Phantom'
 path, morphosrc, sigsrc, K, T = loadMetadata(dataset)
 # K = 10
 
@@ -34,7 +34,7 @@ spline = []
 param0 = []
 param = []
 displacement = np.zeros((I, K - 1)) # Projection of the displacement vectors
-signal = np.zeros((K, len(sigsrc), J, I)) # Signals from the outer sampling windows
+signal = np.zeros((len(sigsrc), J, I, K)) # Signals from the outer sampling windows
 
 # Main loop on frames
 deltat = 0
@@ -50,7 +50,7 @@ for k in range(k0, K):
     c = rasterizeCurve(x.shape, s, deltat) # Representation of the contour as a grayscale image
     w = createWindows(c, I, J) # Binary masks representing the sampling windows
     for m in range(len(sigsrc)):
-        signal[k, m] = extractSignals(imread(path + sigsrc[m](k + 1) + '.tif'), w) # Signals extracted from various imaging channels
+        signal[m, :, :, k] = extractSignals(imread(path + sigsrc[m](k + 1) + '.tif'), w) # Signals extracted from various imaging channels
 
     # Compute projection of displacement vectors onto normal of contour
     if k0 < k:
@@ -77,7 +77,7 @@ for k in range(k0, K):
         param0.append(t0)
         param.append(t)
 
-# Artifact generation
+# Save results to disk
 pp.close()
 dic = {'path': path,
        'morphosrc': morphosrc,
@@ -88,4 +88,4 @@ dic = {'path': path,
         'param0': param0,
         'param': param}
 dill.dump(dic, open(fh.path + 'Data.pkl', 'wb')) # Save analysis results to disk
-showSignals()
+# showSignals()
