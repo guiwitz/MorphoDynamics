@@ -9,7 +9,8 @@ def loadMetadata(dataset):
                   lambda k: 'w34TIRF-mCherry/RhoA_OP_his_02_w34TIRF-mCherry_t' + str(k)]
         K = 159
         shape = (358, 358)
-        T = None
+        # T = None
+        T = 222
     elif dataset == 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good':
         path = 'C:/Work/UniBE2/Guillaume/Example_Data/FRET_sensors + actin/PDGF/RhoA_multipoint_0.5fn_s3_good/'
         morphosrc = 'w34TIRF-mCherry/RhoA_multipoint_0.5fn_01_w34TIRF-mCherry_s3_t'

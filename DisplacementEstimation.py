@@ -76,7 +76,8 @@ def showEdgeScatter(s1, s2, t1, t2, d, dmax=None):
 
     # plt.plot(c1p[0], c1p[1], 'g', zorder=50, lw=lw)
     # plt.plot(c2p[0], c2p[1], 'b', zorder=100, lw=lw)
-    plt.colorbar(plt.scatter(c1p[0], c1p[1], c=d, cmap='bwr', vmin=-dmax, vmax=dmax, zorder=50, s=lw), label='Displacement [pixels]')
+    plt.scatter(c1p[0], c1p[1], c=d, cmap='bwr', vmin=-dmax, vmax=dmax, zorder=50, s=lw)
+    # plt.colorbar(label='Displacement [pixels]')
     for j in range(len(t2)):
         plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='g', zorder=200, lw=lw)
         # plt.arrow(c1[0][j], c1[1][j], s * u[0][j], s * u[1][j], color='y', zorder=200, lw=lw) # Show normal to curve
@@ -93,6 +94,21 @@ def showEdgeLine(s):
         c = splev(np.linspace(0, 1, 10001), s[k])
         plt.plot(c[0], c[1], color=cmap(k/(K-1)), zorder=50, lw=lw)
     plt.gcf().colorbar(plt.cm.ScalarMappable(norm=mpl.colors.Normalize(vmin=0, vmax=K-1), cmap=cmap), label=('Frame index'))
+
+def showEdgeImage(shape, s, t, d):
+    c = rasterizeCurve(shape, s, 0)
+    mask = -1 < c
+    c[mask] = np.interp(c[mask], t, d, period=1)
+    c[np.logical_not(mask)] = 0
+    cmap = plt.cm.get_cmap('bwr')
+    c = cmap(0.5 + 0.5 * c / np.max(np.abs(c)))[:, :, 0:3]
+    c = (255 * c).astype(np.uint8)
+    c *= np.stack((mask, mask, mask), -1)
+    # plt.figure()
+    # plt.imshow(c)
+    # plt.get_current_fig_manager().window.showMaximized()
+    # plt.show()
+    return c
 
 def rasterizeCurve(shape, s, deltat):
     """ Construct a mapping from edge pixels to spline arguments. """

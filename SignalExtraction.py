@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from skimage.external.tifffile import imread, TiffWriter
 from ArtifactGeneration import FigureHelper
-from DisplacementEstimation import showEdgeScatter, showEdgeLine, rasterizeCurve
+from DisplacementEstimation import showEdgeScatter, showEdgeLine, showEdgeImage, rasterizeCurve
 from Windowing import showWindows
 
 def correlate(x, y, normalization=None, removemean=True):
@@ -80,30 +80,20 @@ def showSignals(path):
 
       pp = PdfPages(fh.path + "2 Edge animation.pdf")
       dmax = np.max(np.abs(data['displacement']))
-      # tw = TiffWriter('Edge.tif')
+      tw = TiffWriter('Edge.tif')
       for k in range(K-1):
          print(k)
          fh.openFigure('Frame ' + str(k) + ' to frame ' + str(k+1), 1, (12, 9))
          x = imread(data['path'] + data['morphosrc'] + str(k + 1) + '.tif')
          plt.imshow(x, cmap='gray')
          # showWindows(w, find_boundaries(labelWindows(w0)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
-         showEdgeScatter(data['spline'][k], data['spline'][k + 1], data['param0'][k], data['param'][k], data['displacement'][:, k], np.max(data['displacement'][:, k]))  # Show edge structures (spline curves, displacement vectors, sampling windows)
-         # c = rasterizeCurve(x.shape, data['spline'][k], 0)
-         # # plt.figure()
-         # # plt.imshow(c)
-         # # plt.show()
-         # mask = -1<c
-         # c[mask] = np.interp(c[mask], data['param0'][k], data['displacement'][:, k], period=1)
-         # c[np.logical_not(mask)] = 0
-         # # tw.save(np.stack([x, x, np.zeros(x.shape)]))
-         # # x = x.astype(np.uint8)
-         # c = 255 * c / np.max(data['displacement'][:, k]) # np.max(np.abs(c)) # dmax
-         # tw.save(np.stack([(255+c*(c<0))*mask, (255-np.abs(c))*mask, (255-c*(0<c))*mask], -1).astype(np.uint8))
-         if k < 20:
-            plt.savefig('Edge ' + str(k) + '.tif')
+         showEdgeScatter(data['spline'][k], data['spline'][k + 1], data['param0'][k], data['param'][k], data['displacement'][:, k], np.max(data['displacement'][:, k])) # Show edge structures (spline curves, displacement vectors, sampling windows)
          pp.savefig()
+         # if k < 20:
+         #    plt.savefig('Edge ' + str(k) + '.tif')
+         tw.save(showEdgeImage(x.shape, data['spline'][k], data['param0'][k], data['displacement'][:, k]), compress=6)
          fh.show()
-      # tw.close()
+      tw.close()
       pp.close()
 
    if Config.showDisplacement:
@@ -175,7 +165,7 @@ def showSignals(path):
          showCorrelation(data['signal'][0, 0], data['signal'][-1, 0], trim(data['sigsrc'][0](0)), trim(data['sigsrc'][-1](0)), normalization)
       pp.close()
 
-# path = 'FRET_sensors + actinHistamineExpt2'
+path = 'FRET_sensors + actinHistamineExpt2'
 # path = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
-path = 'GBD_sensors + actinExpt_01'
+# path = 'GBD_sensors + actinExpt_01'
 showSignals(path)
