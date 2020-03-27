@@ -63,7 +63,7 @@ def segment(x, T=None):
     fh.imshow('Regions', regions)
     fh.show()
 
-    return c
+    return c # , c.shape[0]/np.sum(z)
 
 def estimateBleaching(filename, K, shape):
     """ Estimate the intensity decay due to bleaching. """
