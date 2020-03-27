@@ -2,13 +2,14 @@ import numpy as np
 from scipy.ndimage.morphology import distance_transform_edt, binary_fill_holes
 from scipy.ndimage.measurements import center_of_mass
 import matplotlib.pyplot as plt
-from skimage.segmentation import find_boundaries
-from skimage.color import label2rgb
-from skimage.external.tifffile import imread, imsave
-from Segmentation import segment
+# from skimage.segmentation import find_boundaries
+# from skimage.color import label2rgb
+# from skimage.external.tifffile import imread, imsave
+# from Segmentation import segment
 from ArtifactGeneration import FigureHelper
 
 plot = FigureHelper(not True)
+
 
 def createWindows(c, I, J):
     """ Generate binary masks that represent the sampling windows. """

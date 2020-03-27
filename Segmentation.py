@@ -12,11 +12,11 @@ from ArtifactGeneration import FigureHelper
 
 fh = FigureHelper(not True)
 
-def segment(x, T=None):
+def segment(x, T=None, smoothEdge=True):
     """ Segment the cell image, possibly with automatic threshold selection. """
 
     # Determine the threshold based on the histogram, if not provided manually
-    if T == None:
+    if T is None:
         h, _ = histogram(x, source_range='dtype') # Compute histogram of image
         s = UnivariateSpline(range(0, 65536), h) # Interpolate the histogram counts using a smoothing spline
         n = np.arange(0, 65535, 1) # Create array with positions of histogram bins
@@ -28,19 +28,21 @@ def segment(x, T=None):
 
     # Artifact generation
     fh.imshow('Test image', x)
-    if fh.debug & (T == None):
-        fh.openFigure('Histogram')
+    if fh.debug & (T is None):
+        fh.open_figure('Histogram')
         plt.plot(h, 'b', lw=0.1, zorder=50)
         # plt.xlim(0, 1000)
         plt.plot(n, hs, 'r', lw=0.1, zorder=100)
         plt.plot(n0, hs[n0], 'go', zorder=10)
         plt.plot(T, hs[T], 'yo', zorder=10)
-        fh.closeFigure()
+        fh.close_figure()
     fh.show()
 
     # Segment image by thresholding
-    y = gaussian(x, sigma=2, preserve_range=True) # Smooth input image with a Gaussian
-    # y = x
+    if smoothEdge:
+        y = gaussian(x, sigma=2, preserve_range=True) # Smooth input image with a Gaussian
+    else:
+        y = x
     z = T < y # Threshold smoothed input
 
     # Keep only the largest region
@@ -81,9 +83,9 @@ def estimateBleaching(filename, K, shape):
         # p.imshow('Segmentation', c[k, :, :, :])
         # p.show()
     imsave(fh.path + 'Segmentation.tif', c)
-    fh.openFigure('Average intensity in segmented region')
+    fh.open_figure('Average intensity in segmented region')
     plt.plot(I)
-    fh.closeFigure()
+    fh.close_figure()
 
 # x = imread('C:\\Work\\UniBE 2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\w16TIRF-CFP\\RhoA_OP_his_02_w16TIRF-CFP_t53.tif')
 # segment(x)
