@@ -1,3 +1,4 @@
+import math
 import dill
 import numpy as np
 import matplotlib.pyplot as plt
@@ -62,11 +63,14 @@ def showSignals(path):
     """ Display the signals extracted from the cell. """
 
     class Config:
-        showEdge = True
-        showEdgePDF = True
-        showDisplacement = True
-        showSignals = True
-        showCorrelation = True
+        showLengthArea = True
+        showEdge = not True
+        showEdgePDF = not True
+        showDisplacement = not True
+        showSignals = not True
+        showCorrelation = not True
+        # edgeNormalization = 'global'
+        edgeNormalization = 'frame-by-frame'
 
     fh = FigureHelper(not True)
 
@@ -77,6 +81,19 @@ def showSignals(path):
     K = len(data['spline'])
     # K = 10
     I = data['displacement'].shape[0]
+
+    if Config.showLengthArea:
+        pp = PdfPages(fh.path + "Length and area.pdf")
+        fh.open_figure('Length', 1, (16, 9))
+        plt.plot(data['length'])
+        pp.savefig()
+        fh.open_figure('Area', 2, (16, 9))
+        plt.plot(data['area'])
+        pp.savefig()
+        fh.open_figure('Length^2 / Area / 4 / pi', 2, (16, 9))
+        plt.plot(data['length']**2 / data['area'] / 4 / math.pi)
+        pp.savefig()
+        pp.close()
 
     if Config.showEdge:
         pp = PdfPages(fh.path + "Edge overview.pdf")
@@ -102,13 +119,19 @@ def showSignals(path):
                 fh.show()
             pp.close()
 
-        dmax = np.max(np.abs(data['displacement']))
+        if Config.edgeNormalization == 'global':
+            dmax = np.max(np.abs(data['displacement']))
+        else:
+            dmax = None
         tw = TiffWriter('Edge animation.tif')
         for k in range(K - 1):
             tw.save(show_edge_image(x.shape, data['spline'][k], data['param0'][k], data['displacement'][:, k], 3, dmax), compress=6)
         tw.close()
 
-        dmax = np.max(np.abs(dcum))
+        if Config.edgeNormalization == 'global':
+            dmax = np.max(np.abs(dcum))
+        else:
+            dmax = None
         tw = TiffWriter('Edge animation with cumulative displacement.tif')
         for k in range(K - 1):
             tw.save(show_edge_image(x.shape, data['spline'][k], data['param0'][k], dcum[:, k], 3, dmax), compress=6)

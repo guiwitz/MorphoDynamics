@@ -25,6 +25,18 @@ def fit_spline(c):
     return s
 
 
+def compute_length(s):
+    cprm = splev(np.linspace(0, 1, 10000, endpoint=False), s, der=1)
+    return np.sum(np.sqrt(cprm[0]**2 + cprm[1]**2)) / 10000
+
+
+def compute_area(s):
+    c = splev(np.linspace(0, 1, 10000, endpoint=False), s)
+    cprm = splev(np.linspace(0, 1, 10000, endpoint=False), s, der=1)
+    return np.sum(c[0]*cprm[1] - c[1]*cprm[0]) / 2 / 10000
+
+
+
 def correlate(x, y):
     """ Compute the correlation between two signals with periodic boundary conditions. """
     z = np.real(np.fft.ifft(np.fft.fft(x) * np.fft.fft(y[::-1])))
@@ -116,6 +128,8 @@ def show_edge_image(shape, s, t, d, thickness, dmax=None):
     cmap = plt.cm.get_cmap('bwr')
     if dmax is None:
         dmax = np.max(np.abs(c))
+    if dmax == 0:
+        dmax = 1
     c = cmap(0.5 + 0.5 * c / dmax)[:, :, 0:3]
     c = (255 * c).astype(np.uint8)
     c *= np.stack((mask, mask, mask), -1)

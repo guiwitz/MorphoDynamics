@@ -8,7 +8,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from Metadata import loadMetadata
 from ArtifactGeneration import FigureHelper
 from Segmentation import segment
-from DisplacementEstimation import fit_spline, map_contours, rasterize_curve  # , show_edge_scatter
+from DisplacementEstimation import fit_spline, map_contours, rasterize_curve, compute_length, compute_area  # , show_edge_scatter
 from Windowing import createWindows, extractSignals, labelWindows, showWindows
 # from SignalExtraction import showSignals
 
@@ -35,6 +35,8 @@ param0 = []
 param = []
 displacement = np.zeros((I, K - 1))  # Projection of the displacement vectors
 signal = np.zeros((len(sigsrc), J, I, K))  # Signals from the outer sampling windows
+length = np.zeros((K,))
+area = np.zeros((K,))
 
 # Main loop on frames
 deltat = 0
@@ -43,6 +45,8 @@ for k in range(k0, K):
     x = imread(path + morphosrc + str(k + 1) + '.tif').astype(dtype=np.uint16)  # Input image
     c = segment(x, T, dataset != 'Synthetic data')  # Discrete cell contour
     s = fit_spline(c)  # Smoothed spline curve following the contour
+    length[k] = compute_length(s)
+    area[k] = compute_area(s)
     if k0 < k:
         t0 = deltat + 0.5 / I + np.linspace(0, 1, I, endpoint=False)  # Parameters of the startpoints of the displacement vectors
         t = map_contours(s0, s, t0)  # Parameters of the endpoints of the displacement vectors
@@ -79,6 +83,6 @@ for k in range(k0, K):
 
 # Save results to disk
 pp.close()
-dic = {'path': path, 'morphosrc': morphosrc, 'sigsrc': sigsrc, 'displacement': displacement, 'signal': signal, 'spline': spline, 'param0': param0, 'param': param}
+dic = {'path': path, 'morphosrc': morphosrc, 'sigsrc': sigsrc, 'displacement': displacement, 'signal': signal, 'spline': spline, 'param0': param0, 'param': param, 'length': length, 'area': area}
 dill.dump(dic, open(fh.path + 'Data.pkl', 'wb'))  # Save analysis results to disk
 # showSignals()
