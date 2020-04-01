@@ -12,12 +12,13 @@ from DisplacementEstimation import fit_spline, map_contours, rasterize_curve, co
 from Windowing import createWindows, extractSignals, labelWindows, showWindows
 # from SignalExtraction import showSignals
 
-# dataset = 'Synthetic'
+datadir = 'C:/Work/UniBE2/Data/'
+
+# dataset = 'Synthetic data'
 # dataset = 'FRET_sensors + actinHistamineExpt2'
 # dataset = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
-# dataset = 'GBD_sensors + actinExpt_01'
-dataset = 'Synthetic data'
-path, morphosrc, sigsrc, K, T = loadMetadata(dataset)
+dataset = 'GBD_sensors + actinExpt_01'
+expdir, morphodir, sigdir, K, T = loadMetadata(dataset)
 # K = 10
 
 # Analysis parameters
@@ -34,7 +35,7 @@ spline = []
 param0 = []
 param = []
 displacement = np.zeros((I, K - 1))  # Projection of the displacement vectors
-signal = np.zeros((len(sigsrc), J, I, K))  # Signals from the outer sampling windows
+signal = np.zeros((len(sigdir), J, I, K))  # Signals from the outer sampling windows
 length = np.zeros((K,))
 area = np.zeros((K,))
 
@@ -42,7 +43,7 @@ area = np.zeros((K,))
 deltat = 0
 for k in range(k0, K):
     print(k)
-    x = imread(path + morphosrc + str(k + 1) + '.tif').astype(dtype=np.uint16)  # Input image
+    x = imread(datadir + expdir + morphodir + str(k + 1) + '.tif').astype(dtype=np.uint16)  # Input image
     c = segment(x, T, dataset != 'Synthetic data')  # Discrete cell contour
     s = fit_spline(c)  # Smoothed spline curve following the contour
     length[k] = compute_length(s)
@@ -53,8 +54,8 @@ for k in range(k0, K):
         deltat += t[0] - t0[0]  # Translation of the origin of the spline curve
     c = rasterize_curve(x.shape, s, deltat)  # Representation of the contour as a grayscale image
     w = createWindows(c, I, J)  # Binary masks representing the sampling windows
-    for m in range(len(sigsrc)):
-        signal[m, :, :, k] = extractSignals(imread(path + sigsrc[m](k + 1) + '.tif'), w)  # Signals extracted from various imaging channels
+    for m in range(len(sigdir)):
+        signal[m, :, :, k] = extractSignals(imread(datadir + expdir + sigdir[m](k + 1) + '.tif'), w)  # Signals extracted from various imaging channels
 
     # Compute projection of displacement vectors onto normal of contour
     if k0 < k:
@@ -62,14 +63,14 @@ for k in range(k0, K):
         u = np.asarray([u[1], -u[0]]) / np.linalg.norm(u, axis=0)  # Derive an orthogonal vector with unit norm
         displacement[:, k - k0 - 1] = np.sum((np.asarray(splev(np.mod(t, 1), s)) - np.asarray(splev(np.mod(t0, 1), s0))) * u, axis=0)  # Compute scalar product with displacement vector
 
-    # Artifact generation
-    # if k0 < k:
-    fh.open_figure('Frame ' + str(k), 1, (12, 9))
-    showWindows(w, find_boundaries(labelWindows(w)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
-    # showEdge(s0, s, t0, t, displacement[:, k - k0 - 1])  # Show edge structures (spline curves, displacement vectors, sampling windows)
-    pp.savefig()
-    fh.show()
-    # imsave(plot.path + 'Tiles.tif', 255 * np.asarray(w), compress=6)
+    # # Artifact generation
+    # # if k0 < k:
+    # fh.open_figure('Frame ' + str(k), 1, (12, 9))
+    # showWindows(w, find_boundaries(labelWindows(w)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
+    # # showEdge(s0, s, t0, t, displacement[:, k - k0 - 1])  # Show edge structures (spline curves, displacement vectors, sampling windows)
+    # pp.savefig()
+    # fh.show()
+    # # imsave(plot.path + 'Tiles.tif', 255 * np.asarray(w), compress=6)
 
     # Keep variables for the next iteration
     s0 = s
@@ -83,6 +84,5 @@ for k in range(k0, K):
 
 # Save results to disk
 pp.close()
-dic = {'path': path, 'morphosrc': morphosrc, 'sigsrc': sigsrc, 'displacement': displacement, 'signal': signal, 'spline': spline, 'param0': param0, 'param': param, 'length': length, 'area': area}
+dic = {'expdir': expdir, 'morphodir': morphodir, 'sigdir': sigdir, 'displacement': displacement, 'signal': signal, 'spline': spline, 'param0': param0, 'param': param, 'length': length, 'area': area}
 dill.dump(dic, open(fh.path + 'Data.pkl', 'wb'))  # Save analysis results to disk
-# showSignals()

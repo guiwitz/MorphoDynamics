@@ -5,92 +5,46 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from skimage.external.tifffile import imread, TiffWriter
 from ArtifactGeneration import FigureHelper
-from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_image, show_edge_image, rasterize_curve
-# from Windowing import showWindows
-
-
-def correlate(x, y, normalization=None, removemean=True):
-    def npcorrelate(x, y):
-        return np.correlate(x, y, mode='full')
-
-    if removemean:
-        x = x - np.mean(x)
-        y = y - np.mean(y)
-    c = npcorrelate(x, y)
-    if normalization == 'unbiased':
-        c /= npcorrelate(np.ones(x.shape), np.ones(y.shape))
-    elif normalization == 'Pearson':
-        if np.linalg.norm(x) * np.linalg.norm(y) == 0:
-            print('alert')
-        c /= np.linalg.norm(x) * np.linalg.norm(y)
-    elif normalization == 'Pearson-unbiased':
-        e = np.sqrt(npcorrelate(x ** 2, np.ones(y.shape)) * npcorrelate(np.ones(x.shape), y ** 2))
-        e[e == 0] = 1
-        c /= e
-    return c
-
-# K = 100
-# # Visualize position corresponding to zero lag
-# x = np.zeros((K,))
-# x[0] = 1
-# y = np.zeros((K,))
-# y[0] = 1
-# plt.figure()
-# plt.plot(correlate(x, y))
-# # Verify that correlation of ones gives normalization coefficients for unbiased mode
-# x = np.ones((K,))
-# y = np.ones((K,))
-# plt.figure()
-# plt.plot(correlate(x, y, normalization=None, removemean=False))
-# # Verify autocorrelation of a sine with Pearson-unbiased normalization
-# x = np.sin(2*np.pi*np.array(range(K))/10)
-# plt.figure()
-# plt.plot(correlate(x, x, normalization='Pearson-unbiased'))
-# plt.show()
-# quit()
-
-
-def getExtent(A, B, I):
-    A, B = max(A, B), min(A, B)
-    return -B + 1 - 0.5, -B + 1 + A + B - 2 + 0.5, I - 1 + 0.5, -0.5
+from Correlation import show_correlation, correlate_arrays, get_range
+from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_image
 
 
 def trim(s):
     return s.split('/')[0]
 
 
-def showSignals(path):
+def show_data(path):
     """ Display the signals extracted from the cell. """
 
     class Config:
-        showLengthArea = True
+        showCircularity = True
         showEdge = not True
         showEdgePDF = not True
         showDisplacement = not True
         showSignals = not True
-        showCorrelation = not True
+        showCorrelation = True
         # edgeNormalization = 'global'
         edgeNormalization = 'frame-by-frame'
 
     fh = FigureHelper(not True)
 
     data = dill.load(open(path + "/Data.pkl", "rb"))
-    x = imread(data['path'] + data['morphosrc'] + '1.tif')
+    x = imread('C:/Work/UniBE2/Data/' + data['expdir'] + data['morphodir'] + '1.tif')
     dcum = np.cumsum(data['displacement'], axis=1)
 
     K = len(data['spline'])
     # K = 10
-    I = data['displacement'].shape[0]
+    # I = data['displacement'].shape[0]
 
-    if Config.showLengthArea:
-        pp = PdfPages(fh.path + "Length and area.pdf")
+    if Config.showCircularity:
+        pp = PdfPages(fh.path + "Circularity.pdf")
         fh.open_figure('Length', 1, (16, 9))
         plt.plot(data['length'])
         pp.savefig()
         fh.open_figure('Area', 2, (16, 9))
         plt.plot(data['area'])
         pp.savefig()
-        fh.open_figure('Length^2 / Area / 4 / pi', 2, (16, 9))
+        fh.open_figure('Circularity: Length^2 / Area / 4 / pi', 2, (16, 9))
         plt.plot(data['length']**2 / data['area'] / 4 / math.pi)
         pp.savefig()
         pp.close()
@@ -168,9 +122,9 @@ def showSignals(path):
 
     if Config.showSignals:
         pp = PdfPages(fh.path + "Signals.pdf")
-        for m in range(len(data['sigsrc'])):
+        for m in range(len(data['sigdir'])):
             for j in range(data['signal'].shape[1]):
-                fh.open_figure('Signal: ' + trim(data['sigsrc'][m](0)) + ' - Layer: ' + str(j), 1)
+                fh.open_figure('Signal: ' + trim(data['sigdir'][m](0)) + ' - Layer: ' + str(j), 1)
                 plt.imshow(data['signal'][m, j, 0:int(48/2**j), :], cmap='plasma')
                 plt.colorbar(label='Signal')
                 plt.axis('auto')
@@ -183,32 +137,80 @@ def showSignals(path):
         pp.close()
 
     if Config.showCorrelation:
-        def showCorrelation(x, y, sx, sy, normalization):
-            fh.open_figure('Correlation between ' + sx + ' and ' + sy + ' at layer ' + str(0) + ' - Normalization: ' + str(normalization), 1, (16, 9))
-            # I = x.shape[0]
-            c = np.zeros((I, x.shape[1]+y.shape[1]-1))
-            for i in range(I):
-                c[i] = correlate(x[i], y[i], normalization=normalization, removemean=True)
-            cmax = np.max(np.abs(c))
-            plt.imshow(c, extent=getExtent(x.shape[1], y.shape[1], I), cmap='bwr', vmin=-cmax, vmax=cmax, interpolation='none')
-            plt.axis('auto')
-            plt.xlabel('Time lag [frames]')
-            plt.ylabel('Window index')
-            plt.colorbar(label='Correlation')
-            pp.savefig()
-            fh.show()
-
         pp = PdfPages(fh.path + "Correlation.pdf")
-        for m in range(len(data['sigsrc'])):
-            for normalization in [None, 'unbiased', 'Pearson', 'Pearson-unbiased']:
-                showCorrelation(data['displacement'], data['signal'][m, 0], 'displacement', trim(data['sigsrc'][m](0)), normalization)
-                showCorrelation(dcum, data['signal'][m, 0], 'cumulative displacement', trim(data['sigsrc'][m](0)), normalization)
-        for normalization in [None, 'unbiased', 'Pearson', 'Pearson-unbiased']:
-            showCorrelation(data['signal'][0, 0], data['signal'][-1, 0], trim(data['sigsrc'][0](0)), trim(data['sigsrc'][-1](0)), normalization)
+        c = correlate_arrays(data['displacement'], data['displacement'], 'Pearson')
+        show_correlation(fh, c, data['displacement'], data['displacement'], 'displacement', 'displacement', 'Pearson')
+        pp.savefig()
+        # show_average_correlation(fh, c, data['displacement'], data['displacement'])
+        # pp.savefig()
+        for m in range(len(data['sigdir'])):
+            for normalization in ['Pearson']:  # [None, 'unbiased', 'Pearson', 'Pearson-unbiased']:
+                c = correlate_arrays(data['displacement'], data['signal'][m, 0], normalization)
+                show_correlation(fh, c, data['displacement'], data['signal'][m, 0], 'displacement', trim(data['sigdir'][m](0)), normalization)
+                pp.savefig()
+                # show_average_correlation(fh, c, data['displacement'], data['signal'][m, 0])
+                # pp.savefig()
+                c = correlate_arrays(dcum, data['signal'][m, 0], normalization)
+                show_correlation(fh, c, dcum, data['signal'][m, 0], 'cumulative displacement', trim(data['sigdir'][m](0)), normalization)
+                pp.savefig()
+                # show_average_correlation(fh, c, dcum, data['signal'][m, 0])
+                # pp.savefig()
+        for normalization in ['Pearson']:  # [None, 'unbiased', 'Pearson', 'Pearson-unbiased']:
+            c = correlate_arrays(data['signal'][0, 0], data['signal'][-1, 0], normalization)
+            show_correlation(fh, c, data['signal'][0, 0], data['signal'][-1, 0], trim(data['sigdir'][0](0)), trim(data['sigdir'][-1](0)), normalization)
+            pp.savefig()
+            # show_average_correlation(fh, c, data['signal'][0, 0], data['signal'][-1, 0])
+            # pp.savefig()
         pp.close()
 
+        pp = PdfPages(fh.path + "Correlation comparison.pdf")
+        fh.open_figure('Average cross-correlation between displacement and signals at layer ' + str(0), 1)
+        color = 'rbgymc'
+        n = 0
+        for m in [0, len(data['sigdir'])-1]:
+            t = get_range(data['displacement'].shape[1], data['signal'][m, 0].shape[1])
+            c = correlate_arrays(data['displacement'], data['signal'][m, 0], 'Pearson')
+            plt.plot(t, np.mean(c, axis=0), color[n], label=trim(data['sigdir'][m](0)))
+            n += 1
+        plt.grid()
+        plt.legend(loc="upper left")
+        plt.xlabel('Time lag [frames]')
+        plt.ylabel('Cross-correlation')
+        pp.savefig()
+        fh.open_figure('Average cross-correlation between cumulative displacement and signals at layer ' + str(0), 1)
+        color = 'rbgymc'
+        n = 0
+        for m in [0, len(data['sigdir'])-1]:
+            t = get_range(dcum.shape[1], data['signal'][m, 0].shape[1])
+            c = correlate_arrays(dcum, data['signal'][m, 0], 'Pearson')
+            plt.plot(t, np.mean(c, axis=0), color[n], label=trim(data['sigdir'][m](0)))
+            n += 1
+        plt.grid()
+        plt.legend(loc="upper left")
+        plt.xlabel('Time lag [frames]')
+        plt.ylabel('Cross-correlation')
+        pp.savefig()
+        fh.open_figure('Autocorrelation of displacement', 1)
+        t = get_range(data['displacement'].shape[1], data['displacement'].shape[1])
+        c = correlate_arrays(data['displacement'], data['displacement'], 'Pearson')
+        plt.plot(t, np.mean(c, axis=0), color[n])
+        plt.grid()
+        plt.xlabel('Time lag [frames]')
+        plt.ylabel('Correlation')
+        pp.savefig()
+        fh.open_figure('Autocorrelation of cumulative displacement', 1)
+        t = get_range(dcum.shape[1], dcum.shape[1])
+        c = correlate_arrays(dcum, dcum, 'Pearson')
+        plt.plot(t, np.mean(c, axis=0), color[n])
+        plt.grid()
+        plt.xlabel('Time lag [frames]')
+        plt.ylabel('Correlation')
+        pp.savefig()
+        pp.close()
+
+
+# path = 'Synthetic data'
 # path = 'FRET_sensors + actinHistamineExpt2'
 # path = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
-# path = 'GBD_sensors + actinExpt_01'
-path = 'Synthetic data'
-showSignals(path)
+path = 'GBD_sensors + actinExpt_01'
+show_data(path)
