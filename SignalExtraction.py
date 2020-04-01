@@ -7,99 +7,102 @@ from skimage.external.tifffile import imread, TiffWriter
 from ArtifactGeneration import FigureHelper
 from Correlation import show_correlation, correlate_arrays, get_range
 from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_image
+from Metadata import load_metadata
 
 
 def trim(s):
     return s.split('/')[0]
 
 
-def show_data(path):
+def show_analysis(dataset):
     """ Display the signals extracted from the cell. """
 
     class Config:
         showCircularity = True
-        showEdge = not True
-        showEdgePDF = not True
+        showEdge = True
+        showEdgePDF = True
         showDisplacement = not True
-        showSignals = not True
+        showSignals = True
         showCorrelation = True
         # edgeNormalization = 'global'
         edgeNormalization = 'frame-by-frame'
 
     fh = FigureHelper(not True)
+    md = load_metadata(dataset)
+    datadir = 'C:/Work/UniBE2/Data/'
+    res = dill.load(open(dataset + "/Data.pkl", "rb"))
+    resultdir = dataset + '/'
+    x = imread(datadir + md.expdir + md.morphodir(1) + '.tif')
+    dcum = np.cumsum(res.displacement, axis=1)
 
-    data = dill.load(open(path + "/Data.pkl", "rb"))
-    x = imread('C:/Work/UniBE2/Data/' + data['expdir'] + data['morphodir'] + '1.tif')
-    dcum = np.cumsum(data['displacement'], axis=1)
-
-    K = len(data['spline'])
+    K = len(res.spline)
     # K = 10
-    # I = data['displacement'].shape[0]
+    # I = res.displacement.shape[0]
 
     if Config.showCircularity:
-        pp = PdfPages(fh.path + "Circularity.pdf")
+        pp = PdfPages(resultdir + "Circularity.pdf")
         fh.open_figure('Length', 1, (16, 9))
-        plt.plot(data['length'])
+        plt.plot(res.length)
         pp.savefig()
         fh.open_figure('Area', 2, (16, 9))
-        plt.plot(data['area'])
+        plt.plot(res.area)
         pp.savefig()
         fh.open_figure('Circularity: Length^2 / Area / 4 / pi', 2, (16, 9))
-        plt.plot(data['length']**2 / data['area'] / 4 / math.pi)
+        plt.plot(res.length**2 / res.area / 4 / math.pi)
         pp.savefig()
         pp.close()
 
     if Config.showEdge:
-        pp = PdfPages(fh.path + "Edge overview.pdf")
+        pp = PdfPages(resultdir + "Edge overview.pdf")
         fh.open_figure('Edges', 1, (12, 9))
         plt.imshow(x, cmap='gray')
-        show_edge_line(data['spline'])
+        show_edge_line(res.spline)
         pp.savefig()
         fh.show()
         pp.close()
 
         if Config.showEdgePDF:
-            pp = PdfPages(fh.path + "Edge animation.pdf")
-            # dmax = np.max(np.abs(data['displacement']))
+            pp = PdfPages(resultdir + "Edge animation.pdf")
+            # dmax = np.max(np.abs(res.displacement))
             for k in range(K-1):
                 print(k)
                 fh.open_figure('Frame ' + str(k) + ' to frame ' + str(k+1), 1, (12, 9))
-                plt.imshow(imread(data['path'] + data['morphosrc'] + str(k + 1) + '.tif'), cmap='gray')
+                plt.imshow(imread(datadir + md.expdir + md.morphodir(k + 1) + '.tif'), cmap='gray')
                 # showWindows(w, find_boundaries(labelWindows(w0)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
-                show_edge_scatter(data['spline'][k], data['spline'][k + 1], data['param0'][k], data['param'][k], data['displacement'][:, k]) # Show edge structures (spline curves, displacement vectors, sampling windows)
+                show_edge_scatter(res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], res.displacement[:, k]) # Show edge structures (spline curves, displacement vectors, sampling windows)
                 pp.savefig()
                 # if k < 20:
-                #    plt.savefig('Edge ' + str(k) + '.tif')
+                #    plt.savefig(resultdir + 'Edge ' + str(k) + '.tif')
                 fh.show()
             pp.close()
 
         if Config.edgeNormalization == 'global':
-            dmax = np.max(np.abs(data['displacement']))
+            dmax = np.max(np.abs(res.displacement))
         else:
             dmax = None
-        tw = TiffWriter('Edge animation.tif')
+        tw = TiffWriter(resultdir + 'Edge animation.tif')
         for k in range(K - 1):
-            tw.save(show_edge_image(x.shape, data['spline'][k], data['param0'][k], data['displacement'][:, k], 3, dmax), compress=6)
+            tw.save(show_edge_image(x.shape, res.spline[k], res.param0[k], res.displacement[:, k], 3, dmax), compress=6)
         tw.close()
 
         if Config.edgeNormalization == 'global':
             dmax = np.max(np.abs(dcum))
         else:
             dmax = None
-        tw = TiffWriter('Edge animation with cumulative displacement.tif')
+        tw = TiffWriter(resultdir + 'Edge animation with cumulative displacement.tif')
         for k in range(K - 1):
-            tw.save(show_edge_image(x.shape, data['spline'][k], data['param0'][k], dcum[:, k], 3, dmax), compress=6)
+            tw.save(show_edge_image(x.shape, res.spline[k], res.param0[k], dcum[:, k], 3, dmax), compress=6)
         tw.close()
 
     if Config.showDisplacement:
-        pp = PdfPages(fh.path + "Displacement.pdf")
+        pp = PdfPages(resultdir + "Displacement.pdf")
         fh.open_figure('Displacement', 1)
-        plt.imshow(data['displacement'], cmap='bwr')
+        plt.imshow(res.displacement, cmap='bwr')
         plt.axis('auto')
         plt.xlabel('Frame index')
         plt.ylabel('Window index')
         plt.colorbar(label='Displacement [pixels]')
-        cmax = np.max(np.abs(data['displacement']))
+        cmax = np.max(np.abs(res.displacement))
         plt.clim(-cmax, cmax)
         # plt.xticks(range(0, velocity.shape[1], 5))
         pp.savefig()
@@ -121,11 +124,11 @@ def show_data(path):
         pp.close()
 
     if Config.showSignals:
-        pp = PdfPages(fh.path + "Signals.pdf")
-        for m in range(len(data['sigdir'])):
-            for j in range(data['signal'].shape[1]):
-                fh.open_figure('Signal: ' + trim(data['sigdir'][m](0)) + ' - Layer: ' + str(j), 1)
-                plt.imshow(data['signal'][m, j, 0:int(48/2**j), :], cmap='plasma')
+        pp = PdfPages(resultdir + "Signals.pdf")
+        for m in range(len(md.sigdir)):
+            for j in range(res.signal.shape[1]):
+                fh.open_figure('Signal: ' + trim(md.sigdir[m](0)) + ' - Layer: ' + str(j), 1)
+                plt.imshow(res.signal[m, j, 0:int(48/2**j), :], cmap='plasma')
                 plt.colorbar(label='Signal')
                 plt.axis('auto')
                 plt.xlabel('Frame index')
@@ -137,40 +140,40 @@ def show_data(path):
         pp.close()
 
     if Config.showCorrelation:
-        pp = PdfPages(fh.path + "Correlation.pdf")
-        c = correlate_arrays(data['displacement'], data['displacement'], 'Pearson')
-        show_correlation(fh, c, data['displacement'], data['displacement'], 'displacement', 'displacement', 'Pearson')
+        pp = PdfPages(resultdir + "Correlation.pdf")
+        c = correlate_arrays(res.displacement, res.displacement, 'Pearson')
+        show_correlation(fh, c, res.displacement, res.displacement, 'displacement', 'displacement', 'Pearson')
         pp.savefig()
-        # show_average_correlation(fh, c, data['displacement'], data['displacement'])
+        # show_average_correlation(fh, c, res.displacement, res.displacement)
         # pp.savefig()
-        for m in range(len(data['sigdir'])):
+        for m in range(len(md.sigdir)):
             for normalization in ['Pearson']:  # [None, 'unbiased', 'Pearson', 'Pearson-unbiased']:
-                c = correlate_arrays(data['displacement'], data['signal'][m, 0], normalization)
-                show_correlation(fh, c, data['displacement'], data['signal'][m, 0], 'displacement', trim(data['sigdir'][m](0)), normalization)
+                c = correlate_arrays(res.displacement, res.signal[m, 0], normalization)
+                show_correlation(fh, c, res.displacement, res.signal[m, 0], 'displacement', trim(md.sigdir[m](0)), normalization)
                 pp.savefig()
-                # show_average_correlation(fh, c, data['displacement'], data['signal'][m, 0])
+                # show_average_correlation(fh, c, res.displacement, res.signal[m, 0])
                 # pp.savefig()
-                c = correlate_arrays(dcum, data['signal'][m, 0], normalization)
-                show_correlation(fh, c, dcum, data['signal'][m, 0], 'cumulative displacement', trim(data['sigdir'][m](0)), normalization)
+                c = correlate_arrays(dcum, res.signal[m, 0], normalization)
+                show_correlation(fh, c, dcum, res.signal[m, 0], 'cumulative displacement', trim(md.sigdir[m](0)), normalization)
                 pp.savefig()
-                # show_average_correlation(fh, c, dcum, data['signal'][m, 0])
+                # show_average_correlation(fh, c, dcum, res.signal[m, 0])
                 # pp.savefig()
         for normalization in ['Pearson']:  # [None, 'unbiased', 'Pearson', 'Pearson-unbiased']:
-            c = correlate_arrays(data['signal'][0, 0], data['signal'][-1, 0], normalization)
-            show_correlation(fh, c, data['signal'][0, 0], data['signal'][-1, 0], trim(data['sigdir'][0](0)), trim(data['sigdir'][-1](0)), normalization)
+            c = correlate_arrays(res.signal[0, 0], res.signal[-1, 0], normalization)
+            show_correlation(fh, c, res.signal[0, 0], res.signal[-1, 0], trim(md.sigdir[0](0)), trim(md.sigdir[-1](0)), normalization)
             pp.savefig()
-            # show_average_correlation(fh, c, data['signal'][0, 0], data['signal'][-1, 0])
+            # show_average_correlation(fh, c, res.signal[0, 0], res.signal[-1, 0])
             # pp.savefig()
         pp.close()
 
-        pp = PdfPages(fh.path + "Correlation comparison.pdf")
+        pp = PdfPages(resultdir + "Correlation comparison.pdf")
         fh.open_figure('Average cross-correlation between displacement and signals at layer ' + str(0), 1)
         color = 'rbgymc'
         n = 0
-        for m in [0, len(data['sigdir'])-1]:
-            t = get_range(data['displacement'].shape[1], data['signal'][m, 0].shape[1])
-            c = correlate_arrays(data['displacement'], data['signal'][m, 0], 'Pearson')
-            plt.plot(t, np.mean(c, axis=0), color[n], label=trim(data['sigdir'][m](0)))
+        for m in [0, len(md.sigdir)-1]:
+            t = get_range(res.displacement.shape[1], res.signal[m, 0].shape[1])
+            c = correlate_arrays(res.displacement, res.signal[m, 0], 'Pearson')
+            plt.plot(t, np.mean(c, axis=0), color[n], label=trim(md.sigdir[m](0)))
             n += 1
         plt.grid()
         plt.legend(loc="upper left")
@@ -180,10 +183,10 @@ def show_data(path):
         fh.open_figure('Average cross-correlation between cumulative displacement and signals at layer ' + str(0), 1)
         color = 'rbgymc'
         n = 0
-        for m in [0, len(data['sigdir'])-1]:
-            t = get_range(dcum.shape[1], data['signal'][m, 0].shape[1])
-            c = correlate_arrays(dcum, data['signal'][m, 0], 'Pearson')
-            plt.plot(t, np.mean(c, axis=0), color[n], label=trim(data['sigdir'][m](0)))
+        for m in [0, len(md.sigdir)-1]:
+            t = get_range(dcum.shape[1], res.signal[m, 0].shape[1])
+            c = correlate_arrays(dcum, res.signal[m, 0], 'Pearson')
+            plt.plot(t, np.mean(c, axis=0), color[n], label=trim(md.sigdir[m](0)))
             n += 1
         plt.grid()
         plt.legend(loc="upper left")
@@ -191,8 +194,8 @@ def show_data(path):
         plt.ylabel('Cross-correlation')
         pp.savefig()
         fh.open_figure('Autocorrelation of displacement', 1)
-        t = get_range(data['displacement'].shape[1], data['displacement'].shape[1])
-        c = correlate_arrays(data['displacement'], data['displacement'], 'Pearson')
+        t = get_range(res.displacement.shape[1], res.displacement.shape[1])
+        c = correlate_arrays(res.displacement, res.displacement, 'Pearson')
         plt.plot(t, np.mean(c, axis=0), color[n])
         plt.grid()
         plt.xlabel('Time lag [frames]')
@@ -209,8 +212,8 @@ def show_data(path):
         pp.close()
 
 
-# path = 'Synthetic data'
-# path = 'FRET_sensors + actinHistamineExpt2'
-# path = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
-path = 'GBD_sensors + actinExpt_01'
-show_data(path)
+dataset = 'Ellipse with triangle dynamics'
+# dataset = 'FRET_sensors + actinHistamineExpt2'
+# dataset = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
+# dataset = 'GBD_sensors + actinExpt_01'
+show_analysis(dataset)

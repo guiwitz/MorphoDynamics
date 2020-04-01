@@ -1,11 +1,11 @@
+import os
 import numpy as np
 from skimage.external.tifffile import imread  # , imsave
 from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 import dill
 from matplotlib.backends.backend_pdf import PdfPages
-
-from Metadata import loadMetadata
+from Metadata import load_metadata
 from ArtifactGeneration import FigureHelper
 from Segmentation import segment
 from DisplacementEstimation import fit_spline, map_contours, rasterize_curve, compute_length, compute_area  # , show_edge_scatter
@@ -14,37 +14,43 @@ from Windowing import createWindows, extractSignals, labelWindows, showWindows
 
 datadir = 'C:/Work/UniBE2/Data/'
 
-# dataset = 'Synthetic data'
+dataset = 'Ellipse with triangle dynamics'
 # dataset = 'FRET_sensors + actinHistamineExpt2'
 # dataset = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
-dataset = 'GBD_sensors + actinExpt_01'
-expdir, morphodir, sigdir, K, T = loadMetadata(dataset)
-# K = 10
+# dataset = 'GBD_sensors + actinExpt_01'
+md = load_metadata(dataset)
+# md.K = 3
 
 # Analysis parameters
 k0 = 0  # Index of first frame to be analyzed
 I = 48  # Number of sampling windows in the outer layer (along the curve)
 J = 5  # Number of sampling windows in the "radial" direction
+smooth_image = dataset != 'Ellipse with triangle dynamics'
+show_windows = False
 
 # Figures and other artifacts
 fh = FigureHelper(not True)
-pp = PdfPages(fh.path + "Windows.pdf")
+resultdir = dataset + '/'
+if not os.path.exists(resultdir):
+    os.mkdir(resultdir)
+if show_windows:
+    pp = PdfPages(resultdir + 'Windows.pdf')
 
 # Structures that will be saved to disk
 spline = []
 param0 = []
 param = []
-displacement = np.zeros((I, K - 1))  # Projection of the displacement vectors
-signal = np.zeros((len(sigdir), J, I, K))  # Signals from the outer sampling windows
-length = np.zeros((K,))
-area = np.zeros((K,))
+displacement = np.zeros((I, md.K - 1))  # Projection of the displacement vectors
+signal = np.zeros((len(md.sigdir), J, I, md.K))  # Signals from the outer sampling windows
+length = np.zeros((md.K,))
+area = np.zeros((md.K,))
 
 # Main loop on frames
 deltat = 0
-for k in range(k0, K):
+for k in range(k0, md.K):
     print(k)
-    x = imread(datadir + expdir + morphodir + str(k + 1) + '.tif').astype(dtype=np.uint16)  # Input image
-    c = segment(x, T, dataset != 'Synthetic data')  # Discrete cell contour
+    x = imread(datadir + md.expdir + md.morphodir(k + 1) + '.tif').astype(dtype=np.uint16)  # Input image
+    c = segment(x, md.T, smooth_image)  # Discrete cell contour
     s = fit_spline(c)  # Smoothed spline curve following the contour
     length[k] = compute_length(s)
     area[k] = compute_area(s)
@@ -54,8 +60,8 @@ for k in range(k0, K):
         deltat += t[0] - t0[0]  # Translation of the origin of the spline curve
     c = rasterize_curve(x.shape, s, deltat)  # Representation of the contour as a grayscale image
     w = createWindows(c, I, J)  # Binary masks representing the sampling windows
-    for m in range(len(sigdir)):
-        signal[m, :, :, k] = extractSignals(imread(datadir + expdir + sigdir[m](k + 1) + '.tif'), w)  # Signals extracted from various imaging channels
+    for m in range(len(md.sigdir)):
+        signal[m, :, :, k] = extractSignals(imread(datadir + md.expdir + md.sigdir[m](k + 1) + '.tif'), w)  # Signals extracted from various imaging channels
 
     # Compute projection of displacement vectors onto normal of contour
     if k0 < k:
@@ -63,14 +69,16 @@ for k in range(k0, K):
         u = np.asarray([u[1], -u[0]]) / np.linalg.norm(u, axis=0)  # Derive an orthogonal vector with unit norm
         displacement[:, k - k0 - 1] = np.sum((np.asarray(splev(np.mod(t, 1), s)) - np.asarray(splev(np.mod(t0, 1), s0))) * u, axis=0)  # Compute scalar product with displacement vector
 
-    # # Artifact generation
-    # # if k0 < k:
-    # fh.open_figure('Frame ' + str(k), 1, (12, 9))
-    # showWindows(w, find_boundaries(labelWindows(w)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
-    # # showEdge(s0, s, t0, t, displacement[:, k - k0 - 1])  # Show edge structures (spline curves, displacement vectors, sampling windows)
-    # pp.savefig()
-    # fh.show()
-    # # imsave(plot.path + 'Tiles.tif', 255 * np.asarray(w), compress=6)
+    # Artifact generation
+    if show_windows:
+        # if k0 < k:
+        fh.open_figure('Frame ' + str(k), 1, (12, 9))
+        showWindows(w, find_boundaries(labelWindows(
+            w)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
+        # showEdge(s0, s, t0, t, displacement[:, k - k0 - 1])  # Show edge structures (spline curves, displacement vectors, sampling windows)
+        pp.savefig()
+        fh.show()
+        # imsave(resultdir + 'Tiles.tif', 255 * np.asarray(w), compress=6)
 
     # Keep variables for the next iteration
     s0 = s
@@ -83,6 +91,20 @@ for k in range(k0, K):
         param.append(t)
 
 # Save results to disk
-pp.close()
-dic = {'expdir': expdir, 'morphodir': morphodir, 'sigdir': sigdir, 'displacement': displacement, 'signal': signal, 'spline': spline, 'param0': param0, 'param': param, 'length': length, 'area': area}
-dill.dump(dic, open(fh.path + 'Data.pkl', 'wb'))  # Save analysis results to disk
+if show_windows:
+    pp.close()
+
+
+class Results:
+    pass
+
+
+res = Results()
+res.displacement = displacement
+res.signal = signal
+res.spline = spline
+res.param0 = param0
+res.param = param
+res.length = length
+res.area = area
+dill.dump(res, open(resultdir + 'Data.pkl', 'wb'))  # Save analysis results to disk
