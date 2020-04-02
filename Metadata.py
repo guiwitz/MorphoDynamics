@@ -1,8 +1,8 @@
-class Metadata:
+class Struct:
     pass
 
 def load_metadata(dataset):
-    metadata = Metadata()
+    metadata = Struct()
     if dataset == 'FRET_sensors + actinHistamineExpt2':
         metadata.expdir = 'FRET_sensors + actin/Histamine/Expt2/'
         metadata.morphodir = lambda k: 'w16TIRF-CFP/RhoA_OP_his_02_w16TIRF-CFP_t' + str(k)

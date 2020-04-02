@@ -10,6 +10,17 @@ from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_
 from Metadata import load_metadata
 
 
+class Config:
+    showCircularity = True
+    showEdge = True
+    showEdgePDF = True
+    showDisplacement = not True
+    showSignals = True
+    showCorrelation = True
+    # edgeNormalization = 'global'
+    edgeNormalization = 'frame-by-frame'
+
+
 def trim(s):
     return s.split('/')[0]
 
@@ -17,23 +28,13 @@ def trim(s):
 def show_analysis(dataset):
     """ Display the signals extracted from the cell. """
 
-    class Config:
-        showCircularity = True
-        showEdge = True
-        showEdgePDF = True
-        showDisplacement = not True
-        showSignals = True
-        showCorrelation = True
-        # edgeNormalization = 'global'
-        edgeNormalization = 'frame-by-frame'
-
-    fh = FigureHelper(not True)
-    md = load_metadata(dataset)
     datadir = 'C:/Work/UniBE2/Data/'
-    res = dill.load(open(dataset + "/Data.pkl", "rb"))
     resultdir = dataset + '/'
+    md = load_metadata(dataset)
     x = imread(datadir + md.expdir + md.morphodir(1) + '.tif')
+    res = dill.load(open(dataset + "/Data.pkl", "rb"))
     dcum = np.cumsum(res.displacement, axis=1)
+    fh = FigureHelper(not True)
 
     K = len(res.spline)
     # K = 10

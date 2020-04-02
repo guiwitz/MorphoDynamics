@@ -11,7 +11,7 @@ from ArtifactGeneration import FigureHelper
 plot = FigureHelper(not True)
 
 
-def createWindows(c, I, J):
+def create_windows(c, I, J):
     """ Generate binary masks that represent the sampling windows. """
 
     # Compute the distance transform of the contour
@@ -46,7 +46,7 @@ def createWindows(c, I, J):
 
     return w
 
-def labelWindows(windows):
+def label_windows(windows):
     """ Create an image where the sampling windows are shown as regions with unique gray levels. """
     tiles = np.zeros(windows.shape[2:4], dtype=np.uint16)
     n = 1
@@ -56,7 +56,7 @@ def labelWindows(windows):
             n += 1
     return tiles
 
-def extractSignals(y, w):
+def extract_signals(y, w):
     """ Extract the mean values of an image over the sampling windows. """
     signal = np.nan * np.ones(w.shape[0:2])
     for j in range(w.shape[0]):
@@ -65,7 +65,7 @@ def extractSignals(y, w):
                 signal[j, i] = np.mean(y[w[j, i]])
     return signal
 
-def showWindows(w, b):
+def show_windows(w, b):
     """ Display the sampling-window boundaries and indices. """
     plt.imshow(b, cmap='gray', vmin=0, vmax=2)
     for j in range(w.shape[0]):
