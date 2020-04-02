@@ -12,19 +12,20 @@ from ArtifactGeneration import FigureHelper
 
 fh = FigureHelper(not True)
 
-def segment(x, T=None, smoothEdge=True):
+
+def segment(x, T=None, smooth_image=True):
     """ Segment the cell image, possibly with automatic threshold selection. """
 
     # Determine the threshold based on the histogram, if not provided manually
     if T is None:
-        h, _ = histogram(x, source_range='dtype') # Compute histogram of image
-        s = UnivariateSpline(range(0, 65536), h) # Interpolate the histogram counts using a smoothing spline
-        n = np.arange(0, 65535, 1) # Create array with positions of histogram bins
-        hs = s(n) # Evaluate smoothing spline
-        n0 = np.argmax(hs) # Find position of maximum
-        m = argrelmin(hs)[0] # Find positions of local minima
-        m = m[hs[m] < 0.2*hs[n0]] # Remove local minima that are too strong
-        T = m[n0 < m][0] # Select first local minimum after maximum
+        h, _ = histogram(x, source_range='dtype')  # Compute histogram of image
+        s = UnivariateSpline(range(0, 65536), h)  # Interpolate the histogram counts using a smoothing spline
+        n = np.arange(0, 65535, 1)  # Create array with positions of histogram bins
+        hs = s(n)  # Evaluate smoothing spline
+        n0 = np.argmax(hs)  # Find position of maximum
+        m = argrelmin(hs)[0]  # Find positions of local minima
+        m = m[hs[m] < 0.2*hs[n0]]  # Remove local minima that are too strong
+        T = m[n0 < m][0]  # Select first local minimum after maximum
 
     # Artifact generation
     fh.imshow('Test image', x)
@@ -39,11 +40,11 @@ def segment(x, T=None, smoothEdge=True):
     fh.show()
 
     # Segment image by thresholding
-    if smoothEdge:
-        y = gaussian(x, sigma=2, preserve_range=True) # Smooth input image with a Gaussian
+    if smooth_image:
+        y = gaussian(x, sigma=2, preserve_range=True)  # Smooth input image with a Gaussian
     else:
         y = x
-    z = T < y # Threshold smoothed input
+    z = T < y  # Threshold image
 
     # Keep only the largest region
     regions, nr = label(z, return_num=True) # Label each region with a unique integer

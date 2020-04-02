@@ -5,9 +5,8 @@ from scipy.optimize import least_squares
 from scipy.signal import convolve2d
 import numpy as np
 from numpy.linalg import norm
-
 from FunctionalDefinition import Functional
-from ArtifactGeneration import FigureHelper
+from FigureHelper import FigureHelper
 
 fh = FigureHelper(not True)
 
@@ -34,7 +33,6 @@ def compute_area(s):
     c = splev(np.linspace(0, 1, 10000, endpoint=False), s)
     cprm = splev(np.linspace(0, 1, 10000, endpoint=False), s, der=1)
     return np.sum(c[0]*cprm[1] - c[1]*cprm[0]) / 2 / 10000
-
 
 
 def correlate(x, y):
