@@ -1,0 +1,16 @@
+name: morphodynamics
+channels:
+  - conda-forge
+dependencies:
+  - scipy
+  - numpy
+  - matplotlib
+  - pandas
+  - scikit-image
+  - jupyter
+  - jupyterlab
+  - ipywidgets
+  - nodejs
+  - pip
+  - pip:
+    - dill
