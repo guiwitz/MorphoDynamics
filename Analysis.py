@@ -3,7 +3,7 @@ from skimage.external.tifffile import imread  # , imsave
 from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages
-from Metadata import Struct, load_metadata
+from Metadata import Struct, load_data
 from FigureHelper import FigureHelper
 from Segmentation import segment
 from DisplacementEstimation import fit_spline, map_contours, rasterize_curve, compute_length, compute_area  # , show_edge_scatter
@@ -11,12 +11,12 @@ from Windowing import create_windows, extract_signals, label_windows, show_windo
 # from SignalExtraction import showSignals
 
 
-def analyze_morphodynamics(dataset, md, I, J, smooth_image, show_win):
-    # md.K = 3
+def analyze_morphodynamics(ds, I, J, smooth_image, show_win):
+    # ds.K = 3
 
     # Input and output directories
     datadir = 'C:/Work/UniBE2/Data/'
-    resultdir = dataset + '/'
+    resultdir = ds.name + '/'
 
     # Figures and other artifacts
     fh = FigureHelper(not True)
@@ -28,17 +28,17 @@ def analyze_morphodynamics(dataset, md, I, J, smooth_image, show_win):
     res.spline = []
     res.param0 = []
     res.param = []
-    res.displacement = np.zeros((I, md.K - 1))  # Projection of the displacement vectors
-    res.signal = np.zeros((len(md.sigdir), J, I, md.K))  # Signals from the outer sampling windows
-    res.length = np.zeros((md.K,))
-    res.area = np.zeros((md.K,))
+    res.displacement = np.zeros((I, ds.K - 1))  # Projection of the displacement vectors
+    res.signal = np.zeros((len(ds.signalfile), J, I, ds.K))  # Signals from the outer sampling windows
+    res.length = np.zeros((ds.K,))
+    res.area = np.zeros((ds.K,))
 
     # Main loop on frames
     deltat = 0
-    for k in range(0, md.K):
+    for k in range(0, ds.K):
         print(k)
-        x = imread(datadir + md.expdir + md.morphodir(k + 1) + '.tif').astype(dtype=np.uint16)  # Input image
-        c = segment(x, md.T, smooth_image)  # Discrete cell contour
+        x = ds.load_frame_morpho(k)  # Input image
+        c = segment(x, ds.T, smooth_image)  # Discrete cell contour
         s = fit_spline(c)  # Smoothed spline curve following the contour
         res.length[k] = compute_length(s)  # Length of the contour
         res.area[k] = compute_area(s)  # Area delimited by the contour
@@ -48,8 +48,8 @@ def analyze_morphodynamics(dataset, md, I, J, smooth_image, show_win):
             deltat += t[0] - t0[0]  # Translation of the origin of the spline curve
         c = rasterize_curve(x.shape, s, deltat)  # Representation of the contour as a grayscale image
         w = create_windows(c, I, J)  # Binary masks representing the sampling windows
-        for m in range(len(md.sigdir)):
-            res.signal[m, :, :, k] = extract_signals(imread(datadir + md.expdir + md.sigdir[m](k + 1) + '.tif'), w)  # Signals extracted from various imaging channels
+        for m in range(len(ds.signalfile)):
+            res.signal[m, :, :, k] = extract_signals(ds.load_frame_signal(m, k), w)  # Signals extracted from various imaging channels
 
         # Compute projection of displacement vectors onto normal of contour
         if 0 < k:

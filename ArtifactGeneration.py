@@ -2,28 +2,27 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-from skimage.external.tifffile import imread, TiffWriter
+from skimage.external.tifffile import TiffWriter
 from Correlation import show_correlation, correlate_arrays, get_range
 from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_image
 from FigureHelper import FigureHelper
 
 
-def trim(s):
-    return s.split('/')[0]
+# def trim(s):
+#     return s.split('/')[0]
 
 
-def show_analysis(dataset, md, config, res):
+def show_analysis(ds, config, res):
     """ Display the results of the morphodynamics analysis. """
 
     datadir = 'C:/Work/UniBE2/Data/'
-    resultdir = dataset + '/'
-    x = imread(datadir + md.expdir + md.morphodir(1) + '.tif')
+    resultdir = ds.name + '/'
+    x = ds.load_frame_morpho(0)
 
     dcum = np.cumsum(res.displacement, axis=1)
     fh = FigureHelper(not True)
 
-    K = len(res.spline)
-    # K = 10
+    K = ds.K
     # I = res.displacement.shape[0]
 
     if config.showCircularity:
@@ -54,7 +53,7 @@ def show_analysis(dataset, md, config, res):
             for k in range(K-1):
                 print(k)
                 fh.open_figure('Frame ' + str(k) + ' to frame ' + str(k+1), 1, (12, 9))
-                plt.imshow(imread(datadir + md.expdir + md.morphodir(k + 1) + '.tif'), cmap='gray')
+                plt.imshow(ds.load_frame_morpho(k), cmap='gray')
                 # showWindows(w, find_boundaries(labelWindows(w0)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
                 show_edge_scatter(res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], res.displacement[:, k])  # Show edge structures (spline curves, displacement vectors, sampling windows)
                 pp.savefig()
@@ -112,9 +111,9 @@ def show_analysis(dataset, md, config, res):
 
     if config.showSignals:
         pp = PdfPages(resultdir + "Signals.pdf")
-        for m in range(len(md.sigdir)):
+        for m in range(len(ds.signalfile)):
             for j in range(res.signal.shape[1]):
-                fh.open_figure('Signal: ' + trim(md.sigdir[m](0)) + ' - Layer: ' + str(j), 1)
+                fh.open_figure('Signal: ' + ds.get_channel_name(m) + ' - Layer: ' + str(j), 1)
                 plt.imshow(res.signal[m, j, 0:int(48/2**j), :], cmap='plasma')
                 plt.colorbar(label='Signal')
                 plt.axis('auto')
@@ -133,21 +132,21 @@ def show_analysis(dataset, md, config, res):
         pp.savefig()
         # show_average_correlation(fh, c, res.displacement, res.displacement)
         # pp.savefig()
-        for m in range(len(md.sigdir)):
+        for m in range(len(ds.signalfile)):
             for normalization in ['Pearson']:  # [None, 'unbiased', 'Pearson', 'Pearson-unbiased']:
                 c = correlate_arrays(res.displacement, res.signal[m, 0], normalization)
-                show_correlation(fh, c, res.displacement, res.signal[m, 0], 'displacement', trim(md.sigdir[m](0)), normalization)
+                show_correlation(fh, c, res.displacement, res.signal[m, 0], 'displacement', ds.get_channel_name(m), normalization)
                 pp.savefig()
                 # show_average_correlation(fh, c, res.displacement, res.signal[m, 0])
                 # pp.savefig()
                 c = correlate_arrays(dcum, res.signal[m, 0], normalization)
-                show_correlation(fh, c, dcum, res.signal[m, 0], 'cumulative displacement', trim(md.sigdir[m](0)), normalization)
+                show_correlation(fh, c, dcum, res.signal[m, 0], 'cumulative displacement', ds.get_channel_name(m), normalization)
                 pp.savefig()
                 # show_average_correlation(fh, c, dcum, res.signal[m, 0])
                 # pp.savefig()
         for normalization in ['Pearson']:  # [None, 'unbiased', 'Pearson', 'Pearson-unbiased']:
             c = correlate_arrays(res.signal[0, 0], res.signal[-1, 0], normalization)
-            show_correlation(fh, c, res.signal[0, 0], res.signal[-1, 0], trim(md.sigdir[0](0)), trim(md.sigdir[-1](0)), normalization)
+            show_correlation(fh, c, res.signal[0, 0], res.signal[-1, 0], ds.get_channel_name(0), ds.get_channel_name(len(ds.signalfile)-1), normalization)
             pp.savefig()
             # show_average_correlation(fh, c, res.signal[0, 0], res.signal[-1, 0])
             # pp.savefig()
@@ -157,10 +156,10 @@ def show_analysis(dataset, md, config, res):
         fh.open_figure('Average cross-correlation between displacement and signals at layer ' + str(0), 1)
         color = 'rbgymc'
         n = 0
-        for m in [0, len(md.sigdir)-1]:
+        for m in [0, len(ds.signalfile) - 1]:
             t = get_range(res.displacement.shape[1], res.signal[m, 0].shape[1])
             c = correlate_arrays(res.displacement, res.signal[m, 0], 'Pearson')
-            plt.plot(t, np.mean(c, axis=0), color[n], label=trim(md.sigdir[m](0)))
+            plt.plot(t, np.mean(c, axis=0), color[n], label=ds.get_channel_name(m))
             n += 1
         plt.grid()
         plt.legend(loc="upper left")
@@ -170,10 +169,10 @@ def show_analysis(dataset, md, config, res):
         fh.open_figure('Average cross-correlation between cumulative displacement and signals at layer ' + str(0), 1)
         color = 'rbgymc'
         n = 0
-        for m in [0, len(md.sigdir)-1]:
+        for m in [0, len(ds.signalfile) - 1]:
             t = get_range(dcum.shape[1], res.signal[m, 0].shape[1])
             c = correlate_arrays(dcum, res.signal[m, 0], 'Pearson')
-            plt.plot(t, np.mean(c, axis=0), color[n], label=trim(md.sigdir[m](0)))
+            plt.plot(t, np.mean(c, axis=0), color[n], label=ds.get_channel_name(m))
             n += 1
         plt.grid()
         plt.legend(loc="upper left")

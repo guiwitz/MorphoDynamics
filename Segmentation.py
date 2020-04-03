@@ -28,7 +28,6 @@ def segment(x, T=None, smooth_image=True):
         T = m[n0 < m][0]  # Select first local minimum after maximum
 
     # Artifact generation
-    fh.imshow('Test image', x)
     if fh.debug & (T is None):
         fh.open_figure('Histogram')
         plt.plot(h, 'b', lw=0.1, zorder=50)
@@ -56,14 +55,16 @@ def segment(x, T=None, smooth_image=True):
 
     # Fill holes in mask
     z = binary_fill_holes(z)
+    # imsave(str(T) + '.tif', 255 * z.astype(np.uint8), compress=6)
 
     # Extract pixels along contour of region
     c = np.asarray(find_contours(z, 0, fully_connected='high')[0], dtype=np.int)
 
     # Artifact generation
-    fh.imshow('Segmented region', 255 * (T < y).astype(np.uint8))
-    fh.imshow('Smoothed segmented region', 255 * z.astype(np.uint8))
-    fh.imshow('Regions', regions)
+    fh.imshow('Input image', x)
+    fh.imshow('Segmented image', 255 * (T < y).astype(np.uint8))
+    fh.imshow('Filled largest segmented region', 255 * z.astype(np.uint8))
+    # fh.imshow('All regions', regions)
     fh.show()
 
     return c # , c.shape[0]/np.sum(z)

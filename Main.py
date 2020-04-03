@@ -2,18 +2,20 @@ import os
 import dill
 from Analysis import analyze_morphodynamics
 from ArtifactGeneration import show_analysis
-from Metadata import Struct, load_metadata
+from Metadata import Struct, load_data
+from Segmentation import segment
 
 # Dataset specification
-dataset = 'Ellipse with triangle dynamics'
-# dataset = 'FRET_sensors + actinHistamineExpt2'
-# dataset = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
-# dataset = 'GBD_sensors + actinExpt_01'
+# dataset_name = 'Ellipse with triangle dynamics'
+# dataset_name = 'FRET_sensors + actinHistamineExpt2'
+# dataset_name = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
+# dataset_name = 'GBD_sensors + actinExpt_01'
+dataset_name = 'TIAM_protrusion'
 
 # Analysis parameters
 I = 48  # Number of sampling windows in the outer layer (along the curve)
 J = 5  # Number of sampling windows in the "radial" direction
-smooth_image = dataset != 'Ellipse with triangle dynamics'  # Gaussian smoothing (not for synthetic datasets)
+smooth_image = dataset_name != 'Ellipse with triangle dynamics'  # Gaussian smoothing (not for synthetic datasets)
 show_win = False # Graphical representation of the windows
 
 # Figure parameters
@@ -27,14 +29,20 @@ config.showCorrelation = True
 # config.edgeNormalization = 'global'
 config.edgeNormalization = 'frame-by-frame'
 
-md = load_metadata(dataset)
+data = load_data(dataset_name)
+# data.K = 3
 
-res = analyze_morphodynamics(dataset, md, I, J, smooth_image, show_win)
+# x = data.load_frame_morpho(500)
+# for T in range(120, 160):
+#     segment(x, T, smooth_image=True)
+# quit()
 
-if not os.path.exists(dataset):
-    os.mkdir(dataset)
-dill.dump(res, open(dataset + '/Data.pkl', 'wb'))  # Save analysis results to disk
+res = analyze_morphodynamics(data, I, J, smooth_image, show_win)
 
-res = dill.load(open(dataset + "/Data.pkl", "rb"))
+if not os.path.exists(dataset_name):
+    os.mkdir(dataset_name)
+dill.dump(res, open(dataset_name + '/Results.pkl', 'wb'))  # Save analysis results to disk
 
-show_analysis(dataset, md, config, res)
+res = dill.load(open(dataset_name + "/Results.pkl", "rb"))
+
+show_analysis(data, config, res)
