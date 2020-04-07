@@ -5,6 +5,7 @@ from skimage.filters import gaussian, threshold_otsu
 from skimage.measure import find_contours, label
 from scipy.interpolate import UnivariateSpline
 from scipy.signal import argrelmin
+from scipy.ndimage import median_filter
 from scipy.ndimage.morphology import binary_fill_holes
 import numpy as np
 from skimage.external.tifffile import imread, imsave
@@ -13,7 +14,7 @@ from ArtifactGeneration import FigureHelper
 fh = FigureHelper(not True)
 
 
-def segment(x, T=None, smooth_image=True):
+def segment(x, sigma, T=None, tw=None, mask=None):
     """ Segment the cell image, possibly with automatic threshold selection. """
 
     # Determine the threshold based on the histogram, if not provided manually
@@ -39,8 +40,9 @@ def segment(x, T=None, smooth_image=True):
     fh.show()
 
     # Segment image by thresholding
-    if smooth_image:
-        y = gaussian(x, sigma=2, preserve_range=True)  # Smooth input image with a Gaussian
+    if sigma > 0:
+        y = gaussian(x, sigma=sigma, preserve_range=True)  # Smooth input image with a Gaussian
+        # y = median_filter(x, 9)
     else:
         y = x
     z = T < y  # Threshold image
@@ -55,7 +57,8 @@ def segment(x, T=None, smooth_image=True):
 
     # Fill holes in mask
     z = binary_fill_holes(z)
-    # imsave(str(T) + '.tif', 255 * z.astype(np.uint8), compress=6)
+    z[mask>0] = 0
+    tw.save(255 * z.astype(np.uint8), compress=6)
 
     # Extract pixels along contour of region
     c = np.asarray(find_contours(z, 0, fully_connected='high')[0], dtype=np.int)
@@ -67,7 +70,8 @@ def segment(x, T=None, smooth_image=True):
     # fh.imshow('All regions', regions)
     fh.show()
 
-    return c # , c.shape[0]/np.sum(z)
+    return c  # , c.shape[0]/np.sum(z)
+
 
 def estimateBleaching(filename, K, shape):
     """ Estimate the intensity decay due to bleaching. """

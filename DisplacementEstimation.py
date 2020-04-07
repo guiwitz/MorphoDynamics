@@ -11,16 +11,9 @@ from FigureHelper import FigureHelper
 fh = FigureHelper(not True)
 
 
-def fit_spline(c):
+def fit_spline(c, lambda_):
     """" Fit a spline to a contour specified as a list of pixels. """
-    # Smoothing parameter
-    # lambda_ = 0
-    lambda_ = 1e2
-    # lambda_ = 1e3
-
-    # Fitting with periodic boundary conditions
-    s = splprep([c[:, 1], c[:, 0]], s=lambda_, per=c.shape[0])[0]
-
+    s = splprep([c[:, 1], c[:, 0]], s=lambda_, per=c.shape[0])[0]  # Fitting with periodic boundary conditions
     return s
 
 

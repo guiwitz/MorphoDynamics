@@ -12,11 +12,9 @@ from FigureHelper import FigureHelper
 #     return s.split('/')[0]
 
 
-def show_analysis(ds, config, res):
+def show_analysis(ds, param, res):
     """ Display the results of the morphodynamics analysis. """
 
-    datadir = 'C:/Work/UniBE2/Data/'
-    resultdir = ds.name + '/'
     x = ds.load_frame_morpho(0)
 
     dcum = np.cumsum(res.displacement, axis=1)
@@ -25,8 +23,8 @@ def show_analysis(ds, config, res):
     K = ds.K
     # I = res.displacement.shape[0]
 
-    if config.showCircularity:
-        pp = PdfPages(resultdir + "Circularity.pdf")
+    if param.showCircularity:
+        pp = PdfPages(param.resultdir + "Circularity.pdf")
         fh.open_figure('Length', 1, (16, 9))
         plt.plot(res.length)
         pp.savefig()
@@ -38,8 +36,8 @@ def show_analysis(ds, config, res):
         pp.savefig()
         pp.close()
 
-    if config.showEdge:
-        pp = PdfPages(resultdir + "Edge overview.pdf")
+    if param.showEdge:
+        pp = PdfPages(param.resultdir + "Edge overview.pdf")
         fh.open_figure('Edges', 1, (12, 9))
         plt.imshow(x, cmap='gray')
         show_edge_line(res.spline)
@@ -47,8 +45,8 @@ def show_analysis(ds, config, res):
         fh.show()
         pp.close()
 
-        if config.showEdgePDF:
-            pp = PdfPages(resultdir + "Edge animation.pdf")
+        if param.showEdgePDF:
+            pp = PdfPages(param.resultdir + "Edge animation.pdf")
             # dmax = np.max(np.abs(res.displacement))
             for k in range(K-1):
                 print(k)
@@ -58,30 +56,30 @@ def show_analysis(ds, config, res):
                 show_edge_scatter(res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], res.displacement[:, k])  # Show edge structures (spline curves, displacement vectors, sampling windows)
                 pp.savefig()
                 # if k < 20:
-                #    plt.savefig(resultdir + 'Edge ' + str(k) + '.tif')
+                #    plt.savefig(param.resultdir + 'Edge ' + str(k) + '.tif')
                 fh.show()
             pp.close()
 
-        if config.edgeNormalization == 'global':
+        if param.edgeNormalization == 'global':
             dmax = np.max(np.abs(res.displacement))
         else:
             dmax = None
-        tw = TiffWriter(resultdir + 'Edge animation.tif')
+        tw = TiffWriter(param.resultdir + 'Edge animation.tif')
         for k in range(K - 1):
             tw.save(show_edge_image(x.shape, res.spline[k], res.param0[k], res.displacement[:, k], 3, dmax), compress=6)
         tw.close()
 
-        if config.edgeNormalization == 'global':
+        if param.edgeNormalization == 'global':
             dmax = np.max(np.abs(dcum))
         else:
             dmax = None
-        tw = TiffWriter(resultdir + 'Edge animation with cumulative displacement.tif')
+        tw = TiffWriter(param.resultdir + 'Edge animation with cumulative displacement.tif')
         for k in range(K - 1):
             tw.save(show_edge_image(x.shape, res.spline[k], res.param0[k], dcum[:, k], 3, dmax), compress=6)
         tw.close()
 
-    if config.showDisplacement:
-        pp = PdfPages(resultdir + "Displacement.pdf")
+    if param.showDisplacement:
+        pp = PdfPages(param.resultdir + "Displacement.pdf")
         fh.open_figure('Displacement', 1)
         plt.imshow(res.displacement, cmap='bwr')
         plt.axis('auto')
@@ -109,12 +107,12 @@ def show_analysis(ds, config, res):
         fh.close_figure()
         pp.close()
 
-    if config.showSignals:
-        pp = PdfPages(resultdir + "Signals.pdf")
+    if param.showSignals:
+        pp = PdfPages(param.resultdir + "Signals.pdf")
         for m in range(len(ds.signalfile)):
             for j in range(res.signal.shape[1]):
                 fh.open_figure('Signal: ' + ds.get_channel_name(m) + ' - Layer: ' + str(j), 1)
-                plt.imshow(res.signal[m, j, 0:int(48/2**j), :], cmap='plasma')
+                plt.imshow(res.signal[m, j, 0:int(param.I/2**j), :], cmap='plasma')
                 plt.colorbar(label='Signal')
                 plt.axis('auto')
                 plt.xlabel('Frame index')
@@ -125,8 +123,8 @@ def show_analysis(ds, config, res):
                 fh.close_figure()
         pp.close()
 
-    if config.showCorrelation:
-        pp = PdfPages(resultdir + "Correlation.pdf")
+    if param.showCorrelation:
+        pp = PdfPages(param.resultdir + "Correlation.pdf")
         c = correlate_arrays(res.displacement, res.displacement, 'Pearson')
         show_correlation(fh, c, res.displacement, res.displacement, 'displacement', 'displacement', 'Pearson')
         pp.savefig()
@@ -152,7 +150,7 @@ def show_analysis(ds, config, res):
             # pp.savefig()
         pp.close()
 
-        pp = PdfPages(resultdir + "Correlation comparison.pdf")
+        pp = PdfPages(param.resultdir + "Correlation comparison.pdf")
         fh.open_figure('Average cross-correlation between displacement and signals at layer ' + str(0), 1)
         color = 'rbgymc'
         n = 0
@@ -179,7 +177,7 @@ def show_analysis(ds, config, res):
         plt.xlabel('Time lag [frames]')
         plt.ylabel('Cross-correlation')
         pp.savefig()
-        fh.open_figure('Autocorrelation of displacement', 1)
+        fh.open_figure('Average autocorrelation of displacement', 1)
         t = get_range(res.displacement.shape[1], res.displacement.shape[1])
         c = correlate_arrays(res.displacement, res.displacement, 'Pearson')
         plt.plot(t, np.mean(c, axis=0), color[n])
@@ -187,7 +185,7 @@ def show_analysis(ds, config, res):
         plt.xlabel('Time lag [frames]')
         plt.ylabel('Correlation')
         pp.savefig()
-        fh.open_figure('Autocorrelation of cumulative displacement', 1)
+        fh.open_figure('Average autocorrelation of cumulative displacement', 1)
         t = get_range(dcum.shape[1], dcum.shape[1])
         c = correlate_arrays(dcum, dcum, 'Pearson')
         plt.plot(t, np.mean(c, axis=0), color[n])
