@@ -66,7 +66,7 @@ def load_settings(dataset_name):
     param.resultdir = dataset_name + '/'
 
     # Standard deviation for the Gaussian filter prior to segmentation; 0 deactivates filtering
-    param.sigma = 2
+    param.sigma = 5 # 2
     if dataset_name == 'Ellipse with triangle dynamics':  # Skip Gaussian filtering for synthetic datasets
         param.sigma = 0
 
@@ -84,12 +84,14 @@ def load_settings(dataset_name):
 
     # Figure parameters
     param.showWindows = not True
-    param.showCircularity = True
-    param.showEdge = True
-    param.showEdgePDF = True
-    param.showDisplacement = True
-    param.showSignals = True
-    param.showCorrelation = True
+    param.showCircularity = not True
+    param.showEdge = not True
+    param.showEdgePDF = not True
+    param.showCurvature = True
+    param.showDisplacement = not True
+    param.showSignals = not True
+    param.showCorrelation = not True
+    param.showFourierDescriptors = not True
     # param.edgeNormalization = 'global'
     param.edgeNormalization = 'frame-by-frame'
 
@@ -103,7 +105,7 @@ def load_settings(dataset_name):
                   lambda k: 'w34TIRF-mCherry/RhoA_OP_his_02_w34TIRF-mCherry_t' + str(k)]
         K = 159
         shape = (358, 358)
-        dataset = TIFFSeries(dataset_name, expdir, morphofile, signalfile, K, shape)
+        data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, K, shape)
         # param.T = None
         param.T = 222
     elif dataset_name == 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good':
@@ -116,7 +118,7 @@ def load_settings(dataset_name):
                   lambda k: 'w34TIRF-mCherry/RhoA_multipoint_0.5fn_01_w34TIRF-mCherry_s3_t' + str(k)]
         K = 750
         shape = (358, 358)
-        dataset = TIFFSeries(dataset_name, expdir, morphofile, signalfile, K, shape)
+        data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, K, shape)
         param.T = 2620
     elif dataset_name == 'GBD_sensors + actinExpt_01':
         expdir = 'GBD_sensors + actin/Expt_01/'
@@ -125,7 +127,7 @@ def load_settings(dataset_name):
                   lambda k: 'w24TIRF-mCherry_s2/R52_LA-GFP_FN5_mCh-rGBD_02_w24TIRF-mCherry_s2_t' + str(k)]
         K = 250
         shape = (716, 716)
-        dataset = TIFFSeries(dataset_name, expdir, morphofile, signalfile, K, shape)
+        data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, K, shape)
         param.T = 165
     elif dataset_name == 'Ellipse with triangle dynamics':
         expdir = 'Synthetic data/Ellipse with triangle dynamics/'
@@ -133,14 +135,14 @@ def load_settings(dataset_name):
         signalfile = [lambda k: 'Signal/Phantom' + str(k)]
         K = 50
         shape = (101, 101)
-        dataset = TIFFSeries(dataset_name, expdir, morphofile, signalfile, K, shape)
+        data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, K, shape)
         param.T = None
     elif dataset_name == 'TIAM_protrusion':
         expdir = 'TIAM_protrusion/'
         morphofile = 'TIAM-nano_ACTIN.tif'
         signalfile = ['TIAM-nano_OPTO.tif', 'TIAM-nano_STIM.tif']
         step = 15
-        dataset = MultipageTIFF(dataset_name, expdir, morphofile, signalfile, step)
+        data = MultipageTIFF(dataset_name, expdir, morphofile, signalfile, step)
         param.T = 150  # 126  # 140
         param.Tfun = lambda k: 150 * k / 65 + 162 * (65 - k) / 65
     elif dataset_name == 'TIAM_protrusion2':
@@ -148,10 +150,25 @@ def load_settings(dataset_name):
         morphofile = 'TIAM-nano_OPTO.tif'
         signalfile = ['TIAM-nano_OPTO.tif', 'TIAM-nano_STIM.tif']
         step = 15
-        dataset = MultipageTIFF(dataset_name, expdir, morphofile, signalfile, step)
+        data = MultipageTIFF(dataset_name, expdir, morphofile, signalfile, step)
         param.T = 122  # 127 # 126  # 140
+    elif dataset_name == 'TIAM_protrusion3':
+        expdir = 'TIAM_protrusion/'
+        morphofile = 'TIAM-nano_OPTO.tif'
+        signalfile = ['TIAM-nano_ACTIN.tif', 'TIAM-nano_OPTO.tif', 'TIAM-nano_STIM.tif']
+        step = 15
+        data = MultipageTIFF(dataset_name, expdir, morphofile, signalfile, step)
+        param.T = 122  # 127 # 126  # 140
+    elif dataset_name == 'TIAM_protrusion4':
+        expdir = 'TIAM_protrusion/'
+        morphofile = 'TIAM-nano_ACTIN.tif'
+        signalfile = ['TIAM-nano_ACTIN.tif', 'TIAM-nano_OPTO.tif', 'TIAM-nano_STIM.tif']
+        step = 15
+        data = MultipageTIFF(dataset_name, expdir, morphofile, signalfile, step)
+        param.T = 145  # 150
+        param.Tfun = lambda k: 145 * k / 65 + 150 * (65 - k) / 65
     # data.K = 3
-    return dataset, param
+    return data, param
 
 # import matplotlib.pyplot as plt
 # dataset_name = load_metadata('TIAM_protrusion')

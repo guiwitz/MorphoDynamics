@@ -9,7 +9,7 @@ from Segmentation import segment
 # dataset_name = 'FRET_sensors + actinHistamineExpt2'
 # dataset_name = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
 # dataset_name = 'GBD_sensors + actinExpt_01'
-dataset_name = 'TIAM_protrusion2'
+dataset_name = 'TIAM_protrusion4'
 
 data, param = load_settings(dataset_name)
 
@@ -21,12 +21,19 @@ data, param = load_settings(dataset_name)
 if not os.path.exists(param.resultdir):
     os.mkdir(param.resultdir)
 
-res = analyze_morphodynamics(data, param)
+# import numpy as np
+# from skimage.filters import gaussian
+# y = np.zeros((data.K,) + data.shape, dtype=np.float32)
+# for k in range(data.K):
+#     y[k] = gaussian(data.load_frame_morpho(k), sigma=data.sigma, preserve_range=True)
 
-dill.dump(res, open(param.resultdir + 'Results.pkl', 'wb'))  # Save analysis results to disk
+step = 2
 
-# quit()
+if step in range(0, 2):
+    res = analyze_morphodynamics(data, param)
+    dill.dump(param, open(param.resultdir + 'Parameters.pkl', 'wb'))
+    dill.dump(res, open(param.resultdir + 'Results.pkl', 'wb'))
 
-res = dill.load(open(param.resultdir + "Results.pkl", "rb"))
-
-show_analysis(data, param, res)
+if step in range(0, 3, 2):
+    res = dill.load(open(param.resultdir + "Results.pkl", "rb"))
+    show_analysis(data, param, res)

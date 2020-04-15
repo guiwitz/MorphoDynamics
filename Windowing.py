@@ -46,6 +46,7 @@ def create_windows(c, I, J):
 
     return w
 
+
 def label_windows(windows):
     """ Create an image where the sampling windows are shown as regions with unique gray levels. """
     tiles = np.zeros(windows.shape[2:4], dtype=np.uint16)
@@ -56,14 +57,18 @@ def label_windows(windows):
             n += 1
     return tiles
 
+
 def extract_signals(y, w):
     """ Extract the mean values of an image over the sampling windows. """
-    signal = np.nan * np.ones(w.shape[0:2])
+    mean = np.nan * np.ones(w.shape[0:2])
+    var = np.nan * np.ones(w.shape[0:2])
     for j in range(w.shape[0]):
         for i in range(w.shape[1]):
             if np.any(w[j, i]):
-                signal[j, i] = np.mean(y[w[j, i]])
-    return signal
+                mean[j, i] = np.mean(y[w[j, i]])
+                var[j, i] = np.var(y[w[j, i]])
+    return mean, var
+
 
 def show_windows(w, b):
     """ Display the sampling-window boundaries and indices. """

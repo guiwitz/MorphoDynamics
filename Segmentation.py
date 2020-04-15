@@ -13,10 +13,7 @@ from ArtifactGeneration import FigureHelper
 
 fh = FigureHelper(not True)
 
-
-def segment(x, sigma, T=None, tw=None, mask=None):
-    """ Segment the cell image, possibly with automatic threshold selection. """
-
+def segment_aux(x, sigma, T=None, tw=None):
     # Determine the threshold based on the histogram, if not provided manually
     if T is None:
         h, _ = histogram(x, source_range='dtype')  # Compute histogram of image
@@ -57,8 +54,17 @@ def segment(x, sigma, T=None, tw=None, mask=None):
 
     # Fill holes in mask
     z = binary_fill_holes(z)
-    z[mask>0] = 0
-    tw.save(255 * z.astype(np.uint8), compress=6)
+    # z[mask>0] = 0
+    # if not (tw is None):
+    #     tw.save(255 * z.astype(np.uint8), compress=6)
+
+    return z
+
+
+def segment(x, sigma, T=None, tw=None):  # , mask=None
+    """ Segment the cell image, possibly with automatic threshold selection. """
+
+    z = segment_aux(x, sigma, T, tw)
 
     # Extract pixels along contour of region
     c = np.asarray(find_contours(z, 0, fully_connected='high')[0], dtype=np.int)

@@ -28,6 +28,12 @@ def compute_area(s):
     return np.sum(c[0]*cprm[1] - c[1]*cprm[0]) / 2 / 10000
 
 
+def compute_curvature(s):
+    cprm = splev(np.linspace(0, 1, 10001), s, der=1)
+    csec = splev(np.linspace(0, 1, 10001), s, der=2)
+    return (cprm[0]*csec[1] - cprm[1]*csec[0]) / (cprm[0]**2 + cprm[1]**2)**1.5
+
+
 def correlate(x, y):
     """ Compute the correlation between two signals with periodic boundary conditions. """
     z = np.real(np.fft.ifft(np.fft.fft(x) * np.fft.fft(y[::-1])))
@@ -73,7 +79,8 @@ def show_edge_scatter(s1, s2, t1, t2, d, dmax=None):
 
     # Interpolate displacements
     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
-    d = np.interp(np.linspace(0, 1, 10001), t1, d, period=1)
+    if len(d) < 10001:
+        d = np.interp(np.linspace(0, 1, 10001), t1, d, period=1)
     if dmax is None:
         dmax = np.max(np.abs(d))
 

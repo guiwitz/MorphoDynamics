@@ -23,12 +23,13 @@ def analyze_morphodynamics(data, param):
     res.param0 = []
     res.param = []
     res.displacement = np.zeros((param.I, data.K - 1))  # Projection of the displacement vectors
-    res.signal = np.zeros((len(data.signalfile), param.J, param.I, data.K))  # Signals from the outer sampling windows
+    res.mean = np.zeros((len(data.signalfile), param.J, param.I, data.K))  # Signals from the outer sampling windows
+    res.var = np.zeros((len(data.signalfile), param.J, param.I, data.K))  # Signals from the outer sampling windows
     res.length = np.zeros((data.K,))
     res.area = np.zeros((data.K,))
 
-    from skimage.external.tifffile import imread
-    mask = imread(param.resultdir + '../Mask.tif')
+    # from skimage.external.tifffile import imread
+    # mask = imread(param.resultdir + '../Mask.tif')
 
     # Main loop on frames
     deltat = 0
@@ -37,8 +38,11 @@ def analyze_morphodynamics(data, param):
         print(k)
         x = data.load_frame_morpho(k)  # Input image
 
-        # c = segment(x, param.sigma, param.Tfun(k), tw)  # Discrete cell contour
-        c = segment(x, param.sigma, param.T, tw, mask)  # Discrete cell contour
+        if hasattr(param, 'Tfun'):
+            c = segment(x, param.sigma, param.Tfun(k), tw)  # Discrete cell contour
+        else:
+            # c = segment(x, param.sigma, param.T, tw, mask)  # Discrete cell contour
+            c = segment(x, param.sigma, param.T, tw)  # Discrete cell contour
         s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
         res.length[k] = compute_length(s)  # Length of the contour
         res.area[k] = compute_area(s)  # Area delimited by the contour
@@ -49,7 +53,7 @@ def analyze_morphodynamics(data, param):
         c = rasterize_curve(x.shape, s, deltat)  # Representation of the contour as a grayscale image
         w = create_windows(c, param.I, param.J)  # Binary masks representing the sampling windows
         for m in range(len(data.signalfile)):
-            res.signal[m, :, :, k] = extract_signals(data.load_frame_signal(m, k), w)  # Signals extracted from various imaging channels
+            res.mean[m, :, :, k], res.var[m, :, :, k] = extract_signals(data.load_frame_signal(m, k), w)  # Signals extracted from various imaging channels
 
         # Compute projection of displacement vectors onto normal of contour
         if 0 < k:
