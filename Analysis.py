@@ -1,5 +1,5 @@
 import numpy as np
-from skimage.external.tifffile import TiffWriter  # , imread  # , imsave
+from skimage.external.tifffile import TiffWriter, imsave  # , imread  # , imsave
 from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages
@@ -51,6 +51,10 @@ def analyze_morphodynamics(data, param):
             t = map_contours(s0, s, t0)  # Parameters of the endpoints of the displacement vectors
             deltat += t[0] - t0[0]  # Translation of the origin of the spline curve
         c = rasterize_curve(x.shape, s, deltat)  # Representation of the contour as a grayscale image
+        # if k == 3:
+        #     imsave('Contour ' + str(0) + '.tif', rasterize_curve(x.shape, s, 0).astype(np.float32))
+        #     imsave('Contour ' + str(0.5) + '.tif', rasterize_curve(x.shape, s, 0.25).astype(np.float32))
+        #     quit()
         w = create_windows(c, param.I, param.J)  # Binary masks representing the sampling windows
         for m in range(len(data.signalfile)):
             res.mean[m, :, :, k], res.var[m, :, :, k] = extract_signals(data.load_frame_signal(m, k), w)  # Signals extracted from various imaging channels

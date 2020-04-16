@@ -69,12 +69,12 @@ def segment(x, sigma, T=None, tw=None):  # , mask=None
     # Extract pixels along contour of region
     c = np.asarray(find_contours(z, 0, fully_connected='high')[0], dtype=np.int)
 
-    # Artifact generation
-    fh.imshow('Input image', x)
-    fh.imshow('Segmented image', 255 * (T < y).astype(np.uint8))
-    fh.imshow('Filled largest segmented region', 255 * z.astype(np.uint8))
-    # fh.imshow('All regions', regions)
-    fh.show()
+    # # Artifact generation
+    # fh.imshow('Input image', x)
+    # fh.imshow('Segmented image', 255 * (T < y).astype(np.uint8))
+    # fh.imshow('Filled largest segmented region', 255 * z.astype(np.uint8))
+    # # fh.imshow('All regions', regions)
+    # fh.show()
 
     return c  # , c.shape[0]/np.sum(z)
 

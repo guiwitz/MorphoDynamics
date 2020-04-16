@@ -138,12 +138,27 @@ def show_edge_image(shape, s, t, d, thickness, dmax=None):
     return c
 
 
+# def rasterize_curve(shape, s, deltat):
+#     """ Construct a mapping from edge pixels to spline arguments. """
+#     delta = np.inf * np.ones(shape)
+#     tau = - np.ones(shape)
+#     t = np.mod(np.linspace(0, 1, 10001) - deltat, 1)
+#     p = np.asarray(splev(t, s))
+#     pi = np.round(p).astype(dtype=np.int)
+#     for n in range(10001):
+#         d0 = np.linalg.norm(p[:, n]-pi[:, n])
+#         if d0 < delta[pi[1, n], pi[0, n]]:
+#             delta[pi[1, n], pi[0, n]] = d0
+#             tau[pi[1, n], pi[0, n]] = t[n]
+#     return tau
+
 def rasterize_curve(shape, s, deltat):
     """ Construct a mapping from edge pixels to spline arguments. """
     delta = np.inf * np.ones(shape)
     tau = - np.ones(shape)
-    t = np.mod(np.linspace(0, 1, 10001) - deltat, 1)
+    t = np.linspace(0, 1, 10001)
     p = np.asarray(splev(t, s))
+    t = np.mod(t - deltat, 1)
     pi = np.round(p).astype(dtype=np.int)
     for n in range(10001):
         d0 = np.linalg.norm(p[:, n]-pi[:, n])
