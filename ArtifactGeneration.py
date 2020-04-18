@@ -7,9 +7,6 @@ from Correlation import show_correlation, correlate_arrays, get_range
 from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_image, compute_curvature
 from FigureHelper import FigureHelper
 
-# def trim(s):
-#     return s.split('/')[0]
-
 
 def show_analysis(data, param, res):
     """ Display the results of the morphodynamics analysis. """
@@ -109,20 +106,24 @@ def show_analysis(data, param, res):
     if param.showDisplacement:
         pp = PdfPages(param.resultdir + "Displacement.pdf")
         fh.open_figure('Displacement', 1)
-        plt.imshow(res.displacement, cmap='bwr')
+        plt.imshow(res.displacement, cmap='seismic')
         plt.axis('auto')
         plt.xlabel('Frame index')
         plt.ylabel('Window index')
         plt.colorbar(label='Displacement [pixels]')
-        cmax = np.max(np.abs(res.displacement))
+        if hasattr(param, 'scaling_disp'):
+            cmax = param.scaling_disp
+        else:
+            cmax = np.max(np.abs(res.displacement))
         plt.clim(-cmax, cmax)
         # plt.xticks(range(0, velocity.shape[1], 5))
         pp.savefig()
         fh.show()
         fh.close_figure()
+        imsave(param.resultdir + 'Displacement.tif', res.displacement.astype(np.float32))
 
         fh.open_figure('Cumulative displacement', 1)
-        plt.imshow(dcum, cmap='bwr')
+        plt.imshow(dcum, cmap='seismic')
         plt.axis('auto')
         plt.xlabel('Frame index')
         plt.ylabel('Window index')
@@ -140,7 +141,10 @@ def show_analysis(data, param, res):
         for m in range(len(data.signalfile)):
             for j in range(res.mean.shape[1]):
                 fh.open_figure('Signal: ' + data.get_channel_name(m) + ' - Layer: ' + str(j), 1)
-                plt.imshow(res.mean[m, j, 0:param.I//2**j, :], cmap='plasma')
+                if hasattr(param, 'scaling_mean') & (j == 0):
+                    plt.imshow(res.mean[m, j, 0:param.I // 2 ** j, :], cmap='jet', vmin=param.scaling_mean[m][0], vmax=param.scaling_mean[m][1])
+                else:
+                    plt.imshow(res.mean[m, j, 0:param.I//2**j, :], cmap='jet')
                 plt.colorbar(label='Mean')
                 plt.axis('auto')
                 plt.xlabel('Frame index')
@@ -157,7 +161,7 @@ def show_analysis(data, param, res):
         for m in range(len(data.signalfile)):
             for j in range(res.mean.shape[1]):
                 fh.open_figure('Signal: ' + data.get_channel_name(m) + ' - Layer: ' + str(j), 1)
-                plt.imshow(res.var[m, j, 0:param.I//2**j, :], cmap='plasma')
+                plt.imshow(res.var[m, j, 0:param.I//2**j, :], cmap='jet')
                 plt.colorbar(label='Variance')
                 plt.axis('auto')
                 plt.xlabel('Frame index')

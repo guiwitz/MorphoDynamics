@@ -55,8 +55,8 @@ def segment_aux(x, sigma, T=None, tw=None):
     # Fill holes in mask
     z = binary_fill_holes(z)
     # z[mask>0] = 0
-    # if not (tw is None):
-    #     tw.save(255 * z.astype(np.uint8), compress=6)
+    if not (tw is None):
+        tw.save(255 * z.astype(np.uint8), compress=6)
 
     return z
 

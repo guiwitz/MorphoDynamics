@@ -33,16 +33,17 @@ def analyze_morphodynamics(data, param):
 
     # Main loop on frames
     deltat = 0
-    tw = TiffWriter(param.resultdir + 'Segmentation.tif')
+    tw_seg = TiffWriter(param.resultdir + 'Segmentation.tif')
+    tw_win = TiffWriter(param.resultdir + 'Windows.tif')
     for k in range(0, data.K):
         print(k)
         x = data.load_frame_morpho(k)  # Input image
 
         if hasattr(param, 'Tfun'):
-            c = segment(x, param.sigma, param.Tfun(k), tw)  # Discrete cell contour
+            c = segment(x, param.sigma, param.Tfun(k), tw_seg)  # Discrete cell contour
         else:
-            # c = segment(x, param.sigma, param.T, tw, mask)  # Discrete cell contour
-            c = segment(x, param.sigma, param.T, tw)  # Discrete cell contour
+            # c = segment(x, param.sigma, param.T, tw_seg, mask)  # Discrete cell contour
+            c = segment(x, param.sigma, param.T, tw_seg)  # Discrete cell contour
         s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
         res.length[k] = compute_length(s)  # Length of the contour
         res.area[k] = compute_area(s)  # Area delimited by the contour
@@ -69,10 +70,12 @@ def analyze_morphodynamics(data, param):
         if param.showWindows:
             # if 0 < k:
             fh.open_figure('Frame ' + str(k), 1, (12, 9))
-            show_windows(w, find_boundaries(label_windows(w)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
+            b = find_boundaries(label_windows(w))
+            show_windows(w, b)  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
             # showEdge(s0, s, t0, t, res.displacement[:, k - 1])  # Show edge structures (spline curves, displacement vectors, sampling windows)
             pp.savefig()
             fh.show()
+            tw_win.save(255 * b.astype(np.uint8), compress=6)
             # imsave(param.resultdir + 'Tiles.tif', 255 * np.asarray(w), compress=6)
 
         # Keep variable for the next iteration
@@ -85,7 +88,8 @@ def analyze_morphodynamics(data, param):
             res.param.append(t)
 
     # Close windows figure
-    tw.close()
+    tw_seg.close()
+    tw_win.close()
     if param.showWindows:
         pp.close()
 
