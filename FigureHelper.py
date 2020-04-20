@@ -1,6 +1,11 @@
 import matplotlib.pyplot as plt
 from skimage.external.tifffile import imsave
 
+# PDF
+# Figure window
+# Figure in notebook
+# TIFF: entire figure or just image
+
 class FigureHelper:
     """ Helper class for generating figures, when in debug mode. """
     def __init__(self, debug):
