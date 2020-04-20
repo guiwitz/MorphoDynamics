@@ -3,7 +3,7 @@ from skimage.external.tifffile import TiffWriter, imsave  # , imread  # , imsave
 from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages
-from Settings import Struct, load_settings
+from Settings import Struct
 from FigureHelper import FigureHelper
 from Segmentation import segment
 from DisplacementEstimation import fit_spline, map_contours, rasterize_curve, compute_length, compute_area  # , show_edge_scatter
@@ -13,9 +13,14 @@ from Windowing import create_windows, extract_signals, label_windows, show_windo
 
 def analyze_morphodynamics(data, param):
     # Figures and other artifacts
-    fh = FigureHelper(not True)
     if param.showWindows:
-        pp = PdfPages(param.resultdir + 'Windows.pdf')
+        output = Struct()
+        output.dir = param.resultdir
+        output.size = (12, 9)
+        output.display = False
+        output.pdf = True
+        output.tiff = True
+        fh = FigureHelper('Windows', output)
 
     # Structures that will be saved to disk
     res = Struct()
@@ -34,7 +39,7 @@ def analyze_morphodynamics(data, param):
     # Main loop on frames
     deltat = 0
     tw_seg = TiffWriter(param.resultdir + 'Segmentation.tif')
-    tw_win = TiffWriter(param.resultdir + 'Windows.tif')
+    # tw_win = TiffWriter(param.resultdir + 'Windows.tif')
     for k in range(0, data.K):
         print(k)
         x = data.load_frame_morpho(k)  # Input image
@@ -69,13 +74,13 @@ def analyze_morphodynamics(data, param):
         # Artifact generation
         if param.showWindows:
             # if 0 < k:
-            fh.open_figure('Frame ' + str(k), 1, (12, 9))
+            fh.open_figure('Frame ' + str(k), 1)
             b = find_boundaries(label_windows(w))
             show_windows(w, b)  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
             # showEdge(s0, s, t0, t, res.displacement[:, k - 1])  # Show edge structures (spline curves, displacement vectors, sampling windows)
-            pp.savefig()
+            fh.save_pdf()
+            fh.save_tiff(255 * b.astype(np.uint8))
             fh.show()
-            tw_win.save(255 * b.astype(np.uint8), compress=6)
             # imsave(param.resultdir + 'Tiles.tif', 255 * np.asarray(w), compress=6)
 
         # Keep variable for the next iteration
@@ -89,8 +94,8 @@ def analyze_morphodynamics(data, param):
 
     # Close windows figure
     tw_seg.close()
-    tw_win.close()
+    # tw_win.close()
     if param.showWindows:
-        pp.close()
+        fh.close()
 
     return res

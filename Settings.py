@@ -32,23 +32,25 @@ def load_settings(dataset_name):
     # Figure parameters
     # param.showWindows = True
     # param.showCircularity = True
-    # param.showEdge = True
-    # param.showEdgePDF = True
+    # param.showEdgeOverview = True
+    # param.showEdgeVectorial = True
+    # param.showEdgeRasterized = True
     # param.showCurvature = True
     # param.showDisplacement = True
     # param.showSignals = True
-    # param.showCorrelation = True
+    # param.showCorrelation = not True
     # param.showFourierDescriptors = True
     # # param.edgeNormalization = 'global'
     # param.edgeNormalization = 'frame-by-frame'
 
     param.showWindows = not True
-    param.showCircularity = not True
-    param.showEdge = not True
-    param.showEdgePDF = not True
+    param.showCircularity = True
+    param.showEdgeOverview = True
+    param.showEdgeVectorial = True
+    param.showEdgeRasterized = not True
     param.showCurvature = not True
     param.showDisplacement = not True
-    param.showSignals = True
+    param.showSignals = not True
     param.showCorrelation = not True
     param.showFourierDescriptors = not True
     # param.edgeNormalization = 'global'
@@ -170,7 +172,7 @@ def load_settings(dataset_name):
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
         # param.T = None
         param.T = 1038.90  # 1232
-    # data.K = 10
+    # data.K = 5
     return data, param
 
 # import matplotlib.pyplot as plt

@@ -8,7 +8,7 @@ from numpy.linalg import norm
 from FunctionalDefinition import Functional
 from FigureHelper import FigureHelper
 
-fh = FigureHelper(not True)
+# fh = FigureHelper(not True)
 
 
 def fit_spline(c, lambda_):

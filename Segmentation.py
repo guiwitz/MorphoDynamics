@@ -11,7 +11,7 @@ import numpy as np
 from skimage.external.tifffile import imread, imsave
 from ArtifactGeneration import FigureHelper
 
-fh = FigureHelper(not True)
+# fh = FigureHelper(not True)
 
 def segment_aux(x, sigma, T=None, tw=None):
     # Determine the threshold based on the histogram, if not provided manually
@@ -25,16 +25,16 @@ def segment_aux(x, sigma, T=None, tw=None):
         m = m[hs[m] < 0.2*hs[n0]]  # Remove local minima that are too strong
         T = m[n0 < m][0]  # Select first local minimum after maximum
 
-    # Artifact generation
-    if fh.debug & (T is None):
-        fh.open_figure('Histogram')
-        plt.plot(h, 'b', lw=0.1, zorder=50)
-        # plt.xlim(0, 1000)
-        plt.plot(n, hs, 'r', lw=0.1, zorder=100)
-        plt.plot(n0, hs[n0], 'go', zorder=10)
-        plt.plot(T, hs[T], 'yo', zorder=10)
-        fh.close_figure()
-    fh.show()
+    # # Artifact generation
+    # if fh.debug & (T is None):
+    #     fh.open_figure('Histogram')
+    #     plt.plot(h, 'b', lw=0.1, zorder=50)
+    #     # plt.xlim(0, 1000)
+    #     plt.plot(n, hs, 'r', lw=0.1, zorder=100)
+    #     plt.plot(n0, hs[n0], 'go', zorder=10)
+    #     plt.plot(T, hs[T], 'yo', zorder=10)
+    #     fh.close_figure()
+    # fh.show()
 
     # Segment image by thresholding
     if sigma > 0:
@@ -94,10 +94,10 @@ def estimateBleaching(filename, K, shape):
         I[k] = np.mean(x[k][m])
         # p.imshow('Segmentation', c[k, :, :, :])
         # p.show()
-    imsave(fh.path + 'Segmentation.tif', c)
-    fh.open_figure('Average intensity in segmented region')
-    plt.plot(I)
-    fh.close_figure()
+    # imsave(fh.figure_dir + 'Segmentation.tif', c)
+    # fh.open_figure('Average intensity in segmented region')
+    # plt.plot(I)
+    # fh.close_figure()
 
 # x = imread('C:\\Work\\UniBE 2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\w16TIRF-CFP\\RhoA_OP_his_02_w16TIRF-CFP_t53.tif')
 # segment(x)

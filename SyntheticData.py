@@ -56,4 +56,4 @@ for k in range(K):
     # walkingRectangles(k)
     # protrudingEllipse(k)
     # signalEllipse(k)
-    imsave(fh.path + 'Phantom' + str(k + 1) + '.tif', x[k], compress=6)
+    imsave(fh.figure_dir + 'Phantom' + str(k + 1) + '.tif', x[k], compress=6)

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # from Segmentation import segment
 from ArtifactGeneration import FigureHelper
 
-plot = FigureHelper(not True)
+# plot = FigureHelper(not True)
 
 
 def create_windows(c, I, J):
@@ -33,16 +33,16 @@ def create_windows(c, I, J):
         for i in range(int(I / 2 ** j)):
             w[j, i] = m & (s[i] <= L) & (L < s[i+1]) & (b[j] <= D) & (D < b[j+1])
 
-    # Artifact generation
-    plot.imshow('Contour', c)
-    plot.imshow('Mask', m.astype(np.int))
-    plot.imshow('Distance transform', D)
-    # plot.imshow('Contour length', l)
-    plot.imshow('Sectors', L)
-    # plot.imshow('Windows', windows)
-    # plot.imshow('Labeled windows', label2rgb(windows))
-    # plot.imshow('Window boundaries', boundaries.astype(np.uint8))
-    plot.show()
+    # # Artifact generation
+    # plot.imshow('Contour', c)
+    # plot.imshow('Mask', m.astype(np.int))
+    # plot.imshow('Distance transform', D)
+    # # plot.imshow('Contour length', l)
+    # plot.imshow('Sectors', L)
+    # # plot.imshow('Windows', windows)
+    # # plot.imshow('Labeled windows', label2rgb(windows))
+    # # plot.imshow('Window boundaries', boundaries.astype(np.uint8))
+    # plot.show()
 
     return w
 
