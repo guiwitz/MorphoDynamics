@@ -2,8 +2,9 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-from skimage.external.tifffile import imsave
+from skimage.external.tifffile import imsave, TiffWriter
 from scipy.interpolate import splev
+from PIL import Image
 from Correlation import show_correlation, correlate_arrays, get_range
 from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_image, compute_curvature
 from FigureHelper import FigureHelper
@@ -80,6 +81,39 @@ def show_edge_vectorial(param, data, res, curvature=False, size=(12, 9)):
     pp.close()
 
 
+def show_edge_rasterized_aux(param, k, cumulative=False):
+    name = 'Edge animation'
+    if cumulative:
+        name += ' (cumulative)'
+
+    stack = Image.open(param.resultdir + name + '.tif')
+    stack.seek(k)
+
+    plt.clf()
+    plt.gca().set_title('Frame ' + str(k))
+    plt.imshow(np.array(stack))
+    plt.tight_layout()
+
+
+def show_edge_rasterized(param, data, res, cumulative=False):
+    name = 'Edge animation'
+    d = res.displacement
+    if cumulative:
+        d = np.cumsum(d, axis=1)
+        name += ' (cumulative)'
+
+    if param.edgeNormalization == 'global':
+        dmax = np.max(np.abs(d))
+    else:
+        dmax = None
+
+    tw = TiffWriter(param.resultdir + name + '.tif')
+    for k in range(data.K - 1):
+        x = show_edge_image(data.shape, res.spline[k], res.param0[k], d[:, k], 3, dmax)
+        tw.save(x, compress=6)
+    tw.close()
+
+
 # def show_circularity(output, res):
 #     fh = FigureHelper('Circularity', output)
 #
@@ -140,30 +174,30 @@ def show_edge_vectorial(param, data, res, curvature=False, size=(12, 9)):
 #     fh.close()
 
 
-def show_edge_rasterized(output, param, data, res, cumulative=False, frame=None):
-    d = res.displacement
-    if cumulative:
-        d = np.cumsum(d, axis=1)
-
-    if frame is None:
-        frame_range = range(data.K - 1)
-    else:
-        frame_range = [frame]
-
-    if param.edgeNormalization == 'global':
-        dmax = np.max(np.abs(d))
-    else:
-        dmax = None
-
-    fh = FigureHelper('Edge animation', output)
-    fh.open_figure('Edge animation')
-    for k in frame_range:
-        x = show_edge_image(data.shape, res.spline[k], res.param0[k], d[:, k], 3, dmax)
-        plt.imshow(x)
-        fh.save_tiff(x)
-        if k != frame_range[-1]:
-            fh.show()
-    fh.close()
+# def show_edge_rasterized(output, param, data, res, cumulative=False, frame=None):
+#     d = res.displacement
+#     if cumulative:
+#         d = np.cumsum(d, axis=1)
+#
+#     if frame is None:
+#         frame_range = range(data.K - 1)
+#     else:
+#         frame_range = [frame]
+#
+#     if param.edgeNormalization == 'global':
+#         dmax = np.max(np.abs(d))
+#     else:
+#         dmax = None
+#
+#     fh = FigureHelper('Edge animation', output)
+#     fh.open_figure('Edge animation')
+#     for k in frame_range:
+#         x = show_edge_image(data.shape, res.spline[k], res.param0[k], d[:, k], 3, dmax)
+#         plt.imshow(x)
+#         fh.save_tiff(x)
+#         if k != frame_range[-1]:
+#             fh.show()
+#     fh.close()
 
 
 def show_curvature(output, data, res):
@@ -307,7 +341,9 @@ def show_analysis(data, param, res):
         show_edge_vectorial(param, data, res, curvature=False)
 
     if param.showEdgeRasterized:
-        show_edge_rasterized(output, param, data, res, False)
+        # show_edge_rasterized(output, param, data, res, False)
+        # show_edge_rasterized(param, data, res, False)
+        show_edge_rasterized_aux(param, 0, cumulative=False)
 
     if param.showCurvature:
         show_curvature(output, data, res)

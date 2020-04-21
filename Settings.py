@@ -44,10 +44,10 @@ def load_settings(dataset_name):
     # param.edgeNormalization = 'frame-by-frame'
 
     param.showWindows = not True
-    param.showCircularity = True
-    param.showEdgeOverview = True
-    param.showEdgeVectorial = True
-    param.showEdgeRasterized = not True
+    param.showCircularity = not True
+    param.showEdgeOverview = not True
+    param.showEdgeVectorial = not True
+    param.showEdgeRasterized = True
     param.showCurvature = not True
     param.showDisplacement = not True
     param.showSignals = not True
