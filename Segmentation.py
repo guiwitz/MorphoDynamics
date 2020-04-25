@@ -9,7 +9,7 @@ from scipy.ndimage import median_filter
 from scipy.ndimage.morphology import binary_fill_holes
 import numpy as np
 from skimage.external.tifffile import imread, imsave
-from ArtifactGeneration import FigureHelper
+# from ArtifactGeneration import FigureHelper
 
 # fh = FigureHelper(not True)
 

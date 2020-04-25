@@ -4,8 +4,9 @@ from Analysis import analyze_morphodynamics
 from ArtifactGeneration import show_analysis
 from Settings import load_settings
 
-dataset_name = 'Ellipse with triangle dynamics'
+# dataset_name = 'Ellipse with triangle dynamics'
 # dataset_name = 'FRET_sensors + actinHistamineExpt2'
+dataset_name = 'FRET_sensors + actinMigration_line_1D'
 # dataset_name = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
 # dataset_name = 'GBD_sensors + actinExpt_01'
 # dataset_name = 'TIAM_protrusion'

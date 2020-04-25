@@ -58,15 +58,14 @@ def get_extent(A, B, I):
     return -B + 1 - 0.5, -B + 1 + A + B - 2 + 0.5, I - 1 + 0.5, -0.5
 
 
-def show_correlation(fh, c, x, y, nx, ny, normalization):
-    fh.open_figure('Correlation between ' + nx + ' and ' + ny + ' at layer ' + str(0) + ' - Normalization: ' + str(normalization), 1, (16, 9))
+def show_correlation_core(c, x, y, nx, ny, normalization):
+    plt.gca().set_title('Correlation between ' + nx + ' and ' + ny + ' at layer ' + str(0) + ' - Normalization: ' + str(normalization))
     cmax = np.max(np.abs(c))
     plt.imshow(c, extent=get_extent(x.shape[1], y.shape[1], c.shape[0]), cmap='bwr', vmin=-cmax, vmax=cmax, interpolation='none')
     plt.axis('auto')
     plt.xlabel('Time lag [frames]')
     plt.ylabel('Window index')
     plt.colorbar(label='Correlation')
-    fh.show()
 
 
 def get_range(A, B):

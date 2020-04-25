@@ -1,11 +1,11 @@
 from matplotlib.colors import Normalize
 import matplotlib.pyplot as plt
 from scipy.interpolate import splprep, splev
-from scipy.optimize import least_squares
+from scipy.optimize import least_squares, minimize, LinearConstraint
 from scipy.signal import convolve2d
 import numpy as np
 from numpy.linalg import norm
-from FunctionalDefinition import Functional
+from FunctionalDefinition import Functional, Functional2
 from FigureHelper import FigureHelper
 
 # fh = FigureHelper(not True)
@@ -64,6 +64,25 @@ def map_contours(s1, s2, t1):
     result = least_squares(functional.f, functional.transform(t2), bounds=(lb, ub), ftol=1e-3)
     t2 = functional.inversetransform(result.x)
 
+    return t2
+
+
+def map_contours2(s1, s2, t1):
+    N = len(t1)
+    t2 = t1
+    w = np.sum((np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2) / (N - 1)
+    functional = Functional2(s1, s2, t1, w)
+    A = np.zeros((N,N))
+    for n in range(0, N):
+        A[n, n] = 1
+    A[0, N-1] = -1
+    for n in range(1, N):
+        A[n, n-1] = -1
+    lb = np.zeros((N,))
+    lb[0] = -1
+    ub = np.inf * np.ones((N,))
+    result = minimize(functional.f, t2, method='trust-constr', constraints=LinearConstraint(A, lb, ub, keep_feasible=True))
+    t2 = result.x
     return t2
 
 

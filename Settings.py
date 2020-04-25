@@ -30,31 +30,29 @@ def load_settings(dataset_name):
     param.J = 5
 
     # Figure parameters
-    # param.showWindows = True
-    # param.showCircularity = True
-    # param.showEdgeOverview = True
-    # param.showEdgeVectorial = True
-    # param.showEdgeRasterized = True
-    # param.showCurvature = True
-    # param.showDisplacement = True
-    # param.showSignals = True
-    # param.showCorrelation = not True
-    # param.showFourierDescriptors = True
-    # # param.edgeNormalization = 'global'
-    # param.edgeNormalization = 'frame-by-frame'
-
-    param.showWindows = not True
-    param.showCircularity = not True
-    param.showEdgeOverview = not True
-    param.showEdgeVectorial = not True
-    param.showEdgeRasterized = True
-    param.showCurvature = not True
-    param.showDisplacement = not True
-    param.showSignals = not True
-    param.showCorrelation = not True
-    param.showFourierDescriptors = not True
+    param.showWindows = False
+    param.showCircularity = False
+    param.showEdgeOverview = False
+    param.showEdgeVectorial = False
+    param.showEdgeRasterized = False
+    param.showCurvature = False
+    param.showDisplacement = False
+    param.showSignals = False
+    param.showCorrelation = False
+    param.showFourierDescriptors = False
     # param.edgeNormalization = 'global'
     param.edgeNormalization = 'frame-by-frame'
+
+    # param.showWindows = True
+    param.showCircularity = True
+    param.showEdgeOverview = True
+    # param.showEdgeVectorial = True
+    # param.showEdgeRasterized = True
+    param.showCurvature = True
+    param.showDisplacement = True
+    param.showSignals = True
+    param.showCorrelation = True
+    param.showFourierDescriptors = True
 
     if dataset_name == 'Ellipse with triangle dynamics':
         expdir = 'Synthetic data/Ellipse with triangle dynamics/'
@@ -67,16 +65,27 @@ def load_settings(dataset_name):
     elif dataset_name == 'FRET_sensors + actinHistamineExpt2':
         expdir = 'FRET_sensors + actin/Histamine/Expt2/'
         morphofile = lambda k: 'w16TIRF-CFP/RhoA_OP_his_02_w16TIRF-CFP_t' + str(k)
-        signalfile = [lambda k: 'ratio_tiffs/ratio_bs_shade_corrected_{:0>3d}_to_bs_shade_corrected_{:0>3d}_{:0>3d}'.format(k, k, k),
-                  lambda k: 'w16TIRF-CFP/RhoA_OP_his_02_w16TIRF-CFP_t' + str(k),
-                  lambda k: 'w26TIRFFRETacceptor/RhoA_OP_his_02_w26TIRFFRETacceptor_t' + str(k),
-                  lambda k: 'w26TIRFFRETacceptor_corr/RhoA_OP_his_02_w26TIRFFRETacceptor_t' + str(k),
-                  lambda k: 'w34TIRF-mCherry/RhoA_OP_his_02_w34TIRF-mCherry_t' + str(k)]
+        signalfile = [
+            lambda k: 'ratio_tiffs/ratio_bs_shade_corrected_{:0>3d}_to_bs_shade_corrected_{:0>3d}_{:0>3d}'.format(k, k, k),
+            lambda k: 'w16TIRF-CFP/RhoA_OP_his_02_w16TIRF-CFP_t' + str(k),
+            lambda k: 'w26TIRFFRETacceptor/RhoA_OP_his_02_w26TIRFFRETacceptor_t' + str(k),
+            lambda k: 'w26TIRFFRETacceptor_corr/RhoA_OP_his_02_w26TIRFFRETacceptor_t' + str(k),
+            lambda k: 'w34TIRF-mCherry/RhoA_OP_his_02_w34TIRF-mCherry_t' + str(k)]
         shape = (358, 358)
         K = 159
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
         # param.T = None
         param.T = 222
+    elif dataset_name == 'FRET_sensors + actinMigration_line_1D':
+        expdir = 'FRET_sensors + actin/Migration_line_1D/'
+        morphofile = lambda k: 'ratio_tiffs/photobleached_corrected_ratio_{:0>4d}'.format(k)
+        signalfile = [
+            lambda k: 'ratio_tiffs/photobleached_corrected_ratio_{:0>4d}'.format(k),
+            lambda k: 'w34TIRF-mCherry/RhoA_on_line_chemo_w34TIRF-mCherry_t' + str(k)]
+        shape = (358, 358)
+        K = 550  # 600
+        data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
+        param.T = 1299
     elif dataset_name == 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good':
         expdir = 'FRET_sensors + actin/PDGF/RhoA_multipoint_0.5fn_s3_good/'
         morphofile = lambda k: 'w34TIRF-mCherry/RhoA_multipoint_0.5fn_01_w34TIRF-mCherry_s3_t' + str(k)
@@ -172,7 +181,7 @@ def load_settings(dataset_name):
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
         # param.T = None
         param.T = 1038.90  # 1232
-    # data.K = 5
+    # data.K = 10
     return data, param
 
 # import matplotlib.pyplot as plt

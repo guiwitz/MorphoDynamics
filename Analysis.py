@@ -6,7 +6,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from Settings import Struct
 from FigureHelper import FigureHelper
 from Segmentation import segment
-from DisplacementEstimation import fit_spline, map_contours, rasterize_curve, compute_length, compute_area  # , show_edge_scatter
+from DisplacementEstimation import fit_spline, map_contours, map_contours2, rasterize_curve, compute_length, compute_area  # , show_edge_scatter
 from Windowing import create_windows, extract_signals, label_windows, show_windows
 # from SignalExtraction import showSignals
 
@@ -54,7 +54,8 @@ def analyze_morphodynamics(data, param):
         res.area[k] = compute_area(s)  # Area delimited by the contour
         if 0 < k:
             t0 = deltat + 0.5 / param.I + np.linspace(0, 1, param.I, endpoint=False)  # Parameters of the startpoints of the displacement vectors
-            t = map_contours(s0, s, t0)  # Parameters of the endpoints of the displacement vectors
+            # t = map_contours(s0, s, t0)  # Parameters of the endpoints of the displacement vectors
+            t = map_contours2(s0, s, t0)  # Parameters of the endpoints of the displacement vectors
             deltat += t[0] - t0[0]  # Translation of the origin of the spline curve
         c = rasterize_curve(x.shape, s, deltat)  # Representation of the contour as a grayscale image
         # if k == 3:

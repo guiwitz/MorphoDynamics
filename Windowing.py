@@ -2,13 +2,24 @@ import numpy as np
 from scipy.ndimage.morphology import distance_transform_edt, binary_fill_holes
 from scipy.ndimage.measurements import center_of_mass
 import matplotlib.pyplot as plt
-# from skimage.segmentation import find_boundaries
-# from skimage.color import label2rgb
+from skimage.segmentation import find_boundaries
+from skimage.color import label2rgb
 # from skimage.external.tifffile import imread, imsave
 # from Segmentation import segment
-from ArtifactGeneration import FigureHelper
+# from ArtifactGeneration import FigureHelper
 
 # plot = FigureHelper(not True)
+
+
+def label_windows(windows):
+    """ Create an image where the sampling windows are shown as regions with unique gray levels. """
+    tiles = np.zeros(windows.shape[2:4], dtype=np.uint16)
+    n = 1
+    for j in range(windows.shape[0]):
+        for i in range(windows.shape[1]):
+            tiles[windows[j, i]] = n
+            n += 1
+    return tiles
 
 
 def create_windows(c, I, J):
@@ -34,28 +45,57 @@ def create_windows(c, I, J):
             w[j, i] = m & (s[i] <= L) & (L < s[i+1]) & (b[j] <= D) & (D < b[j+1])
 
     # # Artifact generation
-    # plot.imshow('Contour', c)
-    # plot.imshow('Mask', m.astype(np.int))
-    # plot.imshow('Distance transform', D)
+    # plt.figure()
+    # # plt.title('Contour')
+    # plt.imshow(c, 'gray', vmin=-1, vmax=1)
+    # plt.axis('off')
+    # plt.colorbar()
+    # plt.tight_layout()
+    # plt.savefig('Contour.pdf')
+    #
+    # # plt.figure()
+    # # plt.title('Mask')
+    # # plt.imshow(m.astype(np.int), 'gray')
+    #
+    # plt.figure()
+    # # plt.title('Distance transform')
+    # plt.imshow(D, 'gray')
+    # plt.axis('off')
+    # plt.colorbar()
+    # plt.tight_layout()
+    # plt.savefig('Distance transform.pdf')
+    #
     # # plot.imshow('Contour length', l)
-    # plot.imshow('Sectors', L)
-    # # plot.imshow('Windows', windows)
-    # # plot.imshow('Labeled windows', label2rgb(windows))
-    # # plot.imshow('Window boundaries', boundaries.astype(np.uint8))
-    # plot.show()
+    #
+    # plt.figure()
+    # # plt.title('Sectors')
+    # plt.imshow(L, 'gray', vmin=0, vmax=1)
+    # plt.axis('off')
+    # plt.colorbar()
+    # plt.tight_layout()
+    # plt.savefig('Sectors.pdf')
+    #
+    # plt.figure()
+    # # plt.title('Windows')
+    # plt.imshow(label2rgb(label_windows(w)))
+    # plt.axis('off')
+    # plt.tight_layout()
+    # plt.savefig('Windows.pdf')
+    #
+    # plt.figure()
+    # # plt.title('Window boundaries')
+    # plt.imshow(find_boundaries(label_windows(w)), 'gray')
+    # plt.axis('off')
+    # plt.tight_layout()
+    # plt.savefig('Window boundaries.pdf')
+
+    # plot.imshow('Windows', windows)
+    # plot.imshow('Labeled windows', label2rgb(windows))
+    # plot.imshow('Window boundaries', boundaries.astype(np.uint8))
+
+    plt.show()
 
     return w
-
-
-def label_windows(windows):
-    """ Create an image where the sampling windows are shown as regions with unique gray levels. """
-    tiles = np.zeros(windows.shape[2:4], dtype=np.uint16)
-    n = 1
-    for j in range(windows.shape[0]):
-        for i in range(windows.shape[1]):
-            tiles[windows[j, i]] = n
-            n += 1
-    return tiles
 
 
 def extract_signals(y, w):
