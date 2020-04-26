@@ -40,6 +40,14 @@ def correlate(x, y):
     return z
 
 
+def find_origin(s1, s2, t0):
+    t = np.linspace(0, 1, 10000, endpoint=False)
+    x = splev(t0, s1)
+    c = splev(t, s2)
+    n = np.argmin((c[0]-x[0])**2 + (c[1]-x[1])**2)
+    return t[n]
+
+
 def map_contours(s1, s2, t1):
     """ Compute displacement vectors between two consecutive contours. """
 
@@ -67,9 +75,8 @@ def map_contours(s1, s2, t1):
     return t2
 
 
-def map_contours2(s1, s2, t1):
+def map_contours2(s1, s2, t1, t2):
     N = len(t1)
-    t2 = t1
     w = np.sum((np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2) / (N - 1)
     functional = Functional2(s1, s2, t1, w)
     A = np.zeros((N,N))
@@ -81,7 +88,7 @@ def map_contours2(s1, s2, t1):
     lb = np.zeros((N,))
     lb[0] = -1
     ub = np.inf * np.ones((N,))
-    result = minimize(functional.f, t2, method='trust-constr', constraints=LinearConstraint(A, lb, ub, keep_feasible=True))
+    result = minimize(functional.f, t2, method='trust-constr', constraints=LinearConstraint(A, lb, ub, keep_feasible=True), options={'gtol': 1e-2, 'xtol': 1e-2})
     t2 = result.x
     return t2
 
@@ -102,6 +109,8 @@ def show_edge_scatter(s1, s2, t1, t2, d, dmax=None):
         d = np.interp(np.linspace(0, 1, 10001), t1, d, period=1)
     if dmax is None:
         dmax = np.max(np.abs(d))
+        if dmax == 0:
+            dmax = 1
 
     # Plot results
     # matplotlib.use('PDF')

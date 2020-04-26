@@ -43,16 +43,16 @@ def load_settings(dataset_name):
     # param.edgeNormalization = 'global'
     param.edgeNormalization = 'frame-by-frame'
 
-    # param.showWindows = True
-    param.showCircularity = True
+    param.showWindows = True
+    # param.showCircularity = True
     param.showEdgeOverview = True
     # param.showEdgeVectorial = True
     # param.showEdgeRasterized = True
     param.showCurvature = True
     param.showDisplacement = True
     param.showSignals = True
-    param.showCorrelation = True
-    param.showFourierDescriptors = True
+    # param.showCorrelation = True
+    # param.showFourierDescriptors = True
 
     if dataset_name == 'Ellipse with triangle dynamics':
         expdir = 'Synthetic data/Ellipse with triangle dynamics/'
@@ -62,6 +62,16 @@ def load_settings(dataset_name):
         K = 50
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
         param.T = None
+    elif dataset_name == 'Change of origin':
+        expdir = 'Synthetic data/Change of origin/'
+        morphofile = lambda k: 'Phantom' + str(k)
+        signalfile = []
+        shape = (101, 101)
+        K = 50
+        data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
+        param.T = None
+        param.I = 12
+        param.J = 3
     elif dataset_name == 'FRET_sensors + actinHistamineExpt2':
         expdir = 'FRET_sensors + actin/Histamine/Expt2/'
         morphofile = lambda k: 'w16TIRF-CFP/RhoA_OP_his_02_w16TIRF-CFP_t' + str(k)

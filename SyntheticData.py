@@ -1,10 +1,6 @@
 import math
 import numpy as np
-from skimage.external.tifffile import imread, imsave
-from ArtifactGeneration import FigureHelper
-
-fh = FigureHelper(False)
-
+from skimage.external.tifffile import imsave
 
 def pumpingDisk(k):
     x[k][i ** 2 + j ** 2 < (25 + 10 * math.sin(2*math.pi*k/50)) ** 2] = 255
@@ -49,11 +45,11 @@ L = 50
 i, j = np.meshgrid(range(-L, L+1), range(-L, L+1))
 x = np.zeros((K, 2*L+1, 2*L+1), dtype=np.uint8)
 for k in range(K):
-    pumpingDisk(k)
+    # pumpingDisk(k)
     # pumpingEllipse(k)
     # largeTurningEllipse(k)
     # turningSquare(k)
-    # walkingRectangles(k)
+    walkingRectangles(k)
     # protrudingEllipse(k)
     # signalEllipse(k)
-    imsave(fh.figure_dir + 'Phantom' + str(k + 1) + '.tif', x[k], compress=6)
+    imsave('Phantom' + str(k + 1) + '.tif', x[k], compress=6)

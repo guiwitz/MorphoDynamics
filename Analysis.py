@@ -6,21 +6,18 @@ from matplotlib.backends.backend_pdf import PdfPages
 from Settings import Struct
 from FigureHelper import FigureHelper
 from Segmentation import segment
-from DisplacementEstimation import fit_spline, map_contours, map_contours2, rasterize_curve, compute_length, compute_area  # , show_edge_scatter
+from DisplacementEstimation import fit_spline, map_contours, map_contours2, rasterize_curve, compute_length, \
+    compute_area, find_origin, show_edge_scatter  # , show_edge_scatter
 from Windowing import create_windows, extract_signals, label_windows, show_windows
 # from SignalExtraction import showSignals
+import matplotlib.pyplot as plt
 
 
 def analyze_morphodynamics(data, param):
     # Figures and other artifacts
     if param.showWindows:
-        output = Struct()
-        output.dir = param.resultdir
-        output.size = (12, 9)
-        output.display = False
-        output.pdf = True
-        output.tiff = True
-        fh = FigureHelper('Windows', output)
+        pp = PdfPages(param.resultdir + 'Windows.pdf')
+        tw_win = TiffWriter(param.resultdir + 'Windows.tif')
 
     # Structures that will be saved to disk
     res = Struct()
@@ -32,12 +29,13 @@ def analyze_morphodynamics(data, param):
     res.var = np.zeros((len(data.signalfile), param.J, param.I, data.K))  # Signals from the outer sampling windows
     res.length = np.zeros((data.K,))
     res.area = np.zeros((data.K,))
+    res.orig = np.zeros((data.K,))
 
     # from skimage.external.tifffile import imread
     # mask = imread(param.resultdir + '../Mask.tif')
 
     # Main loop on frames
-    deltat = 0
+    # deltat = 0
     tw_seg = TiffWriter(param.resultdir + 'Segmentation.tif')
     # tw_win = TiffWriter(param.resultdir + 'Windows.tif')
     for k in range(0, data.K):
@@ -53,11 +51,17 @@ def analyze_morphodynamics(data, param):
         res.length[k] = compute_length(s)  # Length of the contour
         res.area[k] = compute_area(s)  # Area delimited by the contour
         if 0 < k:
-            t0 = deltat + 0.5 / param.I + np.linspace(0, 1, param.I, endpoint=False)  # Parameters of the startpoints of the displacement vectors
-            # t = map_contours(s0, s, t0)  # Parameters of the endpoints of the displacement vectors
-            t = map_contours2(s0, s, t0)  # Parameters of the endpoints of the displacement vectors
-            deltat += t[0] - t0[0]  # Translation of the origin of the spline curve
-        c = rasterize_curve(x.shape, s, deltat)  # Representation of the contour as a grayscale image
+            # t0 = deltat + 0.5 / param.I + np.linspace(0, 1, param.I, endpoint=False)  # Parameters of the startpoints of the displacement vectors
+            # # t = map_contours(s0, s, t0)  # Parameters of the endpoints of the displacement vectors
+            # t = map_contours2(s0, s, t0)  # Parameters of the endpoints of the displacement vectors
+            # deltat += t[0] - t0[0]  # Translation of the origin of the spline curve
+
+            res.orig[k] = find_origin(s0, s, res.orig[k-1])
+            t0 = res.orig[k-1] + 0.5 / param.I + np.linspace(0, 1, param.I, endpoint=False)  # Parameters of the startpoints of the displacement vectors
+            t = res.orig[k] + 0.5 / param.I + np.linspace(0, 1, param.I, endpoint=False)  # Parameters of the startpoints of the displacement vectors
+            t = map_contours2(s0, s, t0, t)  # Parameters of the endpoints of the displacement vectors
+        # c = rasterize_curve(x.shape, s, deltat)  # Representation of the contour as a grayscale image
+        c = rasterize_curve(x.shape, s, res.orig[k])  # Representation of the contour as a grayscale image
         # if k == 3:
         #     imsave('Contour ' + str(0) + '.tif', rasterize_curve(x.shape, s, 0).astype(np.float32))
         #     imsave('Contour ' + str(0.5) + '.tif', rasterize_curve(x.shape, s, 0.25).astype(np.float32))
@@ -74,18 +78,21 @@ def analyze_morphodynamics(data, param):
 
         # Artifact generation
         if param.showWindows:
-            # if 0 < k:
-            fh.open_figure('Frame ' + str(k), 1)
-            b = find_boundaries(label_windows(w))
-            show_windows(w, b)  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
-            # showEdge(s0, s, t0, t, res.displacement[:, k - 1])  # Show edge structures (spline curves, displacement vectors, sampling windows)
-            fh.save_pdf()
-            fh.save_tiff(255 * b.astype(np.uint8))
-            fh.show()
+            if 0 < k:
+                plt.figure(figsize=(12, 9))
+                plt.gca().set_title('Frame ' + str(k-1))
+                plt.tight_layout()
+                b0 = find_boundaries(label_windows(w0))
+                show_windows(w0, b0)  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
+                show_edge_scatter(s0, s, t0, t, res.displacement[:, k - 1])  # Show edge structures (spline curves, displacement vectors)
+                pp.savefig()
+                tw_win.save(255 * b0.astype(np.uint8), compress=6)
+                plt.close()
             # imsave(param.resultdir + 'Tiles.tif', 255 * np.asarray(w), compress=6)
 
         # Keep variable for the next iteration
         s0 = s
+        w0 = w
 
         # Save variables for archival
         res.spline.append(s)
@@ -95,8 +102,8 @@ def analyze_morphodynamics(data, param):
 
     # Close windows figure
     tw_seg.close()
-    # tw_win.close()
     if param.showWindows:
-        fh.close()
+        pp.close()
+        tw_win.close()
 
     return res

@@ -5,6 +5,7 @@ from ArtifactGeneration import show_analysis
 from Settings import load_settings
 
 # dataset_name = 'Ellipse with triangle dynamics'
+# dataset_name = 'Change of origin'
 # dataset_name = 'FRET_sensors + actinHistamineExpt2'
 dataset_name = 'FRET_sensors + actinMigration_line_1D'
 # dataset_name = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
