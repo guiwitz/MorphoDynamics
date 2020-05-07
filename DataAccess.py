@@ -56,7 +56,7 @@ class MultipageTIFF(VirtualData):
         self.morpho = Image.open(self.datadir + self.expdir + self.morphofile)
         super().__init__(self.morpho.n_frames, bad_frames)
         self.K = self.K // self.step
-        self.shape = self.morpho.size
+        self.shape = (self.morpho.size[1], self.morpho.size[0])
 
         self.signal = []
         for f in self.signalfile:

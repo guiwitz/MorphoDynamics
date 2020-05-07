@@ -6,8 +6,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 from Settings import Struct
 from FigureHelper import FigureHelper
 from Segmentation import segment
-from DisplacementEstimation import fit_spline, map_contours, map_contours2, rasterize_curve, compute_length, \
-    compute_area, find_origin, show_edge_scatter  # , show_edge_scatter
+from DisplacementEstimation import fit_spline, map_contours, map_contours2, rasterize_curve, compute_length, compute_area, find_origin, show_edge_scatter, align_curves
 from Windowing import create_windows, extract_signals, label_windows, show_windows
 # from SignalExtraction import showSignals
 import matplotlib.pyplot as plt
@@ -56,10 +55,15 @@ def analyze_morphodynamics(data, param):
             # t = map_contours2(s0, s, t0)  # Parameters of the endpoints of the displacement vectors
             # deltat += t[0] - t0[0]  # Translation of the origin of the spline curve
 
-            res.orig[k] = find_origin(s0, s, res.orig[k-1])
+            # res.orig[k] = find_origin(s0, s, res.orig[k-1])
+            # t0 = res.orig[k-1] + 0.5 / param.I + np.linspace(0, 1, param.I, endpoint=False)  # Parameters of the startpoints of the displacement vectors
+            # t = res.orig[k] + 0.5 / param.I + np.linspace(0, 1, param.I, endpoint=False)  # Parameters of the startpoints of the displacement vectors
+            # t = map_contours2(s0, s, t0, t)  # Parameters of the endpoints of the displacement vectors
+
+            s0prm, res.orig[k] = align_curves(s0, s, res.orig[k-1])
             t0 = res.orig[k-1] + 0.5 / param.I + np.linspace(0, 1, param.I, endpoint=False)  # Parameters of the startpoints of the displacement vectors
             t = res.orig[k] + 0.5 / param.I + np.linspace(0, 1, param.I, endpoint=False)  # Parameters of the startpoints of the displacement vectors
-            t = map_contours2(s0, s, t0, t)  # Parameters of the endpoints of the displacement vectors
+            t = map_contours2(s0prm, s, t0, t)  # Parameters of the endpoints of the displacement vectors
         # c = rasterize_curve(x.shape, s, deltat)  # Representation of the contour as a grayscale image
         c = rasterize_curve(x.shape, s, res.orig[k])  # Representation of the contour as a grayscale image
         # if k == 3:

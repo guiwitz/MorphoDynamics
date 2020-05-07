@@ -56,7 +56,7 @@ def show_edge_vectorial_aux(data, res, k, curvature=False):
         f = compute_curvature(res.spline[k])
     else:
         f = res.displacement[:, k]
-    show_edge_scatter(res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors, sampling windows)
+    show_edge_scatter(res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors/curvature)
     plt.tight_layout()
 
 
@@ -80,8 +80,11 @@ def show_edge_vectorial(param, data, res, curvature=False, size=(12, 9)):
     pp.close()
 
 
-def show_edge_rasterized_aux(data, res, d, dmax, k, display=True):
-    x = show_edge_image(data.shape, res.spline[k], res.param0[k], d[:, k], 3, dmax)
+def show_edge_rasterized_aux(data, res, d, dmax, k, mode, display=True):
+    if mode == 'curvature':
+        x = show_edge_image(data.shape, res.spline[k], np.linspace(0, 1, 10001), d[:, k], 3, dmax)
+    else:
+        x = show_edge_image(data.shape, res.spline[k], res.param0[k], d[:, k], 3, dmax)
 
     if display:
         plt.clf()
@@ -92,21 +95,38 @@ def show_edge_rasterized_aux(data, res, d, dmax, k, display=True):
     return x
 
 
-def show_edge_rasterized(param, data, res, cumulative=False):
-    name = 'Edge animation'
-    d = res.displacement
-    if cumulative:
-        d = np.cumsum(d, axis=1)
-        name += ' (cumulative)'
+def show_edge_rasterized(param, data, res, mode=None):
+    if mode=='cumulative':
+        d = np.cumsum(res.displacement, axis=1)
+        name = 'Edge animation (cumulative)'
+    elif mode == 'simple':
+        d = np.ones(res.displacement.shape)
+        name = 'Edge animation (simple)'
+    elif mode == 'curvature':
+        t = np.linspace(0, 1, 10001)
+        d = np.zeros((10001, data.K))
+        for k in range(data.K):
+            d[:, k] = compute_curvature(res.spline[k], t)
+        name = 'Edge animation (curvature)'
+    else:
+        d = res.displacement
+        name = 'Edge animation'
 
     if param.edgeNormalization == 'global':
         dmax = np.max(np.abs(d))
     else:
         dmax = None
 
+    y = np.zeros((data.K,) + data.shape)
+    for k in range(data.K):
+        y[k] = data.load_frame_morpho(k)
+    y = 255 * y / np.max(y)
+
     tw = TiffWriter(param.resultdir + name + '.tif')
     for k in range(data.K - 1):
-        x = show_edge_rasterized_aux(data, res, d, dmax, k, display=False)
+        x = show_edge_rasterized_aux(data, res, d, dmax, k, mode, display=False)
+        y0 = np.stack((y[k], y[k], y[k]), axis=-1)
+        x[x==0] = y0[x==0]
         tw.save(x, compress=6)
     tw.close()
 
@@ -114,7 +134,7 @@ def show_edge_rasterized(param, data, res, cumulative=False):
 def show_curvature(param, data, res, size=(16, 9)):
     curvature = np.zeros((10001, data.K))
     for k in range(data.K):
-        curvature[:, k] = compute_curvature(res.spline[k])
+        curvature[:, k] = compute_curvature(res.spline[k], np.linspace(0, 1, 10001))
 
     plt.figure(figsize=size)
     plt.gca().set_title('Curvature')
@@ -391,7 +411,10 @@ def show_analysis(data, param, res):
         show_edge_vectorial(param, data, res, curvature=False)
 
     if param.showEdgeRasterized:
-        show_edge_rasterized(param, data, res, cumulative=False)
+        show_edge_rasterized(param, data, res)
+        # show_edge_rasterized(param, data, res, mode='simple')
+        # show_edge_rasterized(param, data, res, mode='cumulative')
+        # show_edge_rasterized(param, data, res, mode='curvature')
 
     if param.showCurvature:
         show_curvature(param, data, res)

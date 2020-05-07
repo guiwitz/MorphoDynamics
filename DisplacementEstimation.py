@@ -28,9 +28,9 @@ def compute_area(s):
     return np.sum(c[0]*cprm[1] - c[1]*cprm[0]) / 2 / 10000
 
 
-def compute_curvature(s):
-    cprm = splev(np.linspace(0, 1, 10001), s, der=1)
-    csec = splev(np.linspace(0, 1, 10001), s, der=2)
+def compute_curvature(s, t):
+    cprm = splev(t, s, der=1)
+    csec = splev(t, s, der=2)
     return (cprm[0]*csec[1] - cprm[1]*csec[0]) / (cprm[0]**2 + cprm[1]**2)**1.5
 
 
@@ -47,6 +47,47 @@ def find_origin(s1, s2, t0):
     n = np.argmin((c[0]-x[0])**2 + (c[1]-x[1])**2)
     return t[n]
 
+from matplotlib.backends.backend_pdf import PdfPages
+from copy import deepcopy
+
+def align_curves(s1, s2, t1):
+    t = np.linspace(0, 1, 10000, endpoint=False)
+
+    # plt.figure(figsize=(12, 9))
+    # pp = PdfPages('Alignment.pdf')
+    # pp.savefig()
+
+    def functional(v):
+        s1c = deepcopy(s1)
+        s1c[1][0] += v[0]
+        s1c[1][1] += v[1]
+        t2 = v[2]
+        c1 = splev(np.mod(t+t1, 1), s1c)
+        c2 = splev(np.mod(t+t2, 1), s2)
+
+        # plt.clf()
+        # plt.axis('image')
+        # plt.tight_layout()
+        # plt.xlim(0, 358)
+        # plt.ylim(0, 358)
+        # plt.gca().invert_yaxis()
+        # plt.plot(c1[0], c1[1], 'b')
+        # plt.plot(c1[0][0], c1[1][0], 'ob')
+        # plt.plot(c2[0], c2[1], 'r')
+        # plt.plot(c2[0][0], c2[1][0], 'or')
+        # pp.savefig()
+        # # plt.show()
+
+        return np.concatenate(c2) - np.concatenate(c1)
+
+    v = least_squares(functional, [0, 0, t1], ftol=1e-3).x
+    s1c = deepcopy(s1)
+    s1c[1][0] += v[0]
+    s1c[1][1] += v[1]
+    t2 = v[2]
+    # pp.close()
+    # plt.close()
+    return s1c, t2
 
 def map_contours(s1, s2, t1):
     """ Compute displacement vectors between two consecutive contours. """
@@ -126,6 +167,10 @@ def show_edge_scatter(s1, s2, t1, t2, d, dmax=None):
     # plt.arrow(c1[0][j], c1[1][j], s * u[0][j], s * u[1][j], color='y', zorder=200, lw=lw) # Show normal to curve
     plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw)
 
+def show_edge_line_aux(s, color, lw):
+    c = splev(np.linspace(0, 1, 10001), s)
+    plt.plot(c[0], c[1], color=color, zorder=50, lw=lw)
+
 
 def show_edge_line(s):
     """ Draw the cell-edge contour using a colored line. """
@@ -135,8 +180,7 @@ def show_edge_line(s):
     cmap = plt.cm.get_cmap('jet')
     lw = 0.1
     for k in range(K):
-        c = splev(np.linspace(0, 1, 10001), s[k])
-        plt.plot(c[0], c[1], color=cmap(k/(K-1)), zorder=50, lw=lw)
+        show_edge_line_aux(s[k], cmap(k / (K - 1)), lw)
     plt.gcf().colorbar(plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K-1), cmap=cmap), label='Frame index')
 
 
@@ -151,7 +195,7 @@ def show_edge_image(shape, s, t, d, thickness, dmax=None):
         mask = 0 < n
         n[np.logical_not(mask)] = 1
         c = convolve2d(c, f, mode='same') / n
-    cmap = plt.cm.get_cmap('bwr')
+    cmap = plt.cm.get_cmap('seismic')  # 'bwr'
     if dmax is None:
         dmax = np.max(np.abs(c))
     if dmax == 0:
