@@ -196,16 +196,16 @@ def show_signals(param, data, res, size=(16, 9)):
             plt.clf()
             plt.gca().set_title('Signal: ' + data.get_channel_name(m) + ' - Layer: ' + str(j))
             if hasattr(param, 'scaling_mean') & (j == 0):
-                plt.imshow(res.mean[m, j, 0:param.I // 2 ** j, :], cmap='jet', vmin=param.scaling_mean[m][0], vmax=param.scaling_mean[m][1])
+                plt.imshow(res.mean[m, j, 0:res.I[j], :], cmap='jet', vmin=param.scaling_mean[m][0], vmax=param.scaling_mean[m][1])
             else:
-                plt.imshow(res.mean[m, j, 0:param.I // 2 ** j, :], cmap='jet')
+                plt.imshow(res.mean[m, j, 0:res.I[j], :], cmap='jet')
             plt.colorbar(label='Mean')
             plt.axis('auto')
             plt.xlabel('Frame index')
             plt.ylabel('Window index')
             # plt.xticks(range(0, mean.shape[1], 5))
             if j == 0:
-                imsave(param.resultdir + 'Signal mean ' + data.get_channel_name(m) + '.tif', res.mean[m, j, 0:param.I // 2 ** j, :].astype(np.float32), compress=6)
+                imsave(param.resultdir + 'Signal mean ' + data.get_channel_name(m) + '.tif', res.mean[m, j, 0:res.I[j], :].astype(np.float32), compress=6)
             pp.savefig()
     pp.close()
 
@@ -216,14 +216,14 @@ def show_signals(param, data, res, size=(16, 9)):
             plt.figure(f.number)
             plt.clf()
             plt.gca().set_title('Signal: ' + data.get_channel_name(m) + ' - Layer: ' + str(j))
-            plt.imshow(res.var[m, j, 0:param.I // 2 ** j, :], cmap='jet')
+            plt.imshow(res.var[m, j, 0:res.I[j], :], cmap='jet')
             plt.colorbar(label='Variance')
             plt.axis('auto')
             plt.xlabel('Frame index')
             plt.ylabel('Window index')
             # plt.xticks(range(0, mean.shape[1], 5))
             if j == 0:
-                imsave(param.resultdir + 'Signal variance ' + data.get_channel_name(m) + '.tif', res.var[m, j, 0:param.I // 2 ** j, :].astype(np.float32), compress=6)
+                imsave(param.resultdir + 'Signal variance ' + data.get_channel_name(m) + '.tif', res.var[m, j, 0:res.I[j], :].astype(np.float32), compress=6)
             # if j == 0:
             #     tw.save(res.var[m, j, 0:param.I//2**j, :], compress=6)
             pp.savefig()

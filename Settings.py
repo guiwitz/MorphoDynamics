@@ -29,6 +29,10 @@ def load_settings(dataset_name):
     # Number of sampling windows in the "radial" direction
     param.J = 5
 
+    # Dimensions of the sampling windows
+    param.width = 10
+    param.depth = 10
+
     # Figure parameters
     param.showWindows = False
     param.showCircularity = False
@@ -43,14 +47,14 @@ def load_settings(dataset_name):
     # param.edgeNormalization = 'global'
     param.edgeNormalization = 'frame-by-frame'
 
-    # param.showWindows = True
+    param.showWindows = True
     # param.showCircularity = True
     # param.showEdgeOverview = True
     # param.showEdgeVectorial = True
-    param.showEdgeRasterized = True
+    # param.showEdgeRasterized = True
     # param.showCurvature = True
     # param.showDisplacement = True
-    # param.showSignals = True
+    param.showSignals = True
     # param.showCorrelation = True
     # param.showFourierDescriptors = True
 
