@@ -239,6 +239,21 @@ def rasterize_curve(shape, s, deltat):
             tau[pi[1, n], pi[0, n]] = t[n]
     return tau
 
+
+def subdivide_curve(s, orig, I):
+    """ Define points on a contour that are equispaced with respect to the arc length. """
+    t = np.linspace(0, 1, 10001)
+    L = np.cumsum(np.linalg.norm(splev(np.mod(t+orig, 1), s), axis=0))
+    t0 = np.zeros((I,))
+    n = 0
+    for i in range(I):
+        p = L[-1] / I * (0.5 + i)
+        while L[n]<p:
+            n += 1
+        t0[i] = t[n]
+    return t0+orig
+
+
 # # Load images
 # path = 'C:\\Work\\UniBE 2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\w16TIRF-CFP\\'
 # x1 = imread(path + 'RhoA_OP_his_02_w16TIRF-CFP_t71.tif')

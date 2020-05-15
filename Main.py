@@ -22,7 +22,7 @@ data, param = load_settings(dataset_name)
 if not os.path.exists(param.resultdir):
     os.mkdir(param.resultdir)
 
-step = 2
+step = 1
 
 if step in [0, 1]:
     dill.dump(param, open(param.resultdir + 'Parameters.pkl', 'wb'))

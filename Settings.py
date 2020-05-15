@@ -34,6 +34,7 @@ def load_settings(dataset_name):
     param.depth = 10
 
     # Figure parameters
+    param.showSegmentation = False
     param.showWindows = False
     param.showCircularity = False
     param.showEdgeOverview = False
@@ -47,6 +48,7 @@ def load_settings(dataset_name):
     # param.edgeNormalization = 'global'
     param.edgeNormalization = 'frame-by-frame'
 
+    # param.showSegmentation = True
     param.showWindows = True
     # param.showCircularity = True
     # param.showEdgeOverview = True
@@ -195,7 +197,7 @@ def load_settings(dataset_name):
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
         # param.T = None
         param.T = 1038.90  # 1232
-    # data.K = 10
+    data.K = 10
     return data, param
 
 # import matplotlib.pyplot as plt
