@@ -1,14 +1,22 @@
 from matplotlib.colors import Normalize
 import matplotlib.pyplot as plt
 from scipy.interpolate import splprep, splev
+from scipy.ndimage import binary_fill_holes, distance_transform_edt
 from scipy.optimize import least_squares, minimize, LinearConstraint
 from scipy.signal import convolve2d
 import numpy as np
 from numpy.linalg import norm
-from FunctionalDefinition import Functional, Functional2
+from skimage.measure import find_contours
+
+from FunctionalDefinition import Functional, Functional2, Functional3
 from FigureHelper import FigureHelper
 
 # fh = FigureHelper(not True)
+from Windowing import compute_discrete_arc_length
+
+
+def splevper(t, s):
+    return splev(np.mod(t, 1), s)
 
 
 def fit_spline(c, lambda_):
@@ -50,6 +58,7 @@ def find_origin(s1, s2, t0):
 from matplotlib.backends.backend_pdf import PdfPages
 from copy import deepcopy
 
+
 def align_curves(s1, s2, t1):
     t = np.linspace(0, 1, 10000, endpoint=False)
 
@@ -62,8 +71,8 @@ def align_curves(s1, s2, t1):
         s1c[1][0] += v[0]
         s1c[1][1] += v[1]
         t2 = v[2]
-        c1 = splev(np.mod(t+t1, 1), s1c)
-        c2 = splev(np.mod(t+t2, 1), s2)
+        c1 = splevper(t+t1, s1c)
+        c2 = splevper(t+t2, s2)
 
         # plt.clf()
         # plt.axis('image')
@@ -80,7 +89,8 @@ def align_curves(s1, s2, t1):
 
         return np.concatenate(c2) - np.concatenate(c1)
 
-    v = least_squares(functional, [0, 0, t1], ftol=1e-3).x
+    lsq = least_squares(functional, [0, 0, t1], method='lm', x_scale = [1, 1, 1e-4])  # , ftol=1e-3
+    v = lsq.x
     s1c = deepcopy(s1)
     s1c[1][0] += v[0]
     s1c[1][1] += v[1]
@@ -88,6 +98,7 @@ def align_curves(s1, s2, t1):
     # pp.close()
     # plt.close()
     return s1c, t2
+
 
 def map_contours(s1, s2, t1):
     """ Compute displacement vectors between two consecutive contours. """
@@ -130,6 +141,16 @@ def map_contours2(s1, s2, t1, t2):
     lb[0] = -1
     ub = np.inf * np.ones((N,))
     result = minimize(functional.f, t2, method='trust-constr', constraints=LinearConstraint(A, lb, ub, keep_feasible=True), options={'gtol': 1e-2, 'xtol': 1e-2})
+    # result = minimize(functional.f, t2, method='trust-constr', options={'gtol': 1e-12, 'xtol': 1e-12, 'barrier_tol': 1e-12})
+    # result = minimize(functional.f, t2)
+    t2 = result.x
+    return t2
+
+
+def map_contours3(s1, s2, t1, t2):
+    N = len(t1)
+    functional = Functional3(s1, s2, t1, 0)
+    result = least_squares(functional.f, t2, method='lm')
     t2 = result.x
     return t2
 
@@ -139,10 +160,10 @@ def show_edge_scatter(s1, s2, t1, t2, d, dmax=None):
     The contour is drawn using a scatter plot to color-code the displacements. """
 
     # Evaluate splines at window locations and on fine-resolution grid
-    c1 = splev(np.mod(t1, 1), s1)
-    c2 = splev(np.mod(t2, 1), s2)
+    c1 = splevper(t1, s1)
+    c2 = splevper(t2, s2)
     c1p = splev(np.linspace(0, 1, 10001), s1)
-    # c2p = splev(np.linspace(0, 1, 10001), s2)
+    c2p = splev(np.linspace(0, 1, 10001), s2)
 
     # Interpolate displacements
     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
@@ -158,13 +179,13 @@ def show_edge_scatter(s1, s2, t1, t2, d, dmax=None):
     lw = 1
     s = 1  # Scaling factor for the vectors
 
-    # plt.plot(c1p[0], c1p[1], 'g', zorder=50, lw=lw)
-    # plt.plot(c2p[0], c2p[1], 'b', zorder=100, lw=lw)
-    plt.scatter(c1p[0], c1p[1], c=d, cmap='bwr', vmin=-dmax, vmax=dmax, zorder=50, s=lw)
-    # plt.colorbar(label='Displacement [pixels]')
+    plt.plot(c1p[0], c1p[1], 'b', zorder=50, lw=lw)
+    plt.plot(c2p[0], c2p[1], 'r', zorder=100, lw=lw)
+    # plt.scatter(c1p[0], c1p[1], c=d, cmap='bwr', vmin=-dmax, vmax=dmax, zorder=50, s1=lw)
+    # # plt.colorbar(label='Displacement [pixels]')
     for j in range(len(t2)):
-        plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='g', zorder=200, lw=lw)
-    # plt.arrow(c1[0][j], c1[1][j], s * u[0][j], s * u[1][j], color='y', zorder=200, lw=lw) # Show normal to curve
+        plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='y', zorder=200, lw=lw)
+    # plt.arrow(c1[0][j], c1[1][j], s1 * u[0][j], s1 * u[1][j], color='y', zorder=200, lw=lw) # Show normal to curve
     plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw)
 
 def show_edge_line_aux(s, color, lw):
@@ -210,15 +231,15 @@ def show_edge_image(shape, s, t, d, thickness, dmax=None):
     return c
 
 
-# def rasterize_curve(shape, s, deltat):
+# def rasterize_curve(shape, s1, deltat):
 #     """ Construct a mapping from edge pixels to spline arguments. """
 #     delta = np.inf * np.ones(shape)
 #     tau = - np.ones(shape)
 #     t = np.mod(np.linspace(0, 1, 10001) - deltat, 1)
-#     p = np.asarray(splev(t, s))
-#     pi = np.round(p).astype(dtype=np.int)
+#     p1 = np.asarray(splev(t, s1))
+#     pi = np.round(p1).astype(dtype=np.int)
 #     for n in range(10001):
-#         d0 = np.linalg.norm(p[:, n]-pi[:, n])
+#         d0 = np.linalg.norm(p1[:, n]-pi[:, n])
 #         if d0 < delta[pi[1, n], pi[0, n]]:
 #             delta[pi[1, n], pi[0, n]] = d0
 #             tau[pi[1, n], pi[0, n]] = t[n]
@@ -243,7 +264,7 @@ def rasterize_curve(shape, s, deltat):
 def subdivide_curve(s, orig, I):
     """ Define points on a contour that are equispaced with respect to the arc length. """
     t = np.linspace(0, 1, 10001)
-    L = np.cumsum(np.linalg.norm(splev(np.mod(t+orig, 1), s), axis=0))
+    L = np.cumsum(np.linalg.norm(splevper(t+orig, s), axis=0))
     t0 = np.zeros((I,))
     n = 0
     for i in range(I):
@@ -253,6 +274,46 @@ def subdivide_curve(s, orig, I):
         t0[i] = t[n]
     return t0+orig
 
+
+def subdivide_curve_discrete(c_main, I, s, origin):
+    origin = [origin[1], origin[0]]
+
+    # Compute the distance transform of the main contour
+    D_main = distance_transform_edt(-1 == c_main)
+
+    # Compute the mask corresponding to the main contour
+    mask_main = binary_fill_holes(-1 < c_main)
+
+    mask = (0 <= D_main) * mask_main
+
+    # Extract the contour of the mask
+    cvec = np.asarray(find_contours(mask, 0, fully_connected='high')[0], dtype=np.int)
+
+    # Adjust the origin of the contour
+    n0 = np.argmin(np.linalg.norm(cvec - origin, axis=1))
+    cvec = np.roll(cvec, -n0, axis=0)
+
+    # Compute the discrete arc length along the contour
+    Lvec = compute_discrete_arc_length(cvec)
+
+    # Compute the index of the mid-point for each window
+    n = np.zeros((I,), dtype=np.int)
+    for i in range(I):
+        n[i] = np.argmin(np.abs(Lvec - Lvec[-1]/I*(0.5+i)))
+
+    # Compute the parameter of the first mid-point
+    t = np.linspace(0, 1, 10000, endpoint=False)
+    c = splevper(t, s)
+    m = np.argmin(np.linalg.norm(np.transpose(c)-np.flip(cvec[n[0]]), axis=1))
+
+    # Convert the index along the discrete contour to a position along the continuous contour
+    t = np.linspace(t[m], t[m]+1, 10000, endpoint=False)
+    c = splevper(t, s)
+    m = np.zeros((I,), dtype=np.int)
+    for i in range(I):
+        m[i] = np.argmin(np.linalg.norm(np.transpose(c)-np.flip(cvec[n[i]]), axis=1))
+
+    return cvec[n, :], t[m]
 
 # # Load images
 # path = 'C:\\Work\\UniBE 2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\w16TIRF-CFP\\'

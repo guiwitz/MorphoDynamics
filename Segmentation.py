@@ -13,7 +13,9 @@ from skimage.external.tifffile import imread, imsave
 
 # fh = FigureHelper(not True)
 
-def segment_aux(x, sigma, T=None, tw=None):
+def segment(x, sigma, T=None):
+    """ Segment the cell image, possibly with automatic threshold selection. """
+
     # Determine the threshold based on the histogram, if not provided manually
     if T is None:
         h, _ = histogram(x, source_range='dtype')  # Compute histogram of image
@@ -55,19 +57,6 @@ def segment_aux(x, sigma, T=None, tw=None):
     # Fill holes in mask
     z = binary_fill_holes(z)
     # z[mask>0] = 0
-    if not (tw is None):
-        tw.save(255 * z.astype(np.uint8), compress=6)
-
-    return z
-
-
-def segment(x, sigma, T=None, tw=None):  # , mask=None
-    """ Segment the cell image, possibly with automatic threshold selection. """
-
-    z = segment_aux(x, sigma, T, tw)
-
-    # Extract pixels along contour of region
-    c = np.asarray(find_contours(z, 0, fully_connected='high')[0], dtype=np.int)
 
     # # Artifact generation
     # fh.imshow('Input image', x)
@@ -76,7 +65,13 @@ def segment(x, sigma, T=None, tw=None):  # , mask=None
     # # fh.imshow('All regions', regions)
     # fh.show()
 
-    return c  # , c.shape[0]/np.sum(z)
+    return z
+
+
+def extract_contour(mask):
+    """ Extract pixels along contour of mask. """
+
+    return np.asarray(find_contours(mask, 0, fully_connected='high')[0], dtype=np.int)
 
 
 def estimateBleaching(filename, K, shape):
@@ -92,8 +87,8 @@ def estimateBleaching(filename, K, shape):
         m = threshold_otsu(x[k, :, :]) < x[k, :, :]
         c[k, :, :, 0] = 255 * m
         I[k] = np.mean(x[k][m])
-        # p.imshow('Segmentation', c[k, :, :, :])
-        # p.show()
+        # p1.imshow('Segmentation', c[k, :, :, :])
+        # p1.show()
     # imsave(fh.figure_dir + 'Segmentation.tif', c)
     # fh.open_figure('Average intensity in segmented region')
     # plt.plot(I)

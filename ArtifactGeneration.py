@@ -6,28 +6,34 @@ from skimage.external.tifffile import imsave, TiffWriter
 from scipy.interpolate import splev
 from PIL import Image
 from Correlation import show_correlation_core, correlate_arrays, get_range
-from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_image, compute_curvature
+from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_image, compute_curvature, compute_length, compute_area
 from Settings import Struct
 
 
-def show_circularity(param, res, size=(16, 9)):
+def show_circularity(param, data, res, size=(16, 9)):
     pp = PdfPages(param.resultdir + 'Circularity.pdf')
+
+    length = np.zeros((data.K,))
+    area = np.zeros((data.K,))
+    for k in range(data.K):
+        length[k] = compute_length(res.spline[k])  # Length of the contour
+        area[k] = compute_area(res.spline[k])  # Area delimited by the contour
 
     plt.figure(figsize=size)
     plt.gca().set_title('Length')
-    plt.plot(res.length)
+    plt.plot(length)
     plt.tight_layout()
     pp.savefig()
 
     plt.figure(figsize=size)
     plt.gca().set_title('Area')
-    plt.plot(res.area)
+    plt.plot(area)
     plt.tight_layout()
     pp.savefig()
 
     plt.figure(figsize=size)
     plt.gca().set_title('Circularity = Length^2 / Area / 4 / pi')
-    plt.plot(res.length ** 2 / res.area / 4 / math.pi)
+    plt.plot(length ** 2 / area / 4 / math.pi)
     plt.tight_layout()
     pp.savefig()
 
@@ -402,7 +408,7 @@ def show_analysis(data, param, res):
     output.tiff = True
 
     if param.showCircularity:
-        show_circularity(param, res)
+        show_circularity(param, data, res)
 
     if param.showEdgeOverview:
         show_edge_overview(param, data, res)

@@ -3,6 +3,10 @@ import numpy as np
 import math
 
 
+def splevper(t, s):
+    return splev(np.mod(t, 1), s)
+
+
 class Functional:
     def __init__(self, tck1, tck2, p, w):
         self.tck1 = tck1
@@ -39,9 +43,9 @@ class Functional:
         f[0:2*n] = np.concatenate(splev(np.mod(o, 1), self.tck2)) - np.concatenate(splev(np.mod(self.p, 1), self.tck1))
         for i in range(1, n):
             f[i+2*n-1] = math.sqrt(self.w) * (o[i]-o[i-1]) / (self.p[i]-self.p[i-1])
-        # f[i + 2 * n - 1] = math.sqrt(self.w) * (self.p[i] - self.p[i - 1]) / (o[i] - o[i - 1])
+        # f[i + 2 * n - 1] = math.sqrt(self.w) * (self.p1[i] - self.p1[i - 1]) / (o[i] - o[i - 1])
         f[3*n-1] = math.sqrt(self.w) * (1+o[0]-o[n-1]) / (1+self.p[0]-self.p[n-1])
-        # f[3*n-1] = math.sqrt(self.w) * (1+self.p[0]-self.p[n-1]) / (1+o[0]-o[n-1])
+        # f[3*n-1] = math.sqrt(self.w) * (1+self.p1[0]-self.p1[n-1]) / (1+o[0]-o[n-1])
         return f
 
 
@@ -77,10 +81,31 @@ class Functional2:
         Note that here periodic boundary conditions are enforced. """
         n = len(q)
         f = np.zeros((3 * n,))
-        f[0:2 * n] = np.concatenate(splev(np.mod(q, 1), self.tck2)) - np.concatenate(splev(np.mod(self.p, 1), self.tck1))
+        f[0:2 * n] = np.concatenate(splevper(q, self.tck2)) - np.concatenate(splevper(self.p, self.tck1))
         for i in range(1, n):
             f[i + 2 * n - 1] = math.sqrt(self.w) * (q[i] - q[i - 1]) / (self.p[i] - self.p[i - 1])
-        # f[i + 2 * n - 1] = math.sqrt(self.w) * (self.p[i] - self.p[i - 1]) / (o[i] - o[i - 1])
+        # f[i + 2 * n - 1] = math.sqrt(self.w) * (self.p1[i] - self.p1[i - 1]) / (o[i] - o[i - 1])
         f[3 * n - 1] = math.sqrt(self.w) * (1 + q[0] - q[n - 1]) / (1 + self.p[0] - self.p[n - 1])
-        # f[3*n-1] = math.sqrt(self.w) * (1+self.p[0]-self.p[n-1]) / (1+o[0]-o[n-1])
+        # f[3*n-1] = math.sqrt(self.w) * (1+self.p1[0]-self.p1[n-1]) / (1+o[0]-o[n-1])
         return np.sum(f**2)
+
+class Functional3:
+    def __init__(self, tck1, tck2, p, w):
+        self.tck1 = tck1
+        self.tck2 = tck2
+        self.p = p
+        self.w = w
+
+    def f(self, q):
+        """ The functional to be minimized, adapted from the following paper:
+        Ma Dagliyan Hahn Danuser - Profiling cellular morphodynamics by spatiotemporal spectrum decomposition
+        Note that here periodic boundary conditions are enforced. """
+        n = len(q)
+        f = np.zeros((3 * n,))
+        f[0:2 * n] = np.concatenate(splevper(q, self.tck2)) - np.concatenate(splevper(self.p, self.tck1))
+        for i in range(1, n):
+            f[i + 2 * n - 1] = math.sqrt(self.w) * (q[i] - q[i - 1]) / (self.p[i] - self.p[i - 1])
+        # f[i + 2 * n - 1] = math.sqrt(self.w) * (self.p1[i] - self.p1[i - 1]) / (o[i] - o[i - 1])
+        f[3 * n - 1] = math.sqrt(self.w) * (1 + q[0] - q[n - 1]) / (1 + self.p[0] - self.p[n - 1])
+        # f[3*n-1] = math.sqrt(self.w) * (1+self.p1[0]-self.p1[n-1]) / (1+o[0]-o[n-1])
+        return f

@@ -2,6 +2,7 @@ import math
 import numpy as np
 from skimage.external.tifffile import imsave
 
+
 def pumpingDisk(k):
     x[k][i ** 2 + j ** 2 < (25 + 10 * math.sin(2*math.pi*k/50)) ** 2] = 255
 
@@ -23,9 +24,9 @@ def turningSquare(k):
 
 
 def walkingRectangles(k):
-    x[k][(np.abs(i)<30) & (np.abs(j+15)<15)] = 255
-    x[k][(np.abs(i-20)<10) & (np.abs(j)<20)] = 255
-    x[k][(np.abs(i+20)<10) & (np.abs(j)<20+5*math.sin(k/2))] = 255
+    x[k][(np.abs(i-10)<30) & (np.abs(j+10+15)<15)] = 255
+    x[k][(np.abs(i-10-20)<10) & (np.abs(j+10)<20)] = 255
+    x[k][(np.abs(i-10+20)<10) & (np.abs(j+10)<20+5*math.sin(k/2))] = 255
 
 
 def tri(t):
@@ -40,6 +41,11 @@ def protrudingEllipse(k):
 def signalEllipse(k):
     x[k][i ** 2 + 4 * j ** 2 < (25 + 10 * tri((k-25)/15)) ** 2] = 255 * tri((k-15)/15)
 
+
+def movingEllipse(k):
+    x[k][(i-k+25) ** 2 + 4 * (j-k+25) ** 2 < 25 ** 2] = 255
+
+
 K = 50
 L = 50
 i, j = np.meshgrid(range(-L, L+1), range(-L, L+1))
@@ -52,4 +58,5 @@ for k in range(K):
     walkingRectangles(k)
     # protrudingEllipse(k)
     # signalEllipse(k)
+    # movingEllipse(k)
     imsave('Phantom' + str(k + 1) + '.tif', x[k], compress=6)

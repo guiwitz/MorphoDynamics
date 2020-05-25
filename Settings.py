@@ -14,20 +14,18 @@ def load_settings(dataset_name):
 
     # Standard deviation for the Gaussian filter prior to segmentation; 0 deactivates filtering
     param.sigma = 2
-    if dataset_name == 'Ellipse with triangle dynamics':  # Skip Gaussian filtering for synthetic datasets
-        param.sigma = 0
 
     # Smoothing parameter for the spline curve representing the contour of the cell
     # param.lambda_ = 0
     param.lambda_ = 1e2
     # param.lambda_ = 1e3
 
-    # Number of sampling windows in the outer layer (along the curve)
-    # param.I = 48
-    param.I = 96
-
-    # Number of sampling windows in the "radial" direction
-    param.J = 5
+    # # Number of sampling windows in the outer layer (along the curve)
+    # # param.I = 48
+    # param.I = 96
+    #
+    # # Number of sampling windows in the "radial" direction
+    # param.J = 5
 
     # Dimensions of the sampling windows
     param.width = 10
@@ -49,15 +47,15 @@ def load_settings(dataset_name):
     param.edgeNormalization = 'frame-by-frame'
 
     # param.showSegmentation = True
-    param.showWindows = True
+    # param.showWindows = True
     # param.showCircularity = True
     # param.showEdgeOverview = True
     # param.showEdgeVectorial = True
     # param.showEdgeRasterized = True
     # param.showCurvature = True
     # param.showDisplacement = True
-    param.showSignals = True
-    # param.showCorrelation = True
+    # param.showSignals = True
+    param.showCorrelation = True
     # param.showFourierDescriptors = True
 
     if dataset_name == 'Ellipse with triangle dynamics':
@@ -67,6 +65,7 @@ def load_settings(dataset_name):
         shape = (101, 101)
         K = 50
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
+        param.sigma = 0
         param.T = None
     elif dataset_name == 'Change of origin':
         expdir = 'Synthetic data/Change of origin/'
@@ -75,9 +74,21 @@ def load_settings(dataset_name):
         shape = (101, 101)
         K = 50
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
+        # param.sigma = 0
         param.T = None
         param.I = 12
         param.J = 3
+    elif dataset_name == 'Moving ellipse':
+        expdir = 'Synthetic data/Moving ellipse/'
+        morphofile = lambda k: 'Phantom' + str(k)
+        signalfile = []
+        shape = (101, 101)
+        K = 50
+        data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
+        param.sigma = 0
+        param.T = None
+        # param.I = 12
+        # param.J = 3
     elif dataset_name == 'FRET_sensors + actinHistamineExpt2':
         expdir = 'FRET_sensors + actin/Histamine/Expt2/'
         morphofile = lambda k: 'w16TIRF-CFP/RhoA_OP_his_02_w16TIRF-CFP_t' + str(k)
@@ -129,8 +140,8 @@ def load_settings(dataset_name):
         signalfile = ['TIAM-nano_ACTIN.tif', 'TIAM-nano_OPTO.tif', 'TIAM-nano_STIM.tif']
         step = 15
         data = MultipageTIFF(dataset_name, expdir, morphofile, signalfile, step)
-        param.T = 145  # 150
-        param.Tfun = lambda k: 145 * k / 65 + 150 * (65 - k) / 65
+        # param.T = 145  # 150
+        param.T = lambda k: 145 * k / 65 + 150 * (65 - k) / 65
         param.sigma = 5
     elif dataset_name == 'TIAM_protrusion_full':
         expdir = 'CEDRIC_OPTOGENETICS/TIAM_protrusion/'
@@ -139,10 +150,10 @@ def load_settings(dataset_name):
         step = 1
         bad_frames = [34, 50, 397, 446, 513, 684, 794, 962]
         data = MultipageTIFF(dataset_name, expdir, morphofile, signalfile, step, bad_frames)
-        param.T = 145  # 150
-        # param.Tfun = lambda k: 145 * k / 999 + 150 * (999 - k) / 999
-        # param.Tfun = lambda k: 145 * k / 999 + 155 * (999 - k) / 999
-        param.Tfun = lambda k: 145 * k / 991 + 155 * (991 - k) / 991
+        # param.T = 145  # 150
+        # param.T = lambda k: 145 * k / 999 + 150 * (999 - k) / 999
+        # param.T = lambda k: 145 * k / 999 + 155 * (999 - k) / 999
+        param.T = lambda k: 145 * k / 991 + 155 * (991 - k) / 991
         param.sigma = 5
         param.scaling_disp = 15
     elif dataset_name == 'FRET_sensors + actinHistamineExpt1_forPRES':
@@ -197,7 +208,7 @@ def load_settings(dataset_name):
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
         # param.T = None
         param.T = 1038.90  # 1232
-    data.K = 10
+    # data.K = 10
     return data, param
 
 # import matplotlib.pyplot as plt

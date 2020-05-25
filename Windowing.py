@@ -40,17 +40,21 @@ def create_arc_length_image(shape, c, L):
     return x
 
 
-def define_contour_positions(L, I, cvec, cim):
-    t = np.zeros((I,))
-    for i in range(I):
-        L0 = (L[-1] / I) * (i + 0.5)
-        n = np.argmin(np.abs(L-L0))
-        t[i] = cim[cvec[n, 0], cvec[n, 1]]
-    return t
+# def define_contour_positions(L, I, cvec, cim):
+#     t = np.zeros((I,))
+#     for i in range(I):
+#         L0 = (L[-1] / I) * (i + 0.5)
+#         n = np.argmin(np.abs(L-L0))
+#         t[i] = cim[cvec[n, 0], cvec[n, 1]]
+#     return t
 
 
 def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
     origin = [origin[1], origin[0]]
+
+    # plt.figure()
+    # plt.imshow(c_main, 'gray', vmin=-1, vmax=1)
+    # plt.plot(origin[1], origin[0], 'or')
 
     # Compute the distance transform of the main contour
     D_main = distance_transform_edt(-1 == c_main)
@@ -78,22 +82,26 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
         # Extract the contour of the mask
         cvec = np.asarray(find_contours(mask, 0, fully_connected='high')[0], dtype=np.int)
 
+        # Lvec = compute_discrete_arc_length(cvec)
+        # c = create_arc_length_image(mask.shape, cvec, Lvec)
+        # plt.figure()
+        # plt.imshow(c, 'gray', vmin=-Lvec[-1], vmax=Lvec[-1])
+        # plt.plot(origin[1], origin[0], 'or')
+        # # plt.show()
+
         # Adjust the origin of the contour
         n0 = np.argmin(np.linalg.norm(cvec - origin, axis=1))
-        c = np.roll(cvec, -n0, axis=0)
+        cvec = np.roll(cvec, -n0, axis=0)
 
         # Compute the discrete arc length along the contour and create an image of the contour where the intensity is the arc length
-        # ctmp, Lmax = compute_discrete_arc_length_old(mask.shape, c)
+        Lvec = compute_discrete_arc_length(cvec)
+        c = create_arc_length_image(mask.shape, cvec, Lvec)
         # plt.figure()
-        # plt.imshow(ctmp, 'gray')
+        # plt.imshow(c, 'gray', vmin=-Lvec[-1], vmax=Lvec[-1])
+        # plt.plot(origin[1], origin[0], 'or')
+        # # plt.show()
 
-        Lvec = compute_discrete_arc_length(c)
-        c = create_arc_length_image(mask.shape, c, Lvec)
-        # plt.figure()
-        # plt.imshow(c, 'gray')
-        # plt.show()
-
-        # Compute the distance and feature transforms of this image
+        # Compute the feature transform of this image
         F = distance_transform_edt(-1 == c, return_distances=False, return_indices=True)
 
         # Fill array with arc lengths of closest points on the contour
@@ -107,15 +115,20 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
             I.append(int(math.ceil(Lvec[-1] / width)))
         s = np.linspace(0, Lvec[-1], I[j] + 1)
         for i in range(I[j]):
-            # w[-1].append(np.where(mask & (s[i] <= L) & (L < s[i+1]) & (b[0] <= D) & (D < b[1])))
+            # w[-1].append(np.where(mask & (s1[i] <= L) & (L < s1[i+1]) & (b[0] <= D) & (D < b[1])))
             w[-1].append(np.where(mask & (s[i] <= L) & (L < s[i+1]) & (b[j] <= D_main) & (D_main < b[j+1])))
             # plt.figure()
             # plt.imshow(w[j][i])
             # plt.show()
 
-        # Compute positions on the contour that will be used for the displacement estimation
-        if j == 0:
-            t = define_contour_positions(Lvec, I[0], cvec, c_main)
+        # # Compute positions on the contour that will be used for the displacement estimation
+        # if j == 0:
+        #     t = define_contour_positions(Lvec, I[0], cvec, c_main)
+
+    # plt.figure()
+    # plt.imshow(find_boundaries(label_windows(c_main.shape, w)), 'gray')
+    # plt.plot(origin[1], origin[0], 'or')
+    # plt.show()
 
     # # Artifact generation
     # plt.figure()

@@ -4,26 +4,30 @@ from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages
 from Settings import Struct
-from Segmentation import segment
+from Segmentation import segment, extract_contour
 from DisplacementEstimation import fit_spline, map_contours2, rasterize_curve, compute_length, compute_area, \
-    show_edge_scatter, align_curves, subdivide_curve
+    show_edge_scatter, align_curves, subdivide_curve, subdivide_curve_discrete, splevper, map_contours3
 from Windowing import create_windows, extract_signals, label_windows, show_windows
 import matplotlib.pyplot as plt
 
 
 def analyze_morphodynamics(data, param):
     # Figures and other artifacts
-    if param.showWindows:
-        pp = PdfPages(param.resultdir + 'Windows.pdf')
-        tw_win = TiffWriter(param.resultdir + 'Windows.tif')
     if param.showSegmentation:
         tw_seg = TiffWriter(param.resultdir + 'Segmentation.tif')
     else:
         tw_seg = None
+    if param.showWindows:
+        pp = PdfPages(param.resultdir + 'Windows.pdf')
+        tw_win = TiffWriter(param.resultdir + 'Windows.tif')
+    else:
+        pp = None
+        tw_win = None
 
     # Calibration of the windowing procedure
     x = data.load_frame_morpho(0)
-    c = segment(x, param.sigma, param.Tfun(0) if hasattr(param, 'Tfun') else param.T)
+    m = segment(x, param.sigma, param.T(0) if callable(param.T) else param.T)  # Thresholded image with small regions removed
+    c = extract_contour(m)  # Discrete cell contour
     s = fit_spline(c, param.lambda_)
     c = rasterize_curve(x.shape, s, 0)
     w, J, I = create_windows(c, splev(0, s), depth=param.depth, width=param.width)
@@ -48,22 +52,31 @@ def analyze_morphodynamics(data, param):
         print(k)
         x = data.load_frame_morpho(k)  # Input image
 
-        c = segment(x, param.sigma, param.Tfun(k) if hasattr(param, 'Tfun') else param.T, tw_seg)  # Discrete cell contour
+        m = segment(x, param.sigma, param.T(k) if callable(param.T) else param.T)  # Thresholded image with small regions removed
+        c = extract_contour(m)  # Discrete cell contour
+
         s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
-        res.length[k] = compute_length(s)  # Length of the contour
-        res.area[k] = compute_area(s)  # Area delimited by the contour
-        if 0 < k:
+        if k > 0:
             s0prm, res.orig[k] = align_curves(s0, s, res.orig[k-1])
-            # TODO: align the origins of the displacement vectors with the windows
+
+        # TODO: align the origins of the displacement vectors with the windows
+        c = rasterize_curve(x.shape, s, res.orig[k])  # Representation of the contour as a grayscale image
+        w = create_windows(c, splevper(res.orig[k], s), J, I) # Sampling windows
+        if k > 0:
+            p, t0 = subdivide_curve_discrete(c0, I[0], s0, splevper(res.orig[k-1], s0))
+            # plt.figure()
+            # plt.plot(t0, 'bo')
+            # plt.show()
+
+        if k > 0:
             # t0 = res.orig[k-1] + 0.5 / I[0] + np.linspace(0, 1, I[0], endpoint=False)  # Parameters of the startpoints of the displacement vectors
             # t = res.orig[k] + 0.5 / I[0] + np.linspace(0, 1, I[0], endpoint=False)  # Parameters of the startpoints of the displacement vectors
-            t0 = subdivide_curve(s0, res.orig[k-1], I[0])
-            t = subdivide_curve(s, res.orig[k], I[0])
-            t = map_contours2(s0prm, s, t0, t)  # Parameters of the endpoints of the displacement vectors
-        c = rasterize_curve(x.shape, s, res.orig[k])  # Representation of the contour as a grayscale image
-        w = create_windows(c, splev(res.orig[k], s), J, I, param.depth, param.width) # Sampling windows
-        for m in range(len(data.signalfile)):
-            res.mean[m, :, :, k], res.var[m, :, :, k] = extract_signals(data.load_frame_signal(m, k), w)  # Signals extracted from various imaging channels
+            # t0 = subdivide_curve(s0, res.orig[k-1], I[0])
+            # t = subdivide_curve(s1, res.orig[k], I[0])
+            t = map_contours2(s0prm, s, t0, t0-res.orig[k-1]+res.orig[k])  # Parameters of the endpoints of the displacement vectors
+
+        for ell in range(len(data.signalfile)):
+            res.mean[ell, :, :, k], res.var[ell, :, :, k] = extract_signals(data.load_frame_signal(ell, k), w)  # Signals extracted from various imaging channels
 
         # Compute projection of displacement vectors onto normal of contour
         if 0 < k:
@@ -72,6 +85,8 @@ def analyze_morphodynamics(data, param):
             res.displacement[:, k - 1] = np.sum((np.asarray(splev(np.mod(t, 1), s)) - np.asarray(splev(np.mod(t0, 1), s0))) * u, axis=0)  # Compute scalar product with displacement vector
 
         # Artifact generation
+        if param.showSegmentation:
+            tw_seg.save(255 * m.astype(np.uint8), compress=6)
         if param.showWindows:
             if 0 < k:
                 plt.figure(figsize=(12, 9))
@@ -79,14 +94,30 @@ def analyze_morphodynamics(data, param):
                 plt.tight_layout()
                 b0 = find_boundaries(label_windows(x.shape, w0))
                 show_windows(w0, b0)  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
+                # plt.plot(p1[:,1], p1[:,0], 'oy')
+                # plt.plot(p1[0,1], p1[0,0], 'oc')
                 show_edge_scatter(s0, s, t0, t, res.displacement[:, k - 1])  # Show edge structures (spline curves, displacement vectors)
+                # c00 = splev(np.linspace(0, 1, 10001), s0)
+                # plt.plot(c00[0], c00[1], 'g')
+                # cc = splev(np.linspace(0, 1, 10001), s)
+                # plt.plot(cc[0], cc[1], 'b')
+                # # c0prm = splev(np.linspace(0, 1, 10001), s0prm)
+                # # plt.plot(c0prm[0], c0prm[1], 'r--')
+                # # p0prm = splevper(t0, s0prm)
+                # # plt.plot(p0prm[0], p0prm[1], 'or')
+                # # plt.plot(p0prm[0][0], p0prm[1][0], 'oc')
+                # # q0prm = splevper(t0-res.orig[k-1]+res.orig[k], s1)
+                # # plt.plot(q0prm[0], q0prm[1], 'ob')
+                # # plt.plot(q0prm[0][0], q0prm[1][0], 'oc')
                 pp.savefig()
                 tw_win.save(255 * b0.astype(np.uint8), compress=6)
+                # plt.show()
                 plt.close()
 
         # Keep variable for the next iteration
         s0 = s
         w0 = w
+        c0 = c
 
         # Save variables for archival
         res.spline.append(s)
