@@ -1,6 +1,8 @@
 import math
 import numpy as np
 import matplotlib.pyplot as plt
+import ipywidgets as ipw
+from IPython.display import display
 from matplotlib.backends.backend_pdf import PdfPages
 from skimage.external.tifffile import imsave, TiffWriter
 from scipy.interpolate import splev
@@ -135,6 +137,89 @@ def show_edge_rasterized(param, data, res, mode=None):
         x[x==0] = y0[x==0]
         tw.save(x, compress=6)
     tw.close()
+
+
+class EdgeRasterized:
+    def __init__(self, param, data, res, mode=None):
+        self.param = param
+        self.data = data
+        self.res = res
+
+        self.y = np.zeros((self.data.K,) + self.data.shape)
+        for k in range(self.data.K):
+            self.y[k] = self.data.load_frame_morpho(k)
+        self.y = 255 * self.y / np.max(self.y)
+
+    def create_interface(self):
+        out = ipw.Output()
+
+        mode_selector = ipw.RadioButtons(
+            options=['cumulative', 'simple', 'curvature', 'default'],
+            value='default',
+            #    layout={'width': 'max-content'}, # If the items' names are long
+            description='Mode:'
+            # disabled=False
+        )
+
+        def mode_change(change):
+            with out:
+                self.set_mode(change['new'])
+
+        mode_selector.observe(mode_change, names='value')
+
+        time_slider = ipw.IntSlider(description='Time', min=0, max=self.data.K - 1, continuous_update=False, layout=ipw.Layout(width='100%'))
+
+        def time_change(change):
+            with out:
+                # show_edge_rasterized_aux(param, change['new'], cumulative=False)
+                self.plot(change['new'])
+
+        time_slider.observe(time_change, names='value')
+
+        display(mode_selector)
+        display(time_slider)
+        display(out)
+
+    def set_mode(self, mode):
+        if mode == 'cumulative':
+            self.d = np.cumsum(self.res.displacement, axis=1)
+            self.name = 'Edge animation (cumulative)'
+        elif mode == 'simple':
+            self.d = np.ones(self.res.displacement.shape)
+            self.name = 'Edge animation (simple)'
+        elif mode == 'curvature':
+            t = np.linspace(0, 1, 10000, endpoint=False)
+            self.d = np.zeros((10000, self.data.K))
+            for k in range(self.data.K):
+                self.d[:, k] = compute_curvature(self.res.spline[k], t)
+            self.name = 'Edge animation (curvature)'
+        else:
+            self.d = self.res.displacement
+            self.name = 'Edge animation'
+
+    def setNormalization(self, normalization):
+        if normalization == 'global':
+            self.dmax = np.max(np.abs(d))
+        else:
+            self.dmax = None
+
+    def getImage(self, k):
+        x = show_edge_rasterized_aux(self.data, self.res, self.d, self.dmax, k, self.mode, display=False)
+        y0 = np.stack((self.y[k], self.y[k], self.y[k]), axis=-1)
+        x[x == 0] = y0[x == 0]
+        return x
+
+    def save(self):
+        tw = TiffWriter(self.param.resultdir + self.name + '.tif')
+        for k in range(self.data.K - 1):
+            tw.save(self.getImage(k), compress=6)
+        tw.close()
+
+    def plot(self, k):
+        plt.clf()
+        plt.gca().set_title('Frame ' + str(k))
+        plt.imshow(self.getImage(k))
+        plt.tight_layout()
 
 
 def show_curvature(param, data, res, size=(16, 9)):

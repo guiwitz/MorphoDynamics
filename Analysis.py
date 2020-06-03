@@ -5,8 +5,7 @@ from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages
 from Settings import Struct
 from Segmentation import segment, extract_contour
-from DisplacementEstimation import fit_spline, map_contours2, rasterize_curve, compute_length, compute_area, \
-    show_edge_scatter, align_curves, subdivide_curve, subdivide_curve_discrete, splevper, map_contours3
+from DisplacementEstimation import fit_spline, map_contours2, rasterize_curve, compute_length, compute_area, show_edge_scatter, align_curves, subdivide_curve, subdivide_curve_discrete, splevper, map_contours3
 from Windowing import create_windows, extract_signals, label_windows, show_windows
 import matplotlib.pyplot as plt
 
@@ -56,23 +55,15 @@ def analyze_morphodynamics(data, param):
         c = extract_contour(m)  # Discrete cell contour
 
         s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
+
         if k > 0:
             s0prm, res.orig[k] = align_curves(s0, s, res.orig[k-1])
 
-        # TODO: align the origins of the displacement vectors with the windows
         c = rasterize_curve(x.shape, s, res.orig[k])  # Representation of the contour as a grayscale image
         w = create_windows(c, splevper(res.orig[k], s), J, I) # Sampling windows
-        if k > 0:
-            p, t0 = subdivide_curve_discrete(c0, I[0], s0, splevper(res.orig[k-1], s0))
-            # plt.figure()
-            # plt.plot(t0, 'bo')
-            # plt.show()
 
         if k > 0:
-            # t0 = res.orig[k-1] + 0.5 / I[0] + np.linspace(0, 1, I[0], endpoint=False)  # Parameters of the startpoints of the displacement vectors
-            # t = res.orig[k] + 0.5 / I[0] + np.linspace(0, 1, I[0], endpoint=False)  # Parameters of the startpoints of the displacement vectors
-            # t0 = subdivide_curve(s0, res.orig[k-1], I[0])
-            # t = subdivide_curve(s1, res.orig[k], I[0])
+            p, t0 = subdivide_curve_discrete(c0, I[0], s0, splevper(res.orig[k-1], s0))
             t = map_contours2(s0prm, s, t0, t0-res.orig[k-1]+res.orig[k])  # Parameters of the endpoints of the displacement vectors
 
         for ell in range(len(data.signalfile)):
