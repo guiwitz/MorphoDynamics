@@ -60,7 +60,7 @@ def get_extent(A, B, I):
 
 def show_correlation_core(c, x, y, nx, ny, normalization):
     plt.clf()
-    plt.gca().set_title('Correlation between ' + nx + ' and ' + ny + ' at layer ' + str(0) + ' - Normalization: ' + str(normalization))
+    plt.gca().set_title('Correlation between ' + nx + ' and ' + ny + ' at layer ' + str(0))  # + ' - Normalization: ' + str(normalization)
     cmax = np.max(np.abs(c))
     plt.imshow(c, extent=get_extent(x.shape[1], y.shape[1], c.shape[0]), cmap='bwr', vmin=-cmax, vmax=cmax, interpolation='none')
     plt.axis('auto')

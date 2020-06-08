@@ -8,7 +8,7 @@ from skimage.external.tifffile import imsave, TiffWriter
 from scipy.interpolate import splev
 from PIL import Image
 from Correlation import show_correlation_core, correlate_arrays, get_range
-from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_image, compute_curvature, compute_length, compute_area
+from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_image, compute_curvature, compute_length, compute_area, splevper
 from Settings import Struct
 
 
@@ -61,7 +61,7 @@ def show_edge_vectorial_aux(data, res, k, curvature=False):
     plt.imshow(data.load_frame_morpho(k), cmap='gray')
     # showWindows(w, find_boundaries(labelWindows(w0)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
     if curvature:
-        f = compute_curvature(res.spline[k])
+        f = compute_curvature(res.spline[k], np.linspace(0, 1, 10001))
     else:
         f = res.displacement[:, k]
     show_edge_scatter(res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors/curvature)
@@ -88,9 +88,120 @@ def show_edge_vectorial(param, data, res, curvature=False, size=(12, 9)):
     pp.close()
 
 
+class EdgeVectorial():
+    def __init__(self, param, data, res):
+        self.param = param
+        self.data = data
+        self.res = res
+        self.mode = 'displacement'
+
+    def create_interface(self):
+        out = ipw.Output()
+
+        mode_selector = ipw.RadioButtons(
+            options=['displacement', 'curvature'],
+            value='displacement',
+            description='Mode:'
+        )
+
+        def mode_change(change):
+            with out:
+                self.set_mode(change['new'])
+                plt.figure(self.fig.number)
+                show_edge_vectorial_aux(self.data, self.res, time_slider.get_state()['value'], curvature=self.curvature)
+
+        mode_selector.observe(mode_change, names='value')
+
+        time_slider = ipw.IntSlider(description='Time', min=0, max=self.data.K - 1, continuous_update=False, layout=ipw.Layout(width='100%'))
+
+        def time_change(change):
+            with out:
+                plt.figure(self.fig.number)
+                show_edge_vectorial_aux(self.data, self.res, change['new'], curvature=self.curvature)
+
+        time_slider.observe(time_change, names='value')
+
+        display(mode_selector)
+        display(time_slider)
+
+        self.set_mode(mode_selector.get_state('value'))
+
+        self.fig = plt.figure(figsize=(8, 6))
+        show_edge_vectorial_aux(self.data, self.res, 0, curvature=False)
+        display(out)
+
+    def set_mode(self, mode):
+        self.curvature = mode == 'curvature'
+
+    # def show_edge_scatter(s1, s2, t1, t2, d, dmax=None):
+    #     """ Draw the cell-edge contour and the displacement vectors.
+    #     The contour is drawn using a scatter plot to color-code the displacements. """
+    #
+    #     # Evaluate splines at window locations and on fine-resolution grid
+    #     c1 = splevper(t1, s1)
+    #     c2 = splevper(t2, s2)
+    #     c1p = splev(np.linspace(0, 1, 10001), s1)
+    #     c2p = splev(np.linspace(0, 1, 10001), s2)
+    #
+    #     # Interpolate displacements
+    #     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
+    #     if len(d) < 10001:
+    #         d = np.interp(np.linspace(0, 1, 10001), t1, d, period=1)
+    #     if dmax is None:
+    #         dmax = np.max(np.abs(d))
+    #         if dmax == 0:
+    #             dmax = 1
+    #
+    #     # Plot results
+    #     # matplotlib.use('PDF')
+    #     lw = 1
+    #     s = 1  # Scaling factor for the vectors
+    #
+    #     plt.plot(c1p[0], c1p[1], 'b', zorder=50, lw=lw)
+    #     plt.plot(c2p[0], c2p[1], 'r', zorder=100, lw=lw)
+    #     # plt.scatter(c1p[0], c1p[1], c=d, cmap='bwr', vmin=-dmax, vmax=dmax, zorder=50, s1=lw)
+    #     # # plt.colorbar(label='Displacement [pixels]')
+    #     for j in range(len(t2)):
+    #         plt.arrow(c1[0][j], c1[1][j], s * (c2[0][j] - c1[0][j]), s * (c2[1][j] - c1[1][j]), color='y', zorder=200, lw=lw)
+    #     # plt.arrow(c1[0][j], c1[1][j], s1 * u[0][j], s1 * u[1][j], color='y', zorder=200, lw=lw) # Show normal to curve
+    #     plt.arrow(c1[0][0], c1[1][0], s * (c2[0][0] - c1[0][0]), s * (c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw)
+    #
+    # def show_edge_vectorial_aux(data, res, k, curvature=False):
+    #     plt.clf()
+    #     plt.gca().set_title('Frame ' + str(k) + ' to frame ' + str(k + 1))
+    #     plt.imshow(data.load_frame_morpho(k), cmap='gray')
+    #     # showWindows(w, find_boundaries(labelWindows(w0)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
+    #     if curvature:
+    #         f = compute_curvature(res.spline[k])
+    #     else:
+    #         f = res.displacement[:, k]
+    #     show_edge_scatter(res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors/curvature)
+    #     plt.tight_layout()
+    #
+    #
+    # def show_edge_vectorial(param, data, res, curvature=False, size=(12, 9)):
+    #     if curvature:
+    #         name = 'Edge animation with curvature'
+    #     else:
+    #         name = 'Edge animation with displacement'
+    #
+    #     plt.figure(figsize=size)
+    #     pp = PdfPages(param.resultdir + name + '.pdf')
+    #
+    #     plt.text(0.5, 0.5, 'This page intentionally left blank.')
+    #     pp.savefig()
+    #
+    #     # dmax = np.max(np.abs(res.displacement))
+    #     for k in range(data.K - 1):
+    #         print(k)
+    #         show_edge_vectorial_aux(data, res, k, curvature)
+    #         pp.savefig()
+    #     pp.close()
+
+
 def show_edge_rasterized_aux(data, res, d, dmax, k, mode, display=True):
     if mode == 'curvature':
-        x = show_edge_image(data.shape, res.spline[k], np.linspace(0, 1, 10001), d[:, k], 3, dmax)
+        x = show_edge_image(data.shape, res.spline[k], np.linspace(0, 1, 10000, endpoint=False), d[:, k], 3, dmax)
     else:
         x = show_edge_image(data.shape, res.spline[k], res.param0[k], d[:, k], 3, dmax)
 
@@ -111,8 +222,8 @@ def show_edge_rasterized(param, data, res, mode=None):
         d = np.ones(res.displacement.shape)
         name = 'Edge animation (simple)'
     elif mode == 'curvature':
-        t = np.linspace(0, 1, 10001)
-        d = np.zeros((10001, data.K))
+        t = np.linspace(0, 1, 10000, endpoint=False)
+        d = np.zeros((10000, data.K))
         for k in range(data.K):
             d[:, k] = compute_curvature(res.spline[k], t)
         name = 'Edge animation (curvature)'
@@ -154,56 +265,78 @@ class EdgeRasterized:
         out = ipw.Output()
 
         mode_selector = ipw.RadioButtons(
-            options=['cumulative', 'simple', 'curvature', 'default'],
-            value='default',
-            #    layout={'width': 'max-content'}, # If the items' names are long
+            options=['border', 'displacement', 'cumulative displacement', 'curvature'],
+            value='displacement',
             description='Mode:'
-            # disabled=False
         )
 
         def mode_change(change):
             with out:
                 self.set_mode(change['new'])
+                self.set_normalization(normalization_selector.value)
+                self.plot(time_slider.value)
 
         mode_selector.observe(mode_change, names='value')
+
+        normalization_selector = ipw.RadioButtons(
+            options=['global', 'frame-by-frame'],
+            value='frame-by-frame',
+            layout={'width': 'max-content'}, # If the items' names are long
+            description='Normalization:'
+            # disabled=False
+        )
+
+        def normalization_change(change):
+            with out:
+                self.set_normalization(change['new'])
+                self.plot(time_slider.value)
+
+        normalization_selector.observe(normalization_change, names='value')
 
         time_slider = ipw.IntSlider(description='Time', min=0, max=self.data.K - 1, continuous_update=False, layout=ipw.Layout(width='100%'))
 
         def time_change(change):
             with out:
-                # show_edge_rasterized_aux(param, change['new'], cumulative=False)
                 self.plot(change['new'])
 
         time_slider.observe(time_change, names='value')
 
         display(mode_selector)
+        display(normalization_selector)
         display(time_slider)
+
+        self.set_mode(mode_selector.value)
+        self.set_normalization(normalization_selector.value)
+
+        self.fig = plt.figure(figsize=(8, 6))
+        self.plot(0)
         display(out)
 
     def set_mode(self, mode):
-        if mode == 'cumulative':
-            self.d = np.cumsum(self.res.displacement, axis=1)
-            self.name = 'Edge animation (cumulative)'
-        elif mode == 'simple':
+        self.mode = mode
+        if mode == 'border':
             self.d = np.ones(self.res.displacement.shape)
-            self.name = 'Edge animation (simple)'
+            self.name = 'Edge animation (border)'
+        elif mode == 'displacement':
+            self.d = self.res.displacement
+            self.name = 'Edge animation (displacement)'
+        elif mode == 'cumulative displacement':
+            self.d = np.cumsum(self.res.displacement, axis=1)
+            self.name = 'Edge animation (cumulative displacement)'
         elif mode == 'curvature':
             t = np.linspace(0, 1, 10000, endpoint=False)
             self.d = np.zeros((10000, self.data.K))
             for k in range(self.data.K):
                 self.d[:, k] = compute_curvature(self.res.spline[k], t)
             self.name = 'Edge animation (curvature)'
-        else:
-            self.d = self.res.displacement
-            self.name = 'Edge animation'
 
-    def setNormalization(self, normalization):
+    def set_normalization(self, normalization):
         if normalization == 'global':
-            self.dmax = np.max(np.abs(d))
+            self.dmax = np.max(np.abs(self.d))
         else:
             self.dmax = None
 
-    def getImage(self, k):
+    def get_image(self, k):
         x = show_edge_rasterized_aux(self.data, self.res, self.d, self.dmax, k, self.mode, display=False)
         y0 = np.stack((self.y[k], self.y[k], self.y[k]), axis=-1)
         x[x == 0] = y0[x == 0]
@@ -212,25 +345,27 @@ class EdgeRasterized:
     def save(self):
         tw = TiffWriter(self.param.resultdir + self.name + '.tif')
         for k in range(self.data.K - 1):
-            tw.save(self.getImage(k), compress=6)
+            tw.save(self.get_image(k), compress=6)
         tw.close()
 
     def plot(self, k):
+        plt.figure(self.fig.number)
         plt.clf()
         plt.gca().set_title('Frame ' + str(k))
-        plt.imshow(self.getImage(k))
+        plt.imshow(self.get_image(k))
         plt.tight_layout()
 
 
-def show_curvature(param, data, res, size=(16, 9)):
-    curvature = np.zeros((10001, data.K))
+def show_curvature(param, data, res, size=(16, 9), cmax=None):
+    curvature = np.zeros((10000, data.K))
     for k in range(data.K):
-        curvature[:, k] = compute_curvature(res.spline[k], np.linspace(0, 1, 10001))
+        curvature[:, k] = compute_curvature(res.spline[k], np.linspace(0, 1, 10000, endpoint=False))
 
     plt.figure(figsize=size)
     plt.gca().set_title('Curvature')
     pp = PdfPages(param.resultdir + 'Curvature.pdf')
-    cmax = np.max(np.abs(curvature))
+    if cmax is None:
+        cmax = np.max(np.abs(curvature))
     plt.imshow(curvature, cmap='seismic', vmin=-cmax, vmax=cmax)
     plt.colorbar(label='Curvature')
     plt.axis('auto')
@@ -239,6 +374,50 @@ def show_curvature(param, data, res, size=(16, 9)):
     # imsave(param.resultdir + 'Curvature.tif', curvature.astype(np.float32), compress=6)
     pp.savefig()
     pp.close()
+
+
+class Curvature:
+    def __init__(self, param, data, res):
+        self.param = param
+        self.data = data
+        self.res = res
+
+        self.curvature = np.zeros((10000, self.data.K))
+        for k in range(self.data.K):
+            self.curvature[:, k] = compute_curvature(self.res.spline[k], np.linspace(0, 1, 10000, endpoint=False))
+
+    def create_interface(self):
+        out = ipw.Output()
+
+        cmax = np.max(np.abs(self.curvature))
+
+        range_slider = ipw.FloatSlider(value = cmax, description='Range:', min=0, max=cmax, step=0.1, continuous_update=False, layout=ipw.Layout(width='100%'))
+
+        def range_change(change):
+            with out:
+                plt.figure(self.fig.number)
+                self.show_curvature(change['new'])
+
+        range_slider.observe(range_change, names='value')
+
+        display(range_slider)
+
+        self.fig = plt.figure(figsize=(8, 6))
+        self.show_curvature(range_slider.value)
+        display(out)
+
+    def show_curvature(self, cmax):
+        plt.clf()
+        plt.gca().set_title('Curvature')
+        pp = PdfPages(self.param.resultdir + 'Curvature.pdf')
+        plt.imshow(self.curvature, cmap='seismic', vmin=-cmax, vmax=cmax)
+        plt.colorbar(label='Curvature')
+        plt.axis('auto')
+        plt.xlabel('Frame index')
+        plt.ylabel('Position on contour')
+        # imsave(param.resultdir + 'Curvature.tif', curvature.astype(np.float32), compress=6)
+        pp.savefig()
+        pp.close()
 
 
 def show_displacement(param, res, size=(16, 9)):
@@ -277,49 +456,107 @@ def show_displacement(param, res, size=(16, 9)):
     pp.close()
 
 
-def show_signals(param, data, res, size=(16, 9)):
+def show_signals_aux(param, data, res, m, j, mode):
+    if mode == 'Mean':
+        f = res.mean[m, j, 0:res.I[j], :]
+    elif mode == 'Variance':
+        f = res.var[m, j, 0:res.I[j], :]
+
+    plt.clf()
+    plt.gca().set_title('Signal: ' + data.get_channel_name(m) + ' - Layer: ' + str(j))
+    # if hasattr(param, 'scaling_mean') & (j == 0):
+    #     plt.imshow(res.mean[m, j, 0:res.I[j], :], cmap='jet', vmin=param.scaling_mean[m][0], vmax=param.scaling_mean[m][1])
+    # else:
+    plt.imshow(f, cmap='jet')
+    plt.colorbar(label=mode)
+    plt.axis('auto')
+    plt.xlabel('Frame index')
+    plt.ylabel('Window index')
+    # plt.xticks(range(0, mean.shape[1], 5))
+
+
+def show_signals(param, data, res, mode, size=(16, 9)):
     f = plt.figure(figsize=size)
 
-    pp = PdfPages(param.resultdir + 'Signal mean.pdf')
+    pp = PdfPages(param.resultdir + 'Signal ' + mode + '.pdf')
     for m in range(len(data.signalfile)):
         for j in range(res.mean.shape[1]):
             plt.figure(f.number)
-            plt.clf()
-            plt.gca().set_title('Signal: ' + data.get_channel_name(m) + ' - Layer: ' + str(j))
-            if hasattr(param, 'scaling_mean') & (j == 0):
-                plt.imshow(res.mean[m, j, 0:res.I[j], :], cmap='jet', vmin=param.scaling_mean[m][0], vmax=param.scaling_mean[m][1])
-            else:
-                plt.imshow(res.mean[m, j, 0:res.I[j], :], cmap='jet')
-            plt.colorbar(label='Mean')
-            plt.axis('auto')
-            plt.xlabel('Frame index')
-            plt.ylabel('Window index')
-            # plt.xticks(range(0, mean.shape[1], 5))
-            if j == 0:
-                imsave(param.resultdir + 'Signal mean ' + data.get_channel_name(m) + '.tif', res.mean[m, j, 0:res.I[j], :].astype(np.float32), compress=6)
+            show_signals_aux(param, data, res, m, j, mode)
+            # if j == 0:
+            #     imsave(param.resultdir + 'Signal ' + mode + ' ' + data.get_channel_name(m) + '.tif', res.mean[m, j, 0:res.I[j], :].astype(np.float32), compress=6)
             pp.savefig()
     pp.close()
 
-    pp = PdfPages(param.resultdir + 'Signal variance.pdf')
-    # tw = TiffWriter(param.resultdir + 'Variance.tif')
-    for m in range(len(data.signalfile)):
-        for j in range(res.mean.shape[1]):
-            plt.figure(f.number)
-            plt.clf()
-            plt.gca().set_title('Signal: ' + data.get_channel_name(m) + ' - Layer: ' + str(j))
-            plt.imshow(res.var[m, j, 0:res.I[j], :], cmap='jet')
-            plt.colorbar(label='Variance')
-            plt.axis('auto')
-            plt.xlabel('Frame index')
-            plt.ylabel('Window index')
-            # plt.xticks(range(0, mean.shape[1], 5))
-            if j == 0:
-                imsave(param.resultdir + 'Signal variance ' + data.get_channel_name(m) + '.tif', res.var[m, j, 0:res.I[j], :].astype(np.float32), compress=6)
-            # if j == 0:
-            #     tw.save(res.var[m, j, 0:param.I//2**j, :], compress=6)
-            pp.savefig()
-    pp.close()
-    # tw.close()
+    # pp = PdfPages(param.resultdir + 'Signal variance.pdf')
+    # # tw = TiffWriter(param.resultdir + 'Variance.tif')
+    # for m in range(len(data.signalfile)):
+    #     for j in range(res.mean.shape[1]):
+    #         plt.figure(f.number)
+    #         plt.clf()
+    #         plt.gca().set_title('Signal: ' + data.get_channel_name(m) + ' - Layer: ' + str(j))
+    #         plt.imshow(res.var[m, j, 0:res.I[j], :], cmap='jet')
+    #         plt.colorbar(label='Variance')
+    #         plt.axis('auto')
+    #         plt.xlabel('Frame index')
+    #         plt.ylabel('Window index')
+    #         # plt.xticks(range(0, mean.shape[1], 5))
+    #         if j == 0:
+    #             imsave(param.resultdir + 'Signal variance ' + data.get_channel_name(m) + '.tif', res.var[m, j, 0:res.I[j], :].astype(np.float32), compress=6)
+    #         # if j == 0:
+    #         #     tw.save(res.var[m, j, 0:param.I//2**j, :], compress=6)
+    #         pp.savefig()
+    # pp.close()
+    # # tw.close()
+
+
+class Signals:
+    def __init__(self, param, data, res, mode=None):
+        self.param = param
+        self.data = data
+        self.res = res
+
+    def create_interface(self):
+        out = ipw.Output()
+
+        channel_text = ipw.BoundedIntText(value=0, min=0, max=self.res.mean.shape[0]-1, description = 'Channel:')
+
+        def channel_change(change):
+            with out:
+                plt.figure(self.fig.number)
+                show_signals_aux(self.param, self.data, self.res, change['new'], layer_text.value, mode_selector.value)
+
+        channel_text.observe(channel_change, names='value')
+
+        layer_text = ipw.BoundedIntText(value=0, min=0, max=self.res.J-1, description = 'Layer:')
+
+        def layer_change(change):
+            with out:
+                plt.figure(self.fig.number)
+                show_signals_aux(self.param, self.data, self.res, 0, change['new'], mode_selector.value)
+
+        layer_text.observe(layer_change, names='value')
+
+        mode_selector = ipw.RadioButtons(
+            options=['Mean', 'Variance'],
+            value='Mean',
+            description='Mode:'
+        )
+
+        def mode_change(change):
+            with out:
+                plt.figure(self.fig.number)
+                show_signals_aux(self.param, self.data, self.res, 0, layer_text.value, change['new'])
+
+        mode_selector.observe(mode_change, names='value')
+
+        display(channel_text)
+        display(layer_text)
+        display(mode_selector)
+
+        self.fig = plt.figure(figsize=(8, 6))
+        show_signals_aux(self.param, self.data, self.res, 0, layer_text.value, mode_selector.value)
+        display(out)
 
 
 def show_fourier_descriptors_aux(res, k):
@@ -394,12 +631,16 @@ def show_correlation(param, data, res, size=(16, 9)):
     for m in range(len(data.signalfile)):
         for mprm in range(m + 1, len(data.signalfile)):
             c = correlate_arrays(res.var[m, 0], res.var[mprm, 0], 'Pearson')
-            show_correlation_core(c, res.var[m, 0], res.var[mprm, 0], data.get_channel_name(m),
-                             data.get_channel_name(mprm), 'Pearson')
+            show_correlation_core(c, res.var[m, 0], res.var[mprm, 0], data.get_channel_name(m), data.get_channel_name(mprm), 'Pearson')
             pp.savefig()
             # show_average_correlation(fh, c, res.var[0, 0], res.var[-1, 0])
             # pp.savefig()
     pp.close()
+
+def show_correlation_average(param, data, res, size=(16, 9)):
+    dcum = np.cumsum(res.displacement, axis=1)
+
+    plt.figure(figsize=size)
 
     pp = PdfPages(param.resultdir + "Correlation average.pdf")
     plt.clf()
@@ -417,22 +658,22 @@ def show_correlation(param, data, res, size=(16, 9)):
     plt.ylabel('Cross-correlation')
     pp.savefig()
 
-    plt.clf()
-    plt.gca().set_title('Average cross-correlation between displacement and signals at layer ' + str(0) + ' - Windows 40 to 59')
-    color = 'rbgymc'
-    n = 0
-    for m in [0, len(data.signalfile) - 1]:
-        t = get_range(res.displacement.shape[1], res.mean[m, 0].shape[1])
-        c = correlate_arrays(res.displacement[40:60], res.mean[m, 0][40:60], 'Pearson')
-        plt.plot(t, np.mean(c, axis=0), color[n], label=data.get_channel_name(m))
-        n += 1
-    plt.grid()
-    plt.legend(loc="upper left")
-    plt.xlabel('Time lag [frames]')
-    plt.ylabel('Cross-correlation')
-    pp.savefig()
+    # plt.clf()
+    # plt.gca().set_title('Average cross-correlation between displacement and signals at layer ' + str(0) + ' - Windows 40 to 59')
+    # color = 'rbgymc'
+    # n = 0
+    # for m in [0, len(data.signalfile) - 1]:
+    #     t = get_range(res.displacement.shape[1], res.mean[m, 0].shape[1])
+    #     c = correlate_arrays(res.displacement[40:60], res.mean[m, 0][40:60], 'Pearson')
+    #     plt.plot(t, np.mean(c, axis=0), color[n], label=data.get_channel_name(m))
+    #     n += 1
+    # plt.grid()
+    # plt.legend(loc="upper left")
+    # plt.xlabel('Time lag [frames]')
+    # plt.ylabel('Cross-correlation')
+    # pp.savefig()
 
-    plt.clf()
+    plt.figure(figsize=size)
     plt.gca().set_title('Average cross-correlation between cumulative displacement and signals at layer ' + str(0))
     color = 'rbgymc'
     n = 0
@@ -447,7 +688,7 @@ def show_correlation(param, data, res, size=(16, 9)):
     plt.ylabel('Cross-correlation')
     pp.savefig()
 
-    plt.clf()
+    plt.figure(figsize=size)
     plt.gca().set_title('Average autocorrelation of displacement')
     t = get_range(res.displacement.shape[1], res.displacement.shape[1])
     c = correlate_arrays(res.displacement, res.displacement, 'Pearson')
@@ -457,7 +698,7 @@ def show_correlation(param, data, res, size=(16, 9)):
     plt.ylabel('Correlation')
     pp.savefig()
 
-    plt.clf()
+    plt.figure(figsize=size)
     plt.gca().set_title('Average autocorrelation of cumulative displacement')
     t = get_range(dcum.shape[1], dcum.shape[1])
     c = correlate_arrays(dcum, dcum, 'Pearson')
@@ -467,6 +708,87 @@ def show_correlation(param, data, res, size=(16, 9)):
     plt.ylabel('Correlation')
     pp.savefig()
     pp.close()
+
+
+class Correlation():
+    def __init__(self, param, data, res, mode=None):
+        self.param = param
+        self.data = data
+        self.res = res
+
+    def create_interface(self):
+        out = ipw.Output()
+
+        options = ['displacement', 'cumulative displacement']
+        for m in range(len(self.data.signalfile)):
+            options.append(self.data.get_channel_name(m))
+
+        self.signal1_selector = ipw.RadioButtons(
+            options=options,
+            value='displacement',
+            description='Signal 1:'
+        )
+
+        def signal1_change(change):
+            with out:
+                self.f1 = self.get_signal(change['new'], mode_selector.value)
+                plt.figure(self.fig.number)
+                self.show_correlation()
+
+        self.signal1_selector.observe(signal1_change, names='value')
+
+        self.signal2_selector = ipw.RadioButtons(
+            options=options,
+            value='displacement',
+            description='Signal 2:'
+        )
+
+        def signal2_change(change):
+            with out:
+                self.f2 = self.get_signal(change['new'], mode_selector.value)
+                plt.figure(self.fig.number)
+                self.show_correlation()
+
+        self.signal2_selector.observe(signal2_change, names='value')
+
+        mode_selector = ipw.RadioButtons(
+            options=['Mean', 'Variance'],
+            value='Mean',
+            description='Mode:'
+        )
+
+        def mode_change(change):
+            with out:
+                self.f1 = self.get_signal(self.signal1_selector.value, change['new'])
+                self.f2 = self.get_signal(self.signal2_selector.value, change['new'])
+                plt.figure(self.fig.number)
+                self.show_correlation()
+
+        mode_selector.observe(mode_change, names='value')
+
+        display(ipw.HBox([self.signal1_selector, self.signal2_selector, mode_selector]))
+
+        self.fig = plt.figure(figsize=(8, 6))
+        self.f1 = self.get_signal(self.signal1_selector.value, mode_selector.value)
+        self.f2 = self.get_signal(self.signal2_selector.value, mode_selector.value)
+        self.show_correlation()
+        display(out)
+
+    def get_signal(self, name, mode):
+        if name == 'displacement':
+            return self.res.displacement
+        if name == 'cumulative displacement':
+            return np.cumsum(self.res.displacement, axis=1)
+        for m in range(len(self.data.signalfile)):
+            if name == self.data.get_channel_name(m):
+                if mode =='Mean':
+                    return self.res.mean[m, 0]
+                elif mode == 'Variance':
+                    return self.res.var[m, 0]
+
+    def show_correlation(self):
+        c = correlate_arrays(self.f1, self.f2, 'Pearson')
+        show_correlation_core(c, self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, 'Pearson')
 
 
 def show_analysis(data, param, res):
