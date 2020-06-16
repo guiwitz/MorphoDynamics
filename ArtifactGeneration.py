@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import ipywidgets as ipw
 from IPython.display import display
@@ -8,12 +9,16 @@ from skimage.external.tifffile import imsave, TiffWriter
 from scipy.interpolate import splev
 from PIL import Image
 from Correlation import show_correlation_core, correlate_arrays, get_range
-from DisplacementEstimation import show_edge_scatter, show_edge_line, show_edge_image, compute_curvature, compute_length, compute_area, splevper
+from DisplacementEstimation import show_edge_line, show_edge_image, compute_curvature, compute_length, compute_area, \
+    splevper, show_edge_scatter_init, show_edge_scatter_update, show_edge_scatter
 from Settings import Struct
 
 
-def show_circularity(param, data, res, size=(16, 9)):
-    pp = PdfPages(param.resultdir + 'Circularity.pdf')
+def show_circularity(param, data, res, export=False, size=(16, 9)):
+    if export:
+        pp = PdfPages(param.resultdir + 'Circularity.pdf')
+    else:
+        pp = None
 
     length = np.zeros((data.K,))
     area = np.zeros((data.K,))
@@ -25,34 +30,35 @@ def show_circularity(param, data, res, size=(16, 9)):
     plt.gca().set_title('Length')
     plt.plot(length)
     plt.tight_layout()
-    pp.savefig()
+    if export:
+        pp.savefig()
 
     plt.figure(figsize=size)
     plt.gca().set_title('Area')
     plt.plot(area)
     plt.tight_layout()
-    pp.savefig()
+    if export:
+        pp.savefig()
 
     plt.figure(figsize=size)
     plt.gca().set_title('Circularity = Length^2 / Area / 4 / pi')
     plt.plot(length ** 2 / area / 4 / math.pi)
     plt.tight_layout()
-    pp.savefig()
+    if export:
+        pp.savefig()
 
-    pp.close()
+    if export:
+        pp.close()
 
 
-def show_edge_overview(param, data, res, size=(12,9)):
-    pp = PdfPages(param.resultdir + 'Edge overview.pdf')
-
+def show_edge_overview(param, data, res, export=False, size=(12,9)):
     plt.figure(figsize=size)
     plt.gca().set_title('Edge overview')
     plt.imshow(data.load_frame_morpho(0), cmap='gray')
     show_edge_line(res.spline)
     plt.tight_layout()
-    pp.savefig()
-
-    pp.close()
+    if export:
+        plt.savefig(param.resultdir + 'Edge overview.pdf')
 
 
 def show_edge_vectorial_aux(data, res, k, curvature=False):
@@ -88,7 +94,7 @@ def show_edge_vectorial(param, data, res, curvature=False, size=(12, 9)):
     pp.close()
 
 
-class EdgeVectorial():
+class EdgeVectorialSlow():
     def __init__(self, param, data, res):
         self.param = param
         self.data = data
@@ -121,7 +127,7 @@ class EdgeVectorial():
 
         time_slider.observe(time_change, names='value')
 
-        display(mode_selector)
+        # display(mode_selector)
         display(time_slider)
 
         self.set_mode(mode_selector.get_state('value'))
@@ -129,6 +135,96 @@ class EdgeVectorial():
         self.fig = plt.figure(figsize=(8, 6))
         show_edge_vectorial_aux(self.data, self.res, 0, curvature=False)
         display(out)
+
+    def set_mode(self, mode):
+        self.curvature = mode == 'curvature'
+
+
+class EdgeVectorial():
+    def __init__(self, param, data, res):
+        self.param = param
+        self.data = data
+        self.res = res
+        self.mode = 'displacement'
+
+    def create_interface(self):
+        out = ipw.Output()
+
+        mode_selector = ipw.RadioButtons(
+            options=['displacement', 'curvature'],
+            value='displacement',
+            description='Mode:'
+        )
+
+        def mode_change(change):
+            with out:
+                self.set_mode(change['new'])
+                plt.figure(self.fig.number)
+                self.show_edge_vectorial_aux_update(self.data, self.res, time_slider.get_state()['value'], curvature=self.curvature)
+
+        mode_selector.observe(mode_change, names='value')
+
+        time_slider = ipw.IntSlider(description='Time', min=0, max=self.data.K - 1, continuous_update=False, layout=ipw.Layout(width='100%'))
+
+        def time_change(change):
+            with out:
+                plt.figure(self.fig.number)
+                self.show_edge_vectorial_aux_update(self.data, self.res, change['new'], curvature=self.curvature)
+
+        time_slider.observe(time_change, names='value')
+
+        # display(mode_selector)
+        display(time_slider)
+
+        self.set_mode(mode_selector.get_state('value'))
+
+        self.fig = plt.figure(figsize=(8, 6))
+        self.show_edge_vectorial_aux_init(self.data, self.res, 0, curvature=False)
+        display(out)
+
+    def show_edge_vectorial(self, param, data, res, curvature=False, size=(12, 9)):
+        if curvature:
+            name = 'Edge animation with curvature'
+        else:
+            name = 'Edge animation with displacement'
+
+        plt.figure(figsize=size)
+        pp = PdfPages(param.resultdir + name + '.pdf')
+
+        plt.text(0.5, 0.5, 'This page intentionally left blank.')
+        pp.savefig()
+
+        # dmax = np.max(np.abs(res.displacement))
+        self.show_edge_vectorial_aux_init(data, res, 0, curvature)
+        for k in range(1, data.K - 1):
+            print(k)
+            self.show_edge_vectorial_aux_update(data, res, k, curvature)
+            pp.savefig()
+        pp.close()
+
+    def show_edge_vectorial_aux_init(self, data, res, k, curvature=False):
+        plt.clf()
+        self.p = Struct()
+        self.p.t = plt.gca().set_title('Frame ' + str(k) + ' to frame ' + str(k + 1))
+        self.p.i = plt.imshow(data.load_frame_morpho(k), cmap='gray')
+        # showWindows(w, find_boundaries(labelWindows(w0)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
+        if curvature:
+            f = compute_curvature(res.spline[k], np.linspace(0, 1, 10001))
+        else:
+            f = res.displacement[:, k]
+        self.p = show_edge_scatter_init(self.p, res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors/curvature)
+        plt.tight_layout()
+
+    def show_edge_vectorial_aux_update(self, data, res, k, curvature=False):
+        self.p.t.set_text('Frame ' + str(k) + ' to frame ' + str(k + 1))
+        self.p.i.set_data(data.load_frame_morpho(k))
+        # showWindows(w, find_boundaries(labelWindows(w0)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
+        if curvature:
+            f = compute_curvature(res.spline[k], np.linspace(0, 1, 10001))
+        else:
+            f = res.displacement[:, k]
+        self.p = show_edge_scatter_update(self.p, res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors/curvature)
+        plt.tight_layout()
 
     def set_mode(self, mode):
         self.curvature = mode == 'curvature'
@@ -637,6 +733,7 @@ def show_correlation(param, data, res, size=(16, 9)):
             # pp.savefig()
     pp.close()
 
+
 def show_correlation_average(param, data, res, size=(16, 9)):
     dcum = np.cumsum(res.displacement, axis=1)
 
@@ -734,6 +831,10 @@ class Correlation():
                 self.f1 = self.get_signal(change['new'], mode_selector.value)
                 plt.figure(self.fig.number)
                 self.show_correlation()
+                plt.figure(self.fig_avg.number)
+                self.show_correlation_average(self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, self.window_slider.value)
+                plt.figure(self.fig_compl.number)
+                self.show_correlation_compl(self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, self.window_slider.value)
 
         self.signal1_selector.observe(signal1_change, names='value')
 
@@ -748,6 +849,10 @@ class Correlation():
                 self.f2 = self.get_signal(change['new'], mode_selector.value)
                 plt.figure(self.fig.number)
                 self.show_correlation()
+                plt.figure(self.fig_avg.number)
+                self.show_correlation_average(self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, self.window_slider.value)
+                plt.figure(self.fig_compl.number)
+                self.show_correlation_compl(self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, self.window_slider.value)
 
         self.signal2_selector.observe(signal2_change, names='value')
 
@@ -763,8 +868,23 @@ class Correlation():
                 self.f2 = self.get_signal(self.signal2_selector.value, change['new'])
                 plt.figure(self.fig.number)
                 self.show_correlation()
+                plt.figure(self.fig_avg.number)
+                self.show_correlation_average(self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, self.window_slider.value)
+                plt.figure(self.fig_compl.number)
+                self.show_correlation_compl(self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, self.window_slider.value)
 
         mode_selector.observe(mode_change, names='value')
+
+        self.window_slider = ipw.IntRangeSlider(description='Window range', min=0, max=self.res.I[0]-1, value=[0, self.res.I[0]-1], layout=ipw.Layout(width='100%'))
+
+        def window_change(change):
+            with out:
+                plt.figure(self.fig_avg.number)
+                self.show_correlation_average(self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, self.window_slider.value)
+                plt.figure(self.fig_compl.number)
+                self.show_correlation_compl(self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, self.window_slider.value)
+
+        self.window_slider.observe(window_change, names='value')
 
         display(ipw.HBox([self.signal1_selector, self.signal2_selector, mode_selector]))
 
@@ -772,6 +892,14 @@ class Correlation():
         self.f1 = self.get_signal(self.signal1_selector.value, mode_selector.value)
         self.f2 = self.get_signal(self.signal2_selector.value, mode_selector.value)
         self.show_correlation()
+
+        display(self.window_slider)
+
+        self.fig_avg = plt.figure(figsize=(8, 6))
+        self.show_correlation_average(self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, self.window_slider.value)
+        self.fig_compl = plt.figure(figsize=(8, 6))
+        self.show_correlation_compl(self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, self.window_slider.value)
+
         display(out)
 
     def get_signal(self, name, mode):
@@ -790,6 +918,28 @@ class Correlation():
         c = correlate_arrays(self.f1, self.f2, 'Pearson')
         show_correlation_core(c, self.f1, self.f2, self.signal1_selector.value, self.signal2_selector.value, 'Pearson')
 
+    def show_correlation_average(self, f1, f2, f1_name, f2_name, range):
+        plt.clf()
+        plt.gca().set_title('Average correlation between ' + f1_name + ' and ' + f2_name + ' - Windows ' + str(range[0]) + ' to ' + str(range[1]))
+        t = get_range(f1.shape[1], f2.shape[1])
+        c = correlate_arrays(f1[range[0]:range[1]+1], f2[range[0]:range[1]+1], 'Pearson')
+        plt.plot(t, np.mean(c, axis=0))
+        plt.grid()
+        plt.xlabel('Time lag [frames]')
+        plt.ylabel('Correlation')
+
+    def show_correlation_compl(self, f1, f2, f1_name, f2_name, r):
+        i = np.concatenate((np.array(range(0, r[0]), dtype=np.int), np.array(range(r[1]+1, self.res.I[0]), dtype=np.int)))
+        if len(i) > 0:
+            plt.clf()
+            plt.gca().set_title('Average correlation between ' + f1_name + ' and ' + f2_name + ' - Windows 0 to ' + str(r[0] - 1) + ' and ' + str(r[1] + 1) + ' to ' + str(self.res.I[0]))
+            t = get_range(f1.shape[1], f2.shape[1])
+            c = correlate_arrays(f1[i], f2[i], 'Pearson')
+            plt.plot(t, np.mean(c, axis=0))
+            plt.grid()
+            plt.xlabel('Time lag [frames]')
+            plt.ylabel('Correlation')
+
 
 def show_analysis(data, param, res):
     """ Display the results of the morphodynamics analysis. """
@@ -807,21 +957,15 @@ def show_analysis(data, param, res):
     #     pp.savefig()
     #     pp.close()
 
-    output = Struct()
-    output.dir = param.resultdir
-    output.size = (16, 9)
-    output.display = False
-    output.pdf = True
-    output.tiff = True
-
     if param.showCircularity:
-        show_circularity(param, data, res)
+        show_circularity(param, data, res, export=True)
 
     if param.showEdgeOverview:
-        show_edge_overview(param, data, res)
+        show_edge_overview(param, data, res, export=True)
 
     if param.showEdgeVectorial:
-        show_edge_vectorial(param, data, res, curvature=False)
+        ev = EdgeVectorial(param, data, res)
+        ev.show_edge_vectorial(param, data, res, curvature=False)
 
     if param.showEdgeRasterized:
         show_edge_rasterized(param, data, res)
@@ -843,3 +987,104 @@ def show_analysis(data, param, res):
 
     if param.showFourierDescriptors:
         show_fourier_descriptors(param, data, res)
+
+class BatchExport():
+    def __init__(self, param, data, res):
+        self.param = param
+        self.data = data
+        self.res = res
+
+    def create_interface(self):
+        out = ipw.Output()
+
+        circularity_checkbox = ipw.Checkbox(
+            value=self.param.showCircularity,
+            description='Circularity',
+            disabled=False,
+            indent=False
+        )
+
+        edge_overview_checkbox = ipw.Checkbox(
+            value=self.param.showEdgeOverview,
+            description='Edge overview',
+            disabled=False,
+            indent=False
+        )
+
+        edge_vectorial_checkbox = ipw.Checkbox(
+            value=self.param.showEdgeVectorial,
+            description='Edge vectorial',
+            disabled=False,
+            indent=False
+        )
+
+        edge_rasterized_checkbox = ipw.Checkbox(
+            value=self.param.showEdgeRasterized,
+            description='Edge rasterized',
+            disabled=False,
+            indent=False
+        )
+
+        curvature_checkbox = ipw.Checkbox(
+            value=self.param.showCurvature,
+            description='Curvature',
+            disabled=False,
+            indent=False
+        )
+
+        displacement_checkbox = ipw.Checkbox(
+            value=self.param.showDisplacement,
+            description='Displacement',
+            disabled=False,
+            indent=False
+        )
+
+        signals_checkbox = ipw.Checkbox(
+            value=self.param.showSignals,
+            description='Signals',
+            disabled=False,
+            indent=False
+        )
+
+        correlation_checkbox = ipw.Checkbox(
+            value=self.param.showCorrelation,
+            description='Correlation',
+            disabled=False,
+            indent=False
+        )
+
+        fourier_descriptors_checkbox = ipw.Checkbox(
+            value=self.param.showFourierDescriptors,
+            description='Fourier descriptors',
+            disabled=False,
+            indent=False
+        )
+
+        export_button = ipw.Button(
+            description='Export figures',
+            disabled=False,
+            button_style='',  # 'success', 'info', 'warning', 'danger' or ''
+            # tooltip='Click me',
+            # icon='check'  # (FontAwesome names without the `fa-` prefix)
+        )
+
+        def export_figures(change):
+            with out:
+                self.param.showCircularity = circularity_checkbox.value
+                self.param.showEdgeOverview = edge_overview_checkbox.value
+                self.param.showEdgeVectorial = edge_vectorial_checkbox.value
+                self.param.showEdgeRasterized = edge_rasterized_checkbox.value
+                self.param.showCurvature = curvature_checkbox.value
+                self.param.showDisplacement = displacement_checkbox.value
+                self.param.showSignals = signals_checkbox.value
+                self.param.showCorrelation = correlation_checkbox.value
+                self.param.showFourierDescriptors = fourier_descriptors_checkbox.value
+                matplotlib.use('PDF')
+                show_analysis(self.data, self.param, self.res)
+                matplotlib.use('nbAgg')
+
+        export_button.on_click(export_figures)
+
+        display(circularity_checkbox, edge_overview_checkbox, edge_vectorial_checkbox, edge_rasterized_checkbox, curvature_checkbox, displacement_checkbox, signals_checkbox, correlation_checkbox, fourier_descriptors_checkbox, export_button)
+
+        display(out)
