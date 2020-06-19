@@ -221,3 +221,15 @@ def show_windows(w, b):
             if np.any(w[j][i]):
                 p = [np.mean(w[j][i][0]), np.mean(w[j][i][1])]
                 plt.text(p[1], p[0], str(i), color='yellow', fontsize=4, horizontalalignment='center', verticalalignment='center')
+
+
+def calculate_windwos_index(w):
+    """ Display the sampling-window boundaries and indices. """
+    windows_pos = []
+    for j in range(len(w)):
+        for i in range(len(w[j])):
+            if np.any(w[j][i]):
+                p = [np.mean(w[j][i][0]), np.mean(w[j][i][1])]
+                windows_pos.append([p[1], p[0], i])
+
+    return windows_pos
