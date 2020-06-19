@@ -1,4 +1,7 @@
+import os
+
 import numpy as np
+import skimage
 from PIL import Image
 from skimage.external.tifffile import TiffWriter, imread
 
@@ -19,10 +22,13 @@ class VirtualData:
             tw.save(x, compress=6)
         tw.close()
 
-    def get_channel_name(self, m):
+    def load_frame_morpho(self, k):
         pass
 
     def load_frame_signal(self, m, k):
+        pass
+
+    def get_channel_name(self, m):
         pass
 
 
@@ -43,6 +49,24 @@ class TIFFSeries(VirtualData):
 
     def get_channel_name(self, m):
         return self.signalfile[m](0).split('/')[0]
+
+
+class TIFFSeriesAutodetect(VirtualData):
+    def __init__(self, cur_dir, segm_folder, segment_files, signal_files):
+        self.cur_dir = cur_dir
+        self.segm_folder = segm_folder
+        self.segment_files = segment_files
+        self.signal_files = signal_files
+
+    def load_frame_morpho(self, t):
+        return skimage.io.imread(os.path.join(self.cur_dir, self.segm_folder, self.segment_files[t]))
+
+    def load_frame_signal(self, channel_ind, t):
+        return skimage.io.imread(os.path.join(self.cur_dir, channel_ind, self.signal_files[channel_ind][t]))
+
+    def get_channel_name(self, m):
+        # return self.signalfile[m](0).split('/')[0]
+        return 'default'
 
 
 class MultipageTIFF(VirtualData):
