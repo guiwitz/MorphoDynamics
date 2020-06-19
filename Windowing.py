@@ -223,7 +223,7 @@ def show_windows(w, b):
                 plt.text(p[1], p[0], str(i), color='yellow', fontsize=4, horizontalalignment='center', verticalalignment='center')
 
 
-def calculate_windwos_index(w):
+def calculate_windows_index(w):
     """ Display the sampling-window boundaries and indices. """
     windows_pos = []
     for j in range(len(w)):
