@@ -48,7 +48,6 @@ def analyze_morphodynamics(data, param):
 
     # Main loop on frames
     for k in range(0, data.K):
-        print(k)
         x = data.load_frame_morpho(k)  # Input image
 
         m = segment(x, param.sigma, param.T(k) if callable(param.T) else param.T)  # Thresholded image with small regions removed
