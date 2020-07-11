@@ -1,4 +1,6 @@
 import math
+import os
+
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -7,12 +9,12 @@ from IPython.display import display
 from matplotlib.backends.backend_pdf import PdfPages
 from skimage.external.tifffile import imsave, TiffWriter
 from scipy.interpolate import splev
+from scipy.stats import norm
 from PIL import Image
 from Correlation import show_correlation_core, correlate_arrays, get_range
 from DisplacementEstimation import show_edge_line, show_edge_image, compute_curvature, compute_length, compute_area, \
     splevper, show_edge_scatter_init, show_edge_scatter_update, show_edge_scatter
 from Settings import Struct
-
 
 def show_circularity(param, data, res, export=False, size=(16, 9)):
     if export:
@@ -875,7 +877,27 @@ class Correlation():
 
         mode_selector.observe(mode_change, names='value')
 
-        self.window_slider = ipw.IntRangeSlider(description='Window range', min=0, max=self.res.I[0]-1, value=[0, self.res.I[0]-1], layout=ipw.Layout(width='100%'))
+        self.export_button = ipw.Button(
+            description='Export as CSV',
+            disabled=False,
+            button_style='',  # 'success', 'info', 'warning', 'danger' or ''
+            # tooltip='Click me',
+            # icon='check'  # (FontAwesome names without the `fa-` prefix)
+        )
+
+        def export_as_csv(change):
+            with out:
+                c = correlate_arrays(self.f1, self.f2, 'Pearson')
+                np.savetxt(os.path.join(self.param.resultdir, "Correlation.csv"), c, delimiter=",")
+
+        self.export_button.on_click(export_as_csv)
+
+        self.window_slider = ipw.IntRangeSlider(description='Window range', min=0, max=self.res.I[0]-1, value=[0, self.res.I[0]-1], style={"description_width": "initial"}, layout=ipw.Layout(width='100%'), continuous_update=False)
+        # self.default_path_from_browser_button = ipw.Button(
+        #     description="Update using browser",
+        #     layout={"width": "200px"},
+        #     style={"description_width": "initial"},
+        # )
 
         def window_change(change):
             with out:
@@ -886,7 +908,7 @@ class Correlation():
 
         self.window_slider.observe(window_change, names='value')
 
-        display(ipw.HBox([self.signal1_selector, self.signal2_selector, mode_selector]))
+        display(ipw.HBox([self.signal1_selector, self.signal2_selector, ipw.VBox([mode_selector, self.export_button])]))
 
         self.fig = plt.figure(figsize=(8, 6))
         self.f1 = self.get_signal(self.signal1_selector.value, mode_selector.value)
@@ -924,6 +946,14 @@ class Correlation():
         t = get_range(f1.shape[1], f2.shape[1])
         c = correlate_arrays(f1[range[0]:range[1]+1], f2[range[0]:range[1]+1], 'Pearson')
         plt.plot(t, np.mean(c, axis=0))
+        plt.plot(t, self.compute_significance_level(f1.shape[0], f1.shape[1], f2.shape[1], f1_name==f2_name), 'k--')
+        A, B = self.compute_confidence_interval(c)
+        # plt.plot(t, A, 'g')
+        # plt.plot(t, B, 'g')
+        plt.fill_between(t, A, B,
+                         facecolor="orange",  # The fill color
+                         color='red',  # The outline color
+                         alpha=0.2)  # Transparency of the fill
         plt.grid()
         plt.xlabel('Time lag [frames]')
         plt.ylabel('Correlation')
@@ -936,9 +966,75 @@ class Correlation():
             t = get_range(f1.shape[1], f2.shape[1])
             c = correlate_arrays(f1[i], f2[i], 'Pearson')
             plt.plot(t, np.mean(c, axis=0))
+            plt.plot(t, self.compute_significance_level(len(i), f1.shape[1], f2.shape[1], f1_name == f2_name), 'k--')
+            A, B = self.compute_confidence_interval(c)
+            plt.fill_between(t, A, B,
+                             facecolor="orange",  # The fill color
+                             color='red',  # The outline color
+                             alpha=0.2)  # Transparency of the fill
             plt.grid()
             plt.xlabel('Time lag [frames]')
             plt.ylabel('Correlation')
+
+    def compute_significance_level(self, M, K1, K2, autocorrelation=False):
+        np.random.seed(15943)
+        N = 1000
+        s = np.zeros((N, K1 + K2 - 1))
+        for n in range(N):
+            x = np.random.randn(M, K1)
+            if autocorrelation:
+                y = x
+            else:
+                y = np.random.randn(M, K2)
+            c = correlate_arrays(x, y, 'Pearson')
+            s[n] = np.mean(c, axis=0)
+        return np.percentile(s, 95, axis=0)
+
+    # def compute_confidence_interval(self, f1, f2, r):
+    #     np.random.seed(22304)
+    #     rho = correlate_arrays(f1[r[0]:r[1] + 1], f2[r[0]:r[1] + 1], 'Pearson')
+    #     M = rho.shape[0]
+    #     N = 1000
+    #     i = np.random.randint(0, M, (N, M))
+    #     rho_mean = np.zeros((N, rho.shape[1]))
+    #     for n in range(N):
+    #         rho_mean[n] = np.mean(rho[i[n, :]], axis=0)
+    #     A = np.percentile(rho_mean, 2.5, axis=0)
+    #     B = np.percentile(rho_mean, 97.5, axis=0)
+    #     return A, B
+
+
+    # def compute_confidence_interval(self, rho):
+    #     np.random.seed(22304)
+    #     M = rho.shape[0]
+    #     N = 1000
+    #     i = np.random.randint(0, M, (N, M))
+    #     rho_mean = np.zeros((N, rho.shape[1]))
+    #     for n in range(N):
+    #         rho_mean[n] = np.mean(rho[i[n, :]], axis=0)
+    #     A = np.percentile(rho_mean, 2.5, axis=0)
+    #     B = np.percentile(rho_mean, 97.5, axis=0)
+    #     return A, B
+
+
+    def compute_confidence_interval(self, rho):
+        np.random.seed(22304)
+        alpha = 0.025
+        M = rho.shape[0]
+        N = 1000
+        i = np.random.randint(0, M, (N, M))
+        idx = np.abs(rho) > 0.99999
+        rho[idx] = np.sign(rho[idx]) * 0.99999;
+        R = np.arctanh(rho)  # Expecting problems if correlation equals +1 or -1
+        T = np.mean(R, axis=0)
+        Tbs = np.zeros((N, rho.shape[1]))
+        for n in range(N):
+            Tbs[n] = np.mean(rho[i[n, :]], axis=0)
+        beta = np.mean(Tbs, axis=0) - T
+        v = np.var(Tbs, axis=0, ddof=1)  # Normalization by N-1, as in Matlab's bootci function
+        A = np.tanh(T-beta-v**0.5*norm.ppf(1-alpha))
+        B = np.tanh(T-beta-v**0.5*norm.ppf(alpha))
+        return A, B
 
 
 def show_analysis(data, param, res):
