@@ -12,6 +12,7 @@ import yaml
 from Parameters import Param
 from Dataset import MultipageTIFF, TIFFSeries, ND2
 from folders import Folders
+import utils
 
 from Analysis import analyze_morphodynamics
 from morpho_plots import show_windows as show_windows2
@@ -77,6 +78,9 @@ class InteractSeg():
 
         self.load_button = ipw.Button(description='Load segmentation')
         self.load_button.on_click(self.load_data)
+        
+        self.load_params_button = ipw.Button(description='Load parameters')
+        self.load_params_button.on_click(self.load_params)
 
         # slider for time limits to analyze
         self.time_slider = ipw.IntSlider(
@@ -103,7 +107,7 @@ class InteractSeg():
         self.depth_text.observe(self.update_params, names='value')
 
         # run the analysis button
-        self.run_button = ipw.Button(description='Run segmentation')
+        self.run_button = ipw.Button(description='Click to segment')
         self.run_button.on_click(self.run_segmentation)
 
         # load or initialize
@@ -147,8 +151,10 @@ class InteractSeg():
     def run_segmentation(self, b=None):
         """Run segmentation analysis"""
 
+        self.run_button.description = 'Segmenting...'
         self.res = analyze_morphodynamics(self.data, self.param)
         self.show_segmentation(change='init')
+        self.run_button.description = 'Click to segment'
 
     def windows_for_plot(self, image, time):
 
@@ -188,8 +194,9 @@ class InteractSeg():
                               ax=self.ax, implot=self.implot, wplot=self.wplot, tplt=self.tplt)
                 self.ax.set_title(f'Time:{self.data.valid_frames[t]}')'''
             plt.figure(self.fig.number)
-            self.implot, self.wplot, self.tplt = show_windows2(
+            self.ax, self.implot, self.wplot, self.tplt = show_windows2(
                         image, window, b0, windows_pos)
+            self.ax.set_title(f'Time:{self.data.valid_frames[t]}')
 
         if change == 'init':
             self.intensity_range_slider.max = int(image.max())
@@ -303,60 +310,52 @@ class InteractSeg():
             documents = yaml.dump(dict_file, file)
 
     def load_data(self, b):
-        """Callback to load data"""
+        """Callback to load params, data and results"""
 
         folder_load = self.main_folder.cur_dir
         #self.param = dill.load(open(os.path.join(folder_load, 'Parameters.pkl'), "rb"))
+        
+        self.param, self.res, self.data = utils.load_alldata(folder_load, load_results = True)
+        
+        param_copy = deepcopy(self.param)
+        self.update_interface(param_copy)
+        
+        self.show_segmentation(change='init')
 
-        self.param = Param()
-        with open(self.main_folder.cur_dir.joinpath('Parameters.yml')) as file:
-            documents = yaml.full_load(file)
-        for k in documents.keys():
-            setattr(self.param, k, documents[k])
+        
+    def load_params(self, b):
+        """Callback to load only params and data """
 
-        self.param_temp = deepcopy(self.param)
-
-        self.res = dill.load(open(os.path.join(folder_load, 'Results.pkl'), "rb"))
-
-        self.expdir = Path(self.param.expdir)
-        #self.data = dill.load(open(os.path.join(folder_load, 'Data.pkl'), "rb"))
-
-        if self.param.data_type == 'series':
-            self.data = TIFFSeries(self.expdir, self.param.morpho_name, 
-                                   self.param.signal_name, data_type=self.param.data_type,
-                                   step=self.param.step, bad_frames=self.param.bad_frames,
-                                   max_time=self.param.max_time)
-
-        elif self.param.data_type == 'multi':
-            self.data = MultipageTIFF(self.expdir, self.param.morpho_name,
-                                      self.param.signal_name, data_type=self.param.data_type,
-                                      step=self.param.step, bad_frames=self.param.bad_frames,
-                                      max_time=self.param.max_time)
-
-        elif self.param.data_type == 'nd2':
-            self.data = ND2(self.expdir, self.param.morpho_name,
-                            self.param.signal_name, data_type=self.param.data_type,
-                            step=self.param.step, bad_frames=self.param.bad_frames,
-                            max_time=self.param.max_time)
+        folder_load = self.main_folder.cur_dir
+        #self.param = dill.load(open(os.path.join(folder_load, 'Parameters.pkl'), "rb"))
+        
+        self.param, _, self.data = utils.load_alldata(folder_load, load_results = False)
+        
+        param_copy = deepcopy(self.param)
+        self.update_interface(param_copy)
+        
+        
+    def update_interface(self, param_copy):
+        
+        self.expdir = Path(param_copy.expdir)
 
         if self.data.data_type == 'nd2':
             self.main_folder.cur_dir = self.expdir.parent
             self.main_folder.refresh(None)
-            self.segm_folders.options = [self.param_temp.morpho_name]
-            self.channels_folders.options = self.param_temp.signal_name
+            self.segm_folders.options = [param_copy.morpho_name]
+            self.channels_folders.options = param_copy.signal_name
         else:
             self.main_folder.cur_dir = self.expdir
             self.main_folder.refresh(None)
 
         # folders
-        self.segm_folders.value = self.param_temp.morpho_name
-        self.channels_folders.value = self.param_temp.signal_name
+        self.segm_folders.value = param_copy.morpho_name
+        self.channels_folders.value = param_copy.signal_name
 
-        self.width_text.value = self.param_temp.width
-        self.depth_text.value = self.param_temp.depth
-        self.maxtime.value = self.param_temp.max_time
+        self.width_text.value = param_copy.width
+        self.depth_text.value = param_copy.depth
+        self.maxtime.value = param_copy.max_time
 
         self.time_slider.max = self.data.K-1
-        self.step.value = self.param_temp.step
+        self.step.value = param_copy.step
 
-        self.show_segmentation(change='init')
