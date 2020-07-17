@@ -1,4 +1,5 @@
-import os, math
+import math
+import os
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -8,6 +9,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 #from skimage.external.tifffile import imsave, TiffWriter
 from tifffile import TiffWriter, imsave
 from scipy.interpolate import splev
+from scipy.stats import norm
 from PIL import Image
 from .Correlation import show_correlation_core, correlate_arrays, get_range
 from .DisplacementEstimation import show_edge_line, show_edge_image, compute_curvature, compute_length, compute_area, \
