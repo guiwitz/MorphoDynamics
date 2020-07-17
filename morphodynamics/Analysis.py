@@ -1,12 +1,13 @@
 import numpy as np
-from skimage.external.tifffile import TiffWriter
+#from skimage.external.tifffile import TiffWriter
+from tifffile import TiffWriter
 from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages
-from Settings import Struct
-from Segmentation import segment, extract_contour
-from DisplacementEstimation import fit_spline, map_contours2, rasterize_curve, compute_length, compute_area, show_edge_scatter, align_curves, subdivide_curve, subdivide_curve_discrete, splevper, map_contours3
-from Windowing import create_windows, extract_signals, label_windows, show_windows
+from .Settings import Struct
+from .Segmentation import segment, extract_contour
+from .DisplacementEstimation import fit_spline, map_contours2, rasterize_curve, compute_length, compute_area, show_edge_scatter, align_curves, subdivide_curve, subdivide_curve_discrete, splevper, map_contours3
+from .Windowing import create_windows, extract_signals, label_windows, show_windows
 import matplotlib.pyplot as plt
 
 

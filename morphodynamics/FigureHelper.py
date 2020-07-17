@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
-from skimage.external.tifffile import imsave
 from matplotlib.backends.backend_pdf import PdfPages
-from skimage.external.tifffile import TiffWriter
+#from skimage.external.tifffile import TiffWriter, imsave
+from tifffile import TiffWriter, imsave
 
 # PDF
 # Figure window

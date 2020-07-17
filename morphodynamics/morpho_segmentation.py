@@ -9,15 +9,15 @@ import dill
 from nd2reader import ND2Reader
 import yaml
 
-from Parameters import Param
-from Dataset import MultipageTIFF, TIFFSeries, ND2
-from folders import Folders
-import utils
+from .Parameters import Param
+from .Dataset import MultipageTIFF, TIFFSeries, ND2
+from .folders import Folders
 
-from Analysis import analyze_morphodynamics
-from morpho_plots import show_windows as show_windows2
-from Windowing import label_windows, calculate_windows_index, create_windows
-from DisplacementEstimation import rasterize_curve, splevper
+from .Analysis import analyze_morphodynamics
+from .morpho_plots import show_windows as show_windows2
+from .Windowing import label_windows, calculate_windows_index, create_windows
+from .DisplacementEstimation import rasterize_curve, splevper
+from . import utils
 
 
 class InteractSeg():
@@ -78,10 +78,9 @@ class InteractSeg():
 
         self.load_button = ipw.Button(description='Load segmentation')
         self.load_button.on_click(self.load_data)
-        
+
         self.load_params_button = ipw.Button(description='Load parameters')
         self.load_params_button.on_click(self.load_params)
-
         # slider for time limits to analyze
         self.time_slider = ipw.IntSlider(
             description = 'Time', min=0, max=0, value=0, continous_update=False)
@@ -121,12 +120,17 @@ class InteractSeg():
         # parameters
         self.step = ipw.IntText(value=1, description='Step')
         self.step.observe(self.update_data_params, names='value')
+        
+        # parameters
+        self.bad_frames = ipw.Text(value='', description='Bad frames (e.g. 1,2,5-8,12)')
+        self.bad_frames.observe(self.update_data_params, names='value')
 
         self.out_debug = ipw.Output()
         self.out = ipw.Output()
 
         with self.out:
             self.fig, self.ax = plt.subplots(figsize=(5, 5))
+            self.ax.set_title(f'Time:')
         self.implot = None
         self.wplot = None
         self.tplt = None
@@ -150,7 +154,6 @@ class InteractSeg():
 
     def run_segmentation(self, b=None):
         """Run segmentation analysis"""
-
         self.run_button.description = 'Segmenting...'
         self.res = analyze_morphodynamics(self.data, self.param)
         self.show_segmentation(change='init')
@@ -194,9 +197,10 @@ class InteractSeg():
                               ax=self.ax, implot=self.implot, wplot=self.wplot, tplt=self.tplt)
                 self.ax.set_title(f'Time:{self.data.valid_frames[t]}')'''
             plt.figure(self.fig.number)
-            self.ax, self.implot, self.wplot, self.tplt = show_windows2(
+            self.implot, self.wplot, self.tplt = show_windows2(
                         image, window, b0, windows_pos)
-            self.ax.set_title(f'Time:{self.data.valid_frames[t]}')
+            #self.ax.set_title(f'Time:{self.data.valid_frames[t]}')
+            self.fig.axes[0].set_title(f'Time:{self.data.valid_frames[t]}')
 
         if change == 'init':
             self.intensity_range_slider.max = int(image.max())
@@ -246,7 +250,12 @@ class InteractSeg():
 
         self.param.max_time = self.maxtime.value
         self.param.step = self.step.value
-        #self.param.bad_frames =
+
+        #parse bad frames
+        bads = utils.format_bad_frames(self.bad_frames.value)
+        self.param.bad_frames = bads
+
+        #update params
         self.data.update_params(self.param)
 
         self.time_slider.max = self.data.K-1
@@ -299,12 +308,15 @@ class InteractSeg():
         for x in dir(self.param):
             if x[0]=='_':
                 None
-            #elif x == 'expdir':
-            #    dict_file[x] = getattr(interactseg.param, x).as_posix()
+            elif x == 'resultdir':
+                dict_file[x] = getattr(self.param, x).as_posix()
             else:
                 dict_file[x] = getattr(self.param, x)
 
-        del dict_file['resultdir']
+        #del dict_file['resultdir']
+
+
+        dict_file['bad_frames'] = self.bad_frames.value
 
         with open(self.saving_folder.cur_dir.joinpath('Parameters.yml'), 'w') as file:
             documents = yaml.dump(dict_file, file)
@@ -314,15 +326,15 @@ class InteractSeg():
 
         folder_load = self.main_folder.cur_dir
         #self.param = dill.load(open(os.path.join(folder_load, 'Parameters.pkl'), "rb"))
-        
+
         self.param, self.res, self.data = utils.load_alldata(folder_load, load_results = True)
-        
+        self.param.bad_frames = utils.format_bad_frames(self.param.bad_frames)
+
         param_copy = deepcopy(self.param)
         self.update_interface(param_copy)
         
         self.show_segmentation(change='init')
 
-        
     def load_params(self, b):
         """Callback to load only params and data """
 
@@ -333,10 +345,9 @@ class InteractSeg():
         
         param_copy = deepcopy(self.param)
         self.update_interface(param_copy)
-        
-        
+
     def update_interface(self, param_copy):
-        
+
         self.expdir = Path(param_copy.expdir)
 
         if self.data.data_type == 'nd2':
@@ -355,7 +366,46 @@ class InteractSeg():
         self.width_text.value = param_copy.width
         self.depth_text.value = param_copy.depth
         self.maxtime.value = param_copy.max_time
+        self.bad_frames.value = param_copy.bad_frames_txt
 
         self.time_slider.max = self.data.K-1
         self.step.value = param_copy.step
 
+
+    def ui(self):
+        '''Create interface'''
+
+        self.interface = ipw.VBox([
+            ipw.HTML('<font size="5"><b>Choose main folder<b></font>'),
+            ipw.HTML('<font size="2"><b>This folder is either the folder containing the data\
+                or the folder containing en existing segmentation to load<b></font>'),
+            self.main_folder.file_list,
+            self.load_button,
+            #ipw.HTML('<br>'),
+            ipw.HTML('<br><font size="5"><b>Chose segmentation and signal channels (folders or tifs)<b></font>'),
+            ipw.HBox([
+                ipw.VBox([ipw.HTML('<font size="2"><b>Segmentation<b></font>'),self.segm_folders]),
+                ipw.VBox([ipw.HTML('<font size="2"><b>Signal<b></font>'),self.channels_folders])
+            ]),
+            self.init_button,
+            
+            ipw.HTML('<br><font size="5"><b>Set segmentation parameters<b></font>'),
+            ipw.VBox([
+            self.maxtime,
+            self.step,
+            self.bad_frames,
+            self.width_text,
+            self.depth_text,
+            self.run_button
+            ]),
+            
+            ipw.VBox([self.time_slider, self.intensity_range_slider,
+                self.show_windows_choice, self.show_text_choice,
+                self.out]),
+            
+            ipw.HTML('<br><font size="5"><b>Saving<b></font>'),
+            ipw.HTML('<font size="2"><b>Select folder where to save<b></font>'),
+            self.saving_folder.file_list,
+            self.export_button
+            
+        ])

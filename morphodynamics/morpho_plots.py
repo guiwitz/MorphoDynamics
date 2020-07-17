@@ -45,4 +45,4 @@ def show_windows(image, w, b, windows_pos):
     for p in windows_pos:
         tplt.append(ax.text(p[0], p[1], p[2], color='yellow', fontsize=8, horizontalalignment='center', verticalalignment='center'))
 
-    return ax, implot, wplot, tplt
+    return implot, wplot, tplt

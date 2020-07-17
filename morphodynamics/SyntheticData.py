@@ -1,6 +1,7 @@
 import math
 import numpy as np
-from skimage.external.tifffile import imsave
+#from skimage.external.tifffile import imsave
+from tifffile import imsave
 
 
 def pumpingDisk(k):

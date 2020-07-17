@@ -1,10 +1,12 @@
 import dill
 import os
 import yaml
-
-from Parameters import Param
+import numpy as np
 from pathlib import Path
-from Dataset import TIFFSeries, MultipageTIFF, ND2
+
+from .Parameters import Param
+from .Dataset import TIFFSeries, MultipageTIFF, ND2
+
 
 def load_alldata(folder_path, load_results = False):
 
@@ -15,6 +17,8 @@ def load_alldata(folder_path, load_results = False):
         documents = yaml.full_load(file)
     for k in documents.keys():
         setattr(param, k, documents[k])
+    param.bad_frames_txt = param.bad_frames
+    param.bad_frames = format_bad_frames(param.bad_frames)
 
     res = None
     if load_results:
@@ -42,3 +46,19 @@ def load_alldata(folder_path, load_results = False):
             max_time=param.max_time)
 
     return param, res, data
+
+def format_bad_frames(bad_frames):
+    if bad_frames == '' :
+        bads = []
+    else:
+        try:
+            bads = [x.split('-') for x in bad_frames.split(',')]
+            bads = [[int(x) for x in y] for y in bads]
+            bads = np.concatenate([np.array(x) if len(x)==1 else np.arange(x[0],x[1]+1) for x in bads])
+        except:
+            bads = []
+
+    bads = list(bads)
+    bads = [x.item() for x in bads]
+
+    return bads
