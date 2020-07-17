@@ -13,5 +13,8 @@ dependencies:
   - nodejs
   - pip
   - nd2reader
+  - ipympl
   - pip:
     - dill
+    - tifffile
+    - aicsimageio
