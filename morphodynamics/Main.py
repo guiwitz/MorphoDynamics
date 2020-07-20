@@ -1,8 +1,8 @@
 import os
 import dill
-from Analysis import analyze_morphodynamics
-from ArtifactGeneration import show_analysis
-from Settings import load_settings
+from .Analysis import analyze_morphodynamics
+from .ArtifactGeneration import show_analysis
+from .Settings import load_settings
 
 # dataset_name = 'Ellipse with triangle dynamics'
 # dataset_name = 'Change of origin'

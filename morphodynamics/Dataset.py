@@ -116,6 +116,7 @@ class TIFFSeries(Data):
 
         image = self.load_frame_morpho(0)
         self.dims = image.shape
+        self.shape = image.shape
         
     def load_frame_morpho(self, k):
         
@@ -155,6 +156,7 @@ class MultipageTIFF(Data):
 
         image = self.load_frame_morpho(0)
         self.dims = image.shape
+        self.shape = image.shape
         
     def load_frame_morpho(self, k):
         
@@ -198,7 +200,7 @@ class ND2(Data):
 
         image = self.load_frame_morpho(0)
         self.dims = image.shape
-        
+        self.shape = image.shape
 
     def load_frame_morpho(self, k):
         

@@ -1,24 +1,25 @@
 import math
 import os
-
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import ipywidgets as ipw
 from IPython.display import display
 from matplotlib.backends.backend_pdf import PdfPages
-from skimage.external.tifffile import imsave, TiffWriter
+#from skimage.external.tifffile import imsave, TiffWriter
+from tifffile import TiffWriter, imsave
 from scipy.interpolate import splev
 from scipy.stats import norm
 from PIL import Image
-from Correlation import show_correlation_core, correlate_arrays, get_range
-from DisplacementEstimation import show_edge_line, show_edge_image, compute_curvature, compute_length, compute_area, \
+from .Correlation import show_correlation_core, correlate_arrays, get_range
+from .DisplacementEstimation import show_edge_line, show_edge_image, compute_curvature, compute_length, compute_area, \
     splevper, show_edge_scatter_init, show_edge_scatter_update, show_edge_scatter
-from Settings import Struct
+from .Settings import Struct
+
 
 def show_circularity(param, data, res, export=False, size=(16, 9)):
     if export:
-        pp = PdfPages(param.resultdir + 'Circularity.pdf')
+        pp = PdfPages(os.path.join(param.resultdir, 'Circularity.pdf'))
     else:
         pp = None
 
@@ -60,7 +61,7 @@ def show_edge_overview(param, data, res, export=False, size=(12,9)):
     show_edge_line(res.spline)
     plt.tight_layout()
     if export:
-        plt.savefig(param.resultdir + 'Edge overview.pdf')
+        plt.savefig(os.path.join(param.resultdir, 'Edge overview.pdf'))
 
 
 def show_edge_vectorial_aux(data, res, k, curvature=False):
@@ -83,7 +84,7 @@ def show_edge_vectorial(param, data, res, curvature=False, size=(12, 9)):
         name = 'Edge animation with displacement'
 
     plt.figure(figsize=size)
-    pp = PdfPages(param.resultdir + name + '.pdf')
+    pp = PdfPages(os.path.join(param.resultdir, name + '.pdf'))
 
     plt.text(0.5, 0.5, 'This page intentionally left blank.')
     pp.savefig()
@@ -191,7 +192,7 @@ class EdgeVectorial():
             name = 'Edge animation with displacement'
 
         plt.figure(figsize=size)
-        pp = PdfPages(param.resultdir + name + '.pdf')
+        pp = PdfPages(os.path.join(param.resultdir, name + '.pdf'))
 
         plt.text(0.5, 0.5, 'This page intentionally left blank.')
         pp.savefig()
@@ -339,7 +340,7 @@ def show_edge_rasterized(param, data, res, mode=None):
         y[k] = data.load_frame_morpho(k)
     y = 255 * y / np.max(y)
 
-    tw = TiffWriter(param.resultdir + name + '.tif')
+    tw = TiffWriter(os.path.join(param.resultdir, name + '.tif'))
     for k in range(data.K - 1):
         x = show_edge_rasterized_aux(data, res, d, dmax, k, mode, display=False)
         y0 = np.stack((y[k], y[k], y[k]), axis=-1)
@@ -454,14 +455,15 @@ class EdgeRasterized:
         plt.tight_layout()
 
 
-def show_curvature(param, data, res, size=(16, 9), cmax=None):
+def show_curvature(param, data, res, size=(16, 9), cmax=None, export=True):
     curvature = np.zeros((10000, data.K))
     for k in range(data.K):
         curvature[:, k] = compute_curvature(res.spline[k], np.linspace(0, 1, 10000, endpoint=False))
 
     plt.figure(figsize=size)
     plt.gca().set_title('Curvature')
-    pp = PdfPages(param.resultdir + 'Curvature.pdf')
+    if export:
+        pp = PdfPages(os.path.join(param.resultdir, 'Curvature.pdf'))
     if cmax is None:
         cmax = np.max(np.abs(curvature))
     plt.imshow(curvature, cmap='seismic', vmin=-cmax, vmax=cmax)
@@ -470,8 +472,9 @@ def show_curvature(param, data, res, size=(16, 9), cmax=None):
     plt.xlabel('Frame index')
     plt.ylabel('Position on contour')
     # imsave(param.resultdir + 'Curvature.tif', curvature.astype(np.float32), compress=6)
-    pp.savefig()
-    pp.close()
+    if export:
+        pp.savefig()
+        pp.close()
 
 
 class Curvature:
@@ -504,22 +507,26 @@ class Curvature:
         self.show_curvature(range_slider.value)
         display(out)
 
-    def show_curvature(self, cmax):
+    def show_curvature(self, cmax, export=True):
         plt.clf()
         plt.gca().set_title('Curvature')
-        pp = PdfPages(self.param.resultdir + 'Curvature.pdf')
+        if export:
+            pp = PdfPages(os.path.join(self.param.resultdir, 'Curvature.pdf'))
         plt.imshow(self.curvature, cmap='seismic', vmin=-cmax, vmax=cmax)
         plt.colorbar(label='Curvature')
         plt.axis('auto')
         plt.xlabel('Frame index')
         plt.ylabel('Position on contour')
         # imsave(param.resultdir + 'Curvature.tif', curvature.astype(np.float32), compress=6)
-        pp.savefig()
-        pp.close()
+        if export:
+            pp.savefig()
+            pp.close()
 
 
-def show_displacement(param, res, size=(16, 9)):
-    pp = PdfPages(param.resultdir + 'Displacement.pdf')
+def show_displacement(param, res, size=(16, 9), export=True):
+    
+    if export:
+        pp = PdfPages(os.path.join(param.resultdir, 'Displacement.pdf'))
 
     plt.figure(figsize=size)
     plt.gca().set_title('Displacement')
@@ -534,7 +541,8 @@ def show_displacement(param, res, size=(16, 9)):
         cmax = np.max(np.abs(res.displacement))
     plt.clim(-cmax, cmax)
     # plt.xticks(range(0, velocity.shape[1], 5))
-    pp.savefig()
+    if export:
+        pp.savefig()
     # imsave('Displacement.tif', res.displacement.astype(np.float32))
 
     dcum = np.cumsum(res.displacement, axis=1)
@@ -549,9 +557,10 @@ def show_displacement(param, res, size=(16, 9)):
     cmax = np.max(np.abs(dcum))
     plt.clim(-cmax, cmax)
     # plt.xticks(range(0, velocity.shape[1], 5))
-    pp.savefig()
+    if export:
+        pp.savefig()
 
-    pp.close()
+        pp.close()
 
 
 def show_signals_aux(param, data, res, m, j, mode):
@@ -573,18 +582,21 @@ def show_signals_aux(param, data, res, m, j, mode):
     # plt.xticks(range(0, mean.shape[1], 5))
 
 
-def show_signals(param, data, res, mode, size=(16, 9)):
+def show_signals(param, data, res, mode, size=(16, 9), export=True):
     f = plt.figure(figsize=size)
 
-    pp = PdfPages(param.resultdir + 'Signal ' + mode + '.pdf')
+    if export:
+        pp = PdfPages(os.path.join(param.resultdir, 'Signal ' + mode + '.pdf'))
     for m in range(len(data.signalfile)):
         for j in range(res.mean.shape[1]):
             plt.figure(f.number)
             show_signals_aux(param, data, res, m, j, mode)
             # if j == 0:
             #     imsave(param.resultdir + 'Signal ' + mode + ' ' + data.get_channel_name(m) + '.tif', res.mean[m, j, 0:res.I[j], :].astype(np.float32), compress=6)
-            pp.savefig()
-    pp.close()
+            if export:
+                pp.savefig()
+    if export:
+        pp.close()
 
     # pp = PdfPages(param.resultdir + 'Signal variance.pdf')
     # # tw = TiffWriter(param.resultdir + 'Variance.tif')
@@ -672,7 +684,7 @@ def show_fourier_descriptors_aux(res, k):
 
 def show_fourier_descriptors(param, data, res, size=(16, 9)):
     plt.figure(figsize=size)
-    pp = PdfPages(param.resultdir + 'Fourier descriptors.pdf')
+    pp = PdfPages(os.path.join(param.resultdir, 'Fourier descriptors.pdf'))
     for k in range(data.K):
         show_fourier_descriptors_aux(res, k)
         pp.savefig()
@@ -683,7 +695,7 @@ def show_correlation(param, data, res, size=(16, 9)):
 
     plt.figure(figsize=size)
 
-    pp = PdfPages(param.resultdir + "Correlation mean.pdf")
+    pp = PdfPages(os.path.join(param.resultdir, "Correlation mean.pdf"))
     c = correlate_arrays(res.displacement, res.displacement, 'Pearson')
     show_correlation_core(c, res.displacement, res.displacement, 'displacement', 'displacement', 'Pearson')
     pp.savefig()
@@ -709,7 +721,7 @@ def show_correlation(param, data, res, size=(16, 9)):
             # pp.savefig()
     pp.close()
 
-    pp = PdfPages(param.resultdir + "Correlation variance.pdf")
+    pp = PdfPages(os.path.join(param.resultdir, "Correlation variance.pdf"))
     # c = correlate_arrays(res.displacement, res.displacement, 'Pearson')
     # show_correlation_core(c, res.displacement, res.displacement, 'displacement', 'displacement', 'Pearson')
     # pp.savefig()
@@ -736,12 +748,13 @@ def show_correlation(param, data, res, size=(16, 9)):
     pp.close()
 
 
-def show_correlation_average(param, data, res, size=(16, 9)):
+def show_correlation_average(param, data, res, size=(16, 9), export=True):
     dcum = np.cumsum(res.displacement, axis=1)
 
     plt.figure(figsize=size)
 
-    pp = PdfPages(param.resultdir + "Correlation average.pdf")
+    if export:
+        pp = PdfPages(os.path.join(param.resultdir, "Correlation average.pdf"))
     plt.clf()
     plt.gca().set_title('Average cross-correlation between displacement and signals at layer ' + str(0))
     color = 'rbgymc'
@@ -755,7 +768,8 @@ def show_correlation_average(param, data, res, size=(16, 9)):
     plt.legend(loc="upper left")
     plt.xlabel('Time lag [frames]')
     plt.ylabel('Cross-correlation')
-    pp.savefig()
+    if export:
+        pp.savefig()
 
     # plt.clf()
     # plt.gca().set_title('Average cross-correlation between displacement and signals at layer ' + str(0) + ' - Windows 40 to 59')
@@ -785,7 +799,8 @@ def show_correlation_average(param, data, res, size=(16, 9)):
     plt.legend(loc="upper left")
     plt.xlabel('Time lag [frames]')
     plt.ylabel('Cross-correlation')
-    pp.savefig()
+    if export:
+        pp.savefig()
 
     plt.figure(figsize=size)
     plt.gca().set_title('Average autocorrelation of displacement')
@@ -795,7 +810,8 @@ def show_correlation_average(param, data, res, size=(16, 9)):
     plt.grid()
     plt.xlabel('Time lag [frames]')
     plt.ylabel('Correlation')
-    pp.savefig()
+    if export:
+        pp.savefig()
 
     plt.figure(figsize=size)
     plt.gca().set_title('Average autocorrelation of cumulative displacement')
@@ -805,8 +821,9 @@ def show_correlation_average(param, data, res, size=(16, 9)):
     plt.grid()
     plt.xlabel('Time lag [frames]')
     plt.ylabel('Correlation')
-    pp.savefig()
-    pp.close()
+    if export:
+        pp.savefig()
+        pp.close()
 
 
 class Correlation():

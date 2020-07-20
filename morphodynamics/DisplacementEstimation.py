@@ -8,12 +8,12 @@ import numpy as np
 from numpy.linalg import norm
 from skimage.measure import find_contours
 
-from FunctionalDefinition import Functional, Functional2, Functional3
-from FigureHelper import FigureHelper
+from .FunctionalDefinition import Functional, Functional2, Functional3
+from .FigureHelper import FigureHelper
 
 # fh = FigureHelper(not True)
-from Settings import Struct
-from Windowing import compute_discrete_arc_length
+from .Settings import Struct
+from .Windowing import compute_discrete_arc_length
 
 
 def splevper(t, s):
