@@ -1,5 +1,6 @@
 import numpy as np
-from skimage.external.tifffile import TiffWriter
+# from skimage.external.tifffile import TiffWriter
+from tifffile import TiffWriter
 from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages

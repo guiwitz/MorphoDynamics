@@ -3,7 +3,8 @@ import os
 import numpy as np
 import skimage
 from PIL import Image
-from skimage.external.tifffile import TiffWriter, imread
+# from skimage.external.tifffile import TiffWriter, imread
+from tifffile import TiffWriter, imread
 
 
 class VirtualData:
