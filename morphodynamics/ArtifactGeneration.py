@@ -121,7 +121,7 @@ class EdgeVectorialSlow():
 
         mode_selector.observe(mode_change, names='value')
 
-        time_slider = ipw.IntSlider(description='Time', min=0, max=self.data.K - 1, continuous_update=False, layout=ipw.Layout(width='100%'))
+        time_slider = ipw.IntSlider(description='Time', min=0, max=self.data.K - 2, continuous_update=False, layout=ipw.Layout(width='100%'))
 
         def time_change(change):
             with out:
