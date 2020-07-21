@@ -12,6 +12,12 @@ def load_settings(dataset_name):
     # Output directory
     param.resultdir = dataset_name + '/'
 
+    # Whether to use Cellpose for segmenting the cells
+    param.cellpose = True
+
+    # Diameter to be used by Cellpose
+    param.diameter = 100
+
     # Standard deviation for the Gaussian filter prior to segmentation; 0 deactivates filtering
     param.sigma = 2
 
@@ -46,7 +52,7 @@ def load_settings(dataset_name):
     # param.edgeNormalization = 'global'
     param.edgeNormalization = 'frame-by-frame'
 
-    # param.showSegmentation = True
+    param.showSegmentation = True
     # param.showWindows = True
     # param.showCircularity = True
     # param.showEdgeOverview = True
@@ -55,7 +61,7 @@ def load_settings(dataset_name):
     # param.showCurvature = True
     # param.showDisplacement = True
     # param.showSignals = True
-    param.showCorrelation = True
+    # param.showCorrelation = True
     # param.showFourierDescriptors = True
 
     if dataset_name == 'Ellipse with triangle dynamics':
@@ -103,6 +109,7 @@ def load_settings(dataset_name):
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
         # param.T = None
         param.T = 222
+        param.diameter = 110
     elif dataset_name == 'FRET_sensors + actinMigration_line_1D':
         expdir = 'FRET_sensors + actin/Migration_line_1D/'
         morphofile = lambda k: 'ratio_tiffs/photobleached_corrected_ratio_{:0>4d}'.format(k)
@@ -208,7 +215,7 @@ def load_settings(dataset_name):
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
         # param.T = None
         param.T = 1038.90  # 1232
-    # data.K = 10
+    data.K = 10
     return data, param
 
 # import matplotlib.pyplot as plt

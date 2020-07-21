@@ -7,8 +7,8 @@ from .Settings import load_settings
 # dataset_name = 'Ellipse with triangle dynamics'
 # dataset_name = 'Change of origin'
 # dataset_name = 'Moving ellipse'
-# dataset_name = 'FRET_sensors + actinHistamineExpt2'
-dataset_name = 'FRET_sensors + actinMigration_line_1D'
+dataset_name = 'FRET_sensors + actinHistamineExpt2'
+# dataset_name = 'FRET_sensors + actinMigration_line_1D'
 # dataset_name = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
 # dataset_name = 'GBD_sensors + actinExpt_01'
 # dataset_name = 'TIAM_protrusion'
@@ -23,7 +23,7 @@ data, param = load_settings(dataset_name)
 if not os.path.exists(param.resultdir):
     os.mkdir(param.resultdir)
 
-step = 2
+step = 1
 
 if step in [0, 1]:
     dill.dump(param, open(param.resultdir + 'Parameters.pkl', 'wb'))

@@ -1,5 +1,4 @@
 import numpy as np
-#from skimage.external.tifffile import TiffWriter
 from tifffile import TiffWriter
 from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
@@ -9,6 +8,7 @@ from .Segmentation import segment, extract_contour
 from .DisplacementEstimation import fit_spline, map_contours2, rasterize_curve, compute_length, compute_area, show_edge_scatter, align_curves, subdivide_curve, subdivide_curve_discrete, splevper, map_contours3
 from .Windowing import create_windows, extract_signals, label_windows, show_windows
 import matplotlib.pyplot as plt
+from cellpose import models
 
 
 def analyze_morphodynamics(data, param):
@@ -24,9 +24,18 @@ def analyze_morphodynamics(data, param):
         pp = None
         tw_win = None
 
+    if param.cellpose:
+        model = models.Cellpose(model_type='cyto')
+    else:
+        model = None
+
     # Calibration of the windowing procedure
     x = data.load_frame_morpho(0)
-    m = segment(x, param.sigma, param.T(0) if callable(param.T) else param.T)  # Thresholded image with small regions removed
+    if param.cellpose:
+        m, flows, styles, diams = model.eval([x], diameter=param.diameter, channels=[[0, 0]])
+        m = m[np.argmax([np.sum(m0) for m0 in m])]
+    else:
+        m = segment(x, param.sigma, param.T(0) if callable(param.T) else param.T)  # Thresholded image with small regions removed
     c = extract_contour(m)  # Discrete cell contour
     s = fit_spline(c, param.lambda_)
     c = rasterize_curve(x.shape, s, 0)
@@ -49,9 +58,14 @@ def analyze_morphodynamics(data, param):
 
     # Main loop on frames
     for k in range(0, data.K):
+        print(k)
         x = data.load_frame_morpho(k)  # Input image
 
-        m = segment(x, param.sigma, param.T(k) if callable(param.T) else param.T)  # Thresholded image with small regions removed
+        if param.cellpose:
+            m, flows, styles, diams = model.eval([x], diameter=param.diameter, channels=[[0,0]])
+            m = m[np.argmax([np.sum(m0) for m0 in m])]
+        else:
+            m = segment(x, param.sigma, param.T(k) if callable(param.T) else param.T)  # Thresholded image with small regions removed
         c = extract_contour(m)  # Discrete cell contour
 
         s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
