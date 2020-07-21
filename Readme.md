@@ -30,7 +30,7 @@ To update your local installation with the latest version available on GitHub, a
 
 ```
 conda activate morphodynamics 
-pip install --upgrade git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
+pip install --upgrade git+https://github.com/ZejjT5E44/MorphoDynamics.git@master#egg=morphodynamics
 ```
 
 The above command should prompt you to enter your GitHub username and password, as the repository is private.
