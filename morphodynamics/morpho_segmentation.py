@@ -125,6 +125,12 @@ class InteractSeg():
         self.bad_frames = ipw.Text(value='', description='Bad frames (e.g. 1,2,5-8,12)')
         self.bad_frames.observe(self.update_data_params, names='value')
 
+        self.segmentation = ipw.RadioButtons(options=['Thresholding', 'Cellpose'], description='Segmentation:')
+        self.segmentation.observe(self.update_params, names='value')
+
+        self.diameter = ipw.FloatText(value=100, description='Diameter:')
+        self.diameter.observe(self.update_params, names='value')
+
         self.out_debug = ipw.Output()
         self.out = ipw.Output()
 
@@ -263,6 +269,8 @@ class InteractSeg():
     def update_params(self, change=None):
         """Callback to update param paramters upon interactive editing"""
 
+        self.param.cellpose = self.segmentation.value == 'Cellpose'
+        self.param.diameter = self.diameter.value
         self.param.width = self.width_text.value
         self.param.depth = self.depth_text.value
 
@@ -363,6 +371,11 @@ class InteractSeg():
         self.segm_folders.value = param_copy.morpho_name
         self.channels_folders.value = param_copy.signal_name
 
+        if param_copy.cellpose:
+            self.segmentation.value = 'Cellpose'
+        else:
+            self.segmentation.value = 'Thresholding'
+        self.diameter.value = param_copy.diameter
         self.width_text.value = param_copy.width
         self.depth_text.value = param_copy.depth
         self.maxtime.value = param_copy.max_time
@@ -394,6 +407,8 @@ class InteractSeg():
             self.maxtime,
             self.step,
             self.bad_frames,
+            self.segmentation,
+            self.diameter,
             self.width_text,
             self.depth_text,
             self.run_button
