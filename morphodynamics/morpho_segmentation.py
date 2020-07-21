@@ -184,27 +184,30 @@ class InteractSeg():
         windows_pos = calculate_windows_index(window)
 
         with self.out:
-            '''if (change == 'init'):# or (self.ax is None):
-                if self.ax is not None:
-                    self.ax.cla()
-                    _, _, self.implot, self.wplot, self.tplt = show_windows2(
-                    image, self.res.windows[t], b0, windows_pos, ax=self.ax)
-                else:
-                    self.fig, self.ax, self.implot, self.wplot, self.tplt = show_windows2(
-                        image, self.res.windows[t], b0, windows_pos)
-            else:
-                show_windows2(image, self.res.windows[t], b0, windows_pos,
-                              ax=self.ax, implot=self.implot, wplot=self.wplot, tplt=self.tplt)
-                self.ax.set_title(f'Time:{self.data.valid_frames[t]}')'''
+            xlim = self.fig.axes[0].get_xlim()
+            ylim = self.fig.axes[0].get_ylim()
+            
             plt.figure(self.fig.number)
             self.implot, self.wplot, self.tplt = show_windows2(
                         image, window, b0, windows_pos)
-            #self.ax.set_title(f'Time:{self.data.valid_frames[t]}')
+            if xlim[1]>1:
+                self.fig.axes[0].set_xlim(xlim)
+                self.fig.axes[0].set_ylim(ylim)
             self.fig.axes[0].set_title(f'Time:{self.data.valid_frames[t]}')
 
+        # update max slider value with max image value
+        self.intensity_range_slider.unobserve_all()
+        self.intensity_range_slider.max = int(image.max())
+        self.intensity_range_slider.observe(self.update_intensity_range, names='value')
+
+        # when creating image use full intensity values
         if change == 'init':
-            self.intensity_range_slider.max = int(image.max())
             self.intensity_range_slider.value = (0, int(image.max()))
+
+        # set new frame to same intensity range as previous frame
+        self.implot.set_clim(
+            vmin = self.intensity_range_slider.value[0],
+            vmax = self.intensity_range_slider.value[1])
 
     def get_folders(self, change=None):
         '''Update folder options when selecting new main folder'''
