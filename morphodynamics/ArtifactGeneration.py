@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import ipywidgets as ipw
 from IPython.display import display
 from matplotlib.backends.backend_pdf import PdfPages
-#from skimage.external.tifffile import imsave, TiffWriter
 from tifffile import TiffWriter, imsave
 from scipy.interpolate import splev
 from scipy.stats import norm
@@ -1093,7 +1092,8 @@ def show_analysis(data, param, res):
         show_displacement(param, res)
 
     if param.showSignals:
-        show_signals(param, data, res)
+        show_signals(param, data, res, 'Mean')
+        show_signals(param, data, res, 'Variance')
 
     if param.showCorrelation:
         show_correlation(param, data, res)
