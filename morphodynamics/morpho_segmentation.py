@@ -81,6 +81,7 @@ class InteractSeg():
 
         self.load_params_button = ipw.Button(description='Load parameters')
         self.load_params_button.on_click(self.load_params)
+        
         # slider for time limits to analyze
         self.time_slider = ipw.IntSlider(
             description = 'Time', min=0, max=0, value=0, continous_update=False)
@@ -157,6 +158,7 @@ class InteractSeg():
                 self.data = ND2(self.expdir, self.param.morpho_name, self.param.signal_name, data_type=self.param.data_type, step=self.param.step, bad_frames=self.param.bad_frames)
 
             self.param.max_time = self.data.max_time
+            self.maxtime.value = self.data.max_time
 
     def run_segmentation(self, b=None):
         """Run segmentation analysis"""
