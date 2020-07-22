@@ -1,4 +1,4 @@
-name: morphodynamics-cellpose
+name: morphodynamics
 channels:
   - conda-forge
 dependencies:
