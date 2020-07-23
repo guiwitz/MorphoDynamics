@@ -92,7 +92,13 @@ class InteractSeg():
             description = 'Intensity range', min=0, max=10, value=0)
         self.intensity_range_slider.observe(self.update_intensity_range, names='value')
 
-        # show windows or not
+        # channel to display
+        self.display_channel = ipw.Select(options=[])
+        self.segm_folders.observe(self.update_display_channel_list, names="value")
+        self.channels_folders.observe(self.update_display_channel_list, names="value")
+        self.display_channel.observe(self.update_display_channel, names="value")
+
+        # show windows or nots
         self.show_windows_choice = ipw.Checkbox(description="Show windows", value=True)
         self.show_windows_choice.observe(self.update_windows_vis, names='value')
 
@@ -180,7 +186,8 @@ class InteractSeg():
         """Update segmentation plot"""
 
         t = self.time_slider.value
-        image = self.data.load_frame_morpho(t)
+        image = self.load_image(t)
+        #image = self.data.load_frame_morpho(t)
         window = self.windows_for_plot(image, t)
 
         #b0 = find_boundaries(label_windows(image.shape, self.res.windows[t]))
@@ -255,6 +262,28 @@ class InteractSeg():
         """Calback to update signal file lists depending on selections"""
 
         self.param.signal_name = [str(x) for x in self.channels_folders.value]
+
+    def update_display_channel_list(self, change = None):
+        """Callback to update available channels to display"""
+        
+        self.display_channel.options = [str(self.segm_folders.value)] + [str(x) for x in self.channels_folders.value]
+        self.display_channel.value = str(self.segm_folders.value)
+
+    def update_display_channel(self, change=None):
+
+        if self.data is not None:
+            self.show_segmentation()
+
+    def load_image(self, time):
+
+        if self.display_channel.value == self.param.morpho_name:
+            image = self.data.load_frame_morpho(time)
+        else:
+            channel_index = self.param.signal_name.index(self.display_channel.value)
+            image = self.data.load_frame_signal(channel_index, time)
+
+        return image
+
 
     def update_data_params(self, change=None):
         """Callback to update data paramters upon interactive editing"""
@@ -389,6 +418,8 @@ class InteractSeg():
         self.time_slider.max = self.data.K-1
         self.step.value = param_copy.step
 
+        self.update_display_channel_list()
+
 
     def ui(self):
         '''Create interface'''
@@ -421,6 +452,7 @@ class InteractSeg():
             
             ipw.VBox([self.time_slider, self.intensity_range_slider,
                 self.show_windows_choice, self.show_text_choice,
+                self.display_channel,
                 self.out]),
             
             ipw.HTML('<br><font size="5"><b>Saving<b></font>'),
