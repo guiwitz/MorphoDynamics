@@ -49,6 +49,9 @@ class Param:
         
         #max time
         self.max_time = max_time
+
+        # use cellpose
+        self.cellpose = False
         
         #time step
         self.step = 1
