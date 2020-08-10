@@ -13,7 +13,7 @@ def load_settings(dataset_name):
     param.resultdir = dataset_name + '/'
 
     # Whether to use Cellpose for segmenting the cells
-    param.cellpose = True
+    param.cellpose = False
 
     # Diameter to be used by Cellpose
     param.diameter = 100
@@ -53,7 +53,7 @@ def load_settings(dataset_name):
     param.edgeNormalization = 'frame-by-frame'
 
     param.showSegmentation = True
-    # param.showWindows = True
+    param.showWindows = True
     # param.showCircularity = True
     # param.showEdgeOverview = True
     # param.showEdgeVectorial = True
@@ -109,6 +109,22 @@ def load_settings(dataset_name):
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
         # param.T = None
         param.T = 222
+    elif dataset_name == 'FRET_sensors + actinHistamineExpt2 with Cellpose':
+        expdir = 'FRET_sensors + actin/Histamine/Expt2/'
+        morphofile = lambda k: 'w16TIRF-CFP/RhoA_OP_his_02_w16TIRF-CFP_t' + str(k)
+        signalfile = [
+            lambda k: 'ratio_tiffs/ratio_bs_shade_corrected_{:0>3d}_to_bs_shade_corrected_{:0>3d}_{:0>3d}'.format(k, k,
+                                                                                                                  k),
+            lambda k: 'w16TIRF-CFP/RhoA_OP_his_02_w16TIRF-CFP_t' + str(k),
+            lambda k: 'w26TIRFFRETacceptor/RhoA_OP_his_02_w26TIRFFRETacceptor_t' + str(k),
+            lambda k: 'w26TIRFFRETacceptor_corr/RhoA_OP_his_02_w26TIRFFRETacceptor_t' + str(k),
+            lambda k: 'w34TIRF-mCherry/RhoA_OP_his_02_w34TIRF-mCherry_t' + str(k)]
+        shape = (358, 358)
+        K = 159
+        data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
+        # param.T = None
+        param.T = 222
+        param.cellpose = True
         param.diameter = 110
     elif dataset_name == 'FRET_sensors + actinMigration_line_1D':
         expdir = 'FRET_sensors + actin/Migration_line_1D/'
@@ -150,6 +166,17 @@ def load_settings(dataset_name):
         # param.T = 145  # 150
         param.T = lambda k: 145 * k / 65 + 150 * (65 - k) / 65
         param.sigma = 5
+    elif dataset_name == 'TIAM_protrusion with Cellpose':
+        expdir = 'CEDRIC_OPTOGENETICS/TIAM_protrusion/'
+        morphofile = 'TIAM-nano_ACTIN.tif'
+        signalfile = ['TIAM-nano_ACTIN.tif', 'TIAM-nano_OPTO.tif', 'TIAM-nano_STIM.tif']
+        step = 15
+        data = MultipageTIFF(dataset_name, expdir, morphofile, signalfile, step)
+        # param.T = 145  # 150
+        param.T = lambda k: 145 * k / 65 + 150 * (65 - k) / 65
+        param.sigma = 5
+        param.cellpose = True
+        param.diameter = 110
     elif dataset_name == 'TIAM_protrusion_full':
         expdir = 'CEDRIC_OPTOGENETICS/TIAM_protrusion/'
         morphofile = 'TIAM-nano_ACTIN.tif'
@@ -215,7 +242,7 @@ def load_settings(dataset_name):
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
         # param.T = None
         param.T = 1038.90  # 1232
-    data.K = 10
+    # data.K = 10
     return data, param
 
 # import matplotlib.pyplot as plt
