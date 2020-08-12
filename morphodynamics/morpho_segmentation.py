@@ -88,8 +88,7 @@ class InteractSeg():
         self.time_slider.observe(self.show_segmentation, names='value')
 
         # intensity sliders
-        self.intensity_range_slider = ipw.IntRangeSlider(
-            description = 'Intensity range', min=0, max=10, value=0)
+        self.intensity_range_slider = ipw.IntRangeSlider(description = 'Intensity range', min=0, max=10, value=0)
         self.intensity_range_slider.observe(self.update_intensity_range, names='value')
 
         # channel to display
@@ -135,8 +134,17 @@ class InteractSeg():
         self.segmentation = ipw.RadioButtons(options=['Thresholding', 'Cellpose'], description='Segmentation:')
         self.segmentation.observe(self.update_params, names='value')
 
+        self.threshold = ipw.FloatText(value=100, description='Threshold:')
+        self.threshold.observe(self.update_params, names='value')
+
         self.diameter = ipw.FloatText(value=100, description='Diameter:')
         self.diameter.observe(self.update_params, names='value')
+
+        self.location_x = ipw.FloatText(value=100, description='Location X')
+        self.location_x.observe(self.update_params, names='value')
+
+        self.location_y = ipw.FloatText(value=100, description='Location Y')
+        self.location_y.observe(self.update_params, names='value')
 
         self.out_debug = ipw.Output()
         self.out = ipw.Output()
@@ -305,6 +313,8 @@ class InteractSeg():
 
         self.param.cellpose = self.segmentation.value == 'Cellpose'
         self.param.diameter = self.diameter.value
+        self.param.T = self.threshold.value
+        self.param.location = [self.location_x.value, self.location_y.value]
         self.param.width = self.width_text.value
         self.param.depth = self.depth_text.value
 
@@ -409,7 +419,10 @@ class InteractSeg():
             self.segmentation.value = 'Cellpose'
         else:
             self.segmentation.value = 'Thresholding'
+        self.threshold.value = param_copy.T
         self.diameter.value = param_copy.diameter
+        self.location_x = param_copy.location[0]
+        self.location_y = param_copy.location[1]
         self.width_text.value = param_copy.width
         self.depth_text.value = param_copy.depth
         self.maxtime.value = param_copy.max_time
@@ -444,7 +457,10 @@ class InteractSeg():
             self.step,
             self.bad_frames,
             self.segmentation,
+            self.threshold,
             self.diameter,
+            self.location_x,
+            self.location_y,
             self.width_text,
             self.depth_text,
             self.run_button
