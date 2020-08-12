@@ -12,6 +12,9 @@ def load_settings(dataset_name):
     # Output directory
     param.resultdir = dataset_name + '/'
 
+    # Location of the cell to be tracked; if None largest cell will be tracked
+    param.location = None
+
     # Whether to use Cellpose for segmenting the cells
     param.cellpose = False
 
@@ -242,6 +245,19 @@ def load_settings(dataset_name):
         data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
         # param.T = None
         param.T = 1038.90  # 1232
+    elif dataset_name == 'H1R_rGBD_01_forpres':
+        expdir = 'PROBLEM_DATA/H1R_rGBD_01_forpres/'
+        morphofile = lambda k: 'w46TIRFFRETacceptor_corr/H1R_rGBD_02_w46TIRFFRETacceptor_s1_t' + str(k)
+        signalfile = [
+            lambda k: 'ratio_tiffs/ratio_bs_shade_corrected_{:0>3d}_to_bs_shade_corrected_{:0>3d}_{:0>3d}'.format(k, k, k),
+            lambda k: 'w15TIRF-mCherry_s1/H1R_rGBD_02_w15TIRF-mCherry_s1_t' + str(k),
+            lambda k: 'w25WF-mCherry_s1/H1R_rGBD_02_w25WF-mCherry_s1_t' + str(k)]
+        K = 250
+        shape = (716, 716)
+        data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
+        param.T = 829
+        # param.cellpose = True
+        param.location = [341, 345]
     # data.K = 10
     return data, param
 

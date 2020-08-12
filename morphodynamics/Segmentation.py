@@ -6,6 +6,7 @@ from scipy.interpolate import UnivariateSpline
 from scipy.signal import argrelmin
 from scipy.ndimage import median_filter
 from scipy.ndimage.morphology import binary_fill_holes
+from scipy.ndimage.measurements import center_of_mass
 import numpy as np
 from tifffile import imread, imsave
 
@@ -13,7 +14,7 @@ from tifffile import imread, imsave
 
 # fh = FigureHelper(not True)
 
-def segment(x, sigma, T=None):
+def segment_threshold(x, sigma, T, location):
     """ Segment the cell image, possibly with automatic threshold selection. """
 
     # Determine the threshold based on the histogram, if not provided manually
@@ -46,17 +47,24 @@ def segment(x, sigma, T=None):
         y = x
     z = T < y  # Threshold image
 
-    # Keep only the largest region
-    regions, nr = label(z, return_num=True) # Label each region with a unique integer
-    sr = np.zeros((nr,)) # Allocate array of region sizes
-    for k in range(nr):
-        sr[k] = np.sum(regions == k+1) # Populate array
-    k = np.argmax(sr) # Get index of largest region
-    z = regions == k+1 # Create mask of largest region
+    if location is None: # Keep only the largest region
+        regions, nr = label(z, return_num=True) # Label each region with a unique integer
+        sr = np.zeros((nr,)) # Allocate array of region sizes
+        for k in range(nr):
+            sr[k] = np.sum(binary_fill_holes(regions == k+1)) # Populate array
+        k = np.argmax(sr) # Get index of largest region
+        z = binary_fill_holes(regions == k+1) # Create mask of largest region
+    else: # Keep the region that is closest to the specified location
+        regions, nr = label(z, return_num=True) # Label each region with a unique integer
+        cm = np.zeros((nr,2)) # Allocate center of masses of regions
+        for k in range(nr):
+            cm[k] = center_of_mass(binary_fill_holes(regions == k+1)) # Populate array
+        k = np.argmin([np.linalg.norm(cm0-location) for cm0 in cm])  # Get index of closest region
+        z = binary_fill_holes(regions == k+1)  # Create mask of closest region
 
-    # Fill holes in mask
-    z = binary_fill_holes(z)
-    # z[mask>0] = 0
+    # # Fill holes in mask
+    # z = binary_fill_holes(z)
+    # # z[mask>0] = 0
 
     # # Artifact generation
     # fh.imshow('Input image', x)
@@ -66,6 +74,27 @@ def segment(x, sigma, T=None):
     # fh.show()
 
     return z
+
+
+def segment_cellpose(model, x, diameter, location):
+    m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
+    m = m[0]
+    nr = np.max(m)
+    if location is None: # Keep only the largest region
+        # m = m[np.argmax([np.sum(m0) for m0 in m])]
+        sr = np.zeros((nr,)) # Allocate array of region sizes
+        for k in range(nr):
+            sr[k] = np.sum(m == k+1) # Populate array
+        k = np.argmax(sr) # Get index of largest region
+        m = m == k+1 # Create mask of largest region
+    else: # Keep the region that is closest to the specified location
+        # nr = len(m)
+        cm = np.zeros((nr,2)) # Allocate center of masses of regions
+        for k in range(nr):
+            cm[k] = center_of_mass(m == k+1) # Populate array
+        k = np.argmin([np.linalg.norm(cm0-location) for cm0 in cm])  # Get index of closest region
+        m = m == k+1 # Create mask of closest region
+    return m
 
 
 def extract_contour(mask):
