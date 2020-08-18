@@ -111,6 +111,7 @@ class TIFFSeries(Data):
 
         if self.max_time is None:
             self.max_time = len(self.morphofile)
+            # print(self.max_time)
         
         self.set_valid_frames()
 

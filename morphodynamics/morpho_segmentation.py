@@ -120,7 +120,7 @@ class InteractSeg():
         self.init_button.on_click(self.initialize)
 
         # parameters
-        self.maxtime = ipw.IntText(value=0, description='Max time')
+        self.maxtime = ipw.BoundedIntText(value=0, description='Max time')
         self.maxtime.observe(self.update_data_params, names='value')
 
         # parameters
@@ -163,7 +163,6 @@ class InteractSeg():
             if os.path.isdir(os.path.join(self.expdir, self.param.morpho_name)):
                 self.param.data_type = 'series'
                 self.data = TIFFSeries(self.expdir, self.param.morpho_name, self.param.signal_name, data_type=self.param.data_type, step=self.param.step, bad_frames=self.param.bad_frames)
-
             elif self.param.morpho_name.split('.')[-1] == 'tif':
                 self.param.data_type = 'multi'
                 self.data = MultipageTIFF(self.expdir, self.param.morpho_name, self.param.signal_name, data_type=self.param.data_type, step=self.param.step, bad_frames=self.param.bad_frames)
@@ -171,6 +170,8 @@ class InteractSeg():
                 self.param.data_type = 'nd2'
                 self.data = ND2(self.expdir, self.param.morpho_name, self.param.signal_name, data_type=self.param.data_type, step=self.param.step, bad_frames=self.param.bad_frames)
 
+            self.maxtime.max = self.data.max_time
+            self.maxtime.min = 0
             self.param.max_time = self.data.max_time
             self.maxtime.value = self.data.max_time
 
