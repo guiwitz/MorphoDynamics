@@ -121,13 +121,15 @@ class TIFFSeries(Data):
         
     def load_frame_morpho(self, k):
         
-        time = self.valid_frames[k] + 1
+        time = self.valid_frames[k]
+        print('load_frame_morpho: ' + str(time))
         full_path = os.path.join(self.expdir, self.morpho_name, self.morphofile[time])
+        print('path: ' + full_path)
         return skimage.io.imread(full_path).astype(dtype=np.uint16)
     
     def load_frame_signal(self, m, k):
 
-        time = self.valid_frames[k] + 1
+        time = self.valid_frames[k]
         full_path = os.path.join(self.expdir, self.signal_name[m], self.signalfile[m][time])
         return skimage.io.imread(full_path).astype(dtype=np.uint16)
     
@@ -161,13 +163,13 @@ class MultipageTIFF(Data):
         
     def load_frame_morpho(self, k):
         
-        time = self.valid_frames[k] + 1
+        time = self.valid_frames[k]
         image = self.morpho_imobj.get_image_data('YX', S=0, T=0, C=0, Z=time)
         return image.astype(dtype=np.uint16)
     
     def load_frame_signal(self, m, k):
 
-        time = self.valid_frames[k] + 1
+        time = self.valid_frames[k]
         
         image = self.signal_imobj[m].get_image_data('YX', S=0, T=0, C=0, Z=time)
         return image.astype(dtype=np.uint16)
@@ -205,7 +207,7 @@ class ND2(Data):
 
     def load_frame_morpho(self, k):
         
-        time = self.valid_frames[k] + 1
+        time = self.valid_frames[k]
         
         ch_index = self.nd2file.metadata['channels'].index(self.morphofile)
         image = self.nd2file.get_frame_2D(x=0, y=0, z=0, c=ch_index, t=time, v=0)
@@ -214,7 +216,7 @@ class ND2(Data):
 
     def load_frame_signal(self, m, k):
 
-        time = self.valid_frames[k] + 1
+        time = self.valid_frames[k]
 
         ch_index = self.nd2file.metadata['channels'].index(self.signalfile[m])
         image = self.nd2file.get_frame_2D(x=0, y=0, z=0, c=ch_index, t=time, v=0)
