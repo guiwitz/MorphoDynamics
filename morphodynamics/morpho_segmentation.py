@@ -198,15 +198,19 @@ class InteractSeg():
         t = self.time_slider.value
         image = self.load_image(t)
         #image = self.data.load_frame_morpho(t)
-        window = self.windows_for_plot(image, t)
+        
+        b0 = None
+        windows_pos = None
+        if self.res is not None:
+            window = self.windows_for_plot(image, t)
 
-        #b0 = find_boundaries(label_windows(image.shape, self.res.windows[t]))
-        b0 = find_boundaries(label_windows(image.shape, window))
-        b0 = b0.astype(float)
-        b0[b0==0] = np.nan
+            #b0 = find_boundaries(label_windows(image.shape, self.res.windows[t]))
+            b0 = find_boundaries(label_windows(image.shape, window))
+            b0 = b0.astype(float)
+            b0[b0==0] = np.nan
 
-        #windows_pos = calculate_windows_index(self.res.windows[t])
-        windows_pos = calculate_windows_index(window)
+            #windows_pos = calculate_windows_index(self.res.windows[t])
+            windows_pos = calculate_windows_index(window)
 
         with self.out:
             xlim = self.fig.axes[0].get_xlim()
