@@ -153,6 +153,8 @@ class InteractSeg():
         with self.out:
             self.fig, self.ax = plt.subplots(figsize=(5, 5))
             self.ax.set_title(f'Time:')
+            cid = self.fig.canvas.mpl_connect('button_press_event', self.onclick)
+
         self.implot = None
         self.wplot = None
         self.tplt = None
@@ -240,6 +242,16 @@ class InteractSeg():
         self.implot.set_clim(
             vmin = self.intensity_range_slider.value[0],
             vmax = self.intensity_range_slider.value[1])
+
+        # show cell center-of-mass if it exists
+        if self.param.location is not None:
+            plt.plot([self.param.location[1]], [self.param.location[0]],'ro', markersize=10)
+
+    def onclick(self, event):
+        '''Store click location'''
+        with self.out_debug:
+            self.param.location = np.array([event.ydata, event.xdata])
+            self.show_segmentation()
 
     def get_folders(self, change=None):
         '''Update folder options when selecting new main folder'''
