@@ -176,6 +176,9 @@ class InteractSeg():
             self.param.max_time = self.data.max_time
             self.maxtime.value = self.data.max_time
 
+            # display image
+            self.show_segmentation(change='init')
+
     def run_segmentation(self, b=None):
         """Run segmentation analysis"""
         self.run_button.description = 'Segmenting...'
