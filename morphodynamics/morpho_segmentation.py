@@ -394,6 +394,9 @@ class InteractSeg():
         with open(self.saving_folder.cur_dir.joinpath('Parameters.yml'), 'w') as file:
             documents = yaml.dump(dict_file, file)
 
+        print('Your results have been saved in the following directory:')
+        print(self.param.resultdir)
+
     def load_data(self, b):
         """Callback to load params, data and results"""
 
@@ -442,8 +445,8 @@ class InteractSeg():
             self.segmentation.value = 'Thresholding'
         self.threshold.value = param_copy.T
         self.diameter.value = param_copy.diameter
-        self.location_x = param_copy.location[0]
-        self.location_y = param_copy.location[1]
+        self.location_x.value = param_copy.location[0]
+        self.location_y.value = param_copy.location[1]
         self.width_text.value = param_copy.width
         self.depth_text.value = param_copy.depth
         self.maxtime.value = param_copy.max_time
