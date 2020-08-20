@@ -33,16 +33,20 @@ def show_windows_set(image, w, b, windows_pos, ax=None, implot=None, wplot=None,
     return fig, ax, implot, wplot, tplt
 
 
-def show_windows(image, b, windows_pos):
+def show_windows(image, b=None, windows_pos=None):
     #fig, ax = plt.subplots(figsize=(5,5))
 
     plt.clf()
     ax = plt.axes()
     implot = ax.imshow(image, cmap = 'gray')
-    wplot = ax.imshow(b, cmap = 'Greens', vmin = 0, vmax=2)
+    
+    wplot = None
+    tplt = None
+    if b is not None:
+        wplot = ax.imshow(b, cmap = 'Greens', vmin = 0, vmax=2)
 
-    tplt = []
-    for p in windows_pos:
-        tplt.append(ax.text(p[0], p[1], p[2], color='yellow', fontsize=8, horizontalalignment='center', verticalalignment='center'))
+        tplt = []
+        for p in windows_pos:
+            tplt.append(ax.text(p[0], p[1], p[2], color='yellow', fontsize=8, horizontalalignment='center', verticalalignment='center'))
 
     return implot, wplot, tplt
