@@ -68,7 +68,7 @@ def analyze_morphodynamics(data, param):
             m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, location)
         if param.location is not None:
             location = center_of_mass(m) # Set the location for the next iteration
-            print(location)
+            # print(location)
         c = extract_contour(m)  # Discrete cell contour
 
         s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
