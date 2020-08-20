@@ -214,7 +214,7 @@ class InteractSeg():
             
             plt.figure(self.fig.number)
             self.implot, self.wplot, self.tplt = show_windows2(
-                        image, window, b0, windows_pos)
+                        image, b0, windows_pos)
             if xlim[1]>1:
                 self.fig.axes[0].set_xlim(xlim)
                 self.fig.axes[0].set_ylim(ylim)

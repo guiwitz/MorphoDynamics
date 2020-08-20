@@ -33,7 +33,7 @@ def show_windows_set(image, w, b, windows_pos, ax=None, implot=None, wplot=None,
     return fig, ax, implot, wplot, tplt
 
 
-def show_windows(image, w, b, windows_pos):
+def show_windows(image, b, windows_pos):
     #fig, ax = plt.subplots(figsize=(5,5))
 
     plt.clf()
