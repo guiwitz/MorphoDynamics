@@ -50,6 +50,9 @@ class Param:
         #max time
         self.max_time = max_time
 
+        #cell location
+        self.location = None
+
         # use cellpose
         self.cellpose = False
         
