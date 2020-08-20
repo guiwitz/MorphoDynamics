@@ -48,6 +48,7 @@ class InteractSeg():
         self.param.signal_name = signal_name
 
         self.data = None
+        self.res = None
 
         # folders and channel selections
         self.main_folder = Folders(window_width=300)
