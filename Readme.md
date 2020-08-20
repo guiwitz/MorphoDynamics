@@ -35,6 +35,8 @@ pip install --upgrade git+https://github.com/ZejjT5E44/MorphoDynamics.git@master
 
 The above command should prompt you to enter your GitHub username and password, as the repository is private.
 
+Note: close all notebooks (click on File | Close and Halt) prior to the update and reopen them afterwards.
+
 ## Usage
 
 Whenever you want to use Jupyter and the Morphodynamics package, open a terminal, activate the environment 

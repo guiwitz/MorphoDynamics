@@ -122,9 +122,9 @@ class TIFFSeries(Data):
     def load_frame_morpho(self, k):
         
         time = self.valid_frames[k]
-        print('load_frame_morpho: ' + str(time))
+        # print('load_frame_morpho: ' + str(time))
         full_path = os.path.join(self.expdir, self.morpho_name, self.morphofile[time])
-        print('path: ' + full_path)
+        # print('path: ' + full_path)
         return skimage.io.imread(full_path).astype(dtype=np.uint16)
     
     def load_frame_signal(self, m, k):
