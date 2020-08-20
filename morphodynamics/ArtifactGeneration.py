@@ -625,24 +625,40 @@ class Signals:
         self.data = data
         self.res = res
 
+    def get_signal(self, name):
+        for m in range(len(self.data.signalfile)):
+            if name == self.data.get_channel_name(m):
+                return m
+
     def create_interface(self):
         out = ipw.Output()
 
-        channel_text = ipw.BoundedIntText(value=0, min=0, max=self.res.mean.shape[0]-1, description = 'Channel:')
+        # channel_text = ipw.BoundedIntText(value=0, min=0, max=self.res.mean.shape[0]-1, description = 'Channel:')
 
-        def channel_change(change):
-            with out:
-                plt.figure(self.fig.number)
-                show_signals_aux(self.param, self.data, self.res, change['new'], layer_text.value, mode_selector.value)
+        signal_selector = ipw.RadioButtons(
+            options=self.data.signal_name,
+            value=self.data.signal_name[0],
+            description='Signal:'
+        )
 
-        channel_text.observe(channel_change, names='value')
+        # def channel_change(change):
+        #     with out:
+        #         plt.figure(self.fig.number)
+        #         show_signals_aux(self.param, self.data, self.res, change['new'], layer_text.value, mode_selector.value)
+
+        def channel_change_2(change):
+            plt.figure(self.fig.number)
+            show_signals_aux(self.param, self.data, self.res, self.get_signal(change['new']), layer_text.value, mode_selector.value)
+
+        # channel_text.observe(channel_change, names='value')
+        signal_selector.observe(channel_change_2, names='value')
 
         layer_text = ipw.BoundedIntText(value=0, min=0, max=self.res.J-1, description = 'Layer:')
 
         def layer_change(change):
             with out:
                 plt.figure(self.fig.number)
-                show_signals_aux(self.param, self.data, self.res, 0, change['new'], mode_selector.value)
+                show_signals_aux(self.param, self.data, self.res, self.get_signal(signal_selector.value), layer_text.value, mode_selector.value)
 
         layer_text.observe(layer_change, names='value')
 
@@ -655,16 +671,17 @@ class Signals:
         def mode_change(change):
             with out:
                 plt.figure(self.fig.number)
-                show_signals_aux(self.param, self.data, self.res, 0, layer_text.value, change['new'])
+                show_signals_aux(self.param, self.data, self.res, self.get_signal(signal_selector.value), layer_text.value, mode_selector.value)
 
         mode_selector.observe(mode_change, names='value')
 
-        display(channel_text)
+        # display(channel_text)
+        display(signal_selector)
         display(layer_text)
         display(mode_selector)
 
         self.fig = plt.figure(figsize=(8, 6))
-        show_signals_aux(self.param, self.data, self.res, 0, layer_text.value, mode_selector.value)
+        show_signals_aux(self.param, self.data, self.res, self.get_signal(signal_selector.value), layer_text.value, mode_selector.value)
         display(out)
 
 
