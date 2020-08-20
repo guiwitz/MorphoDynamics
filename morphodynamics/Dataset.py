@@ -134,7 +134,8 @@ class TIFFSeries(Data):
         return skimage.io.imread(full_path).astype(dtype=np.uint16)
     
     def get_channel_name(self, m):
-        return self.signalfile[m][0].split('.')[0]
+        # return self.signalfile[m][0].split('.')[0]
+        return self.signal_name[m]
 
     
 class MultipageTIFF(Data):
@@ -175,8 +176,8 @@ class MultipageTIFF(Data):
         return image.astype(dtype=np.uint16)
     
     def get_channel_name(self, m):
-        return self.signalfile[m].split('.')[0]
-
+        # return self.signalfile[m].split('.')[0]
+        return self.signal_name[m]
     
 class ND2(Data):
     def __init__(self, expdir, morpho_name, signal_name, bad_frames=[], step=1,
@@ -189,7 +190,7 @@ class ND2(Data):
     def initialize(self):
                         
         self.morphofile = self.morpho_name
-        self.signalfile = self.signal_name
+        self.signalfile = self.signal_name  # TODO: is signalfile really needed; it looks like signal_name is enough
         
         #self.expdir = Path(self.expdir)
 
