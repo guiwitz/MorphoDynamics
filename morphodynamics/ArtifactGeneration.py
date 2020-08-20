@@ -633,25 +633,17 @@ class Signals:
     def create_interface(self):
         out = ipw.Output()
 
-        # channel_text = ipw.BoundedIntText(value=0, min=0, max=self.res.mean.shape[0]-1, description = 'Channel:')
-
         signal_selector = ipw.RadioButtons(
             options=self.data.signal_name,
             value=self.data.signal_name[0],
             description='Signal:'
         )
 
-        # def channel_change(change):
-        #     with out:
-        #         plt.figure(self.fig.number)
-        #         show_signals_aux(self.param, self.data, self.res, change['new'], layer_text.value, mode_selector.value)
-
-        def channel_change_2(change):
+        def channel_change(change):
             plt.figure(self.fig.number)
             show_signals_aux(self.param, self.data, self.res, self.get_signal(change['new']), layer_text.value, mode_selector.value)
 
-        # channel_text.observe(channel_change, names='value')
-        signal_selector.observe(channel_change_2, names='value')
+        signal_selector.observe(channel_change, names='value')
 
         layer_text = ipw.BoundedIntText(value=0, min=0, max=self.res.J-1, description = 'Layer:')
 
@@ -675,7 +667,6 @@ class Signals:
 
         mode_selector.observe(mode_change, names='value')
 
-        # display(channel_text)
         display(signal_selector)
         display(layer_text)
         display(mode_selector)

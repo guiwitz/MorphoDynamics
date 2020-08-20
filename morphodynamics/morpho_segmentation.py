@@ -72,6 +72,8 @@ class InteractSeg():
             self.expdir = Path(self.expdir)
             self.main_folder.cur_dir = self.expdir
             self.main_folder.refresh(None)
+            self.saving_folder.cur_dir = self.expdir
+            self.saving_folder.refresh(None)
 
         # export, import buttons
         self.export_button = ipw.Button(description='Save segmentation')
