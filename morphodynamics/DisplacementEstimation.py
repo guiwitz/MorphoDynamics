@@ -332,8 +332,10 @@ def rasterize_curve(shape, s, deltat):
     p = np.asarray(splev(t, s))
     t = np.mod(t - deltat, 1)
     pi = np.round(p).astype(dtype=np.int)
+    d0_all = np.linalg.norm(p-pi,axis = 0)
     for n in range(10001):
-        d0 = np.linalg.norm(p[:, n]-pi[:, n])
+        d0 = d0_all[n]
+        #d0 = np.linalg.norm(p[:, n]-pi[:, n])
         if d0 < delta[pi[1, n], pi[0, n]]:
             delta[pi[1, n], pi[0, n]] = d0
             tau[pi[1, n], pi[0, n]] = t[n]

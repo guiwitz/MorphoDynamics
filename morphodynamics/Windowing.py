@@ -24,19 +24,22 @@ def label_windows(shape, windows):
             n += 1
     return tiles
 
+
 def compute_discrete_arc_length(c):
-    N = c.shape[0]
-    L = np.zeros((N+1,))
-    for n in range(1, N):
-        L[n] = L[n-1] + np.linalg.norm(c[n]-c[n-1])
-    L[N] = L[N-1] + np.linalg.norm(c[0]-c[N-1])
+    L = np.cumsum(np.linalg.norm(np.diff(np.concatenate([[c[0]],c,[c[0]]]),axis=0),axis=1))
+    #N = c.shape[0]
+    #L = np.zeros((N+1,))
+    #for n in range(1, N):
+    #    L[n] = L[n-1] + np.linalg.norm(c[n]-c[n-1])
+    #L[N] = L[N-1] + np.linalg.norm(c[0]-c[N-1])
     return L
 
 
 def create_arc_length_image(shape, c, L):
     x = -np.ones(shape)
-    for n in range(c.shape[0]):
-        x[c[n,0], c[n,1]] = L[n]
+    x[c[np.arange(c.shape[0]), 0], c[np.arange(c.shape[0]), 1]] = L[np.arange(c.shape[0])]
+    #for n in range(c.shape[0]):
+    #    x[c[n,0], c[n,1]] = L[n]
     return x
 
 
@@ -105,10 +108,12 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
         F = distance_transform_edt(-1 == c, return_distances=False, return_indices=True)
 
         # Fill array with arc lengths of closest points on the contour
-        L = np.zeros(c.shape)
-        for u in range(c.shape[0]):
-            for v in range(c.shape[1]):
-                L[u, v] = c[F[0, u, v], F[1, u, v]]
+        #L = np.zeros(c.shape)
+        #for u in range(c.shape[0]):
+        #    for v in range(c.shape[1]):
+        #        L[u, v] = c[F[0, u, v], F[1, u, v]]
+        gridy, gridx = np.meshgrid(range(c.shape[0]),range(c.shape[1]))
+        L = c[F[0,:,:][gridx, gridy],F[1,:,:][gridx, gridy]]
 
         # Create sampling windows for the j-th layer
         if compute_num_win:
