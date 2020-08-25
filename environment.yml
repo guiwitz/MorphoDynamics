@@ -24,6 +24,7 @@ dependencies:
     - dill
     - tifffile
     - aicsimageio
+    - bokeh>=0.13.0
     - mxnet-mkl
     - opencv-python-headless
     - pyqtgraph==0.11.0rc0
