@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 import ipywidgets as ipw
+from IPython.display import display
 from skimage.segmentation import find_boundaries
 import dill
 from nd2reader import ND2Reader
@@ -21,6 +22,10 @@ from . import utils
 
 from dask_jobqueue import SLURMCluster
 from dask.distributed import Client
+
+# fix MacOSX OMP bug (see e.g. https://github.com/dmlc/xgboost/issues/1715)
+import os
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 
 class InteractSeg():
@@ -160,10 +165,14 @@ class InteractSeg():
         self.out = ipw.Output()
         self.out_distributed = ipw.Output()
 
+        # initialize image
+        self.shift_is_held = False
         with self.out:
             self.fig, self.ax = plt.subplots(figsize=(5, 5))
             self.ax.set_title(f'Time:')
             cid = self.fig.canvas.mpl_connect('button_press_event', self.onclick)
+            cid2 = self.fig.canvas.mpl_connect('key_press_event', self.on_key_press)
+            cid3 = self.fig.canvas.mpl_connect('key_release_event', self.on_key_release)
 
         self.implot = None
         self.wplot = None
@@ -215,7 +224,6 @@ class InteractSeg():
             self.client = Client()
             with self.out_distributed:
                 display(self.client.cluster._widget())
-            
 
     def windows_for_plot(self, image, time):
 
@@ -278,9 +286,18 @@ class InteractSeg():
 
     def onclick(self, event):
         '''Store click location'''
-        with self.out_debug:
+
+        if self.shift_is_held:
             self.param.location = np.array([event.ydata, event.xdata])
             self.show_segmentation()
+
+    def on_key_press(self, event):
+        if event.key == 'shift':
+            self.shift_is_held = True
+
+    def on_key_release(self, event):
+        if event.key == 'shift':
+            self.shift_is_held = False
 
     def get_folders(self, change=None):
         '''Update folder options when selecting new main folder'''
