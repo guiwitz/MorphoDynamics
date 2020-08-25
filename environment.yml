@@ -17,6 +17,7 @@ dependencies:
   - pip
   - nd2reader
   - ipympl
+  - python-graphviz
   - pip:
     - dill
     - tifffile
@@ -29,3 +30,4 @@ dependencies:
     - tqdm
     - cellpose
     - .
+    - "dask[complete]"

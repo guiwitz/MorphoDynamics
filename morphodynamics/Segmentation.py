@@ -9,6 +9,8 @@ from scipy.ndimage.morphology import binary_fill_holes
 from scipy.ndimage.measurements import center_of_mass
 import numpy as np
 from tifffile import imread, imsave
+from cellpose import models
+
 
 # from ArtifactGeneration import FigureHelper
 
@@ -81,6 +83,8 @@ def track_threshold(regions, location):
 
 
 def segment_cellpose(model, x, diameter, location):
+    if model is None:
+        model = models.Cellpose(model_type='cyto')
     m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
     m = m[0]
     return m

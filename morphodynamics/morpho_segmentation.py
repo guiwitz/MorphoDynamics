@@ -114,6 +114,10 @@ class InteractSeg():
         self.depth_text = ipw.IntText(value=10, description='Window width', layout=layout, style=style)
         self.depth_text.observe(self.update_params, names='value')
 
+        # use distributed computing
+        self.distributed = ipw.Checkbox(description='Distributed computing', value=False)
+        self.distributed.observe(self.update_params, names='value')
+
         # run the analysis button
         self.run_button = ipw.Button(description='Click to segment')
         self.run_button.on_click(self.run_segmentation)
@@ -340,6 +344,7 @@ class InteractSeg():
         self.param.location = [self.location_x.value, self.location_y.value]
         self.param.width = self.width_text.value
         self.param.depth = self.depth_text.value
+        self.param.distributed = self.distributed.value
 
     def update_saving_folder(self, change=None):
         """Callback to update saving directory paramters"""
@@ -475,7 +480,10 @@ class InteractSeg():
                 ipw.VBox([ipw.HTML('<font size="2"><b>Segmentation<b></font>'),self.segm_folders]),
                 ipw.VBox([ipw.HTML('<font size="2"><b>Signal<b></font>'),self.channels_folders])
             ]),
-            self.init_button,
+            ipw.HBox([
+                self.init_button,
+                self.distributed
+            ]),
             
             ipw.HTML('<br><font size="5"><b>Set segmentation parameters<b></font>'),
             ipw.VBox([

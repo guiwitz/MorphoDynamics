@@ -10,7 +10,7 @@ from .DisplacementEstimation import fit_spline, map_contours2, rasterize_curve, 
 from .Windowing import create_windows, extract_signals, label_windows, show_windows
 import matplotlib.pyplot as plt
 from cellpose import models
-#import dask
+import dask
 
 
 def analyze_morphodynamics(data, param):
@@ -62,6 +62,9 @@ def analyze_morphodynamics(data, param):
     # Segment all images but don't select cell
     #segmented = dask.delayed(segment_all(data, param, model)).compute()
     segmented = segment_all(data, param, model)
+    if param.distributed:
+        segmented = dask.delayed(segmented).compute()
+    
     # do the tracking
     for k in range(0, data.K):
         
@@ -152,17 +155,23 @@ def analyze_morphodynamics(data, param):
 
 def segment_all(data, param, model):
     # Segment all images but don't select cell
-    x = data.load_frame_morpho(0)
-    segmented = []#np.zeros(x.shape[0], x.shape[1], data.K)
+    segmented = []
     for k in range(0, data.K):
-        #x = dask.delayed(data.load_frame_morpho)(k)  # Input image
-        x = data.load_frame_morpho(k)  # Input image
+        if param.distributed:
+            x = dask.delayed(data.load_frame_morpho)(k)  # Input image
+        else:
+            x = data.load_frame_morpho(k)  # Input image
 
         if param.cellpose:
-            #m = dask.delayed(segment_cellpose)(model, x, param.diameter, None)
-            m = segment_cellpose(model, x, param.diameter, None)
+            if param.distributed:
+                m = dask.delayed(segment_cellpose)(None, x, param.diameter, None)
+            else:
+                m = segment_cellpose(model, x, param.diameter, None)
         else:
-            #m = dask.delayed(segment_threshold)(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
-            m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
+            if param.distributed:
+                m = dask.delayed(segment_threshold)(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
+            else:
+                m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
         segmented.append(m)
     return segmented
+

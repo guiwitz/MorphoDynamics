@@ -55,6 +55,9 @@ class Param:
 
         # use cellpose
         self.cellpose = False
+
+        # use distributed computing
+        self.distributed = False
         
         #time step
         self.step = 1
