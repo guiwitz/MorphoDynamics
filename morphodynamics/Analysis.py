@@ -62,7 +62,7 @@ def analyze_morphodynamics(data, param):
     # Segment all images but don't select cell
     #segmented = dask.delayed(segment_all(data, param, model)).compute()
     segmented = segment_all(data, param, model)
-    if param.distributed:
+    if param.distributed == 'local' or param.distributed == 'cluster':
         segmented = dask.delayed(segmented).compute()
     
     # do the tracking
@@ -154,21 +154,26 @@ def analyze_morphodynamics(data, param):
 
 
 def segment_all(data, param, model):
+    
+    distr = False
+    if param.distributed == 'local' or param.distributed == 'cluster':
+        distr = True
+
     # Segment all images but don't select cell
     segmented = []
     for k in range(0, data.K):
-        if param.distributed:
+        if distr:
             x = dask.delayed(data.load_frame_morpho)(k)  # Input image
         else:
             x = data.load_frame_morpho(k)  # Input image
 
         if param.cellpose:
-            if param.distributed:
+            if distr:
                 m = dask.delayed(segment_cellpose)(None, x, param.diameter, None)
             else:
                 m = segment_cellpose(model, x, param.diameter, None)
         else:
-            if param.distributed:
+            if distr:
                 m = dask.delayed(segment_threshold)(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
             else:
                 m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)

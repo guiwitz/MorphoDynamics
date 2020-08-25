@@ -19,6 +19,9 @@ from .Windowing import label_windows, calculate_windows_index, create_windows
 from .DisplacementEstimation import rasterize_curve, splevper
 from . import utils
 
+from dask_jobqueue import SLURMCluster
+from dask.distributed import Client
+
 
 class InteractSeg():
     def __init__(self, expdir=None, morpho_name=None, signal_name=None):
@@ -115,8 +118,8 @@ class InteractSeg():
         self.depth_text.observe(self.update_params, names='value')
 
         # use distributed computing
-        self.distributed = ipw.Checkbox(description='Distributed computing', value=False)
-        self.distributed.observe(self.update_params, names='value')
+        self.distributed = ipw.Select(options=['No', 'local','cluster'], description='Distributed computing', value='No')
+        self.distributed.observe(self.initialize_dask, names='value')
 
         # run the analysis button
         self.run_button = ipw.Button(description='Click to segment')
@@ -155,6 +158,7 @@ class InteractSeg():
 
         self.out_debug = ipw.Output()
         self.out = ipw.Output()
+        self.out_distributed = ipw.Output()
 
         with self.out:
             self.fig, self.ax = plt.subplots(figsize=(5, 5))
@@ -164,6 +168,9 @@ class InteractSeg():
         self.implot = None
         self.wplot = None
         self.tplt = None
+
+        # initialize dask
+        self.initialize_dask()
 
     def initialize(self, b=None):
         """Creat a data object based on chosen directories/files"""
@@ -193,6 +200,22 @@ class InteractSeg():
         self.res = analyze_morphodynamics(self.data, self.param)
         self.show_segmentation(change='init')
         self.run_button.description = 'Click to segment'
+
+    def initialize_dask(self, change = None):
+
+        self.param.distributed = self.distributed.value
+        if self.param.distributed == 'cluster':
+            cluster = SLURMCluster(
+                cores=1,
+                memory="1 GB")
+            self.client = Client(cluster)
+            with self.out_distributed:
+                display(self.client.cluster._widget())
+        elif self.param.distributed == 'local':
+            self.client = Client()
+            with self.out_distributed:
+                display(self.client.cluster._widget())
+            
 
     def windows_for_plot(self, image, time):
 
@@ -344,7 +367,6 @@ class InteractSeg():
         self.param.location = [self.location_x.value, self.location_y.value]
         self.param.width = self.width_text.value
         self.param.depth = self.depth_text.value
-        self.param.distributed = self.distributed.value
 
     def update_saving_folder(self, change=None):
         """Callback to update saving directory paramters"""
@@ -482,7 +504,8 @@ class InteractSeg():
             ]),
             ipw.HBox([
                 self.init_button,
-                self.distributed
+                self.distributed,
+                self.out_distributed
             ]),
             
             ipw.HTML('<br><font size="5"><b>Set segmentation parameters<b></font>'),
