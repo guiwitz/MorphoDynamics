@@ -5,11 +5,12 @@ from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages
 from .Settings import Struct
-from .Segmentation import segment_threshold, extract_contour, segment_cellpose
+from .Segmentation import segment_threshold, extract_contour, segment_cellpose, track_cellpose, track_threshold
 from .DisplacementEstimation import fit_spline, map_contours2, rasterize_curve, compute_length, compute_area, show_edge_scatter, align_curves, subdivide_curve, subdivide_curve_discrete, splevper, map_contours3
 from .Windowing import create_windows, extract_signals, label_windows, show_windows
 import matplotlib.pyplot as plt
 from cellpose import models
+#import dask
 
 
 def analyze_morphodynamics(data, param):
@@ -58,14 +59,20 @@ def analyze_morphodynamics(data, param):
     res.orig = np.zeros((data.K,))
 
     # Main loop on frames
+    # Segment all images but don't select cell
+    #segmented = dask.delayed(segment_all(data, param, model)).compute()
+    segmented = segment_all(data, param, model)
+    # do the tracking
     for k in range(0, data.K):
-        #print(k)
-        x = data.load_frame_morpho(k)  # Input image
+        
+        m = segmented[k]
 
+        # select cell to track in mask
         if param.cellpose:
-            m = segment_cellpose(model, x, param.diameter, location)
+            m = track_threshold(m, location)
         else:
-            m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, location)
+            m = track_threshold(m, location)
+
         if param.location is not None:
             location = center_of_mass(m) # Set the location for the next iteration
             # print(location)
@@ -141,3 +148,21 @@ def analyze_morphodynamics(data, param):
         tw_win.close()
 
     return res
+
+
+def segment_all(data, param, model):
+    # Segment all images but don't select cell
+    x = data.load_frame_morpho(0)
+    segmented = []#np.zeros(x.shape[0], x.shape[1], data.K)
+    for k in range(0, data.K):
+        #x = dask.delayed(data.load_frame_morpho)(k)  # Input image
+        x = data.load_frame_morpho(k)  # Input image
+
+        if param.cellpose:
+            #m = dask.delayed(segment_cellpose)(model, x, param.diameter, None)
+            m = segment_cellpose(model, x, param.diameter, None)
+        else:
+            #m = dask.delayed(segment_threshold)(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
+            m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
+        segmented.append(m)
+    return segmented

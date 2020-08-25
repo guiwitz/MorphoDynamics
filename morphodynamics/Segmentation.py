@@ -46,16 +46,20 @@ def segment_threshold(x, sigma, T, location):
     else:
         y = x
     z = T < y  # Threshold image
+    regions = label(z)
+    
+    return regions
 
+def track_threshold(regions, location):
+
+    nr = np.max(regions)
     if location is None: # Keep only the largest region
-        regions, nr = label(z, return_num=True) # Label each region with a unique integer
         sr = np.zeros((nr,)) # Allocate array of region sizes
         for k in range(nr):
             sr[k] = np.sum(binary_fill_holes(regions == k+1)) # Populate array
         k = np.argmax(sr) # Get index of largest region
         z = binary_fill_holes(regions == k+1) # Create mask of largest region
     else: # Keep the region that is closest to the specified location
-        regions, nr = label(z, return_num=True) # Label each region with a unique integer
         cm = np.zeros((nr,2)) # Allocate center of masses of regions
         for k in range(nr):
             cm[k] = center_of_mass(binary_fill_holes(regions == k+1)) # Populate array
@@ -79,22 +83,26 @@ def segment_threshold(x, sigma, T, location):
 def segment_cellpose(model, x, diameter, location):
     m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
     m = m[0]
-    nr = np.max(m)
+    return m
+
+
+def track_cellpose(regions, location):
+    nr = np.max(regions)
     if location is None: # Keep only the largest region
         # m = m[np.argmax([np.sum(m0) for m0 in m])]
         sr = np.zeros((nr,)) # Allocate array of region sizes
         for k in range(nr):
-            sr[k] = np.sum(m == k+1) # Populate array
+            sr[k] = np.sum(regions == k+1) # Populate array
         k = np.argmax(sr) # Get index of largest region
-        m = m == k+1 # Create mask of largest region
+        regions = regions == k+1 # Create mask of largest region
     else: # Keep the region that is closest to the specified location
         # nr = len(m)
         cm = np.zeros((nr,2)) # Allocate center of masses of regions
         for k in range(nr):
-            cm[k] = center_of_mass(m == k+1) # Populate array
+            cm[k] = center_of_mass(regions == k+1) # Populate array
         k = np.argmin([np.linalg.norm(cm0-location) for cm0 in cm])  # Get index of closest region
-        m = m == k+1 # Create mask of closest region
-    return m
+        regions = regions == k+1 # Create mask of closest region
+    return regions
 
 
 def extract_contour(mask):
