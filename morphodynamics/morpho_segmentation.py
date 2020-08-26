@@ -22,6 +22,7 @@ from . import utils
 
 from dask_jobqueue import SLURMCluster
 from dask.distributed import Client
+import mplcursors
 
 # fix MacOSX OMP bug (see e.g. https://github.com/dmlc/xgboost/issues/1715)
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
@@ -298,6 +299,7 @@ class InteractSeg():
                 self.fig.axes[0].set_ylim(ylim)
             self.fig.axes[0].set_title(f'Time:{self.data.valid_frames[t]}')
             self.fig.tight_layout()
+            mplcursors.cursor()
 
         # update max slider value with max image value
         self.intensity_range_slider.unobserve_all()
