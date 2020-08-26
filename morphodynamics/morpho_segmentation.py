@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 import ipywidgets as ipw
-from IPython.display import display
+from IPython.display import display, HTML, clear_output
 from skimage.segmentation import find_boundaries
 import dill
 from nd2reader import ND2Reader
@@ -27,7 +27,6 @@ from dask.distributed import Client
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 # suppress figure titles in widgets rendering and enlarge notebook
-from IPython.core.display import display, HTML
 display(HTML('<style>div.jupyter-widgets.widget-label {display: none;}</style>'))
 display(HTML("<style>.container { width:100% !important; }</style>"))
 
@@ -158,6 +157,8 @@ class InteractSeg():
         self.diameter = ipw.FloatText(value=100, description='Diameter:')
         self.diameter.observe(self.update_params, names='value')
 
+        self.segparam = self.threshold
+
         self.location_x = ipw.FloatText(value=100, description='Location X')
         self.location_x.observe(self.update_params, names='value')
         self.location_x.observe(self.update_location, names='value')
@@ -169,6 +170,7 @@ class InteractSeg():
         self.out_debug = ipw.Output()
         self.out = ipw.Output()
         self.out_distributed = ipw.Output()
+        self.interface = ipw.Output()
 
         # initialize image and interactivity
         self.shift_is_held = False
@@ -421,6 +423,13 @@ class InteractSeg():
     def update_params(self, change=None):
         """Callback to update param paramters upon interactive editing"""
 
+        if (self.segmentation.value == 'Cellpose' and not self.param.cellpose):
+            self.segparam = self.diameter
+            self.ui()
+        elif (self.segmentation.value == 'Thresholding' and self.param.cellpose):
+            self.segparam = self.threshold
+            self.ui()
+
         self.param.cellpose = self.segmentation.value == 'Cellpose'
         self.param.diameter = self.diameter.value
         self.param.T = self.threshold.value
@@ -549,51 +558,54 @@ class InteractSeg():
     def ui(self):
         """Create interface"""
 
-        self.interface = ipw.VBox([
-            ipw.HTML('<font size="5"><b>Choose main folder<b></font>'),
-            ipw.HTML('<font size="2"><b>This folder is either the folder containing the data\
-                or the folder containing en existing segmentation to load<b></font>'),
-            self.main_folder.file_list,
-            self.load_button,
-            ipw.HTML('<br><font size="5"><b>Chose segmentation and signal channels (folders or tifs)<b></font>'),
-            ipw.HBox([
-                ipw.VBox([ipw.HTML('<font size="2"><b>Segmentation<b></font>'),self.segm_folders]),
-                ipw.VBox([ipw.HTML('<font size="2"><b>Signal<b></font>'),self.channels_folders])
-            ]),
-            ipw.HBox([
-                self.init_button,
-            ]),
-
-            ipw.HTML('<br><font size="5"><b>Computing type<b></font>'),
-            self.distributed,
-            self.out_distributed,
-
-            ipw.HTML('<br><font size="5"><b>Set segmentation parameters<b></font>'),
-            ipw.HBox([
-                ipw.VBox([
-                    self.maxtime,
-                    self.step,
-                    self.bad_frames,
-                    self.segmentation,
-                    self.threshold,
-                    self.diameter,
-                    self.location_x,
-                    self.location_y,
-                    self.width_text,
-                    self.depth_text,
-                    self.run_button
+        with self.interface:
+            clear_output()
+            display(ipw.VBox([
+                ipw.HTML('<font size="5"><b>Choose main folder<b></font>'),
+                ipw.HTML('<font size="2"><b>This folder is either the folder containing the data\
+                    or the folder containing en existing segmentation to load<b></font>'),
+                self.main_folder.file_list,
+                self.load_button,
+                ipw.HTML('<br><font size="5"><b>Chose segmentation and signal channels (folders or tifs)<b></font>'),
+                ipw.HBox([
+                    ipw.VBox([ipw.HTML('<font size="2"><b>Segmentation<b></font>'), self.segm_folders]),
+                    ipw.VBox([ipw.HTML('<font size="2"><b>Signal<b></font>'), self.channels_folders])
                 ]),
-                self.out,
-                ipw.VBox([
-                    
-                    self.time_slider, self.intensity_range_slider,
-                    self.show_windows_choice, self.show_text_choice,
-                    self.display_channel
-                ])
-            ]),
+                ipw.HBox([
+                    self.init_button,
+                ]),
 
-            ipw.HTML('<br><font size="5"><b>Saving<b></font>'),
-            ipw.HTML('<font size="2"><b>Select folder where to save<b></font>'),
-            self.saving_folder.file_list,
-            self.export_button
-        ])
+                ipw.HTML('<br><font size="5"><b>Computing type<b></font>'),
+                self.distributed,
+                self.out_distributed,
+
+                ipw.HTML('<br><font size="5"><b>Set segmentation parameters<b></font>'),
+                ipw.HBox([
+                    ipw.VBox([
+                        self.maxtime,
+                        self.step,
+                        self.bad_frames,
+                        self.segmentation,
+                        self.segparam,
+                        #self.threshold,
+                        #self.diameter,
+                        self.location_x,
+                        self.location_y,
+                        self.width_text,
+                        self.depth_text,
+                        self.run_button
+                    ]),
+                    self.out,
+                    ipw.VBox([
+                        
+                        self.time_slider, self.intensity_range_slider,
+                        self.show_windows_choice, self.show_text_choice,
+                        self.display_channel
+                    ])
+                ]),
+
+                ipw.HTML('<br><font size="5"><b>Saving<b></font>'),
+                ipw.HTML('<font size="2"><b>Select folder where to save<b></font>'),
+                self.saving_folder.file_list,
+                self.export_button
+            ]))
