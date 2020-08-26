@@ -398,6 +398,10 @@ class InteractSeg():
         bads = utils.format_bad_frames(self.bad_frames.value)
         self.param.bad_frames = bads
 
+        # if data object does not exist, create it now
+        if self.data is None:
+            self.initialize()
+
         # update params
         self.data.update_params(self.param)
         self.time_slider.max = self.data.K-1
@@ -411,6 +415,10 @@ class InteractSeg():
         self.param.location = [self.location_x.value, self.location_y.value]
         self.param.width = self.width_text.value
         self.param.depth = self.depth_text.value
+
+        # if data object does not exist, create it now
+        if self.data is None:
+            self.initialize()
 
     def update_saving_folder(self, change=None):
         """Callback to update saving directory paramters"""
