@@ -15,7 +15,8 @@ from skimage.color import label2rgb
 
 
 def label_windows(shape, windows):
-    """ Create an image where the sampling windows are shown as regions with unique gray levels. """
+    """Create an image where the sampling windows are shown as regions with unique gray levels."""
+    
     tiles = np.zeros(shape, dtype=np.uint16)
     n = 1
     for j in range(len(windows)):
@@ -26,7 +27,13 @@ def label_windows(shape, windows):
 
 
 def compute_discrete_arc_length(c):
-    L = np.cumsum(np.linalg.norm(np.diff(np.concatenate([[c[0]],c,[c[0]]]),axis=0),axis=1))
+    """Compute cumulative arc length along contour"""
+
+    L = np.cumsum(
+        np.linalg.norm(
+            np.diff(np.concatenate([[c[0]], c, [c[0]]]), axis=0),
+            axis=1)
+        )
     #N = c.shape[0]
     #L = np.zeros((N+1,))
     #for n in range(1, N):
@@ -36,6 +43,9 @@ def compute_discrete_arc_length(c):
 
 
 def create_arc_length_image(shape, c, L):
+    """Create image of cumulative arc length by assigning cumulative length to
+    pixels along contour"""
+
     x = -np.ones(shape)
     x[c[np.arange(c.shape[0]), 0], c[np.arange(c.shape[0]), 1]] = L[np.arange(c.shape[0])]
     #for n in range(c.shape[0]):
@@ -53,6 +63,8 @@ def create_arc_length_image(shape, c, L):
 
 
 def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
+    """Create windows based on contour and windowing parameters"""
+
     origin = [origin[1], origin[0]]
 
     # plt.figure()
@@ -194,6 +206,7 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
 
 def extract_signals_old(y, w):
     """ Extract the mean values of an image over the sampling windows. """
+
     mean = np.nan * np.ones(w.shape[0:2])
     var = np.nan * np.ones(w.shape[0:2])
     for j in range(w.shape[0]):
@@ -206,6 +219,7 @@ def extract_signals_old(y, w):
 
 def extract_signals(y, w):
     """ Extract the mean values of an image over the sampling windows. """
+
     J = len(w)
     I = [len(e) for e in w]
     Imax = np.max(I)
@@ -220,6 +234,7 @@ def extract_signals(y, w):
 
 def show_windows(w, b):
     """ Display the sampling-window boundaries and indices. """
+
     plt.imshow(b, cmap='gray', vmin=0, vmax=2)
     for j in range(len(w)):
         for i in range(len(w[j])):
@@ -230,6 +245,7 @@ def show_windows(w, b):
 
 def calculate_windows_index(w):
     """ Display the sampling-window boundaries and indices. """
+
     windows_pos = []
     for j in range(len(w)):
         for i in range(len(w[j])):

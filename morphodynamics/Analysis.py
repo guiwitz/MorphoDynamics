@@ -58,16 +58,14 @@ def analyze_morphodynamics(data, param):
     res.area = np.zeros((data.K,))
     res.orig = np.zeros((data.K,))
 
-    # Main loop on frames
     # Segment all images but don't select cell
-    #segmented = dask.delayed(segment_all(data, param, model)).compute()
     segmented = segment_all(data, param, model)
     if param.distributed == 'local' or param.distributed == 'cluster':
         segmented = dask.delayed(segmented).compute()
-    
+
     # do the tracking
     for k in range(0, data.K):
-        
+
         m = segmented[k]
 
         # select cell to track in mask
@@ -78,7 +76,6 @@ def analyze_morphodynamics(data, param):
 
         if param.location is not None:
             location = center_of_mass(m) # Set the location for the next iteration
-            # print(location)
         c = extract_contour(m)  # Discrete cell contour
 
         s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
@@ -154,12 +151,15 @@ def analyze_morphodynamics(data, param):
 
 
 def segment_all(data, param, model):
-    
+    """Segment all frames and return a list of labelled masks. The correct
+    label is not selected here"""
+
+    # check if distributed computing should be used
     distr = False
     if param.distributed == 'local' or param.distributed == 'cluster':
         distr = True
 
-    # Segment all images but don't select cell
+    # Segment all images but don't do tracking (selection of label)
     segmented = []
     for k in range(0, data.K):
         if distr:
@@ -179,4 +179,3 @@ def segment_all(data, param, model):
                 m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
         segmented.append(m)
     return segmented
-

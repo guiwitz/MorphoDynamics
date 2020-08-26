@@ -17,7 +17,7 @@ from cellpose import models
 # fh = FigureHelper(not True)
 
 def segment_threshold(x, sigma, T, location):
-    """ Segment the cell image, possibly with automatic threshold selection. """
+    """Segment the cell image, possibly with automatic threshold selection."""
 
     # Determine the threshold based on the histogram, if not provided manually
     if T is None:
@@ -49,10 +49,12 @@ def segment_threshold(x, sigma, T, location):
         y = x
     z = T < y  # Threshold image
     regions = label(z)
-    
+
     return regions
 
+
 def track_threshold(regions, location):
+    """Given a labelled mask and a location, keep the label closest to location"""
 
     nr = np.max(regions)
     if location is None: # Keep only the largest region
@@ -83,6 +85,8 @@ def track_threshold(regions, location):
 
 
 def segment_cellpose(model, x, diameter, location):
+    """Segment image x using Cellpose. If model is None, a model is loaded"""
+
     if model is None:
         model = models.Cellpose(model_type='cyto')
     m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
@@ -91,6 +95,8 @@ def segment_cellpose(model, x, diameter, location):
 
 
 def track_cellpose(regions, location):
+    """Given a labelled mask and a location, keep the label closest to location"""
+
     nr = np.max(regions)
     if location is None: # Keep only the largest region
         # m = m[np.argmax([np.sum(m0) for m0 in m])]
@@ -101,7 +107,7 @@ def track_cellpose(regions, location):
         regions = regions == k+1 # Create mask of largest region
     else: # Keep the region that is closest to the specified location
         # nr = len(m)
-        cm = np.zeros((nr,2)) # Allocate center of masses of regions
+        cm = np.zeros((nr, 2)) # Allocate center of masses of regions
         for k in range(nr):
             cm[k] = center_of_mass(regions == k+1) # Populate array
         k = np.argmin([np.linalg.norm(cm0-location) for cm0 in cm])  # Get index of closest region
@@ -116,7 +122,8 @@ def extract_contour(mask):
 
 
 def estimateBleaching(filename, K, shape):
-    """ Estimate the intensity decay due to bleaching. """
+    """Estimate the intensity decay due to bleaching."""
+
     x = np.zeros((K,) + shape, dtype=np.uint16)
     c = np.zeros((K,) + shape + (3,), dtype=np.uint8)
     I = np.zeros((K,))

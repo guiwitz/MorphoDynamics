@@ -24,8 +24,7 @@ from dask_jobqueue import SLURMCluster
 from dask.distributed import Client
 
 # fix MacOSX OMP bug (see e.g. https://github.com/dmlc/xgboost/issues/1715)
-import os
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
 
 class InteractSeg():
@@ -95,11 +94,11 @@ class InteractSeg():
         
         # slider for time limits to analyze
         self.time_slider = ipw.IntSlider(
-            description = 'Time', min=0, max=0, value=0, continous_update=False)
+            description='Time', min=0, max=0, value=0, continous_update=False)
         self.time_slider.observe(self.show_segmentation, names='value')
 
         # intensity sliders
-        self.intensity_range_slider = ipw.IntRangeSlider(description = 'Intensity range', min=0, max=10, value=0)
+        self.intensity_range_slider = ipw.IntRangeSlider(description='Intensity range', min=0, max=10, value=0)
         self.intensity_range_slider.observe(self.update_intensity_range, names='value')
 
         # channel to display
@@ -123,7 +122,7 @@ class InteractSeg():
         self.depth_text.observe(self.update_params, names='value')
 
         # use distributed computing
-        self.distributed = ipw.Select(options=['No', 'local','cluster'], description='Distributed computing', value='No')
+        self.distributed = ipw.Select(options=['No', 'local','cluster'], value='No')
         self.distributed.observe(self.initialize_dask, names='value')
 
         # run the analysis button
@@ -165,7 +164,7 @@ class InteractSeg():
         self.out = ipw.Output()
         self.out_distributed = ipw.Output()
 
-        # initialize image
+        # initialize image and interactivity
         self.shift_is_held = False
         with self.out:
             self.fig, self.ax = plt.subplots(figsize=(5, 5))
@@ -182,18 +181,38 @@ class InteractSeg():
         self.initialize_dask()
 
     def initialize(self, b=None):
-        """Creat a data object based on chosen directories/files"""
+        """Create a data object based on chosen directories/files"""
 
         with self.out_debug:
             if os.path.isdir(os.path.join(self.expdir, self.param.morpho_name)):
                 self.param.data_type = 'series'
-                self.data = TIFFSeries(self.expdir, self.param.morpho_name, self.param.signal_name, data_type=self.param.data_type, step=self.param.step, bad_frames=self.param.bad_frames)
+                self.data = TIFFSeries(
+                    self.expdir,
+                    self.param.morpho_name,
+                    self.param.signal_name,
+                    data_type=self.param.data_type,
+                    step=self.param.step,
+                    bad_frames=self.param.bad_frames
+                    )
             elif self.param.morpho_name.split('.')[-1] == 'tif':
                 self.param.data_type = 'multi'
-                self.data = MultipageTIFF(self.expdir, self.param.morpho_name, self.param.signal_name, data_type=self.param.data_type, step=self.param.step, bad_frames=self.param.bad_frames)
+                self.data = MultipageTIFF(
+                    self.expdir,
+                    self.param.morpho_name,
+                    self.param.signal_name,
+                    data_type=self.param.data_type,
+                    step=self.param.step,
+                    bad_frames=self.param.bad_frames
+                    )
             elif self.expdir.split('.')[-1] == 'nd2':
                 self.param.data_type = 'nd2'
-                self.data = ND2(self.expdir, self.param.morpho_name, self.param.signal_name, data_type=self.param.data_type, step=self.param.step, bad_frames=self.param.bad_frames)
+                self.data = ND2(
+                    self.expdir,
+                    self.param.morpho_name,
+                    self.param.signal_name,
+                    data_type=self.param.data_type,
+                    step=self.param.step,
+                    bad_frames=self.param.bad_frames)
 
             self.maxtime.max = self.data.max_time
             self.maxtime.min = 0
@@ -205,12 +224,14 @@ class InteractSeg():
 
     def run_segmentation(self, b=None):
         """Run segmentation analysis"""
+
         self.run_button.description = 'Segmenting...'
         self.res = analyze_morphodynamics(self.data, self.param)
         self.show_segmentation(change='init')
         self.run_button.description = 'Click to segment'
 
-    def initialize_dask(self, change = None):
+    def initialize_dask(self, change=None):
+        """Start a Dask client and display it in the UI when selected by the user"""
 
         self.param.distributed = self.distributed.value
         if self.param.distributed == 'cluster':
@@ -226,6 +247,7 @@ class InteractSeg():
                 display(self.client.cluster._widget())
 
     def windows_for_plot(self, image, time):
+        """Create a window image"""
 
         c = rasterize_curve(
             image.shape, self.res.spline[time], self.res.orig[time])
@@ -238,22 +260,20 @@ class InteractSeg():
         """Update segmentation plot"""
 
         t = self.time_slider.value
+        # load image of channel selected in self.display_channel
         image = self.load_image(t)
-        #image = self.data.load_frame_morpho(t)
         
+        # calculate windows
         b0 = None
         windows_pos = None
         if self.res is not None:
             window = self.windows_for_plot(image, t)
-
-            #b0 = find_boundaries(label_windows(image.shape, self.res.windows[t]))
             b0 = find_boundaries(label_windows(image.shape, window))
             b0 = b0.astype(float)
-            b0[b0==0] = np.nan
-
-            #windows_pos = calculate_windows_index(self.res.windows[t])
+            b0[b0 == 0] = np.nan
             windows_pos = calculate_windows_index(window)
-
+        
+        # display image and windows and readjust zoom state
         with self.out:
             xlim = self.fig.axes[0].get_xlim()
             ylim = self.fig.axes[0].get_ylim()
@@ -261,7 +281,7 @@ class InteractSeg():
             plt.figure(self.fig.number)
             self.implot, self.wplot, self.tplt = show_windows2(
                         image, b0, windows_pos)
-            if xlim[1]>1:
+            if xlim[1] > 1:
                 self.fig.axes[0].set_xlim(xlim)
                 self.fig.axes[0].set_ylim(ylim)
             self.fig.axes[0].set_title(f'Time:{self.data.valid_frames[t]}')
@@ -277,43 +297,52 @@ class InteractSeg():
 
         # set new frame to same intensity range as previous frame
         self.implot.set_clim(
-            vmin = self.intensity_range_slider.value[0],
-            vmax = self.intensity_range_slider.value[1])
+            vmin=self.intensity_range_slider.value[0],
+            vmax=self.intensity_range_slider.value[1])
 
         # show cell center-of-mass if it exists
         if self.param.location is not None:
-            plt.plot([self.param.location[1]], [self.param.location[0]],'ro', markersize=10)
+            plt.plot(
+                [self.param.location[1]],
+                [self.param.location[0]], 'ro', markersize=10)
 
     def onclick(self, event):
-        '''Store click location'''
+        """Store click location"""
 
         if self.shift_is_held:
             self.param.location = np.array([event.ydata, event.xdata])
             self.show_segmentation()
 
     def on_key_press(self, event):
+        """Record if shift key is pressed"""
+
         if event.key == 'shift':
             self.shift_is_held = True
 
     def on_key_release(self, event):
+        """Record if shift key is released"""
         if event.key == 'shift':
             self.shift_is_held = False
 
     def get_folders(self, change=None):
-        '''Update folder options when selecting new main folder'''
+        """Update folder options when selecting new main folder"""
 
         # if an nd2 file is selected, load it, and use metadata channels as choices
         if len(self.main_folder.file_list.value) > 0:
             if (self.main_folder.file_list.value[0]).split('.')[-1] == 'nd2':
-                image = ND2Reader(os.path.join(self.main_folder.cur_dir, self.main_folder.file_list.value[0]))
+                image = ND2Reader(os.path.join(
+                    self.main_folder.cur_dir,
+                    self.main_folder.file_list.value[0]))
                 self.segm_folders.options = image.metadata['channels']
                 self.segm_folders.value = None
-            
+
                 self.channels_folders.options = image.metadata['channels']
                 self.channels_folders.value = ()
 
-                self.expdir = os.path.join(self.main_folder.cur_dir, self.main_folder.file_list.value[0])
-                self.param.expdir = self.expdir#.as_posix()
+                self.expdir = os.path.join(
+                    self.main_folder.cur_dir,
+                    self.main_folder.file_list.value[0])
+                self.param.expdir = self.expdir
         else:
             folder_names = np.array([x for x in self.main_folder.file_list.options if x[0]!='.' ])
 
@@ -324,32 +353,32 @@ class InteractSeg():
 
             self.channels_folders.options = folder_names
 
-            #self.update_file_list(x)
             self.expdir = self.main_folder.cur_dir
             self.param.expdir = self.expdir.as_posix()
 
-    def update_segm_file_list(self, change = None):
+    def update_segm_file_list(self, change=None):
         """Calback to update segmentation file lists depending on selections"""
 
         self.param.morpho_name = str(self.segm_folders.value)
 
-    def update_signal_file_list(self, change = None):
+    def update_signal_file_list(self, change=None):
         """Calback to update signal file lists depending on selections"""
 
         self.param.signal_name = [str(x) for x in self.channels_folders.value]
 
-    def update_display_channel_list(self, change = None):
+    def update_display_channel_list(self, change=None):
         """Callback to update available channels to display"""
-        
+
         self.display_channel.options = [str(self.segm_folders.value)] + [str(x) for x in self.channels_folders.value]
         self.display_channel.value = str(self.segm_folders.value)
 
     def update_display_channel(self, change=None):
-
+        """Callback to update displayed channel"""
         if self.data is not None:
             self.show_segmentation()
 
     def load_image(self, time):
+        """Load image selected in self.display_channel widget"""
 
         if self.display_channel.value == self.param.morpho_name:
             image = self.data.load_frame_morpho(time)
@@ -359,20 +388,18 @@ class InteractSeg():
 
         return image
 
-
     def update_data_params(self, change=None):
         """Callback to update data paramters upon interactive editing"""
 
         self.param.max_time = self.maxtime.value
         self.param.step = self.step.value
 
-        #parse bad frames
+        # parse bad frames
         bads = utils.format_bad_frames(self.bad_frames.value)
         self.param.bad_frames = bads
 
-        #update params
+        # update params
         self.data.update_params(self.param)
-
         self.time_slider.max = self.data.K-1
 
     def update_params(self, change=None):
@@ -395,45 +422,36 @@ class InteractSeg():
 
         self.intensity_range_slider.max = self.implot.get_array().max()
         self.implot.set_clim(
-            vmin = self.intensity_range_slider.value[0],
-            vmax = self.intensity_range_slider.value[1])
-        
+            vmin=self.intensity_range_slider.value[0],
+            vmax=self.intensity_range_slider.value[1])
+
     def update_windows_vis(self, change=None):
         """Callback to turn windows visibility on/off"""
-        
+
         self.wplot.set_visible(change['new'])
-        
-            
+
     def update_text_vis(self, change=None):
         """Callback to turn windows labels visibility on/off"""
-        
+
         for x in self.tplt:
             x.set_visible(change['new'])
-        
+
     def export_data(self, b):
-        """Callback to export data"""
-        
+        """Callback to export Results and Parameters"""
+
         if self.data.data_type == 'nd2':
             del self.data.nd2file
-            
-        #dill.dump(self.param, open(os.path.join(self.param.resultdir, 'Parameters.pkl'), 'wb'))
+
         dill.dump(self.res, open(os.path.join(self.param.resultdir, 'Results.pkl'), 'wb'))
-        #dill.dump(self.data, open(os.path.join(self.param.resultdir, 'Data.pkl'), 'wb'))
-        
-        #if self.data.data_type == 'nd2':
-        #    self.data.initialize()
 
         dict_file = {}
         for x in dir(self.param):
-            if x[0]=='_':
+            if x[0] == '_':
                 None
             elif x == 'resultdir':
                 dict_file[x] = getattr(self.param, x).as_posix()
             else:
                 dict_file[x] = getattr(self.param, x)
-
-        #del dict_file['resultdir']
-
 
         dict_file['bad_frames'] = self.bad_frames.value
 
@@ -447,29 +465,28 @@ class InteractSeg():
         """Callback to load params, data and results"""
 
         folder_load = self.main_folder.cur_dir
-        #self.param = dill.load(open(os.path.join(folder_load, 'Parameters.pkl'), "rb"))
 
-        self.param, self.res, self.data = utils.load_alldata(folder_load, load_results = True)
+        self.param, self.res, self.data = utils.load_alldata(folder_load, load_results=True)
         self.param.bad_frames = utils.format_bad_frames(self.param.bad_frames)
 
         param_copy = deepcopy(self.param)
         self.update_interface(param_copy)
-        
+
         self.show_segmentation(change='init')
 
     def load_params(self, b):
         """Callback to load only params and data """
 
         folder_load = self.main_folder.cur_dir
-        #self.param = dill.load(open(os.path.join(folder_load, 'Parameters.pkl'), "rb"))
-        
-        self.param, _, self.data = utils.load_alldata(folder_load, load_results = False)
-        
+        self.param, _, self.data = utils.load_alldata(folder_load, load_results=False)
+
         param_copy = deepcopy(self.param)
         self.update_interface(param_copy)
 
     def update_interface(self, param_copy):
+        """Set interface parameters using information from param object"""
 
+        # set paths, folders and channel selectors
         self.expdir = Path(param_copy.expdir)
 
         if self.data.data_type == 'nd2':
@@ -481,14 +498,16 @@ class InteractSeg():
             self.main_folder.cur_dir = self.expdir
             self.main_folder.refresh(None)
 
-        # folders
         self.segm_folders.value = param_copy.morpho_name
         self.channels_folders.value = param_copy.signal_name
 
+        # set segmentation type
         if param_copy.cellpose:
             self.segmentation.value = 'Cellpose'
         else:
             self.segmentation.value = 'Thresholding'
+
+        # set segmentation parameters
         self.threshold.value = param_copy.T
         self.diameter.value = param_copy.diameter
         self.location_x.value = param_copy.location[0]
@@ -503,9 +522,8 @@ class InteractSeg():
 
         self.update_display_channel_list()
 
-
     def ui(self):
-        '''Create interface'''
+        """Create interface"""
 
         self.interface = ipw.VBox([
             ipw.HTML('<font size="5"><b>Choose main folder<b></font>'),
@@ -513,7 +531,6 @@ class InteractSeg():
                 or the folder containing en existing segmentation to load<b></font>'),
             self.main_folder.file_list,
             self.load_button,
-            #ipw.HTML('<br>'),
             ipw.HTML('<br><font size="5"><b>Chose segmentation and signal channels (folders or tifs)<b></font>'),
             ipw.HBox([
                 ipw.VBox([ipw.HTML('<font size="2"><b>Segmentation<b></font>'),self.segm_folders]),
@@ -521,33 +538,35 @@ class InteractSeg():
             ]),
             ipw.HBox([
                 self.init_button,
-                self.distributed,
-                self.out_distributed
             ]),
-            
+
+            ipw.HTML('<br><font size="5"><b>Computing type<b></font>'),
+            self.distributed,
+            self.out_distributed,
+
             ipw.HTML('<br><font size="5"><b>Set segmentation parameters<b></font>'),
             ipw.VBox([
-            self.maxtime,
-            self.step,
-            self.bad_frames,
-            self.segmentation,
-            self.threshold,
-            self.diameter,
-            self.location_x,
-            self.location_y,
-            self.width_text,
-            self.depth_text,
-            self.run_button
+                self.maxtime,
+                self.step,
+                self.bad_frames,
+                self.segmentation,
+                self.threshold,
+                self.diameter,
+                self.location_x,
+                self.location_y,
+                self.width_text,
+                self.depth_text,
+                self.run_button
             ]),
-            
-            ipw.VBox([self.time_slider, self.intensity_range_slider,
+
+            ipw.VBox([
+                self.time_slider, self.intensity_range_slider,
                 self.show_windows_choice, self.show_text_choice,
                 self.display_channel,
                 self.out]),
-            
+
             ipw.HTML('<br><font size="5"><b>Saving<b></font>'),
             ipw.HTML('<font size="2"><b>Select folder where to save<b></font>'),
             self.saving_folder.file_list,
             self.export_button
-            
         ])
