@@ -26,6 +26,10 @@ from dask.distributed import Client
 # fix MacOSX OMP bug (see e.g. https://github.com/dmlc/xgboost/issues/1715)
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
+# suppress figure titles in widgets rendering and enlarge notebook
+from IPython.core.display import display, HTML
+display(HTML('<style>div.jupyter-widgets.widget-label {display: none;}</style>'))
+display(HTML("<style>.container { width:100% !important; }</style>"))
 
 class InteractSeg():
     def __init__(self, expdir=None, morpho_name=None, signal_name=None):
@@ -39,7 +43,7 @@ class InteractSeg():
             name of folder or file used segmentation
         signa_name: list of str
             names of folders or files used as signal
-       
+
         Attributes
         ----------
         """
@@ -91,7 +95,7 @@ class InteractSeg():
 
         self.load_params_button = ipw.Button(description='Load parameters')
         self.load_params_button.on_click(self.load_params)
-        
+
         # slider for time limits to analyze
         self.time_slider = ipw.IntSlider(
             description='Time', min=0, max=0, value=0, continous_update=False)
@@ -140,7 +144,7 @@ class InteractSeg():
         # parameters
         self.step = ipw.IntText(value=1, description='Step')
         self.step.observe(self.update_data_params, names='value')
-        
+
         # parameters
         self.bad_frames = ipw.Text(value='', description='Bad frames (e.g. 1,2,5-8,12)')
         self.bad_frames.observe(self.update_data_params, names='value')
@@ -156,9 +160,11 @@ class InteractSeg():
 
         self.location_x = ipw.FloatText(value=100, description='Location X')
         self.location_x.observe(self.update_params, names='value')
+        self.location_x.observe(self.update_location, names='value')
 
         self.location_y = ipw.FloatText(value=100, description='Location Y')
         self.location_y.observe(self.update_params, names='value')
+        self.location_y.observe(self.update_location, names='value')
 
         self.out_debug = ipw.Output()
         self.out = ipw.Output()
@@ -169,6 +175,7 @@ class InteractSeg():
         with self.out:
             self.fig, self.ax = plt.subplots(figsize=(5, 5))
             self.ax.set_title(f'Time:')
+            self.fig.tight_layout()
             cid = self.fig.canvas.mpl_connect('button_press_event', self.onclick)
             cid2 = self.fig.canvas.mpl_connect('key_press_event', self.on_key_press)
             cid3 = self.fig.canvas.mpl_connect('key_release_event', self.on_key_release)
@@ -225,6 +232,9 @@ class InteractSeg():
     def run_segmentation(self, b=None):
         """Run segmentation analysis"""
 
+        with self.out_debug:
+            print("data maxtime")
+            print(self.data.max_time)
         self.run_button.description = 'Segmenting...'
         self.res = analyze_morphodynamics(self.data, self.param)
         self.show_segmentation(change='init')
@@ -262,7 +272,7 @@ class InteractSeg():
         t = self.time_slider.value
         # load image of channel selected in self.display_channel
         image = self.load_image(t)
-        
+
         # calculate windows
         b0 = None
         windows_pos = None
@@ -272,12 +282,12 @@ class InteractSeg():
             b0 = b0.astype(float)
             b0[b0 == 0] = np.nan
             windows_pos = calculate_windows_index(window)
-        
+
         # display image and windows and readjust zoom state
         with self.out:
             xlim = self.fig.axes[0].get_xlim()
             ylim = self.fig.axes[0].get_ylim()
-            
+
             plt.figure(self.fig.number)
             self.implot, self.wplot, self.tplt = show_windows2(
                         image, b0, windows_pos)
@@ -285,6 +295,7 @@ class InteractSeg():
                 self.fig.axes[0].set_xlim(xlim)
                 self.fig.axes[0].set_ylim(ylim)
             self.fig.axes[0].set_title(f'Time:{self.data.valid_frames[t]}')
+            self.fig.tight_layout()
 
         # update max slider value with max image value
         self.intensity_range_slider.unobserve_all()
@@ -310,8 +321,9 @@ class InteractSeg():
         """Store click location"""
 
         if self.shift_is_held:
-            self.param.location = np.array([event.ydata, event.xdata])
+            self.param.location = np.array([int(event.ydata), int(event.xdata)])
             self.show_segmentation()
+            self.location_x.value, self.location_y.value = self.param.location[0], self.param.location[1]
 
     def on_key_press(self, event):
         """Record if shift key is pressed"""
@@ -419,6 +431,10 @@ class InteractSeg():
         # if data object does not exist, create it now
         if self.data is None:
             self.initialize()
+
+    def update_location(self, change=None):
+        """Callback to update cm location after manual location entering"""
+        self.show_segmentation()
 
     def update_saving_folder(self, change=None):
         """Callback to update saving directory paramters"""
@@ -553,25 +569,28 @@ class InteractSeg():
             self.out_distributed,
 
             ipw.HTML('<br><font size="5"><b>Set segmentation parameters<b></font>'),
-            ipw.VBox([
-                self.maxtime,
-                self.step,
-                self.bad_frames,
-                self.segmentation,
-                self.threshold,
-                self.diameter,
-                self.location_x,
-                self.location_y,
-                self.width_text,
-                self.depth_text,
-                self.run_button
+            ipw.HBox([
+                ipw.VBox([
+                    self.maxtime,
+                    self.step,
+                    self.bad_frames,
+                    self.segmentation,
+                    self.threshold,
+                    self.diameter,
+                    self.location_x,
+                    self.location_y,
+                    self.width_text,
+                    self.depth_text,
+                    self.run_button
+                ]),
+                self.out,
+                ipw.VBox([
+                    
+                    self.time_slider, self.intensity_range_slider,
+                    self.show_windows_choice, self.show_text_choice,
+                    self.display_channel
+                ])
             ]),
-
-            ipw.VBox([
-                self.time_slider, self.intensity_range_slider,
-                self.show_windows_choice, self.show_text_choice,
-                self.display_channel,
-                self.out]),
 
             ipw.HTML('<br><font size="5"><b>Saving<b></font>'),
             ipw.HTML('<font size="2"><b>Select folder where to save<b></font>'),
