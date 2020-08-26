@@ -31,8 +31,10 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 display(HTML('<style>div.jupyter-widgets.widget-label {display: none;}</style>'))
 display(HTML("<style>.container { width:100% !important; }</style>"))
 
+
 class InteractSeg():
-    def __init__(self, expdir=None, morpho_name=None, signal_name=None):
+    def __init__(self, expdir=None, morpho_name=None, signal_name=None,
+                memory="2 GB", cores=1):
 
         """Standard __init__ method.
         Parameters
@@ -41,8 +43,12 @@ class InteractSeg():
             path to folder containing data
         morpho_name: str
             name of folder or file used segmentation
-        signa_name: list of str
+        signal_name: list of str
             names of folders or files used as signal
+        memory : str
+            RAM to use on cluster
+        cores : int
+            number of cores to use per worker on cluster
 
         Attributes
         ----------
@@ -57,6 +63,8 @@ class InteractSeg():
         self.expdir = expdir
         self.param.morpho_name = morpho_name
         self.param.signal_name = signal_name
+        self.memory = memory
+        self.cores = cores
 
         self.data = None
         self.res = None
@@ -249,8 +257,8 @@ class InteractSeg():
         self.param.distributed = self.distributed.value
         if self.param.distributed == 'cluster':
             cluster = SLURMCluster(
-                cores=1,
-                memory="1 GB")
+                cores=self.cores,
+                memory=self.memory)
             self.client = Client(cluster)
             with self.out_distributed:
                 display(self.client.cluster._widget())
