@@ -43,6 +43,7 @@ class TIFFSeries(VirtualData):
         super().__init__(K, bad_frames)
 
     def load_frame_morpho(self, k):
+        print('Morpho: ' + str(self.morphofile(self.valid_frames[k] + 1)))
         return imread(self.datadir + self.expdir + self.morphofile(self.valid_frames[k] + 1) + '.tif').astype(dtype=np.uint16)
 
     def load_frame_signal(self, m, k):

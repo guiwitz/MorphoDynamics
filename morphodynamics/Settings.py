@@ -258,6 +258,32 @@ def load_settings(dataset_name):
         param.T = 829
         # param.cellpose = True
         param.location = [341, 345]
+    elif dataset_name == 'H1R_rGBD_03_forpres':
+        expdir = 'PROBLEM_DATA/H1R_rGBD_03_forpres/'
+        morphofile = lambda k: 'w46TIRFFRETacceptor_corr/H1R_rGBD_01_w46TIRFFRETacceptor_s3_t' + str(k)
+        signalfile = [
+            lambda k: 'ratio_tiffs/photobleached_corrected_ratio_{:0>3d}'.format(k),
+            lambda k: 'w15TIRF-mCherry_s3/H1R_rGBD_01_w15TIRF-mCherry_s3_t' + str(k),
+            lambda k: 'w25WF-mCherry_s3/H1R_rGBD_01_w25WF-mCherry_s3_t' + str(k)]
+        K = 211
+        shape = (716, 716)
+        data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
+        param.T = 990
+        # param.cellpose = True
+        param.location = [354, 358]
+    elif dataset_name == 'H1R_rGBD_03_forpres_end':
+        expdir = 'PROBLEM_DATA/H1R_rGBD_03_forpres/'
+        morphofile = lambda k: 'w46TIRFFRETacceptor_corr/H1R_rGBD_01_w46TIRFFRETacceptor_s3_t' + str(k+52)
+        signalfile = [
+            lambda k: 'ratio_tiffs/photobleached_corrected_ratio_{:0>3d}'.format(k+52),
+            lambda k: 'w15TIRF-mCherry_s3/H1R_rGBD_01_w15TIRF-mCherry_s3_t' + str(k+52),
+            lambda k: 'w25WF-mCherry_s3/H1R_rGBD_01_w25WF-mCherry_s3_t' + str(k+52)]
+        K = 6
+        shape = (716, 716)
+        data = TIFFSeries(dataset_name, expdir, morphofile, signalfile, shape, K)
+        param.T = 990
+        # param.cellpose = True
+        param.location = [354, 358]
     # data.K = 10
     return data, param
 

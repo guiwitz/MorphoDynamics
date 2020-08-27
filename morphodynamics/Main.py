@@ -1,3 +1,4 @@
+import numpy as np
 import os
 import dill
 from .Analysis import analyze_morphodynamics
@@ -19,7 +20,11 @@ from .Settings import load_settings
 # dataset_name = 'FRET_sensors + actinPDGFExpt2_forPRES'
 # dataset_name = 'Rac1_arhgap31_01_s2_forPRES'
 # dataset_name = 'Rac1_arhgap31_02_s2_forPRES'
-dataset_name = 'H1R_rGBD_01_forpres'
+# dataset_name = 'H1R_rGBD_01_forpres'
+# dataset_name = 'H1R_rGBD_03_forpres'
+dataset_name = 'H1R_rGBD_03_forpres_end'
+
+np.seterr(all='raise')
 
 data, param = load_settings(dataset_name)
 
