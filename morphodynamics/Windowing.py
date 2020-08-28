@@ -124,8 +124,8 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
         #for u in range(c.shape[0]):
         #    for v in range(c.shape[1]):
         #        L[u, v] = c[F[0, u, v], F[1, u, v]]
-        gridy, gridx = np.meshgrid(range(c.shape[0]),range(c.shape[1]))
-        L = c[F[0,:,:][gridx, gridy],F[1,:,:][gridx, gridy]]
+        gridx, gridy = np.meshgrid(range(c.shape[1]), range(c.shape[0]))
+        L = c[F[0,:,:][gridy, gridx], F[1,:,:][gridy, gridx]]
 
         # Create sampling windows for the j-th layer
         if compute_num_win:
