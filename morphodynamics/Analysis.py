@@ -5,7 +5,7 @@ from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages
 from .Settings import Struct
-from .Segmentation import segment_threshold, extract_contour, segment_cellpose, track_cellpose, track_threshold
+from .Segmentation import segment_threshold, extract_contour, segment_cellpose, track_cellpose, track_threshold, segment_farid
 from .DisplacementEstimation import fit_spline, map_contours2, rasterize_curve, compute_length, compute_area, show_edge_scatter, align_curves, subdivide_curve, subdivide_curve_discrete, splevper, map_contours3
 from .Windowing import create_windows, extract_signals, label_windows, show_windows
 import matplotlib.pyplot as plt
@@ -36,8 +36,11 @@ def analyze_morphodynamics(data, param):
     x = data.load_frame_morpho(0)
     if param.cellpose:
         m = segment_cellpose(model, x, param.diameter, location)
+        m = track_cellpose(m, location)
     else:
         m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
+        #m = segment_farid(x)
+        m = track_threshold(m, location)
     c = extract_contour(m)  # Discrete cell contour
     s = fit_spline(c, param.lambda_)
     c = rasterize_curve(x.shape, s, 0)
@@ -175,7 +178,9 @@ def segment_all(data, param, model):
         else:
             if distr:
                 m = dask.delayed(segment_threshold)(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
+                #m = dask.delayed(segment_farid)(x)            
             else:
                 m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
+                #m = segment_farid(x)      
         segmented.append(m)
     return segmented
