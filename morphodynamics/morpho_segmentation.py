@@ -106,7 +106,7 @@ class InteractSeg():
 
         # slider for time limits to analyze
         self.time_slider = ipw.IntSlider(
-            description='Time', min=0, max=0, value=0, continous_update=False)
+            description='Time', min=0, max=0, value=0, continuous_update=False)
         self.time_slider.observe(self.show_segmentation, names='value')
 
         # intensity sliders
@@ -134,7 +134,7 @@ class InteractSeg():
         self.depth_text.observe(self.update_params, names='value')
 
         # use distributed computing
-        self.distributed = ipw.Select(options=['No', 'local','cluster'], value='No')
+        self.distributed = ipw.Select(options=['No', 'local', 'cluster'], value='No')
         self.distributed.observe(self.initialize_dask, names='value')
 
         # run the analysis button
@@ -186,7 +186,7 @@ class InteractSeg():
         with self.out:
             self.fig, self.ax = plt.subplots(figsize=(5, 5))
             self.ax.set_title(f'Time:')
-            self.fig.tight_layout()
+            #self.fig.tight_layout()
             cid = self.fig.canvas.mpl_connect('button_press_event', self.onclick)
             cid2 = self.fig.canvas.mpl_connect('key_press_event', self.on_key_press)
             cid3 = self.fig.canvas.mpl_connect('key_release_event', self.on_key_release)
@@ -306,7 +306,7 @@ class InteractSeg():
                 self.fig.axes[0].set_xlim(xlim)
                 self.fig.axes[0].set_ylim(ylim)
             self.fig.axes[0].set_title(f'Time:{self.data.valid_frames[t]}')
-            self.fig.tight_layout()
+            #self.fig.tight_layout()
             mplcursors.cursor()
 
         # update max slider value with max image value
@@ -317,6 +317,8 @@ class InteractSeg():
         # when creating image use full intensity values
         if change == 'init':
             self.intensity_range_slider.value = (0, int(image.max()))
+            self.fig.axes[0].set_xlim((-0.5,image.shape[1]-0.5))
+            self.fig.axes[0].set_ylim((image.shape[0]-0.5, -0.5))
 
         # set new frame to same intensity range as previous frame
         self.implot.set_clim(
