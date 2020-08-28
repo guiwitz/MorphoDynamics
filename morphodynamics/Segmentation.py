@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 from skimage.exposure import histogram
-from skimage.filters import gaussian, threshold_otsu
-from skimage.measure import find_contours, label
+from skimage.filters import gaussian, threshold_otsu, farid
+from skimage.morphology import binary_closing, disk
+from skimage.measure import find_contours, label, regionprops
 from scipy.interpolate import UnivariateSpline
 from scipy.signal import argrelmin
 from scipy.ndimage import median_filter
@@ -10,6 +11,8 @@ from scipy.ndimage.measurements import center_of_mass
 import numpy as np
 from tifffile import imread, imsave
 from cellpose import models
+
+
 
 
 # from ArtifactGeneration import FigureHelper
@@ -49,6 +52,23 @@ def segment_threshold(x, sigma, T, location):
         y = x
     z = T < y  # Threshold image
     regions = label(z)
+
+    return regions
+
+
+def segment_farid(x):
+
+    farid2 = farid(gaussian(x, 2, preserve_range=True)) > 1
+    farid_lab = label(farid2)
+    farid_reg = regionprops(farid_lab)
+
+    farid_indices = np.array(
+        [0] + [x.label if x.area > 500 else 0 for x in farid_reg]
+    ).astype(int)
+    farid3 = farid_indices[farid_lab] > 0
+    farid4 = binary_closing(farid3, disk(3))
+
+    regions = label(farid4)
 
     return regions
 
