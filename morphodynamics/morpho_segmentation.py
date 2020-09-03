@@ -169,11 +169,11 @@ class InteractSeg():
         self.segparam = self.threshold
 
         self.location_x = ipw.FloatText(value=100, description='Location X')
-        self.location_x.observe(self.update_params, names='value')
+        #self.location_x.observe(self.update_params, names='value')
         self.location_x.observe(self.update_location, names='value')
 
         self.location_y = ipw.FloatText(value=100, description='Location Y')
-        self.location_y.observe(self.update_params, names='value')
+        #self.location_y.observe(self.update_params, names='value')
         self.location_y.observe(self.update_location, names='value')
 
         self.out_debug = ipw.Output()
@@ -445,7 +445,6 @@ class InteractSeg():
         self.param.cellpose = self.segmentation.value == 'Cellpose'
         self.param.diameter = self.diameter.value
         self.param.T = self.threshold.value
-        self.param.location = [self.location_x.value, self.location_y.value]
         self.param.width = self.width_text.value
         self.param.depth = self.depth_text.value
 
@@ -455,6 +454,7 @@ class InteractSeg():
 
     def update_location(self, change=None):
         """Callback to update cm location after manual location entering"""
+        self.param.location = [self.location_x.value, self.location_y.value]
         self.show_segmentation()
 
     def update_saving_folder(self, change=None):
