@@ -41,6 +41,7 @@ def analyze_morphodynamics(data, param):
         m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
         #m = segment_farid(x)
         m = track_threshold(m, location)
+    location = center_of_mass(m) #get location for tracking
     c = extract_contour(m)  # Discrete cell contour
     s = fit_spline(c, param.lambda_)
     c = rasterize_curve(x.shape, s, 0)
@@ -73,12 +74,12 @@ def analyze_morphodynamics(data, param):
 
         # select cell to track in mask
         if param.cellpose:
-            m = track_threshold(m, location)
+            m = track_cellpose(m, location)
         else:
             m = track_threshold(m, location)
 
-        if param.location is not None:
-            location = center_of_mass(m) # Set the location for the next iteration
+        #if param.location is not None:
+        location = center_of_mass(m) # Set the location for the next iteration
         c = extract_contour(m)  # Discrete cell contour
 
         s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
@@ -165,6 +166,7 @@ def segment_all(data, param, model):
     # Segment all images but don't do tracking (selection of label)
     segmented = []
     for k in range(0, data.K):
+        
         if distr:
             x = dask.delayed(data.load_frame_morpho)(k)  # Input image
         else:
