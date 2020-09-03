@@ -14,7 +14,7 @@ from .Parameters import Param
 from .Dataset import MultipageTIFF, TIFFSeries, ND2
 from .folders import Folders
 
-from .Analysis import analyze_morphodynamics
+from .Analysis_par import analyze_morphodynamics
 from .morpho_plots import show_windows as show_windows2
 from .Windowing import label_windows, calculate_windows_index, create_windows
 from .DisplacementEstimation import rasterize_curve, splevper
