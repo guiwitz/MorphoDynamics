@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from skimage.exposure import histogram
 from skimage.filters import gaussian, threshold_otsu, farid
-from skimage.morphology import binary_closing, disk
+from skimage.morphology import binary_closing, binary_erosion, disk
 from skimage.measure import find_contours, label, regionprops
 from scipy.interpolate import UnivariateSpline
 from scipy.signal import argrelmin
@@ -59,16 +59,25 @@ def segment_threshold(x, sigma, T, location):
 def segment_farid(x):
 
     farid2 = farid(gaussian(x, 2, preserve_range=True)) > 1
-    farid_lab = label(farid2)
-    farid_reg = regionprops(farid_lab)
 
+    #farid_lab = label(farid2)
+    #farid_reg = regionprops(farid_lab)
+    #farid_indices = np.array(
+    #    [0] + [x.label if x.area > 500 else 0 for x in farid_reg]
+    #).astype(int)
+    #farid3 = farid_indices[farid_lab] > 0
+    #farid4 = binary_closing(farid3, disk(3))
+
+    farid3 = binary_closing(farid2, disk(3))
+    farid4 = binary_erosion(farid3, disk(3))
+
+    farid_lab = label(farid4)
+    farid_reg = regionprops(farid_lab)
     farid_indices = np.array(
         [0] + [x.label if x.area > 500 else 0 for x in farid_reg]
     ).astype(int)
-    farid3 = farid_indices[farid_lab] > 0
-    farid4 = binary_closing(farid3, disk(3))
-
-    regions = label(farid4)
+    regions = farid_indices[farid_lab] > 0
+    regions = label(regions)
 
     return regions
 
@@ -86,7 +95,8 @@ def track_threshold(regions, location):
     else: # Keep the region that is closest to the specified location
         cm = np.zeros((nr,2)) # Allocate center of masses of regions
         for k in range(nr):
-            cm[k] = center_of_mass(binary_fill_holes(regions == k+1)) # Populate array
+            cm[k] = center_of_mass(regions == k+1) # no hole filling if location is given
+            #cm[k] = center_of_mass(binary_fill_holes(regions == k+1)) # Populate array
         k = np.argmin([np.linalg.norm(cm0-location) for cm0 in cm])  # Get index of closest region
         z = binary_fill_holes(regions == k+1)  # Create mask of closest region
 
