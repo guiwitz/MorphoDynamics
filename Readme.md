@@ -18,11 +18,8 @@ Then activate the environment:
 conda activate morphodynamics
 ```
 
-and install the Morphodynamics package using pip (the dot at the end of the line is important):
+The Morphodynamics package is automatically installed in that environment.
 
-```
-pip install .
-```
 
 ## Updates
 
