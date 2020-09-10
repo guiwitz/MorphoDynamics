@@ -1,3 +1,5 @@
+# Run this file if you want to execute the code as a script (without the graphical user interface).
+
 import numpy as np
 import os
 import dill
@@ -5,6 +7,7 @@ from .Analysis import analyze_morphodynamics
 from .ArtifactGeneration import show_analysis
 from .Settings import load_settings
 
+# Specify the dataset to be analyzed
 # dataset_name = 'Ellipse with triangle dynamics'
 # dataset_name = 'Change of origin'
 # dataset_name = 'Moving ellipse'
@@ -21,16 +24,16 @@ from .Settings import load_settings
 # dataset_name = 'Rac1_arhgap31_01_s2_forPRES'
 # dataset_name = 'Rac1_arhgap31_02_s2_forPRES'
 # dataset_name = 'H1R_rGBD_01_forpres'
-# dataset_name = 'H1R_rGBD_03_forpres'
-dataset_name = 'H1R_rGBD_03_forpres_end'
+dataset_name = 'H1R_rGBD_03_forpres'
+# dataset_name = 'H1R_rGBD_03_forpres_end'
 
-np.seterr(all='raise')
-
+# Load the dataset and parameters defined in Settings.py
 data, param = load_settings(dataset_name)
 
 if not os.path.exists(param.resultdir):
     os.mkdir(param.resultdir)
 
+# 1 = analyze data; 2 = generate figures; 0 = do both
 step = 0
 
 if step in [0, 1]:

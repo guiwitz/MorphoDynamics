@@ -61,6 +61,27 @@ from copy import deepcopy
 
 
 def align_curves(s1, s2, t1):
+    '''
+
+    This function is intended to help improve the accuracy of displacement estimation
+    when in addition to protrusions the cell is subject to motion.
+    The idea is to create an intermediate contour s1c that is the result of a translation
+    and a change of origin of s1, so as to make it as close as possible to s2.
+    The idea is to find a translation of s1 and a change of origin for s2 that make both
+    curves as close as possible.
+    s1c essentially accounts for the the motion of the cell, and once it is available,
+    one can compute the usual displacement between s1c and s2.
+    The total displacement is the sum of both components.
+
+    Parameters:
+        s1: Curve at current frame
+        s2: Curve at next frame
+        t1: Origin of curve s1
+
+    Returns:
+        Tuple s1c, t2 where s1c is the intermediate contour and t2 is the new origin for curve s2.
+    '''
+
     t = np.linspace(0, 1, 10000, endpoint=False)
 
     # plt.figure(figsize=(12, 9))
@@ -68,6 +89,13 @@ def align_curves(s1, s2, t1):
     # pp.savefig()
 
     def functional(v):
+        ''' Computes the difference between s1c and s2 with adjusted origin.
+        Used to minimize this difference using scipy.optimize.least_squares.
+
+        Parameters:
+            v: Three-dimensional vector representing the translation of s1 and the new origin of s2.
+        '''
+
         s1c = deepcopy(s1)
         s1c[1][0] += v[0]
         s1c[1][1] += v[1]
@@ -90,8 +118,11 @@ def align_curves(s1, s2, t1):
 
         return np.concatenate(c2) - np.concatenate(c1)
 
+    # Search for the optimal translation and change of origin
     lsq = least_squares(functional, [0, 0, t1], method='lm', x_scale = [1, 1, 1e-4])  # , ftol=1e-3
     v = lsq.x
+
+    # Construct the translated curve and the new origin
     s1c = deepcopy(s1)
     s1c[1][0] += v[0]
     s1c[1][1] += v[1]
@@ -325,20 +356,31 @@ def show_edge_image(shape, s, t, d, thickness, dmax=None):
 #     return tau
 
 def rasterize_curve(shape, s, deltat):
-    """ Construct a mapping from edge pixels to spline arguments. """
-    delta = np.inf * np.ones(shape)
-    tau = - np.ones(shape)
-    t = np.linspace(0, 1, 10001)
-    p = np.asarray(splev(t, s))
-    t = np.mod(t - deltat, 1)
-    pi = np.round(p).astype(dtype=np.int)
-    d0_all = np.linalg.norm(p-pi,axis = 0)
-    for n in range(10001):
-        d0 = d0_all[n]
-        #d0 = np.linalg.norm(p[:, n]-pi[:, n])
-        if d0 < delta[pi[1, n], pi[0, n]]:
-            delta[pi[1, n], pi[0, n]] = d0
-            tau[pi[1, n], pi[0, n]] = t[n]
+    """ Represent a contour as a grayscale image.
+    If a pixel is part of the contour, then its intensity
+    is equal to the parameter t of the closest point on the contour s(t).
+    Otherwise it is equal to -1.
+
+    Parameters:
+        shape: Size of the desired image.
+        s: Spline curve.
+        deltat: Origin of the curve.
+
+    Returns:
+        A rasterized image of the contour.
+    """
+
+    delta = np.inf * np.ones(shape)  # Will store the distance between edge pixels and the closest points on the contour
+    tau = - np.ones(shape) # Will store the parameters t of the closest points on the contour; pixels that are not part of the contour will take the value -1
+    t = np.linspace(0, 1, 10001)  # The parameters of the points on the curve
+    p = np.asarray(splev(t, s))  # The points on the curve
+    t = np.mod(t - deltat, 1)  # Adjust the origin of the curve and account for periodicity of the parameterization
+    pi = np.round(p).astype(dtype=np.int) # Coordinates of the pixels that are part of the contour
+    d0 = np.linalg.norm(p-pi,axis = 0)  # Distances between the points on the contour and the nearest pixels
+    for n in range(10001):  # For each point p[:, n] on the contour...
+        if d0[n] < delta[pi[1, n], pi[0, n]]:  # ... if the distance to the nearest pixel is the smallest so far...
+            delta[pi[1, n], pi[0, n]] = d0[n]  # ... remember this distance...
+            tau[pi[1, n], pi[0, n]] = t[n]  # ... and store the parameter t corresponding to p[:, n]
     return tau
 
 

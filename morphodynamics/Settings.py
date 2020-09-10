@@ -9,6 +9,8 @@ def load_settings(dataset_name):
     # Analysis parameters
     param = Struct()
 
+    param.distributed = 'local'
+
     # Output directory
     param.resultdir = dataset_name + '/'
 

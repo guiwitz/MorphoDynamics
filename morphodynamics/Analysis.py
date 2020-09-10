@@ -14,6 +14,8 @@ import dask
 
 
 def analyze_morphodynamics(data, param):
+    # np.seterr(all='raise')
+
     # Figures and other artifacts
     if param.showSegmentation:
         tw_seg = TiffWriter(param.resultdir + 'Segmentation.tif')
@@ -69,6 +71,7 @@ def analyze_morphodynamics(data, param):
 
     # do the tracking
     for k in range(0, data.K):
+        print(k)
 
         m = segmented[k]
 
@@ -85,7 +88,7 @@ def analyze_morphodynamics(data, param):
         s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
 
         if k > 0:
-            s0prm, res.orig[k] = align_curves(s0, s, res.orig[k-1])
+            s0prm, res.orig[k] = align_curves(s0, s, res.orig[k-1]) # Intermediate curve and change of origin to account for cell motion
 
         c = rasterize_curve(x.shape, s, res.orig[k])  # Representation of the contour as a grayscale image
         w = create_windows(c, splevper(res.orig[k], s), J, I) # Sampling windows
