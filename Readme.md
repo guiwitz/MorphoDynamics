@@ -6,11 +6,11 @@ This software can be used to analyze the dynamics of single-cells imaged by time
 
 We strongly recommend to install the necessary software via conda. If you don't have conda installed, follow [these instructions](https://docs.conda.io/en/latest/miniconda.html) to install a minimal version called miniconda.
 
-Then, download this package to your machine, open a terminal and move to the downloaded folder (Morphodynamics-master). The latter contains an ```environment.yml``` file that can be used to setup a conda environment wih all necessary packages. For that, just execute the folling line:
+Then, download (or clone) this repository to your machine (green "Code" button at the top right of this page), unzip the folder, open a terminal and move to the downloaded folder (Morphodynamics-master). The latter contains an ```environment.yml``` file that can be used to setup a conda environment wih all necessary packages. For that, just execute the following line:
 
 ```
 conda env create -f environment.yml
-````
+```
 
 Then activate the environment:
 
@@ -27,7 +27,7 @@ To update your local installation with the latest version available on GitHub, a
 
 ```
 conda activate morphodynamics 
-pip install --upgrade git+https://github.com/ZejjT5E44/MorphoDynamics.git@master#egg=morphodynamics
+pip install --upgrade git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
 ```
 
 The above command should prompt you to enter your GitHub username and password, as the repository is private.
@@ -48,5 +48,5 @@ and start a Jupyter session:
 jupyter notebook
 ```
 
-Two notebooks are provided in the ```notebooks``` folder. [Morpho_segmentation.ipynb](Morpho_segmentation.ipynb) allows you to perform cell segmentation and windowing. It accepts data in the form of series of tiffs, tiff stacks or nd2 files (still experimental). Once segmentation is done and saved, that information can be used to proceed to the data analysis per se in the [InterfaceFigures.ipynb](InterfaceFigures.ipynb) notebooks. There you import the segmentation, and can choose from a variety of different analysis to plot.
+Two notebooks are provided in the [notebooks](notebooks) folder. [Morpho_segmentation.ipynb](notebooks/Morpho_segmentation.ipynb) allows you to perform cell segmentation and windowing. It accepts data in the form of series of tiffs, tiff stacks or nd2 files (still experimental). Once segmentation is done and saved, that information can be used to proceed to the data analysis per se in the [InterfaceFigures.ipynb](notebooks/InterfaceFigures.ipynb) notebooks. There you import the segmentation, and can choose from a variety of different analysis to plot.
 
