@@ -63,7 +63,26 @@ def create_arc_length_image(shape, c, L):
 
 
 def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
-    """Create windows based on contour and windowing parameters"""
+    """Create windows based on contour and windowing parameters.
+
+    Note: to define the windows, this function uses pseudo-radial and pseudo-angular
+    coordinates. The pseudo-radial coordinate is based on the distance transform of
+    the rasterized version of the continuous spline that defines the contour of the
+    cell. The pseudo-angular coordinate for layer j is based on the distance transform
+    of the discrete contour of layer j. So there is a bit of an inconsistency between
+    continuous and discrete contours.
+
+    Parameters:
+        c_main: A rasterized version of the contour, as obtained by rasterize_curve.
+        origin: (y, x) coordinates of the origin of the curve.
+        J: Number of window layers.
+        I: Vector of dimension J specifying the number of windows per layer.
+        depth: Desired depth of the windows.
+        width: Desired width of the windows.
+
+    Returns:
+        If I and J are specified, a list of lists w such that w[j][i] is an array of all pixel positions that belong to window (j, i). If I and J are not specified, they are determined based on the depth and width arguments and the tuple w, J, I is returned.
+    """
 
     origin = [origin[1], origin[0]]
 
@@ -77,11 +96,11 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
     # Compute the mask corresponding to the main contour
     mask_main = binary_fill_holes(-1 < c_main)
 
-    # Divide the radial coordinate into J layers
+    # Divide the radial coordinate into J layers with specified depth
     Dmax = np.amax(D_main * mask_main)
     if J is None:
         J = int(math.ceil(Dmax / depth))
-    b = np.linspace(0, Dmax, J + 1)
+    b = np.linspace(0, Dmax, J + 1)  # Boundaries of the layers in terms of distances to the main contour
 
     if I is None:
         compute_num_win = True
@@ -92,6 +111,7 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
     for j in range(J):
         w.append([])
 
+        # The mask containing the interior of the cell starting from the j-th layer
         mask = (b[j] <= D_main) * mask_main
 
         # Extract the contour of the mask
@@ -104,7 +124,9 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
         # plt.plot(origin[1], origin[0], 'or')
         # # plt.show()
 
-        # Adjust the origin of the contour
+        # Adjust the origin of the contour:
+        # on the discrete contour cvec, find the closest point to the origin,
+        # then apply a circular shift to cvec to make this point the first one.
         n0 = np.argmin(np.linalg.norm(cvec - origin, axis=1))
         cvec = np.roll(cvec, -n0, axis=0)
 
@@ -116,7 +138,8 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
         # plt.plot(origin[1], origin[0], 'or')
         # # plt.show()
 
-        # Compute the feature transform of this image
+        # Compute the feature transform of this image:
+        # for each pixel position, we get the coordinates of the closest pixel on the contour
         F = distance_transform_edt(-1 == c, return_distances=False, return_indices=True)
 
         # Fill array with arc lengths of closest points on the contour
@@ -124,8 +147,11 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
         #for u in range(c.shape[0]):
         #    for v in range(c.shape[1]):
         #        L[u, v] = c[F[0, u, v], F[1, u, v]]
-        gridx, gridy = np.meshgrid(range(c.shape[1]), range(c.shape[0]))
-        L = c[F[0,:,:][gridy, gridx], F[1,:,:][gridy, gridx]]
+
+        # gridx, gridy = np.meshgrid(range(c.shape[1]), range(c.shape[0]))
+        # L = c[F[0,:,:][gridy, gridx], F[1,:,:][gridy, gridx]]
+
+        L = c[F[0,:,:], F[1,:,:]]
 
         # Create sampling windows for the j-th layer
         if compute_num_win:

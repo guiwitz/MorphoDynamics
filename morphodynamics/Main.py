@@ -11,7 +11,7 @@ from .Settings import load_settings
 # dataset_name = 'Ellipse with triangle dynamics'
 # dataset_name = 'Change of origin'
 # dataset_name = 'Moving ellipse'
-# dataset_name = 'FRET_sensors + actinHistamineExpt2'
+dataset_name = 'FRET_sensors + actinHistamineExpt2'
 # dataset_name = 'FRET_sensors + actinHistamineExpt2 with Cellpose'
 # dataset_name = 'FRET_sensors + actinMigration_line_1D'
 # dataset_name = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
@@ -24,7 +24,7 @@ from .Settings import load_settings
 # dataset_name = 'Rac1_arhgap31_01_s2_forPRES'
 # dataset_name = 'Rac1_arhgap31_02_s2_forPRES'
 # dataset_name = 'H1R_rGBD_01_forpres'
-dataset_name = 'H1R_rGBD_03_forpres'
+# dataset_name = 'H1R_rGBD_03_forpres'
 # dataset_name = 'H1R_rGBD_03_forpres_end'
 
 # Load the dataset and parameters defined in Settings.py
