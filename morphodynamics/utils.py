@@ -4,8 +4,8 @@ import yaml
 import numpy as np
 from pathlib import Path
 
-from .Parameters import Param
-from .Dataset import TIFFSeries, MultipageTIFF, ND2
+from .parameters import Param
+from .dataset import TIFFSeries, MultipageTIFF, ND2
 
 
 def load_alldata(folder_path, load_results = False):

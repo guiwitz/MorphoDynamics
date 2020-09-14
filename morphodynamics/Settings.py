@@ -1,4 +1,4 @@
-from .DataAccess import TIFFSeries, MultipageTIFF
+from .dataaccess import TIFFSeries, MultipageTIFF
 
 
 class Struct:
