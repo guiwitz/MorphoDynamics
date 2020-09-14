@@ -9,7 +9,7 @@ from numpy.linalg import norm
 from skimage.measure import find_contours
 
 from .functionaldefinition import Functional, Functional2, Functional3
-from .figureHelper import FigureHelper
+from .figurehelper import FigureHelper
 
 # fh = FigureHelper(not True)
 from .settings import Struct
