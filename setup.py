@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='morphodynamics',
-      version='0.0',
+      version='0.1',
       description='Cell segmentation and windowing',
       url='',
       author='Cedric Vonesch and Guillaume Witz',
