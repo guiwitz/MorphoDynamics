@@ -1,7 +1,11 @@
 from setuptools import setup
 
+version = {}
+with open("morphodynamics/version.py") as fp:
+    exec(fp.read(), version)
+
 setup(name='morphodynamics',
-      version='0.1',
+      version=version["__version__"],
       description='Cell segmentation and windowing',
       url='',
       author='Cedric Vonesch and Guillaume Witz',
