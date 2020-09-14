@@ -10,10 +10,10 @@ from tifffile import TiffWriter, imsave
 from scipy.interpolate import splev
 from scipy.stats import norm
 from PIL import Image
-from .Correlation import show_correlation_core, correlate_arrays, get_range
-from .DisplacementEstimation import show_edge_line, show_edge_image, compute_curvature, compute_length, compute_area, \
+from .correlation import show_correlation_core, correlate_arrays, get_range
+from .displacementestimation import show_edge_line, show_edge_image, compute_curvature, compute_length, compute_area, \
     splevper, show_edge_scatter_init, show_edge_scatter_update, show_edge_scatter
-from .Settings import Struct
+from .settings import Struct
 
 
 def show_circularity(param, data, res, export=False, size=(16, 9)):

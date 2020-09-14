@@ -3,9 +3,9 @@
 import numpy as np
 import os
 import dill
-from .Analysis import analyze_morphodynamics
-from .ArtifactGeneration import show_analysis
-from .Settings import load_settings
+from .analysis import analyze_morphodynamics
+from .artifactgeneration import show_analysis
+from .settings import load_settings
 
 # Specify the dataset to be analyzed
 # dataset_name = 'Ellipse with triangle dynamics'

@@ -10,14 +10,14 @@ import dill
 from nd2reader import ND2Reader
 import yaml
 
-from .Parameters import Param
-from .Dataset import MultipageTIFF, TIFFSeries, ND2
+from .parameters import Param
+from .dataset import MultipageTIFF, TIFFSeries, ND2
 from .folders import Folders
 
-from .Analysis_par import analyze_morphodynamics
+from .analysis_par import analyze_morphodynamics
 from .morpho_plots import show_windows as show_windows2
-from .Windowing import label_windows, calculate_windows_index, create_windows
-from .DisplacementEstimation import rasterize_curve, splevper
+from .windowing import label_windows, calculate_windows_index, create_windows
+from .displacementestimation import rasterize_curve, splevper
 from . import utils
 
 from dask_jobqueue import SLURMCluster
