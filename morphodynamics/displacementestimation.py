@@ -160,18 +160,40 @@ def map_contours(s1, s2, t1):
 
 
 def map_contours2(s1, s2, t1, t2):
+    ''' Solves a variational problem for mapping positions along contour s1
+    to positions along contour s2.
+
+    Parameters:
+        s1: The first spline contour.
+        s2: The spline contour in the subsequent frame.
+        t1: The positions along s1.
+        t2: Initial guess for the positions along s2
+
+    Returns: An updated set t2 of positions along s2.
+    '''
+
     N = len(t1)
+
+    # The weight that balances the two terms (displacement and strain) of the functional
     w = np.sum((np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2) / (N - 1)
+
+    # The functional
     functional = Functional2(s1, s2, t1, w)
+
+    # Change-of-basis matrix for specifying the linear constraints
     A = np.zeros((N,N))
     for n in range(0, N):
         A[n, n] = 1
     A[0, N-1] = -1
     for n in range(1, N):
         A[n, n-1] = -1
+
+    # Lower and upper bounds for the constraints
     lb = np.zeros((N,))
     lb[0] = -1
     ub = np.inf * np.ones((N,))
+
+    # Minimization of the functional; we use high tolerances to get the results faster
     result = minimize(functional.f, t2, method='trust-constr', constraints=LinearConstraint(A, lb, ub, keep_feasible=True), options={'gtol': 1e-2, 'xtol': 1e-2})
     # result = minimize(functional.f, t2, method='trust-constr', options={'gtol': 1e-12, 'xtol': 1e-12, 'barrier_tol': 1e-12})
     # result = minimize(functional.f, t2)
@@ -399,6 +421,21 @@ def subdivide_curve(s, orig, I):
 
 
 def subdivide_curve_discrete(c_main, I, s, origin):
+    ''' Creates a discrete contour whose first pixel corresponds
+    to the specified origin, plus a list of coordinates along the
+    continuous curve corresponding to the mid-points of the
+    windows in the first (outer) layer.
+
+    Note: this function tries to reconcile discrete and continuous
+    representations of the contour, so it may not be conceptually
+    very satisfactory.
+
+    :param c_main: A rasterized version of the contour, as obtained by rasterize_curve.
+    :param I: Number of windows in the first (outer) layer.
+    :param s: Spline curve.
+    :param origin: (y, x) coordinates of the origin of the curve.
+    :return: Positions of the mid-points along the discrete curve and along the continuous curve (in terms of parameter values).
+    '''
     origin = [origin[1], origin[0]]
 
     # Compute the distance transform of the main contour
@@ -407,12 +444,15 @@ def subdivide_curve_discrete(c_main, I, s, origin):
     # Compute the mask corresponding to the main contour
     mask_main = binary_fill_holes(-1 < c_main)
 
+    # To be verified: this might actually be the same as mask_main
     mask = (0 <= D_main) * mask_main
 
     # Extract the contour of the mask
     cvec = np.asarray(find_contours(mask, 0, fully_connected='high')[0], dtype=np.int)
 
-    # Adjust the origin of the contour
+    # Adjust the origin of the contour:
+    # on the discrete contour cvec, find the closest point to the origin,
+    # then apply a circular shift to cvec to make this point the first one.
     n0 = np.argmin(np.linalg.norm(cvec - origin, axis=1))
     cvec = np.roll(cvec, -n0, axis=0)
 
@@ -420,6 +460,7 @@ def subdivide_curve_discrete(c_main, I, s, origin):
     Lvec = compute_discrete_arc_length(cvec)
 
     # Compute the index of the mid-point for each window
+    # Note that the arc length is being used as a coordinate along the curve
     n = np.zeros((I,), dtype=np.int)
     for i in range(I):
         n[i] = np.argmin(np.abs(Lvec - Lvec[-1]/I*(0.5+i)))

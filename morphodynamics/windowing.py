@@ -130,8 +130,10 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
         n0 = np.argmin(np.linalg.norm(cvec - origin, axis=1))
         cvec = np.roll(cvec, -n0, axis=0)
 
-        # Compute the discrete arc length along the contour and create an image of the contour where the intensity is the arc length
+        # Compute the discrete arc length along the contour
         Lvec = compute_discrete_arc_length(cvec)
+
+        # Create an image of the contour where the intensity is the arc length
         c = create_arc_length_image(mask.shape, cvec, Lvec)
         # plt.figure()
         # plt.imshow(c, 'gray', vmin=-Lvec[-1], vmax=Lvec[-1])
