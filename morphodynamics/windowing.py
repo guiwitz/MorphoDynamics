@@ -246,13 +246,28 @@ def extract_signals_old(y, w):
 
 
 def extract_signals(y, w):
-    """ Extract the mean values of an image over the sampling windows. """
+    """ Extract the mean and variance of an image over the sampling windows.
 
+    Parameters:
+        y: Image.
+        w: Windows.
+
+    Returns: Tuple with mean and variance.
+    """
+
+    # Number of windows
     J = len(w)
     I = [len(e) for e in w]
     Imax = np.max(I)
+
+    # Initialization of the mean and variance structures
+    # Remember that the number of windows depends on the layer j.
+    # Here we use rectangular arrays to store the mean and variance,
+    # but some elements will be unused and have a NaN value.
     mean = np.nan * np.ones((J,Imax))
     var = np.nan * np.ones((J,Imax))
+
+    # Extraction of the mean and variance
     for j in range(J):
         for i in range(I[j]):
             mean[j, i] = np.mean(y[w[j][i][0], w[j][i][1]])
