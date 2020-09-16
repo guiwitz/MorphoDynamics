@@ -14,6 +14,9 @@ def load_settings(dataset_name):
     # Output directory
     param.resultdir = dataset_name + '/'
 
+    # Number of samples around the contour (used for various computations and graphical representations)
+    param.n_curve = 10000
+
     # Location of the cell to be tracked; if None largest cell will be tracked
     param.location = None
 
@@ -59,15 +62,15 @@ def load_settings(dataset_name):
 
     param.showSegmentation = True
     param.showWindows = True
-    # param.showCircularity = True
-    # param.showEdgeOverview = True
-    # param.showEdgeVectorial = True
-    # param.showEdgeRasterized = True
-    # param.showCurvature = True
-    # param.showDisplacement = True
-    # param.showSignals = True
-    # param.showCorrelation = True
-    # param.showFourierDescriptors = True
+    param.showCircularity = True
+    param.showEdgeOverview = True
+    param.showEdgeVectorial = True
+    param.showEdgeRasterized = True
+    param.showCurvature = True
+    param.showDisplacement = True
+    param.showSignals = True
+    param.showCorrelation = True
+    param.showFourierDescriptors = True
 
     if dataset_name == 'Ellipse with triangle dynamics':
         expdir = 'Synthetic data/Ellipse with triangle dynamics/'

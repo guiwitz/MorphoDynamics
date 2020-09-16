@@ -26,15 +26,15 @@ def fit_spline(c, lambda_):
     return s
 
 
-def compute_length(s):
-    cprm = splev(np.linspace(0, 1, 10000, endpoint=False), s, der=1)
-    return np.sum(np.sqrt(cprm[0]**2 + cprm[1]**2)) / 10000
+def compute_length(N, s):
+    cprm = splev(np.linspace(0, 1, N, endpoint=False), s, der=1)
+    return np.sum(np.sqrt(cprm[0]**2 + cprm[1]**2)) / N
 
 
-def compute_area(s):
-    c = splev(np.linspace(0, 1, 10000, endpoint=False), s)
-    cprm = splev(np.linspace(0, 1, 10000, endpoint=False), s, der=1)
-    return np.sum(c[0]*cprm[1] - c[1]*cprm[0]) / 2 / 10000
+def compute_area(N, s):
+    c = splev(np.linspace(0, 1, N, endpoint=False), s)
+    cprm = splev(np.linspace(0, 1, N, endpoint=False), s, der=1)
+    return np.sum(c[0]*cprm[1] - c[1]*cprm[0]) / 2 / N
 
 
 def compute_curvature(s, t):
@@ -49,8 +49,8 @@ def correlate(x, y):
     return z
 
 
-def find_origin(s1, s2, t0):
-    t = np.linspace(0, 1, 10000, endpoint=False)
+def find_origin(N, s1, s2, t0):
+    t = np.linspace(0, 1, N, endpoint=False)
     x = splev(t0, s1)
     c = splev(t, s2)
     n = np.argmin((c[0]-x[0])**2 + (c[1]-x[1])**2)
@@ -60,20 +60,18 @@ from matplotlib.backends.backend_pdf import PdfPages
 from copy import deepcopy
 
 
-def align_curves(s1, s2, t1):
+def align_curves(N, s1, s2, t1):
     '''
-
     This function is intended to help improve the accuracy of displacement estimation
     when in addition to protrusions the cell is subject to motion.
-    The idea is to create an intermediate contour s1c that is the result of a translation
-    and a change of origin of s1, so as to make it as close as possible to s2.
     The idea is to find a translation of s1 and a change of origin for s2 that make both
     curves as close as possible.
-    s1c essentially accounts for the the motion of the cell, and once it is available,
-    one can compute the usual displacement between s1c and s2.
+    The translated curve s1c essentially accounts for the the motion of the cell, and
+    once it is available, one can compute the usual displacement between s1c and s2.
     The total displacement is the sum of both components.
 
     Parameters:
+        N: Number of samples along the curve
         s1: Curve at current frame
         s2: Curve at next frame
         t1: Origin of curve s1
@@ -82,7 +80,7 @@ def align_curves(s1, s2, t1):
         Tuple s1c, t2 where s1c is the intermediate contour and t2 is the new origin for curve s2.
     '''
 
-    t = np.linspace(0, 1, 10000, endpoint=False)
+    t = np.linspace(0, 1, N, endpoint=False)
 
     # plt.figure(figsize=(12, 9))
     # pp = PdfPages('Alignment.pdf')
@@ -209,20 +207,20 @@ def map_contours3(s1, s2, t1, t2):
     return t2
 
 
-def show_edge_scatter(s1, s2, t1, t2, d, dmax=None):
+def show_edge_scatter(N, s1, s2, t1, t2, d, dmax=None):
     """ Draw the cell-edge contour and the displacement vectors.
     The contour is drawn using a scatter plot to color-code the displacements. """
 
     # Evaluate splines at window locations and on fine-resolution grid
     c1 = splevper(t1, s1)
     c2 = splevper(t2, s2)
-    c1p = splev(np.linspace(0, 1, 10001), s1)
-    c2p = splev(np.linspace(0, 1, 10001), s2)
+    c1p = splev(np.linspace(0, 1, N+1), s1)
+    c2p = splev(np.linspace(0, 1, N+1), s2)
 
     # Interpolate displacements
     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
-    if len(d) < 10001:
-        d = np.interp(np.linspace(0, 1, 10001), t1, d, period=1)
+    if len(d) < N+1:
+        d = np.interp(np.linspace(0, 1, N+1), t1, d, period=1)
     if dmax is None:
         dmax = np.max(np.abs(d))
         if dmax == 0:
@@ -243,20 +241,20 @@ def show_edge_scatter(s1, s2, t1, t2, d, dmax=None):
     plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw)
 
 
-def show_edge_scatter_init(p, s1, s2, t1, t2, d, dmax=None):
+def show_edge_scatter_init(N, p, s1, s2, t1, t2, d, dmax=None):
     """ Draw the cell-edge contour and the displacement vectors.
     The contour is drawn using a scatter plot to color-code the displacements. """
 
     # Evaluate splines at window locations and on fine-resolution grid
     c1 = splevper(t1, s1)
     c2 = splevper(t2, s2)
-    c1p = splev(np.linspace(0, 1, 10001), s1)
-    c2p = splev(np.linspace(0, 1, 10001), s2)
+    c1p = splev(np.linspace(0, 1, N+1), s1)
+    c2p = splev(np.linspace(0, 1, N+1), s2)
 
     # Interpolate displacements
     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
-    if len(d) < 10001:
-        d = np.interp(np.linspace(0, 1, 10001), t1, d, period=1)
+    if len(d) < N+1:
+        d = np.interp(np.linspace(0, 1, N+1), t1, d, period=1)
     if dmax is None:
         dmax = np.max(np.abs(d))
         if dmax == 0:
@@ -279,20 +277,20 @@ def show_edge_scatter_init(p, s1, s2, t1, t2, d, dmax=None):
     return p
 
 
-def show_edge_scatter_update(p, s1, s2, t1, t2, d, dmax=None):
+def show_edge_scatter_update(N, p, s1, s2, t1, t2, d, dmax=None):
     """ Draw the cell-edge contour and the displacement vectors.
     The contour is drawn using a scatter plot to color-code the displacements. """
 
     # Evaluate splines at window locations and on fine-resolution grid
     c1 = splevper(t1, s1)
     c2 = splevper(t2, s2)
-    c1p = splev(np.linspace(0, 1, 10001), s1)
-    c2p = splev(np.linspace(0, 1, 10001), s2)
+    c1p = splev(np.linspace(0, 1, N+1), s1)
+    c2p = splev(np.linspace(0, 1, N+1), s2)
 
     # Interpolate displacements
     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
-    if len(d) < 10001:
-        d = np.interp(np.linspace(0, 1, 10001), t1, d, period=1)
+    if len(d) < N+1:
+        d = np.interp(np.linspace(0, 1, N+1), t1, d, period=1)
     if dmax is None:
         dmax = np.max(np.abs(d))
         if dmax == 0:
@@ -320,12 +318,12 @@ def show_edge_scatter_update(p, s1, s2, t1, t2, d, dmax=None):
     return p
 
 
-def show_edge_line_aux(s, color, lw):
-    c = splev(np.linspace(0, 1, 10001), s)
+def show_edge_line_aux(N, s, color, lw):
+    c = splev(np.linspace(0, 1, N+1), s)
     plt.plot(c[0], c[1], color=color, zorder=50, lw=lw)
 
 
-def show_edge_line(s):
+def show_edge_line(N, s):
     """ Draw the cell-edge contour using a colored line. """
 
     # Evaluate splines at window locations and on fine-resolution grid
@@ -333,12 +331,12 @@ def show_edge_line(s):
     cmap = plt.cm.get_cmap('jet')
     lw = 0.1
     for k in range(K):
-        show_edge_line_aux(s[k], cmap(k / (K - 1)), lw)
+        show_edge_line_aux(N, s[k], cmap(k / (K - 1)), lw)
     plt.gcf().colorbar(plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K-1), cmap=cmap), label='Frame index')
 
 
-def show_edge_image(shape, s, t, d, thickness, dmax=None):
-    c = rasterize_curve(shape, s, 0)
+def show_edge_image(N, shape, s, t, d, thickness, dmax=None):
+    c = rasterize_curve(N, shape, s, 0)
     mask = -1 < c
     c[mask] = np.interp(c[mask], t, d, period=1)
     c[np.logical_not(mask)] = 0
@@ -377,7 +375,7 @@ def show_edge_image(shape, s, t, d, thickness, dmax=None):
 #             tau[pi[1, n], pi[0, n]] = t[n]
 #     return tau
 
-def rasterize_curve(shape, s, deltat):
+def rasterize_curve(N, shape, s, deltat):
     """ Represent a contour as a grayscale image.
     If a pixel is part of the contour, then its intensity
     is equal to the parameter t of the closest point on the contour s(t).
@@ -394,21 +392,21 @@ def rasterize_curve(shape, s, deltat):
 
     delta = np.inf * np.ones(shape)  # Will store the distance between edge pixels and the closest points on the contour
     tau = - np.ones(shape) # Will store the parameters t of the closest points on the contour; pixels that are not part of the contour will take the value -1
-    t = np.linspace(0, 1, 10001)  # The parameters of the points on the curve
+    t = np.linspace(0, 1, N+1)  # The parameters of the points on the curve
     p = np.asarray(splev(t, s))  # The points on the curve
     t = np.mod(t - deltat, 1)  # Adjust the origin of the curve and account for periodicity of the parameterization
     pi = np.round(p).astype(dtype=np.int) # Coordinates of the pixels that are part of the contour
     d0 = np.linalg.norm(p-pi,axis = 0)  # Distances between the points on the contour and the nearest pixels
-    for n in range(10001):  # For each point p[:, n] on the contour...
+    for n in range(N+1):  # For each point p[:, n] on the contour...
         if d0[n] < delta[pi[1, n], pi[0, n]]:  # ... if the distance to the nearest pixel is the smallest so far...
             delta[pi[1, n], pi[0, n]] = d0[n]  # ... remember this distance...
             tau[pi[1, n], pi[0, n]] = t[n]  # ... and store the parameter t corresponding to p[:, n]
     return tau
 
 
-def subdivide_curve(s, orig, I):
+def subdivide_curve(N, s, orig, I):
     """ Define points on a contour that are equispaced with respect to the arc length. """
-    t = np.linspace(0, 1, 10001)
+    t = np.linspace(0, 1, N+1)
     L = np.cumsum(np.linalg.norm(splevper(t+orig, s), axis=0))
     t0 = np.zeros((I,))
     n = 0
@@ -420,7 +418,7 @@ def subdivide_curve(s, orig, I):
     return t0+orig
 
 
-def subdivide_curve_discrete(c_main, I, s, origin):
+def subdivide_curve_discrete(N, c_main, I, s, origin):
     ''' Creates a discrete contour whose first pixel corresponds
     to the specified origin, plus a list of coordinates along the
     continuous curve corresponding to the mid-points of the
@@ -466,12 +464,12 @@ def subdivide_curve_discrete(c_main, I, s, origin):
         n[i] = np.argmin(np.abs(Lvec - Lvec[-1]/I*(0.5+i)))
 
     # Compute the parameter of the first mid-point
-    t = np.linspace(0, 1, 10000, endpoint=False)
+    t = np.linspace(0, 1, N, endpoint=False)
     c = splevper(t, s)
     m = np.argmin(np.linalg.norm(np.transpose(c)-np.flip(cvec[n[0]]), axis=1))
 
     # Convert the index along the discrete contour to a position along the continuous contour
-    t = np.linspace(t[m], t[m]+1, 10000, endpoint=False)
+    t = np.linspace(t[m], t[m]+1, N, endpoint=False)
     c = splevper(t, s)
     m = np.zeros((I,), dtype=np.int)
     for i in range(I):

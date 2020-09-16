@@ -48,7 +48,7 @@ def analyze_morphodynamics(data, param):
 
     c = extract_contour(m)  # Discrete cell contour
     s = fit_spline(c, param.lambda_)
-    c = rasterize_curve(x.shape, s, 0)
+    c = rasterize_curve(param.n_curve, x.shape, s, 0)
     w, J, I = create_windows(c, splev(0, s), depth=param.depth, width=param.width)
     Imax = np.max(I)
 
@@ -104,9 +104,9 @@ def analyze_morphodynamics(data, param):
 
     # align curves across frames and rasterize the windows
     if param.distributed == 'local' or param.distributed == 'cluster':
-        spline_out = dask.compute([dask.delayed(spline_align_rasterize)(s_all[k-1] if k > 0 else None, s_all[k], x.shape, k) for k in range(0, data.K)])[0]
+        spline_out = dask.compute([dask.delayed(spline_align_rasterize)(param.n_curve, s_all[k-1] if k > 0 else None, s_all[k], x.shape, k) for k in range(0, data.K)])[0]
     else:
-        spline_out = [spline_align_rasterize(s_all[k-1] if k > 0 else None, s_all[k], x.shape, k) for k in range(0, data.K)]
+        spline_out = [spline_align_rasterize(param.n_curve, s_all[k-1] if k > 0 else None, s_all[k], x.shape, k) for k in range(0, data.K)]
 
     for k in range(0, data.K):
         s0prm_all[k] = spline_out[k][0]
@@ -117,11 +117,13 @@ def analyze_morphodynamics(data, param):
     # map windows across frames
     if param.distributed == 'local' or param.distributed == 'cluster':
         output = dask.compute([dask.delayed(windowing_mapping)(
+            param.n_curve,
             c_all[k], c_all[k-1] if k > 0 else None,
             s_all[k], s_all[k-1] if k > 0 else None,
             res.orig, s0prm_all[k], J, I, k) for k in range(0, data.K)])[0]
     else:
         output = [windowing_mapping(
+            param.n_curve,
             c_all[k], c_all[k-1] if k > 0 else None,
             s_all[k], s_all[k-1] if k > 0 else None,
             res.orig, s0prm_all[k], J, I, k) for k in range(0, data.K)]
@@ -153,7 +155,7 @@ def analyze_morphodynamics(data, param):
     return res
 
 
-def windowing_mapping(c, c0, s, s0, origin, s0prm, J, I, k):
+def windowing_mapping(N, c, c0, s, s0, origin, s0prm, J, I, k):
 
     output = {'w': None, 't': None, 't0': None}
     ori = origin[k]
@@ -165,7 +167,7 @@ def windowing_mapping(c, c0, s, s0, origin, s0prm, J, I, k):
     t = None
     t0 = None
     if k > 0:
-        p, t0 = subdivide_curve_discrete(c0, I[0], s0, splevper(ori0, s0))
+        p, t0 = subdivide_curve_discrete(N, c0, I[0], s0, splevper(ori0, s0))
         t = map_contours2(s0prm, s, t0, t0-ori0+ori)  # Parameters of the endpoints of the displacement vectors
 
     output['w'] = w
@@ -215,12 +217,12 @@ def contour_spline(m, param):
     return s, c
 
 
-def spline_align_rasterize(s0, s, im_shape, k):
+def spline_align_rasterize(N, s0, s, im_shape, k):
 
     origin = 0
     s0prm = None
     if k > 0:
-        s0prm, origin = align_curves(s0, s, 0)
-    c = rasterize_curve(im_shape, s, origin)  # Representation of the contour as a grayscale image
+        s0prm, origin = align_curves(N, s0, s, 0)
+    c = rasterize_curve(N, im_shape, s, origin)  # Representation of the contour as a grayscale image
 
     return s0prm, c, origin

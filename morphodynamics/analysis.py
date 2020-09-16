@@ -46,7 +46,7 @@ def analyze_morphodynamics(data, param):
     location = center_of_mass(m) #get location for tracking
     c = extract_contour(m)  # Discrete cell contour
     s = fit_spline(c, param.lambda_)
-    c = rasterize_curve(x.shape, s, 0)
+    c = rasterize_curve(param.n_curve, x.shape, s, 0)
     w, J, I = create_windows(c, splev(0, s), depth=param.depth, width=param.width)
     Imax = np.max(I)
 
@@ -88,13 +88,13 @@ def analyze_morphodynamics(data, param):
         s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
 
         if k > 0:
-            s0prm, res.orig[k] = align_curves(s0, s, res.orig[k-1]) # Intermediate curve and change of origin to account for cell motion
+            s0prm, res.orig[k] = align_curves(param.n_curve, s0, s, res.orig[k-1]) # Intermediate curve and change of origin to account for cell motion
 
-        c = rasterize_curve(x.shape, s, res.orig[k])  # Representation of the contour as a grayscale image
+        c = rasterize_curve(param.n_curve, x.shape, s, res.orig[k])  # Representation of the contour as a grayscale image
         w = create_windows(c, splevper(res.orig[k], s), J, I) # Sampling windows
 
         if k > 0:
-            p, t0 = subdivide_curve_discrete(c0, I[0], s0, splevper(res.orig[k-1], s0))
+            p, t0 = subdivide_curve_discrete(param.n_curve, c0, I[0], s0, splevper(res.orig[k-1], s0))
             t = map_contours2(s0prm, s, t0, t0-res.orig[k-1]+res.orig[k])  # Parameters of the endpoints of the displacement vectors
 
         for ell in range(len(data.signalfile)):
@@ -118,7 +118,7 @@ def analyze_morphodynamics(data, param):
                 show_windows(w0, b0)  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
                 # plt.plot(p1[:,1], p1[:,0], 'oy')
                 # plt.plot(p1[0,1], p1[0,0], 'oc')
-                show_edge_scatter(s0, s, t0, t, res.displacement[:, k - 1])  # Show edge structures (spline curves, displacement vectors)
+                show_edge_scatter(param.n_curve, s0, s, t0, t, res.displacement[:, k - 1])  # Show edge structures (spline curves, displacement vectors)
                 # c00 = splev(np.linspace(0, 1, 10001), s0)
                 # plt.plot(c00[0], c00[1], 'g')
                 # cc = splev(np.linspace(0, 1, 10001), s)

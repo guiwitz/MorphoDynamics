@@ -57,8 +57,7 @@ class InteractSeg():
         style = {'description_width': 'initial'}
         layout = {'width': '300px'}
 
-        self.param = Param(
-            expdir=expdir, morpho_name=morpho_name, signal_name=signal_name)
+        self.param = Param(expdir=expdir, morpho_name=morpho_name, signal_name=signal_name)
 
         self.expdir = expdir
         self.param.morpho_name = morpho_name
@@ -267,14 +266,11 @@ class InteractSeg():
             with self.out_distributed:
                 display(self.client.cluster._widget())
 
-    def windows_for_plot(self, image, time):
+    def windows_for_plot(self, N, image, time):
         """Create a window image"""
 
-        c = rasterize_curve(
-            image.shape, self.res.spline[time], self.res.orig[time])
-        w = create_windows(
-            c, splevper(self.res.orig[time], self.res.spline[time]),
-            self.res.J, self.res.I)
+        c = rasterize_curve(N, image.shape, self.res.spline[time], self.res.orig[time])
+        w = create_windows(c, splevper(self.res.orig[time], self.res.spline[time]), self.res.J, self.res.I)
         return w
 
     def show_segmentation(self, change=None):
@@ -288,7 +284,7 @@ class InteractSeg():
         b0 = None
         windows_pos = None
         if self.res is not None:
-            window = self.windows_for_plot(image, t)
+            window = self.windows_for_plot(self.param.n_curve, image, t)
             b0 = find_boundaries(label_windows(image.shape, window))
             b0 = b0.astype(float)
             b0[b0 == 0] = np.nan

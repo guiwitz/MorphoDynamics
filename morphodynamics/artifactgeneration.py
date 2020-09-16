@@ -25,8 +25,8 @@ def show_circularity(param, data, res, export=False, size=(16, 9)):
     length = np.zeros((data.K,))
     area = np.zeros((data.K,))
     for k in range(data.K):
-        length[k] = compute_length(res.spline[k])  # Length of the contour
-        area[k] = compute_area(res.spline[k])  # Area delimited by the contour
+        length[k] = compute_length(param.n_curve, res.spline[k])  # Length of the contour
+        area[k] = compute_area(param.n_curve, res.spline[k])  # Area delimited by the contour
 
     plt.figure(figsize=size)
     plt.gca().set_title('Length')
@@ -57,22 +57,22 @@ def show_edge_overview(param, data, res, export=False, size=(12,9)):
     plt.figure(figsize=size)
     plt.gca().set_title('Edge overview')
     plt.imshow(data.load_frame_morpho(0), cmap='gray')
-    show_edge_line(res.spline)
+    show_edge_line(param.n_curve, res.spline)
     plt.tight_layout()
     if export:
         plt.savefig(os.path.join(param.resultdir, 'Edge overview.pdf'))
 
 
-def show_edge_vectorial_aux(data, res, k, curvature=False):
+def show_edge_vectorial_aux(param, data, res, k, curvature=False):
     plt.clf()
     plt.gca().set_title('Frame ' + str(k) + ' to frame ' + str(k + 1))
     plt.imshow(data.load_frame_morpho(k), cmap='gray')
     # showWindows(w, find_boundaries(labelWindows(w0)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
     if curvature:
-        f = compute_curvature(res.spline[k], np.linspace(0, 1, 10001))
+        f = compute_curvature(res.spline[k], np.linspace(0, 1, param.n_curve+1))
     else:
         f = res.displacement[:, k]
-    show_edge_scatter(res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors/curvature)
+    show_edge_scatter(param.n_curve, res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors/curvature)
     plt.tight_layout()
 
 
@@ -91,7 +91,7 @@ def show_edge_vectorial(param, data, res, curvature=False, size=(12, 9)):
     # dmax = np.max(np.abs(res.displacement))
     for k in range(data.K - 1):
         print(k)
-        show_edge_vectorial_aux(data, res, k, curvature)
+        show_edge_vectorial_aux(param, data, res, k, curvature)
         pp.savefig()
     pp.close()
 
@@ -116,7 +116,7 @@ class EdgeVectorialSlow():
             with out:
                 self.set_mode(change['new'])
                 plt.figure(self.fig.number)
-                show_edge_vectorial_aux(self.data, self.res, time_slider.get_state()['value'], curvature=self.curvature)
+                show_edge_vectorial_aux(self.param, self.data, self.res, time_slider.get_state()['value'], curvature=self.curvature)
 
         mode_selector.observe(mode_change, names='value')
 
@@ -125,7 +125,7 @@ class EdgeVectorialSlow():
         def time_change(change):
             with out:
                 plt.figure(self.fig.number)
-                show_edge_vectorial_aux(self.data, self.res, change['new'], curvature=self.curvature)
+                show_edge_vectorial_aux(self.param, self.data, self.res, change['new'], curvature=self.curvature)
 
         time_slider.observe(time_change, names='value')
 
@@ -135,7 +135,7 @@ class EdgeVectorialSlow():
         self.set_mode(mode_selector.get_state('value'))
 
         self.fig = plt.figure(figsize=(8, 6))
-        show_edge_vectorial_aux(self.data, self.res, 0, curvature=False)
+        show_edge_vectorial_aux(self.param, self.data, self.res, 0, curvature=False)
         display(out)
 
     def set_mode(self, mode):
@@ -162,7 +162,7 @@ class EdgeVectorial():
             with out:
                 self.set_mode(change['new'])
                 plt.figure(self.fig.number)
-                self.show_edge_vectorial_aux_update(self.data, self.res, time_slider.get_state()['value'], curvature=self.curvature)
+                self.show_edge_vectorial_aux_update(self.param, self.data, self.res, time_slider.get_state()['value'], curvature=self.curvature)
 
         mode_selector.observe(mode_change, names='value')
 
@@ -171,7 +171,7 @@ class EdgeVectorial():
         def time_change(change):
             with out:
                 plt.figure(self.fig.number)
-                self.show_edge_vectorial_aux_update(self.data, self.res, change['new'], curvature=self.curvature)
+                self.show_edge_vectorial_aux_update(self.param, self.data, self.res, change['new'], curvature=self.curvature)
 
         time_slider.observe(time_change, names='value')
 
@@ -181,7 +181,7 @@ class EdgeVectorial():
         self.set_mode(mode_selector.get_state('value'))
 
         self.fig = plt.figure(figsize=(8, 6))
-        self.show_edge_vectorial_aux_init(self.data, self.res, 0, curvature=False)
+        self.show_edge_vectorial_aux_init(self.param, self.data, self.res, 0, curvature=False)
         display(out)
 
     def show_edge_vectorial(self, param, data, res, curvature=False, size=(12, 9)):
@@ -197,35 +197,35 @@ class EdgeVectorial():
         pp.savefig()
 
         # dmax = np.max(np.abs(res.displacement))
-        self.show_edge_vectorial_aux_init(data, res, 0, curvature)
+        self.show_edge_vectorial_aux_init(param, data, res, 0, curvature)
         for k in range(1, data.K - 1):
             print(k)
-            self.show_edge_vectorial_aux_update(data, res, k, curvature)
+            self.show_edge_vectorial_aux_update(param, data, res, k, curvature)
             pp.savefig()
         pp.close()
 
-    def show_edge_vectorial_aux_init(self, data, res, k, curvature=False):
+    def show_edge_vectorial_aux_init(self, param, data, res, k, curvature=False):
         plt.clf()
         self.p = Struct()
         self.p.t = plt.gca().set_title('Frame ' + str(k) + ' to frame ' + str(k + 1))
         self.p.i = plt.imshow(data.load_frame_morpho(k), cmap='gray')
         # showWindows(w, find_boundaries(labelWindows(w0)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
         if curvature:
-            f = compute_curvature(res.spline[k], np.linspace(0, 1, 10001))
+            f = compute_curvature(res.spline[k], np.linspace(0, 1, param.n_curve+1))
         else:
             f = res.displacement[:, k]
-        self.p = show_edge_scatter_init(self.p, res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors/curvature)
+        self.p = show_edge_scatter_init(param.n_curve, self.p, res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors/curvature)
         plt.tight_layout()
 
-    def show_edge_vectorial_aux_update(self, data, res, k, curvature=False):
+    def show_edge_vectorial_aux_update(self, param, data, res, k, curvature=False):
         self.p.t.set_text('Frame ' + str(k) + ' to frame ' + str(k + 1))
         self.p.i.set_data(data.load_frame_morpho(k))
         # showWindows(w, find_boundaries(labelWindows(w0)))  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
         if curvature:
-            f = compute_curvature(res.spline[k], np.linspace(0, 1, 10001))
+            f = compute_curvature(res.spline[k], np.linspace(0, 1, param.n_curve+1))
         else:
             f = res.displacement[:, k]
-        self.p = show_edge_scatter_update(self.p, res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors/curvature)
+        self.p = show_edge_scatter_update(param.n_curve, self.p, res.spline[k], res.spline[k + 1], res.param0[k], res.param[k], f)  # Show edge structures (spline curves, displacement vectors/curvature)
         plt.tight_layout()
 
     def set_mode(self, mode):
@@ -297,11 +297,11 @@ class EdgeVectorial():
     #     pp.close()
 
 
-def show_edge_rasterized_aux(data, res, d, dmax, k, mode, display=True):
+def show_edge_rasterized_aux(param, data, res, d, dmax, k, mode, display=True):
     if mode == 'curvature':
-        x = show_edge_image(data.shape, res.spline[k], np.linspace(0, 1, 10000, endpoint=False), d[:, k], 3, dmax)
+        x = show_edge_image(param.n_curve, data.shape, res.spline[k], np.linspace(0, 1, param.n_curve, endpoint=False), d[:, k], 3, dmax)
     else:
-        x = show_edge_image(data.shape, res.spline[k], res.param0[k], d[:, k], 3, dmax)
+        x = show_edge_image(param.n_curve, data.shape, res.spline[k], res.param0[k], d[:, k], 3, dmax)
 
     if display:
         plt.clf()
@@ -320,8 +320,8 @@ def show_edge_rasterized(param, data, res, mode=None):
         d = np.ones(res.displacement.shape)
         name = 'Edge animation (simple)'
     elif mode == 'curvature':
-        t = np.linspace(0, 1, 10000, endpoint=False)
-        d = np.zeros((10000, data.K))
+        t = np.linspace(0, 1, param.n_curve, endpoint=False)
+        d = np.zeros((param.n_curve, data.K))
         for k in range(data.K):
             d[:, k] = compute_curvature(res.spline[k], t)
         name = 'Edge animation (curvature)'
@@ -341,7 +341,7 @@ def show_edge_rasterized(param, data, res, mode=None):
 
     tw = TiffWriter(os.path.join(param.resultdir, name + '.tif'))
     for k in range(data.K - 1):
-        x = show_edge_rasterized_aux(data, res, d, dmax, k, mode, display=False)
+        x = show_edge_rasterized_aux(param, data, res, d, dmax, k, mode, display=False)
         y0 = np.stack((y[k], y[k], y[k]), axis=-1)
         x[x==0] = y0[x==0]
         tw.save(x, compress=6)
@@ -422,8 +422,8 @@ class EdgeRasterized:
             self.d = np.cumsum(self.res.displacement, axis=1)
             self.name = 'Edge animation (cumulative displacement)'
         elif mode == 'curvature':
-            t = np.linspace(0, 1, 10000, endpoint=False)
-            self.d = np.zeros((10000, self.data.K))
+            t = np.linspace(0, 1, self.param.n_curve, endpoint=False)
+            self.d = np.zeros((self.param.n_curve, self.data.K))
             for k in range(self.data.K):
                 self.d[:, k] = compute_curvature(self.res.spline[k], t)
             self.name = 'Edge animation (curvature)'
@@ -435,7 +435,7 @@ class EdgeRasterized:
             self.dmax = None
 
     def get_image(self, k):
-        x = show_edge_rasterized_aux(self.data, self.res, self.d, self.dmax, k, self.mode, display=False)
+        x = show_edge_rasterized_aux(self.param, self.data, self.res, self.d, self.dmax, k, self.mode, display=False)
         y0 = np.stack((self.y[k], self.y[k], self.y[k]), axis=-1)
         x[x == 0] = y0[x == 0]
         return x
@@ -455,9 +455,9 @@ class EdgeRasterized:
 
 
 def show_curvature(param, data, res, size=(16, 9), cmax=None, export=True):
-    curvature = np.zeros((10000, data.K))
+    curvature = np.zeros((param.n_curve, data.K))
     for k in range(data.K):
-        curvature[:, k] = compute_curvature(res.spline[k], np.linspace(0, 1, 10000, endpoint=False))
+        curvature[:, k] = compute_curvature(res.spline[k], np.linspace(0, 1, param.n_curve, endpoint=False))
 
     plt.figure(figsize=size)
     plt.gca().set_title('Curvature')
@@ -482,9 +482,9 @@ class Curvature:
         self.data = data
         self.res = res
 
-        self.curvature = np.zeros((10000, self.data.K))
+        self.curvature = np.zeros((self.param.n_curve, self.data.K))
         for k in range(self.data.K):
-            self.curvature[:, k] = compute_curvature(self.res.spline[k], np.linspace(0, 1, 10000, endpoint=False))
+            self.curvature[:, k] = compute_curvature(self.res.spline[k], np.linspace(0, 1, self.param.n_curve, endpoint=False))
 
     def create_interface(self):
         out = ipw.Output()
@@ -676,8 +676,8 @@ class Signals:
         display(out)
 
 
-def show_fourier_descriptors_aux(res, k):
-    N = 1000
+def show_fourier_descriptors_aux(param, res, k):
+    N = param.n_curve
     c = splev(np.linspace(0, 1, N, endpoint=False), res.spline[k])
     c = c[0] + 1j * c[1]
     chat = np.fft.fftshift(np.fft.fft(c))
@@ -693,7 +693,7 @@ def show_fourier_descriptors(param, data, res, size=(16, 9)):
     plt.figure(figsize=size)
     pp = PdfPages(os.path.join(param.resultdir, 'Fourier descriptors.pdf'))
     for k in range(data.K):
-        show_fourier_descriptors_aux(res, k)
+        show_fourier_descriptors_aux(param, res, k)
         pp.savefig()
     pp.close()
 
