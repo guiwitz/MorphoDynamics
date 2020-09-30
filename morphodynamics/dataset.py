@@ -8,54 +8,59 @@ from pathlib import Path
 
 
 class Data:
-    def __init__(self, expdir, morpho_name, signal_name, bad_frames=[], step=1, max_time=None,
-                 data_type='series', signalfile=None, morphofile=None):
+    """Class defining and handling datasets. Given an experiment directory
+    (tiff files or stacks) or a a file (ND2) the available data are
+    automatically parsed. Parameters specific to an analysis run such as
+    bad frame indices or the time steps are also stored in the Data object.
 
-        """Standard __init__ method.
-        Parameters
-        ----------
-        expdir: str
-            path to data folder (tif) or file (ND2)
-        morpho_name: str
-            name of data to use for segmentation
-        signal_name: list of str
-            names of data to use as signals
-        bad_frames: list
-            list of time-points to discard
-        step: int
-            time step to use when iterating across frames
-        max_time: int
-            last frame to consider
-        data_type: str
+    Parameters
+    ----------
+    expdir: str
+        path to data folder (tif) or file (ND2)
+    morpho_name: str
+        name of data to use for segmentation
+    signal_name: list of str
+        names of data to use as signals
+    bad_frames: list, optional
+        list of time-points to discard
+    step: int
+        time step to use when iterating across frames
+    max_time: int. optional
+        last frame to consider
+    data_type: str,
             type of data considers ("series", "multi", "nd2")
-        morphofile: str or list
-            'series': 
-                list of str, each element is a filename for a specific frame
-            'multi':
-                str, filename for a specific channel
-            'nd2':
-                str, channel name matching metadata information
-        signalfile: str or list
-            'series': 
-                list of list of str, each element is a filename,
-                files are grouped in a list for each channel, and 
-                all list grouped in a larger list
-            'multi':
-                list of str, each element is a filename corresponding
-                to a channnel
-            'nd2':
-                list of str, each element is a channel name matching
-                metadata information
-        
-        Attributes
-        ----------
-        K: int
-            Number of frames considerd (including steps, bad frames)
-        dims: tuple
-            XY image dimensions
-        valid_frames: 1D array
-            indices of conisered frames
-        """
+
+    Attributes
+    ----------
+    K: int
+        Number of frames considered (including steps, bad frames)
+    dims: tuple
+        XY image dimensions
+    valid_frames: 1D array
+        indices of considered frames
+    morphofile: str or list
+        'series':
+            list of str, each element is a filename for a specific frame
+        'multi':
+            str, filename for a specific channel
+        'nd2':
+            str, channel name matching metadata information
+    signalfile: str or list
+        'series':
+            list of list of str, each element is a filename,
+            files are grouped in a list for each channel, and 
+            all list grouped in a larger list
+        'multi':
+            list of str, each element is a filename corresponding
+            to a channnel
+        'nd2':
+            list of str, each element is a channel name matching
+            metadata information
+
+    """
+
+    def __init__(self, expdir, morpho_name, signal_name, bad_frames=[], step=1,
+                 max_time=None, data_type=None):
 
         self.data_type = data_type
         self.expdir = Path(expdir)
@@ -65,11 +70,12 @@ class Data:
         self.signal_name = signal_name
         self.bad_frames = np.array(bad_frames)
         self.step = step
-        self.signalfile = signalfile
-        self.morphofile = morphofile
         self.max_time = max_time
-        self.K = None
+
         self.dims = None
+        self.signalfile = None
+        self.morphofile = None
+        self.data_type = data_type
 
     def set_valid_frames(self):
         """Create a list of indices of valid frames"""
@@ -101,9 +107,9 @@ class Data:
 
 class TIFFSeries(Data):
     def __init__(self, expdir, morpho_name, signal_name, bad_frames=[], step=1,
-                 max_time=None, data_type='series', signalfile=None, morphofile=None):
+                 max_time=None, data_type='series'):
         Data.__init__(self, expdir, morpho_name, signal_name, bad_frames, step,
-                        max_time, data_type, signalfile, morphofile)
+                      max_time, data_type)
 
         self.initialize()
 
@@ -146,9 +152,9 @@ class TIFFSeries(Data):
 
 class MultipageTIFF(Data):
     def __init__(self, expdir, morpho_name, signal_name, bad_frames=[], step=1,
-                 max_time=None, data_type='multi', signalfile=None, morphofile=None):
+                 max_time=None, data_type='multi'):
         Data.__init__(self, expdir, morpho_name, signal_name, bad_frames, step,
-                 max_time, data_type, signalfile, morphofile)
+                      max_time, data_type)
 
         self.initialize()
 
@@ -191,9 +197,9 @@ class MultipageTIFF(Data):
 
 class ND2(Data):
     def __init__(self, expdir, morpho_name, signal_name, bad_frames=[], step=1,
-                 max_time=None, data_type='nd2', signalfile=None, morphofile=None):
+                 max_time=None, data_type='nd2'):
         Data.__init__(self, expdir, morpho_name, signal_name, bad_frames, step,
-                 max_time, data_type, signalfile, morphofile)
+                      max_time, data_type)
 
         self.initialize()
 
