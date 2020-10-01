@@ -178,19 +178,6 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
     return w, J, I
 
 
-def extract_signals_old(y, w):
-    """ Extract the mean values of an image over the sampling windows. """
-
-    mean = np.nan * np.ones(w.shape[0:2])
-    var = np.nan * np.ones(w.shape[0:2])
-    for j in range(w.shape[0]):
-        for i in range(w.shape[1]):
-            if np.any(w[j, i]):
-                mean[j, i] = np.mean(y[w[j, i]])
-                var[j, i] = np.var(y[w[j, i]])
-    return mean, var
-
-
 def extract_signals(y, w):
     """ Extract the mean and variance of an image over the sampling windows.
 
