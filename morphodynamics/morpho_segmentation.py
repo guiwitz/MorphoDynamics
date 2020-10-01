@@ -60,8 +60,8 @@ class InteractSeg():
         self.param = Param(expdir=expdir, morpho_name=morpho_name, signal_name=signal_name)
 
         self.expdir = expdir
-        self.param.morpho_name = morpho_name
-        self.param.signal_name = signal_name
+        #self.param.morpho_name = morpho_name
+        #self.param.signal_name = signal_name
         self.memory = memory
         self.cores = cores
 
@@ -270,7 +270,7 @@ class InteractSeg():
         """Create a window image"""
 
         c = rasterize_curve(N, image.shape, self.res.spline[time], self.res.orig[time])
-        w = create_windows(c, splevper(self.res.orig[time], self.res.spline[time]), self.res.J, self.res.I)
+        w, _, _ = create_windows(c, splevper(self.res.orig[time], self.res.spline[time]), self.res.J, self.res.I)
         return w
 
     def show_segmentation(self, change=None):
