@@ -5,11 +5,10 @@ from skimage.morphology import binary_closing, binary_erosion, disk
 from skimage.measure import find_contours, label, regionprops
 from scipy.interpolate import UnivariateSpline
 from scipy.signal import argrelmin
-from scipy.ndimage import median_filter
 from scipy.ndimage.morphology import binary_fill_holes
 from scipy.ndimage.measurements import center_of_mass
 import numpy as np
-from tifffile import imread, imsave
+from tifffile import imread
 from cellpose import models
 
 
@@ -74,7 +73,25 @@ def segment_farid(x, threshold=1, minsize=500):
     return regions
 
 
-def tracking(regions, location, seg_type='threshold'):
+def tracking(regions, location=None, seg_type='farid'):
+    """Given a labelled mask, select one of the objects as cell.
+    If a location is provided, pick closest object, otherwise
+    pick largest.
+
+    Parameters
+    ----------
+    regions: 2d array
+        labeled mask of cells
+    location: 1d array, optional
+        position vector
+    seg_type: str
+        type of segmentation used, currently 'farid' or 'cellpose'
+
+    Returns
+    -------
+    sel_region: 2d array
+        binary mask of cell
+    """
 
     # number of regions
     nr = np.max(regions)
