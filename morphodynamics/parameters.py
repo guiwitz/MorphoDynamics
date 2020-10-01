@@ -1,6 +1,6 @@
 class Param:
     def __init__(self, expdir=None, resultdir=None, T=None, data_type='series',
-                morpho_name = None, signal_name = None, max_time=None):
+                 n_curve=10000, morpho_name=None, signal_name=None, max_time=None):
 
         """Standard __init__ method.
         Parameters
@@ -35,6 +35,9 @@ class Param:
         # self.lambda_ = 0
         self.lambda_ = 1e2
         # self.lambda_ = 1e3
+
+        #Number of points in the spline
+        self.n_curve = n_curve
 
         # # Number of sampling windows in the outer layer (along the curve)
         # # self.I = 48
