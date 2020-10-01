@@ -91,7 +91,7 @@ def analyze_morphodynamics(data, param):
             s0prm, res.orig[k] = align_curves(param.n_curve, s0, s, res.orig[k-1]) # Intermediate curve and change of origin to account for cell motion
 
         c = rasterize_curve(param.n_curve, x.shape, s, res.orig[k])  # Representation of the contour as a grayscale image
-        w = create_windows(c, splevper(res.orig[k], s), J, I) # Sampling windows
+        w, _, _ = create_windows(c, splevper(res.orig[k], s), J, I) # Sampling windows
 
         if k > 0:
             p, t0 = subdivide_curve_discrete(param.n_curve, c0, I[0], s0, splevper(res.orig[k-1], s0))

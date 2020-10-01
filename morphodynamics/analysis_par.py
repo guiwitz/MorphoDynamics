@@ -162,7 +162,7 @@ def windowing_mapping(N, c, c0, s, s0, origin, s0prm, J, I, k):
     if k > 0:
         ori0 = origin[k-1]
 
-    w = create_windows(c, splevper(ori, s), J, I) # Sampling windows
+    w, _, _ = create_windows(c, splevper(ori, s), J, I) # Sampling windows
 
     t = None
     t0 = None
@@ -177,7 +177,7 @@ def windowing_mapping(N, c, c0, s, s0, origin, s0prm, J, I, k):
     return output
 
 
-def segment_all(data, param, model):
+def segment_all(data, param, model=None):
     """Segment all frames and return a list of labelled masks. The correct
     label is not selected here"""
 
