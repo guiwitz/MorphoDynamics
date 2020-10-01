@@ -5,7 +5,7 @@ from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages
 from .settings import Struct
-from .segmentation import segment_threshold, extract_contour, segment_cellpose, track_cellpose, track_threshold, segment_farid
+from .segmentation import segment_threshold, extract_contour, segment_cellpose, tracking, segment_farid
 from .displacementestimation import fit_spline, map_contours2, rasterize_curve, compute_length, compute_area, show_edge_scatter, align_curves, subdivide_curve, subdivide_curve_discrete, splevper, map_contours3
 from .windowing import create_windows, extract_signals, label_windows, show_windows
 import matplotlib.pyplot as plt
@@ -36,11 +36,11 @@ def analyze_morphodynamics(data, param):
     x = data.load_frame_morpho(0)
     if param.cellpose:
         m = segment_cellpose(model, x, param.diameter, location)
-        m = track_cellpose(m, location)
+        m = tracking(m, location, seg_type='cellpose')
     else:
         #m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
         m = segment_farid(x)
-        m = track_threshold(m, location)
+        m = tracking(m, location, seg_type='farid')
 
     # update location
     if location is None:
@@ -78,9 +78,9 @@ def analyze_morphodynamics(data, param):
 
         # select cell to track in mask
         if param.cellpose:
-            m = track_cellpose(m, location)
+            m = tracking(m, location, seg_type='cellpose')
         else:
-            m = track_threshold(m, location)
+            m = tracking(m, location, seg_type='farid')
 
         location = 2*np.array(center_of_mass(m[::2,::2])) # Set the location for the next iteration. Use reduced image for speed
 

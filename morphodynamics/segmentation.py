@@ -13,12 +13,6 @@ from tifffile import imread, imsave
 from cellpose import models
 
 
-
-
-# from ArtifactGeneration import FigureHelper
-
-# fh = FigureHelper(not True)
-
 def segment_threshold(x, sigma, T, location):
     """Segment the cell image, possibly with automatic threshold selection."""
 
@@ -33,17 +27,6 @@ def segment_threshold(x, sigma, T, location):
         m = m[hs[m] < 0.2*hs[n0]]  # Remove local minima that are too strong
         T = m[n0 < m][0]  # Select first local minimum after maximum
 
-    # # Artifact generation
-    # if fh.debug & (T is None):
-    #     fh.open_figure('Histogram')
-    #     plt.plot(h, 'b', lw=0.1, zorder=50)
-    #     # plt.xlim(0, 1000)
-    #     plt.plot(n, hs, 'r', lw=0.1, zorder=100)
-    #     plt.plot(n0, hs[n0], 'go', zorder=10)
-    #     plt.plot(T, hs[T], 'yo', zorder=10)
-    #     fh.close_figure()
-    # fh.show()
-
     # Segment image by thresholding
     if sigma > 0:
         y = gaussian(x, sigma=sigma, preserve_range=True)  # Smooth input image with a Gaussian
@@ -56,17 +39,26 @@ def segment_threshold(x, sigma, T, location):
     return regions
 
 
-def segment_farid(x):
+def segment_farid(x, threshold=1, minsize=500):
+    """Segment an image using its gradient calculated using
+    the Farid method.
 
-    farid2 = farid(gaussian(x, 2, preserve_range=True)) > 1
+    Parameters
+    ----------
+    x: 2d array
+        image to segment
+    threshold: float
+        threshold on gradient image
+    minsize: int
+        remove binary objects smaller than this value
 
-    #farid_lab = label(farid2)
-    #farid_reg = regionprops(farid_lab)
-    #farid_indices = np.array(
-    #    [0] + [x.label if x.area > 500 else 0 for x in farid_reg]
-    #).astype(int)
-    #farid3 = farid_indices[farid_lab] > 0
-    #farid4 = binary_closing(farid3, disk(3))
+    Returns
+    -------
+    regions: 2d array
+        labelled array
+    """
+
+    farid2 = farid(gaussian(x, 2, preserve_range=True)) > threshold
 
     farid3 = binary_closing(farid2, disk(3))
     farid4 = binary_erosion(farid3, disk(3))
@@ -82,36 +74,32 @@ def segment_farid(x):
     return regions
 
 
-def track_threshold(regions, location):
-    """Given a labelled mask and a location, keep the label closest to location"""
+def tracking(regions, location, seg_type='threshold'):
 
+    # number of regions
     nr = np.max(regions)
-    if location is None: # Keep only the largest region
-        sr = np.zeros((nr,)) # Allocate array of region sizes
+    # if not location is given, keep largest regions
+    # otherwise keep region closest to location
+    if location is None:
+        sr = np.zeros((nr,))
         for k in range(nr):
-            sr[k] = np.sum(binary_fill_holes(regions == k+1)) # Populate array
-        k = np.argmax(sr) # Get index of largest region
-        z = binary_fill_holes(regions == k+1) # Create mask of largest region
-    else: # Keep the region that is closest to the specified location
-        cm = np.zeros((nr,2)) # Allocate center of masses of regions
+            if seg_type == 'farid':
+                sr[k] = np.sum(binary_fill_holes(regions == k+1))
+            elif seg_type == 'cellpose':
+                sr[k] = np.sum(regions == k+1)
+        k = np.argmax(sr)
+        sel_region = binary_fill_holes(regions == k+1)
+    else:
+        cm = np.zeros((nr, 2))
         for k in range(nr):
-            cm[k] = center_of_mass(regions == k+1) # no hole filling if location is given
-            #cm[k] = center_of_mass(binary_fill_holes(regions == k+1)) # Populate array
-        k = np.argmin([np.linalg.norm(cm0-location) for cm0 in cm])  # Get index of closest region
-        z = binary_fill_holes(regions == k+1)  # Create mask of closest region
+            cm[k] = center_of_mass(regions == k+1)
+        k = np.argmin([np.linalg.norm(cm0-location) for cm0 in cm])
+        if seg_type == 'farid':
+            sel_region = binary_fill_holes(regions == k+1)
+        elif seg_type == 'cellpose':
+            sel_region = regions == k+1
 
-    # # Fill holes in mask
-    # z = binary_fill_holes(z)
-    # # z[mask>0] = 0
-
-    # # Artifact generation
-    # fh.imshow('Input image', x)
-    # fh.imshow('Segmented image', 255 * (T < y).astype(np.uint8))
-    # fh.imshow('Filled largest segmented region', 255 * z.astype(np.uint8))
-    # # fh.imshow('All regions', regions)
-    # fh.show()
-
-    return z
+    return sel_region
 
 
 def segment_cellpose(model, x, diameter, location):
@@ -122,27 +110,6 @@ def segment_cellpose(model, x, diameter, location):
     m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
     m = m[0]
     return m
-
-
-def track_cellpose(regions, location):
-    """Given a labelled mask and a location, keep the label closest to location"""
-
-    nr = np.max(regions)
-    if location is None: # Keep only the largest region
-        # m = m[np.argmax([np.sum(m0) for m0 in m])]
-        sr = np.zeros((nr,)) # Allocate array of region sizes
-        for k in range(nr):
-            sr[k] = np.sum(regions == k+1) # Populate array
-        k = np.argmax(sr) # Get index of largest region
-        regions = regions == k+1 # Create mask of largest region
-    else: # Keep the region that is closest to the specified location
-        # nr = len(m)
-        cm = np.zeros((nr, 2)) # Allocate center of masses of regions
-        for k in range(nr):
-            cm[k] = center_of_mass(regions == k+1) # Populate array
-        k = np.argmin([np.linalg.norm(cm0-location) for cm0 in cm])  # Get index of closest region
-        regions = regions == k+1 # Create mask of closest region
-    return regions
 
 
 def extract_contour(mask):
