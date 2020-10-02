@@ -82,8 +82,8 @@ def analyze_morphodynamics(data, param):
     # rasterized contour, splines, windows, window-centered
     # spline paramters in pairs of successive points t and t0
     s0prm_all = {k: None for k in range(0, data.K)}
-    c_all = {k: None for k in range(0, data.K)}
-    s_all = {k: None for k in range(0, data.K)}
+    c_all = {k: None for k in range(-1, data.K)}
+    s_all = {k: None for k in range(-1, data.K)}
     w_all = {k: None for k in range(0, data.K)}
     t_all = {k: None for k in range(0, data.K)}
     t0_all = {k: None for k in range(0, data.K)}
@@ -96,7 +96,7 @@ def analyze_morphodynamics(data, param):
     # align curves across frames and rasterize the windows
     for k in range(0, data.K):
         s0prm_all[k], c_all[k], res.orig[k] = fun_spline_align_rasterize(
-            param.n_curve, s_all[k-1] if k > 0 else None, s_all[k], x.shape, k > 0)
+            param.n_curve, s_all[k-1], s_all[k], x.shape, k > 0)
     s0prm_all, c_all, res.orig = dask.compute(s0prm_all, c_all, res.orig)
 
     # origin shifts have been computed pair-wise. Calculate the cumulative
@@ -107,9 +107,9 @@ def analyze_morphodynamics(data, param):
     for k in range(0, data.K):
         w_all[k], t_all[k], t0_all[k] = fun_windowing_mapping(
             param.n_curve,
-            c_all[k], c_all[k-1] if k > 0 else None,
-            s_all[k], s_all[k-1] if k > 0 else None,
-            res.orig[k], res.orig[k-1] if k > 0 else None,
+            c_all[k], c_all[k-1],
+            s_all[k], s_all[k-1],
+            res.orig[k], res.orig[k-1],
             s0prm_all[k], J, I, k > 0)
     w_all, t_all, t0_all = dask.compute(w_all, t_all, t0_all)
 
@@ -118,10 +118,11 @@ def analyze_morphodynamics(data, param):
 
         s = s_all[k]
 
+        # Signals extracted from various imaging channels
         for ell in range(len(data.signalfile)):
             res.mean[ell, :, :, k], res.var[ell, :, :, k] = extract_signals(
                 data.load_frame_signal(ell, k), w_all[k]
-                )  # Signals extracted from various imaging channels
+                )  
 
         # Compute projection of displacement vectors onto normal of contour
         if 0 < k:
