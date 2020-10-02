@@ -11,6 +11,8 @@ import numpy as np
 from tifffile import imread
 from cellpose import models
 
+from .displacementestimation import fit_spline
+
 
 def segment_threshold(x, sigma, T, location):
     """Segment the cell image, possibly with automatic threshold selection."""
@@ -133,6 +135,28 @@ def extract_contour(mask):
     """ Extract pixels along contour of mask. """
 
     return np.asarray(find_contours(mask, 0, fully_connected='high')[0], dtype=np.int)
+
+
+def contour_spline(m, smoothing):
+    """Extract contour from binary image and fit a spline
+
+    Parameters
+    ----------
+    m: 2d array
+        binary image
+    smoothing: float
+        smoothing parameter as defined by splprep
+
+    Returns
+    -------
+    s: spline tuple
+    c: 2d array
+        coordinates of contour
+    """
+
+    c = extract_contour(m)  # Discrete cell contour
+    s = fit_spline(c, smoothing)  # Smoothed spline curve following the contour
+    return s, c
 
 
 def estimateBleaching(filename, K, shape):
