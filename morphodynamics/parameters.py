@@ -1,4 +1,8 @@
 class Param:
+    """Object storing relevant information regarding the processing,
+    e.g. the window size, the analyzed signal, the type of segmentation used.
+    """
+    
     def __init__(self, expdir=None, resultdir=None, T=None, data_type='series',
                  n_curve=10000, morpho_name=None, signal_name=None, max_time=None):
 

@@ -41,7 +41,8 @@ def segment_threshold(x, sigma, T, location):
 
 
 def segment_farid(x, threshold=1, minsize=500):
-    """Segment an image using its gradient calculated using
+    """
+    Segment an image using its gradient calculated using
     the Farid method.
 
     Parameters
@@ -57,6 +58,7 @@ def segment_farid(x, threshold=1, minsize=500):
     -------
     regions: 2d array
         labelled array
+
     """
 
     farid2 = farid(gaussian(x, 2, preserve_range=True)) > threshold
@@ -76,7 +78,8 @@ def segment_farid(x, threshold=1, minsize=500):
 
 
 def tracking(regions, location=None, seg_type='farid'):
-    """Given a labelled mask, select one of the objects as cell.
+    """
+    Given a labelled mask, select one of the objects as cell.
     If a location is provided, pick closest object, otherwise
     pick largest.
 
@@ -93,6 +96,7 @@ def tracking(regions, location=None, seg_type='farid'):
     -------
     sel_region: 2d array
         binary mask of cell
+
     """
 
     # number of regions
@@ -138,7 +142,8 @@ def extract_contour(mask):
 
 
 def contour_spline(m, smoothing):
-    """Extract contour from binary image and fit a spline
+    """
+    Extract contour from binary image and fit a spline
 
     Parameters
     ----------
@@ -152,6 +157,7 @@ def contour_spline(m, smoothing):
     s: spline tuple
     c: 2d array
         coordinates of contour
+
     """
 
     c = extract_contour(m)  # Discrete cell contour

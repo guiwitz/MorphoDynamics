@@ -33,26 +33,29 @@ display(HTML("<style>.container { width:100% !important; }</style>"))
 
 
 class InteractSeg():
+    """
+    Methods creating the user interface for the package.
+
+    Parameters
+    ----------
+    expdir: str
+        path to folder containing data
+    morpho_name: str
+        name of folder or file used segmentation
+    signal_name: list of str
+        names of folders or files used as signal
+    memory : str
+        RAM to use on cluster
+    cores : int
+        number of cores to use per worker on cluster
+
+    Attributes
+    ----------
+    expdir, memory, cores: see Parameters
+    """
+
     def __init__(self, expdir=None, morpho_name=None, signal_name=None,
-                memory="2 GB", cores=1):
-
-        """Standard __init__ method.
-        Parameters
-        ----------
-        expdir: str
-            path to folder containing data
-        morpho_name: str
-            name of folder or file used segmentation
-        signal_name: list of str
-            names of folders or files used as signal
-        memory : str
-            RAM to use on cluster
-        cores : int
-            number of cores to use per worker on cluster
-
-        Attributes
-        ----------
-        """
+                 memory="2 GB", cores=1):
 
         style = {'description_width': 'initial'}
         layout = {'width': '300px'}
@@ -60,8 +63,6 @@ class InteractSeg():
         self.param = Param(expdir=expdir, morpho_name=morpho_name, signal_name=signal_name)
 
         self.expdir = expdir
-        #self.param.morpho_name = morpho_name
-        #self.param.signal_name = signal_name
         self.memory = memory
         self.cores = cores
 
@@ -595,8 +596,6 @@ class InteractSeg():
                         self.bad_frames,
                         self.segmentation,
                         self.segparam,
-                        #self.threshold,
-                        #self.diameter,
                         self.location_x,
                         self.location_y,
                         self.width_text,
@@ -605,7 +604,7 @@ class InteractSeg():
                     ]),
                     self.out,
                     ipw.VBox([
-                        
+
                         self.time_slider, self.intensity_range_slider,
                         self.show_windows_choice, self.show_text_choice,
                         self.display_channel

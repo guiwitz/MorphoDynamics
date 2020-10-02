@@ -8,7 +8,29 @@ from .parameters import Param
 from .dataset import TIFFSeries, MultipageTIFF, ND2
 
 
-def load_alldata(folder_path, load_results = False):
+def load_alldata(folder_path, load_results=False):
+    """
+    Given a folder, load the parameter information contained in
+    Parameters.yml and optionally load results from the
+    Results.yml file.
+
+    Parameters
+    ----------
+    folder_path: str
+        Path to folder containing Parameters.yml file
+    load_results: bool (False)
+        Load results from Results.yml file or not
+
+    Returns
+    -------
+    param: Param object
+        As created by morphodynamics.parameters.Param
+    res: Result object
+        As created by morphodynamics.results.Results
+    data: Data object
+        As created by morphodynamics.dataset
+
+    """
 
     folder_path = Path(folder_path)
 
@@ -47,14 +69,17 @@ def load_alldata(folder_path, load_results = False):
 
     return param, res, data
 
+
 def format_bad_frames(bad_frames):
-    if bad_frames == '' :
+    """Create an array of bad frame indices from string loaded from yml file."""
+
+    if bad_frames == '':
         bads = []
     else:
         try:
             bads = [x.split('-') for x in bad_frames.split(',')]
             bads = [[int(x) for x in y] for y in bads]
-            bads = np.concatenate([np.array(x) if len(x)==1 else np.arange(x[0],x[1]+1) for x in bads])
+            bads = np.concatenate([np.array(x) if len(x) == 1 else np.arange(x[0], x[1]+1) for x in bads])
         except:
             bads = []
 

@@ -7,8 +7,23 @@ from skimage.measure import find_contours
 
 
 def label_windows(shape, windows):
-    """Create an image where the sampling windows are shown as regions
-    with unique gray levels."""
+    """
+    Create an image where the sampling windows are shown as regions
+    with unique gray levels.
+
+    Parameters
+    ----------
+    shape: tuple
+        intended shape of image
+    windows: 3d list
+        list of window indices as output by create_windows()
+
+    Returns
+    -------
+    tiles: 2d array
+        array where individual windows are labelled with unique index
+
+    """
 
     tiles = np.zeros(shape, dtype=np.uint16)
     n = 1
@@ -20,43 +35,55 @@ def label_windows(shape, windows):
 
 
 def compute_discrete_arc_length(c):
-    """Compute cumulative arc length along contour"""
+    """
+    Compute cumulative arc length along contour c.
+
+    Parameters
+    ----------
+    c: 2d array
+        list of contour coordinates
+
+    Returns
+    -------
+    L: 1d array
+        arc length along contour
+
+    """
 
     L = np.cumsum(
         np.linalg.norm(
             np.diff(np.concatenate([[c[0]], c, [c[0]]]), axis=0),
             axis=1)
         )
-    #N = c.shape[0]
-    #L = np.zeros((N+1,))
-    #for n in range(1, N):
-    #    L[n] = L[n-1] + np.linalg.norm(c[n]-c[n-1])
-    #L[N] = L[N-1] + np.linalg.norm(c[0]-c[N-1])
     return L
 
 
 def create_arc_length_image(shape, c, L):
-    """Create image of cumulative arc length by assigning cumulative length to
-    pixels along contour"""
+    """
+    Create image of cumulative arc length by assigning cumulative length to
+    pixels along contour.
+
+    Parameters
+    ----------
+    shape: tuple
+        intended shape of image
+    c: 2d array
+        contour coordinates
+    L: 2d array
+        arc length along contour
+
+    """
 
     x = -np.ones(shape)
     x[c[np.arange(c.shape[0]), 0], c[np.arange(c.shape[0]), 1]] = L[np.arange(c.shape[0])]
-    #for n in range(c.shape[0]):
-    #    x[c[n,0], c[n,1]] = L[n]
+
     return x
 
 
-# def define_contour_positions(L, I, cvec, cim):
-#     t = np.zeros((I,))
-#     for i in range(I):
-#         L0 = (L[-1] / I) * (i + 0.5)
-#         n = np.argmin(np.abs(L-L0))
-#         t[i] = cim[cvec[n, 0], cvec[n, 1]]
-#     return t
-
-
 def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
-    """Create windows based on contour and windowing parameters.
+    """
+    Create windows based on contour and windowing parameters. The first
+    window (at arc length = 0) is placed at the spline origin.
 
     Note: to define the windows, this function uses pseudo-radial and
     pseudo-angular coordinates. The pseudo-radial coordinate is based
@@ -179,7 +206,8 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
 
 
 def extract_signals(y, w):
-    """ Extract the mean and variance of an image over the sampling windows.
+    """
+    Extract the mean and variance of an image over the sampling windows.
 
     Parameters
     ----------
@@ -195,6 +223,7 @@ def extract_signals(y, w):
     var : 2d array
         variance values of signal in each window. Array of size number of
         layers times number of windows in outer layer
+
     """
 
     # Number of windows
@@ -218,7 +247,7 @@ def extract_signals(y, w):
 
 
 def show_windows(w, b):
-    """ Display the sampling-window boundaries and indices. """
+    """Display the sampling-window boundaries and indices."""
 
     plt.imshow(b, cmap='gray', vmin=0, vmax=2)
     for j in range(len(w)):
@@ -236,7 +265,21 @@ def show_windows(w, b):
 
 
 def calculate_windows_index(w):
-    """ Display the sampling-window boundaries and indices. """
+    """
+    Calculate per window index position.
+
+    Parameters
+    ----------
+    w: 3d list
+        list of window indices as output by create_windows()
+
+    Returns
+    -------
+    windows_pos: list of lists
+        each element is a list [x, y, index] where x,y are the
+        window average position
+
+    """
 
     windows_pos = []
     for j in range(len(w)):

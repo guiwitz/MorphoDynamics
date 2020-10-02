@@ -17,7 +17,8 @@ from .windowing import compute_discrete_arc_length
 
 
 def splevper(t, s):
-    """Evaluate B-spline for periodic curve
+    """
+    Evaluate B-spline for periodic curve
 
     Parameters
     ----------
@@ -29,12 +30,14 @@ def splevper(t, s):
     -------
     list of arrays
         coordinates of evaluated spline
+
     """
     return splev(np.mod(t, 1), s)
 
 
 def fit_spline(c, lambda_):
-    """" Fit a spline to a contour specified as a list of pixels.
+    """"
+    Fit a spline to a contour specified as a list of pixels.
 
     Parameters
     ----------
@@ -47,44 +50,74 @@ def fit_spline(c, lambda_):
     -------
     s: tuple
         spline tuple
+
     """
+
     s = splprep([c[:, 1], c[:, 0]], s=lambda_, per=c.shape[0])[0]  # Fitting with periodic boundary conditions
     return s
 
 
 def compute_length(N, s):
+    """Compute length of spline s discretized in N segments."""
+    
     cprm = splev(np.linspace(0, 1, N, endpoint=False), s, der=1)
     return np.sum(np.sqrt(cprm[0]**2 + cprm[1]**2)) / N
 
 
 def compute_area(N, s):
+    """Compute area of spline s discretized in N segments."""
+    
     c = splev(np.linspace(0, 1, N, endpoint=False), s)
     cprm = splev(np.linspace(0, 1, N, endpoint=False), s, der=1)
     return np.sum(c[0]*cprm[1] - c[1]*cprm[0]) / 2 / N
 
 
 def compute_curvature(s, t):
+    """Compute local curvature of spline s at paramters positions t."""
     cprm = splev(t, s, der=1)
     csec = splev(t, s, der=2)
     return (cprm[0]*csec[1] - cprm[1]*csec[0]) / (cprm[0]**2 + cprm[1]**2)**1.5
 
 
 def correlate(x, y):
-    """ Compute the correlation between two signals with periodic boundary conditions. """
+    """Compute the correlation between two signals with periodic boundary conditions."""
     z = np.real(np.fft.ifft(np.fft.fft(x) * np.fft.fft(y[::-1])))
     return z
 
 
 def find_origin(N, s1, s2, t0):
+    """
+    Find the parameter for s2 that best approximates the origin on s1 
+    given a shift t0.
+
+    Parameters
+    ----------
+    N: int
+        Number of samples along the curve
+    s1: tuple
+        spline tuple as returned by splprep
+    s2: tuple
+        spline tuple as returned by splprep
+    t0: float
+        Origin shift of curve s1
+
+    Returns
+    -------
+    orig_param: float
+        parameter for s2 matching origin position on s1
+
+    """
+
     t = np.linspace(0, 1, N, endpoint=False)
     x = splev(t0, s1)
     c = splev(t, s2)
     n = np.argmin((c[0]-x[0])**2 + (c[1]-x[1])**2)
-    return t[n]
+    orig_param = t[n]
+    return orig_param
 
 
 def align_curves(N, s1, s2, t1):
-    '''
+    """
     This function is intended to help improve the accuracy of displacement estimation
     when in addition to protrusions the cell is subject to motion.
     The idea is to find a translation and a change of origin for s2 that aligns it
@@ -110,7 +143,8 @@ def align_curves(N, s1, s2, t1):
         translated curve s1
     t2: float
         is the new origin for curve s2.
-    '''
+
+    """
 
     t = np.linspace(0, 1, N, endpoint=False)
 
@@ -145,7 +179,7 @@ def align_curves(N, s1, s2, t1):
 
 
 def map_contours(s1, s2, t1):
-    """ Compute displacement vectors between two consecutive contours. """
+    """Compute displacement vectors between two consecutive contours."""
 
     # Positions of the velocity arrows
     N = len(t1)
@@ -172,28 +206,43 @@ def map_contours(s1, s2, t1):
 
 
 def map_contours2(s1, s2, t1, t2):
-    ''' Solves a variational problem for mapping positions along contour s1
+    """
+    Solves a variational problem for mapping positions along contour s1
     to positions along contour s2.
 
-    Parameters:
-        s1: The first spline contour.
-        s2: The spline contour in the subsequent frame.
-        t1: The positions along s1.
-        t2: Initial guess for the positions along s2
+    Parameters
+    ----------
+    s1: tuple
+        spline tuple as returned by splprep
+    s2: tuple
+        spline tuple as returned by splprep
+    t1: 1d array
+        list of spline parameters along s1
+        defining positions centered on windows
+    t2: 1d array
+        list of spline parameters along s2
+        as initial guesses
 
-    Returns: An updated set t2 of positions along s2.
-    '''
+    Returns
+    -------
+    t2: 1d array
+        updated positions along s2 minimizing the functional
+
+    """
 
     N = len(t1)
 
-    # The weight that balances the two terms (displacement and strain) of the functional
-    w = np.sum((np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2) / (N - 1)
+    # The weight that balances the two terms (displacement and strain)
+    # of the functional
+    w = np.sum(
+        (np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2
+        ) / (N - 1)
 
     # The functional
     functional = Functional2(s1, s2, t1, w)
 
     # Change-of-basis matrix for specifying the linear constraints
-    A = np.zeros((N,N))
+    A = np.zeros((N, N))
     for n in range(0, N):
         A[n, n] = 1
     A[0, N-1] = -1
@@ -205,8 +254,15 @@ def map_contours2(s1, s2, t1, t2):
     lb[0] = -1
     ub = np.inf * np.ones((N,))
 
-    # Minimization of the functional; we use high tolerances to get the results faster
-    result = minimize(functional.f, t2, method='trust-constr', constraints=LinearConstraint(A, lb, ub, keep_feasible=True), options={'gtol': 1e-2, 'xtol': 1e-2})
+    # Minimization of the functional; we use high tolerances to
+    # get the results faster
+    result = minimize(
+        fun=functional.f,
+        x0=t2,
+        method='trust-constr',
+        constraints=LinearConstraint(A, lb, ub, keep_feasible=True),
+        options={'gtol': 1e-2, 'xtol': 1e-2}
+        )
     # result = minimize(functional.f, t2, method='trust-constr', options={'gtol': 1e-12, 'xtol': 1e-12, 'barrier_tol': 1e-12})
     # result = minimize(functional.f, t2)
     t2 = result.x
@@ -222,8 +278,8 @@ def map_contours3(s1, s2, t1, t2):
 
 
 def show_edge_scatter(N, s1, s2, t1, t2, d, dmax=None):
-    """ Draw the cell-edge contour and the displacement vectors.
-    The contour is drawn using a scatter plot to color-code the displacements. """
+    """Draw the cell-edge contour and the displacement vectors.
+    The contour is drawn using a scatter plot to color-code the displacements."""
 
     # Evaluate splines at window locations and on fine-resolution grid
     c1 = splevper(t1, s1)
@@ -256,8 +312,8 @@ def show_edge_scatter(N, s1, s2, t1, t2, d, dmax=None):
 
 
 def show_edge_scatter_init(N, p, s1, s2, t1, t2, d, dmax=None):
-    """ Draw the cell-edge contour and the displacement vectors.
-    The contour is drawn using a scatter plot to color-code the displacements. """
+    """Draw the cell-edge contour and the displacement vectors.
+    The contour is drawn using a scatter plot to color-code the displacements."""
 
     # Evaluate splines at window locations and on fine-resolution grid
     c1 = splevper(t1, s1)
@@ -292,8 +348,8 @@ def show_edge_scatter_init(N, p, s1, s2, t1, t2, d, dmax=None):
 
 
 def show_edge_scatter_update(N, p, s1, s2, t1, t2, d, dmax=None):
-    """ Draw the cell-edge contour and the displacement vectors.
-    The contour is drawn using a scatter plot to color-code the displacements. """
+    """Draw the cell-edge contour and the displacement vectors.
+    The contour is drawn using a scatter plot to color-code the displacements."""
 
     # Evaluate splines at window locations and on fine-resolution grid
     c1 = splevper(t1, s1)
@@ -338,7 +394,7 @@ def show_edge_line_aux(N, s, color, lw):
 
 
 def show_edge_line(N, s):
-    """ Draw the cell-edge contour using a colored line. """
+    """Draw the cell-edge contour using a colored line."""
 
     # Evaluate splines at window locations and on fine-resolution grid
     K = len(s)
@@ -390,18 +446,26 @@ def show_edge_image(N, shape, s, t, d, thickness, dmax=None):
 #     return tau
 
 def rasterize_curve(N, shape, s, deltat):
-    """ Represent a contour as a grayscale image.
+    """
+    Represent a contour as a grayscale image.
     If a pixel is part of the contour, then its intensity
     is equal to the parameter t of the closest point on the contour s(t).
     Otherwise it is equal to -1.
 
-    Parameters:
-        shape: Size of the desired image.
-        s: Spline curve.
-        deltat: Origin of the curve.
+    Parameters
+    ----------
+    shape: tuple
+        size of the desired image.
+    s1: tuple
+        spline tuple as returned by splprep
+    deltat: float
+        origin shift of the spline.
 
-    Returns:
-        A rasterized image of the contour.
+    Returns
+    -------
+    tau: 2d array
+        rasterized image of the contour
+
     """
 
     delta = np.inf * np.ones(shape)  # Will store the distance between edge pixels and the closest points on the contour
@@ -419,7 +483,7 @@ def rasterize_curve(N, shape, s, deltat):
 
 
 def subdivide_curve(N, s, orig, I):
-    """ Define points on a contour that are equispaced with respect to the arc length. """
+    """Define points on a contour that are equispaced with respect to the arc length."""
     t = np.linspace(0, 1, N+1)
     L = np.cumsum(np.linalg.norm(splevper(t+orig, s), axis=0))
     t0 = np.zeros((I,))
@@ -433,7 +497,8 @@ def subdivide_curve(N, s, orig, I):
 
 
 def subdivide_curve_discrete(N, c_main, I, s, origin):
-    ''' Creates a discrete contour whose first pixel corresponds
+    """
+    Creates a discrete contour whose first pixel corresponds
     to the specified origin, plus a list of coordinates along the
     continuous curve corresponding to the mid-points of the
     windows in the first (outer) layer.
@@ -442,12 +507,25 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
     representations of the contour, so it may not be conceptually
     very satisfactory.
 
-    :param c_main: A rasterized version of the contour, as obtained by rasterize_curve.
-    :param I: Number of windows in the first (outer) layer.
-    :param s: Spline curve.
-    :param origin: (y, x) coordinates of the origin of the curve.
-    :return: Positions of the mid-points along the discrete curve and along the continuous curve (in terms of parameter values).
-    '''
+    Parameters
+    ----------
+    c_main: 2d array
+        A rasterized version of the contour, as obtained by rasterize_curve.
+    I: int
+        Number of windows in the first (outer) layer.
+    s: tuple
+        spline tuple as returned by splprep
+    origin: (y, x) coordinates of the origin of the curve.
+
+    Returns
+    -------
+    cvec_sel: 2d array
+        xy array of selected positions along the contour
+    t_sel: 1d array
+        list of spline parameters on s defining the same points as cvec_sel
+
+    """
+
     origin = [origin[1], origin[0]]
 
     # Compute the distance transform of the main contour
@@ -476,6 +554,7 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
     n = np.zeros((I,), dtype=np.int)
     for i in range(I):
         n[i] = np.argmin(np.abs(Lvec - Lvec[-1]/I*(0.5+i)))
+    cvec_sel = cvec[n, :]
 
     # Compute the parameter of the first mid-point
     t = np.linspace(0, 1, N, endpoint=False)
@@ -488,16 +567,6 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
     m = np.zeros((I,), dtype=np.int)
     for i in range(I):
         m[i] = np.argmin(np.linalg.norm(np.transpose(c)-np.flip(cvec[n[i]]), axis=1))
+    t_sel = t[m]
 
-    return cvec[n, :], t[m]
-
-# # Load images
-# path = 'C:\\Work\\UniBE 2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\w16TIRF-CFP\\'
-# x1 = imread(path + 'RhoA_OP_his_02_w16TIRF-CFP_t71.tif')
-# x2 = imread(path + 'RhoA_OP_his_02_w16TIRF-CFP_t131.tif')
-#
-# # Segment images
-# c1, mask1 = segment(x1)
-# c2, mask2 = segment(x2)
-#
-# mapContours(x1, c1, c2)
+    return cvec_sel, t_sel

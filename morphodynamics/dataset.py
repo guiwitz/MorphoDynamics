@@ -8,7 +8,8 @@ from pathlib import Path
 
 
 class Data:
-    """Class defining and handling datasets. Given an experiment directory
+    """
+    Class defining and handling datasets. Given an experiment directory
     (tiff files or stacks) or a a file (ND2) the available data are
     automatically parsed. Parameters specific to an analysis run such as
     bad frame indices or the time steps are also stored in the Data object.
