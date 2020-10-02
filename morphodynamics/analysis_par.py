@@ -5,7 +5,7 @@ from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages
 from .settings import Struct
-from .segmentation import segment_threshold, extract_contour, segment_cellpose, tracking, segment_farid
+from .segmentation import segment_threshold, extract_contour, segment_cellpose, tracking, segment_farid, contour_spline
 from .displacementestimation import fit_spline, map_contours2, rasterize_curve, compute_length, compute_area, show_edge_scatter, align_curves, subdivide_curve, subdivide_curve_discrete, splevper, map_contours3
 from .windowing import create_windows, extract_signals, label_windows, show_windows
 import matplotlib.pyplot as plt
@@ -14,6 +14,12 @@ import dask
 
 
 def analyze_morphodynamics(data, param):
+
+    # check if dask is used for parallelization
+    is_parallel = False
+    if param.distributed == 'local' or param.distributed == 'cluster':
+        is_parallel = True
+
     # Figures and other artifacts
     if param.showSegmentation:
         tw_seg = TiffWriter(param.resultdir + 'Segmentation.tif')
@@ -46,10 +52,9 @@ def analyze_morphodynamics(data, param):
     if location is None:
         location = center_of_mass(m)
 
-    c = extract_contour(m)  # Discrete cell contour
-    s = fit_spline(c, param.lambda_)
-    c = rasterize_curve(param.n_curve, x.shape, s, 0)
-    w, J, I = create_windows(c, splev(0, s), depth=param.depth, width=param.width)
+    s, _ = contour_spline(m, param.lambda_)
+    c = rasterize_curve(param.n_curve, m.shape, s, 0)
+    _, J, I = create_windows(c, splev(0, s), depth=param.depth, width=param.width)
     Imax = np.max(I)
 
     # Structures that will be saved to disk
@@ -68,24 +73,11 @@ def analyze_morphodynamics(data, param):
 
     # Segment all images but don't select cell
     segmented = segment_all(data, param, model)
-    if param.distributed == 'local' or param.distributed == 'cluster':
+    if is_parallel:
         segmented = dask.compute(segmented)[0]
 
     # do the tracking
-    for k in range(0, data.K):
-
-        m = segmented[k]
-
-        # select cell to track in mask
-        if param.cellpose:
-            m = tracking(m, location, seg_type='cellpose')
-        else:
-            m = tracking(m, location, seg_type='farid')
-
-        location = 2*np.array(center_of_mass(m[::2,::2])) # Set the location for the next iteration. Use reduced image for speed
-
-        # replace initial segmentation with aligned one
-        segmented[k] = m
+    segmented = track_all(segmented, location, param)
 
     # create contour, windows etc. in multiple parallelized loops
     s0prm_all = {k: None for k in range(0, data.K)}
@@ -93,40 +85,37 @@ def analyze_morphodynamics(data, param):
     s_all = {k: None for k in range(0, data.K)}
 
     # extract the contour and fit a spline
-    if param.distributed == 'local' or param.distributed == 'cluster':
-        s_c = dask.compute([dask.delayed(contour_spline)(m, param) for m in segmented])[0]
+    if is_parallel:
+        fun = dask.delayed(contour_spline)
     else:
-        s_c = [contour_spline(m, param) for m in segmented]
+        fun = contour_spline
+    s_c = dask.compute([fun(m, param.lambda_) for m in segmented])[0]
 
     for k in range(0, data.K):
         s_all[k] = s_c[k][0]
         res.spline.append(s_c[k][0])
 
     # align curves across frames and rasterize the windows
-    if param.distributed == 'local' or param.distributed == 'cluster':
-        spline_out = dask.compute([dask.delayed(spline_align_rasterize)(param.n_curve, s_all[k-1] if k > 0 else None, s_all[k], x.shape, k) for k in range(0, data.K)])[0]
+    if is_parallel:
+        fun = dask.delayed(spline_align_rasterize)
     else:
-        spline_out = [spline_align_rasterize(param.n_curve, s_all[k-1] if k > 0 else None, s_all[k], x.shape, k) for k in range(0, data.K)]
-
+        fun = spline_align_rasterize
     for k in range(0, data.K):
-        s0prm_all[k] = spline_out[k][0]
-        c_all[k] = spline_out[k][1]
-        res.orig[k] = spline_out[k][2]
+        s0prm_all[k], c_all[k], res.orig[k] = fun(
+            param.n_curve, s_all[k-1] if k > 0 else None, s_all[k], x.shape, k)
+    s0prm_all, c_all, res.orig = dask.compute(s0prm_all, c_all, res.orig)
     res.orig = np.cumsum(res.orig)
 
     # map windows across frames
-    if param.distributed == 'local' or param.distributed == 'cluster':
-        output = dask.compute([dask.delayed(windowing_mapping)(
-            param.n_curve,
-            c_all[k], c_all[k-1] if k > 0 else None,
-            s_all[k], s_all[k-1] if k > 0 else None,
-            res.orig, s0prm_all[k], J, I, k) for k in range(0, data.K)])[0]
+    if is_parallel:
+        fun = dask.delayed(windowing_mapping)
     else:
-        output = [windowing_mapping(
-            param.n_curve,
-            c_all[k], c_all[k-1] if k > 0 else None,
-            s_all[k], s_all[k-1] if k > 0 else None,
-            res.orig, s0prm_all[k], J, I, k) for k in range(0, data.K)]
+        fun = windowing_mapping
+    output = dask.compute([fun(
+        param.n_curve,
+        c_all[k], c_all[k-1] if k > 0 else None,
+        s_all[k], s_all[k-1] if k > 0 else None,
+        res.orig, s0prm_all[k], J, I, k) for k in range(0, data.K)])[0]
 
     # extract signals and calculate displacements
     for k in range(0, data.K):
@@ -153,6 +142,25 @@ def analyze_morphodynamics(data, param):
             res.param.append(t)
 
     return res
+
+
+def track_all(segmented, location, param):
+
+    for k in range(0, len(segmented)):
+
+        m = segmented[k]
+
+        # select cell to track in mask
+        if param.cellpose:
+            m = tracking(m, location, seg_type='cellpose')
+        else:
+            m = tracking(m, location, seg_type='farid')
+
+        location = 2*np.array(center_of_mass(m[::2, ::2])) # Set the location for the next iteration. Use reduced image for speed
+
+        # replace initial segmentation with aligned one
+        segmented[k] = m
+    return segmented
 
 
 def windowing_mapping(N, c, c0, s, s0, origin, s0prm, J, I, k):
@@ -208,13 +216,6 @@ def segment_all(data, param, model=None):
                 m = segment_farid(x)      
         segmented.append(m)
     return segmented
-
-
-def contour_spline(m, param):
-
-    c = extract_contour(m)  # Discrete cell contour
-    s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
-    return s, c
 
 
 def spline_align_rasterize(N, s0, s, im_shape, k):
