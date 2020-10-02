@@ -5,23 +5,49 @@ from scipy.ndimage import binary_fill_holes, distance_transform_edt
 from scipy.optimize import least_squares, minimize, LinearConstraint
 from scipy.signal import convolve2d
 import numpy as np
-from numpy.linalg import norm
 from skimage.measure import find_contours
 
+from matplotlib.backends.backend_pdf import PdfPages
+from copy import deepcopy
+
 from .functionaldefinition import Functional, Functional2, Functional3
-from .figurehelper import FigureHelper
 
 # fh = FigureHelper(not True)
-from .settings import Struct
 from .windowing import compute_discrete_arc_length
 
 
 def splevper(t, s):
+    """Evaluate B-spline for periodic curve
+
+    Parameters
+    ----------
+    t: 1d array
+        points on which to return the evaluation
+    s: spline tuple as returned by splprep
+
+    Returns
+    -------
+    list of arrays
+        coordinates of evaluated spline
+    """
     return splev(np.mod(t, 1), s)
 
 
 def fit_spline(c, lambda_):
-    """" Fit a spline to a contour specified as a list of pixels. """
+    """" Fit a spline to a contour specified as a list of pixels.
+
+    Parameters
+    ----------
+    c: 2d array
+        contour coordinates
+    lambda_: float
+        smoothing parameter (as used by splprep)
+
+    Returns
+    -------
+    s: tuple
+        spline tuple
+    """
     s = splprep([c[:, 1], c[:, 0]], s=lambda_, per=c.shape[0])[0]  # Fitting with periodic boundary conditions
     return s
 
@@ -56,35 +82,37 @@ def find_origin(N, s1, s2, t0):
     n = np.argmin((c[0]-x[0])**2 + (c[1]-x[1])**2)
     return t[n]
 
-from matplotlib.backends.backend_pdf import PdfPages
-from copy import deepcopy
-
 
 def align_curves(N, s1, s2, t1):
     '''
     This function is intended to help improve the accuracy of displacement estimation
     when in addition to protrusions the cell is subject to motion.
-    The idea is to find a translation of s1 and a change of origin for s2 that make both
-    curves as close as possible.
+    The idea is to find a translation and a change of origin for s2 that aligns it
+    on s1.
     The translated curve s1c essentially accounts for the the motion of the cell, and
     once it is available, one can compute the usual displacement between s1c and s2.
     The total displacement is the sum of both components.
 
-    Parameters:
-        N: Number of samples along the curve
-        s1: Curve at current frame
-        s2: Curve at next frame
-        t1: Origin of curve s1
+    Parameters
+    ----------
+    N: int
+        Number of samples along the curve
+    s1: tuple
+        spline tuple as returned by splprep
+    s2: tuple
+        spline tuple as returned by splprep
+    t1: float
+        Origin of curve s1
 
-    Returns:
-        Tuple s1c, t2 where s1c is the intermediate contour and t2 is the new origin for curve s2.
+    Returns
+    -------
+    s1c: bspline tuple
+        translated curve s1
+    t2: float
+        is the new origin for curve s2.
     '''
 
     t = np.linspace(0, 1, N, endpoint=False)
-
-    # plt.figure(figsize=(12, 9))
-    # pp = PdfPages('Alignment.pdf')
-    # pp.savefig()
 
     def functional(v):
         ''' Computes the difference between s1c and s2 with adjusted origin.
@@ -101,19 +129,6 @@ def align_curves(N, s1, s2, t1):
         c1 = splevper(t+t1, s1c)
         c2 = splevper(t+t2, s2)
 
-        # plt.clf()
-        # plt.axis('image')
-        # plt.tight_layout()
-        # plt.xlim(0, 358)
-        # plt.ylim(0, 358)
-        # plt.gca().invert_yaxis()
-        # plt.plot(c1[0], c1[1], 'b')
-        # plt.plot(c1[0][0], c1[1][0], 'ob')
-        # plt.plot(c2[0], c2[1], 'r')
-        # plt.plot(c2[0][0], c2[1][0], 'or')
-        # pp.savefig()
-        # # plt.show()
-
         return np.concatenate(c2) - np.concatenate(c1)
 
     # Search for the optimal translation and change of origin
@@ -125,8 +140,7 @@ def align_curves(N, s1, s2, t1):
     s1c[1][0] += v[0]
     s1c[1][1] += v[1]
     t2 = v[2]
-    # pp.close()
-    # plt.close()
+
     return s1c, t2
 
 
