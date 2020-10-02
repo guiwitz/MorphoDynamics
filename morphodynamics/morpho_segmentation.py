@@ -201,51 +201,47 @@ class InteractSeg():
     def initialize(self, b=None):
         """Create a data object based on chosen directories/files"""
 
-        with self.out_debug:
-            if os.path.isdir(os.path.join(self.expdir, self.param.morpho_name)):
-                self.param.data_type = 'series'
-                self.data = TIFFSeries(
-                    self.expdir,
-                    self.param.morpho_name,
-                    self.param.signal_name,
-                    data_type=self.param.data_type,
-                    step=self.param.step,
-                    bad_frames=self.param.bad_frames
-                    )
-            elif self.param.morpho_name.split('.')[-1] == 'tif':
-                self.param.data_type = 'multi'
-                self.data = MultipageTIFF(
-                    self.expdir,
-                    self.param.morpho_name,
-                    self.param.signal_name,
-                    data_type=self.param.data_type,
-                    step=self.param.step,
-                    bad_frames=self.param.bad_frames
-                    )
-            elif self.expdir.split('.')[-1] == 'nd2':
-                self.param.data_type = 'nd2'
-                self.data = ND2(
-                    self.expdir,
-                    self.param.morpho_name,
-                    self.param.signal_name,
-                    data_type=self.param.data_type,
-                    step=self.param.step,
-                    bad_frames=self.param.bad_frames)
+        if os.path.isdir(os.path.join(self.expdir, self.param.morpho_name)):
+            self.param.data_type = 'series'
+            self.data = TIFFSeries(
+                self.expdir,
+                self.param.morpho_name,
+                self.param.signal_name,
+                data_type=self.param.data_type,
+                step=self.param.step,
+                bad_frames=self.param.bad_frames
+                )
+        elif self.param.morpho_name.split('.')[-1] == 'tif':
+            self.param.data_type = 'multi'
+            self.data = MultipageTIFF(
+                self.expdir,
+                self.param.morpho_name,
+                self.param.signal_name,
+                data_type=self.param.data_type,
+                step=self.param.step,
+                bad_frames=self.param.bad_frames
+                )
+        elif self.expdir.split('.')[-1] == 'nd2':
+            self.param.data_type = 'nd2'
+            self.data = ND2(
+                self.expdir,
+                self.param.morpho_name,
+                self.param.signal_name,
+                data_type=self.param.data_type,
+                step=self.param.step,
+                bad_frames=self.param.bad_frames)
 
-            self.maxtime.max = self.data.max_time
-            self.maxtime.min = 0
-            self.param.max_time = self.data.max_time
-            self.maxtime.value = self.data.max_time
+        self.maxtime.max = self.data.max_time
+        self.maxtime.min = 0
+        self.param.max_time = self.data.max_time
+        self.maxtime.value = self.data.max_time
 
-            # display image
-            self.show_segmentation(change='init')
+        # display image
+        self.show_segmentation(change='init')
 
     def run_segmentation(self, b=None):
         """Run segmentation analysis"""
 
-        with self.out_debug:
-            print("data maxtime")
-            print(self.data.max_time)
         self.run_button.description = 'Segmenting...'
         self.res = analyze_morphodynamics(self.data, self.param)
         self.show_segmentation(change='init')
@@ -552,8 +548,9 @@ class InteractSeg():
         # set segmentation parameters
         self.threshold.value = param_copy.T
         self.diameter.value = param_copy.diameter
-        self.location_x.value = param_copy.location[0]
-        self.location_y.value = param_copy.location[1]
+        if param_copy.location is not None:
+            self.location_x.value = param_copy.location[0]
+            self.location_y.value = param_copy.location[1]
         self.width_text.value = param_copy.width
         self.depth_text.value = param_copy.depth
         self.maxtime.value = param_copy.max_time

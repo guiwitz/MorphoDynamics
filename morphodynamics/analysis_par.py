@@ -36,9 +36,9 @@ def analyze_morphodynamics(data, param):
 
     # define dask functions if parallelized
     if is_parallel:
-        fun_contour_spline = dask.delayed(contour_spline)
-        fun_spline_align_rasterize = dask.delayed(spline_align_rasterize)
-        fun_windowing_mapping = dask.delayed(windowing_mapping)
+        fun_contour_spline = dask.delayed(contour_spline, nout=2)
+        fun_spline_align_rasterize = dask.delayed(spline_align_rasterize, nout=3)
+        fun_windowing_mapping = dask.delayed(windowing_mapping, nout=3)
     else:
         fun_contour_spline = contour_spline
         fun_spline_align_rasterize = spline_align_rasterize
@@ -87,20 +87,22 @@ def analyze_morphodynamics(data, param):
     w_all = {k: None for k in range(0, data.K)}
     t_all = {k: None for k in range(0, data.K)}
     t0_all = {k: None for k in range(0, data.K)}
+    ori_all = {k: None for k in range(0, data.K)}
 
     for k in range(0, data.K):
         s_all[k], _ = fun_contour_spline(segmented[k], param.lambda_)
-        s_all[k] = dask.compute(s_all)[0]
-    res.spline = [s_all[k] for k in s_all]
+    s_all = dask.compute(s_all)[0]
+    res.spline = [s_all[k] for k in range(data.K)]
 
     # align curves across frames and rasterize the windows
     for k in range(0, data.K):
-        s0prm_all[k], c_all[k], res.orig[k] = fun_spline_align_rasterize(
-            param.n_curve, s_all[k-1], s_all[k], x.shape, k > 0)
-    s0prm_all, c_all, res.orig = dask.compute(s0prm_all, c_all, res.orig)
+        s0prm_all[k], c_all[k], ori_all[k] = fun_spline_align_rasterize(
+            param.n_curve, s_all[k-1], s_all[k], data.shape, k > 0)
+    s0prm_all, c_all, ori_all = dask.compute(s0prm_all, c_all, ori_all)
 
     # origin shifts have been computed pair-wise. Calculate the cumulative
     # sum to get a "true" alignment on the first frame
+    res.orig = np.array([ori_all[k] for k in range(data.K)])
     res.orig = np.cumsum(res.orig)
 
     # map windows across frames
@@ -122,7 +124,7 @@ def analyze_morphodynamics(data, param):
         for ell in range(len(data.signalfile)):
             res.mean[ell, :, :, k], res.var[ell, :, :, k] = extract_signals(
                 data.load_frame_signal(ell, k), w_all[k]
-                )  
+                ) 
 
         # Compute projection of displacement vectors onto normal of contour
         if 0 < k:
