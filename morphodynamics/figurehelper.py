@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
-#from skimage.external.tifffile import TiffWriter, imsave
+
+# from skimage.external.tifffile import TiffWriter, imsave
 from tifffile import TiffWriter, imsave
 
 # PDF
@@ -53,17 +54,19 @@ class FigureHelper:
     def close_figure(self):
         """ Save a figure. """
         if self.output.pdf:
-            plt.savefig(self.output.dir + str(self.n) + ' ' + self.name + '.pdf')
+            plt.savefig(
+                self.output.dir + str(self.n) + " " + self.name + ".pdf"
+            )
 
     def save_pdf(self):
-        if not hasattr(self, 'pp'):
-            self.pp = PdfPages(self.output.dir + self.name + '.pdf')
+        if not hasattr(self, "pp"):
+            self.pp = PdfPages(self.output.dir + self.name + ".pdf")
         if self.output.pdf:
             self.pp.savefig()
 
     def save_tiff(self, x, compress=6):
-        if not hasattr(self, 'tw'):
-            self.tw = TiffWriter(self.output.dir + self.name + '.tif')
+        if not hasattr(self, "tw"):
+            self.tw = TiffWriter(self.output.dir + self.name + ".tif")
         if self.output.tiff:
             self.tw.save(x, compress=compress)
 
@@ -73,7 +76,7 @@ class FigureHelper:
 
     def close(self):
         self.show()
-        if hasattr(self, 'pp') & self.output.pdf:
+        if hasattr(self, "pp") & self.output.pdf:
             self.pp.close()
-        if hasattr(self, 'tw') & self.output.tiff:
+        if hasattr(self, "tw") & self.output.tiff:
             self.tw.close()

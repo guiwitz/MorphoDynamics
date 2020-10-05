@@ -11,7 +11,7 @@ from .settings import load_settings
 # dataset_name = 'Ellipse with triangle dynamics'
 # dataset_name = 'Change of origin'
 # dataset_name = 'Moving ellipse'
-dataset_name = 'FRET_sensors + actinHistamineExpt2'
+dataset_name = "FRET_sensors + actinHistamineExpt2"
 # dataset_name = 'FRET_sensors + actinHistamineExpt2 with Cellpose'
 # dataset_name = 'FRET_sensors + actinMigration_line_1D'
 # dataset_name = 'FRET_sensors + actinPDGFRhoA_multipoint_0.5fn_s3_good'
@@ -37,9 +37,9 @@ if not os.path.exists(param.resultdir):
 step = 0
 
 if step in [0, 1]:
-    dill.dump(param, open(param.resultdir + 'Parameters.pkl', 'wb'))
+    dill.dump(param, open(param.resultdir + "Parameters.pkl", "wb"))
     res = analyze_morphodynamics(data, param)
-    dill.dump(res, open(param.resultdir + 'Results.pkl', 'wb'))
+    dill.dump(res, open(param.resultdir + "Results.pkl", "wb"))
 
 if step in [0, 2]:
     res = dill.load(open(param.resultdir + "Results.pkl", "rb"))

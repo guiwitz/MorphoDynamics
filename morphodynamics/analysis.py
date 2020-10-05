@@ -5,9 +5,32 @@ from skimage.segmentation import find_boundaries
 from scipy.interpolate import splev
 from matplotlib.backends.backend_pdf import PdfPages
 from .settings import Struct
-from .segmentation import segment_threshold, extract_contour, segment_cellpose, tracking, segment_farid
-from .displacementestimation import fit_spline, map_contours2, rasterize_curve, compute_length, compute_area, show_edge_scatter, align_curves, subdivide_curve, subdivide_curve_discrete, splevper, map_contours3
-from .windowing import create_windows, extract_signals, label_windows, show_windows
+from .segmentation import (
+    segment_threshold,
+    extract_contour,
+    segment_cellpose,
+    tracking,
+    segment_farid,
+)
+from .displacementestimation import (
+    fit_spline,
+    map_contours2,
+    rasterize_curve,
+    compute_length,
+    compute_area,
+    show_edge_scatter,
+    align_curves,
+    subdivide_curve,
+    subdivide_curve_discrete,
+    splevper,
+    map_contours3,
+)
+from .windowing import (
+    create_windows,
+    extract_signals,
+    label_windows,
+    show_windows,
+)
 import matplotlib.pyplot as plt
 from cellpose import models
 import dask
@@ -18,18 +41,18 @@ def analyze_morphodynamics(data, param):
 
     # Figures and other artifacts
     if param.showSegmentation:
-        tw_seg = TiffWriter(param.resultdir + 'Segmentation.tif')
+        tw_seg = TiffWriter(param.resultdir + "Segmentation.tif")
     else:
         tw_seg = None
     if param.showWindows:
-        pp = PdfPages(param.resultdir + 'Windows.pdf')
-        tw_win = TiffWriter(param.resultdir + 'Windows.tif')
+        pp = PdfPages(param.resultdir + "Windows.pdf")
+        tw_win = TiffWriter(param.resultdir + "Windows.tif")
     else:
         pp = None
         tw_win = None
 
     if param.cellpose:
-        model = models.Cellpose(model_type='cyto')
+        model = models.Cellpose(model_type="cyto")
     else:
         model = None
 
@@ -38,16 +61,23 @@ def analyze_morphodynamics(data, param):
     x = data.load_frame_morpho(0)
     if param.cellpose:
         m = segment_cellpose(model, x, param.diameter, location)
-        m = tracking(m, location, seg_type='cellpose')
+        m = tracking(m, location, seg_type="cellpose")
     else:
-        m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
-        #m = segment_farid(x)
-        m = tracking(m, location, seg_type='farid')
-    location = center_of_mass(m) #get location for tracking
+        m = segment_threshold(
+            x,
+            param.sigma,
+            param.T(0) if callable(param.T) else param.T,
+            location,
+        )
+        # m = segment_farid(x)
+        m = tracking(m, location, seg_type="farid")
+    location = center_of_mass(m)  # get location for tracking
     c = extract_contour(m)  # Discrete cell contour
     s = fit_spline(c, param.lambda_)
     c = rasterize_curve(param.n_curve, x.shape, s, 0)
-    w, J, I = create_windows(c, splev(0, s), depth=param.depth, width=param.width)
+    w, J, I = create_windows(
+        c, splev(0, s), depth=param.depth, width=param.width
+    )
     Imax = np.max(I)
 
     # Structures that will be saved to disk
@@ -57,16 +87,22 @@ def analyze_morphodynamics(data, param):
     res.spline = []
     res.param0 = []
     res.param = []
-    res.displacement = np.zeros((I[0], data.K - 1))  # Projection of the displacement vectors
-    res.mean = np.zeros((len(data.signalfile), J, Imax, data.K))  # Signals from the outer sampling windows
-    res.var = np.zeros((len(data.signalfile), J, Imax, data.K))  # Signals from the outer sampling windows
+    res.displacement = np.zeros(
+        (I[0], data.K - 1)
+    )  # Projection of the displacement vectors
+    res.mean = np.zeros(
+        (len(data.signalfile), J, Imax, data.K)
+    )  # Signals from the outer sampling windows
+    res.var = np.zeros(
+        (len(data.signalfile), J, Imax, data.K)
+    )  # Signals from the outer sampling windows
     res.length = np.zeros((data.K,))
     res.area = np.zeros((data.K,))
     res.orig = np.zeros((data.K,))
 
     # Segment all images but don't select cell
     segmented = segment_all(data, param, model)
-    if param.distributed == 'local' or param.distributed == 'cluster':
+    if param.distributed == "local" or param.distributed == "cluster":
         segmented = dask.delayed(segmented).compute()
 
     # do the tracking
@@ -77,34 +113,59 @@ def analyze_morphodynamics(data, param):
 
         # select cell to track in mask
         if param.cellpose:
-            m = tracking(m, location, seg_type='cellpose')
+            m = tracking(m, location, seg_type="cellpose")
         else:
-            m = tracking(m, location, seg_type='farid')
+            m = tracking(m, location, seg_type="farid")
 
-        #if param.location is not None:
-        location = center_of_mass(m) # Set the location for the next iteration
+        # if param.location is not None:
+        location = center_of_mass(m)  # Set the location for the next iteration
         c = extract_contour(m)  # Discrete cell contour
 
-        s = fit_spline(c, param.lambda_)  # Smoothed spline curve following the contour
+        s = fit_spline(
+            c, param.lambda_
+        )  # Smoothed spline curve following the contour
 
         if k > 0:
-            s0prm, res.orig[k] = align_curves(param.n_curve, s0, s, res.orig[k-1]) # Intermediate curve and change of origin to account for cell motion
+            s0prm, res.orig[k] = align_curves(
+                param.n_curve, s0, s, res.orig[k - 1]
+            )  # Intermediate curve and change of origin to account for cell motion
 
-        c = rasterize_curve(param.n_curve, x.shape, s, res.orig[k])  # Representation of the contour as a grayscale image
-        w, _, _ = create_windows(c, splevper(res.orig[k], s), J, I) # Sampling windows
+        c = rasterize_curve(
+            param.n_curve, x.shape, s, res.orig[k]
+        )  # Representation of the contour as a grayscale image
+        w, _, _ = create_windows(
+            c, splevper(res.orig[k], s), J, I
+        )  # Sampling windows
 
         if k > 0:
-            p, t0 = subdivide_curve_discrete(param.n_curve, c0, I[0], s0, splevper(res.orig[k-1], s0))
-            t = map_contours2(s0prm, s, t0, t0-res.orig[k-1]+res.orig[k])  # Parameters of the endpoints of the displacement vectors
+            p, t0 = subdivide_curve_discrete(
+                param.n_curve, c0, I[0], s0, splevper(res.orig[k - 1], s0)
+            )
+            t = map_contours2(
+                s0prm, s, t0, t0 - res.orig[k - 1] + res.orig[k]
+            )  # Parameters of the endpoints of the displacement vectors
 
         for ell in range(len(data.signalfile)):
-            res.mean[ell, :, :, k], res.var[ell, :, :, k] = extract_signals(data.load_frame_signal(ell, k), w)  # Signals extracted from various imaging channels
+            res.mean[ell, :, :, k], res.var[ell, :, :, k] = extract_signals(
+                data.load_frame_signal(ell, k), w
+            )  # Signals extracted from various imaging channels
 
         # Compute projection of displacement vectors onto normal of contour
         if 0 < k:
-            u = np.asarray(splev(np.mod(t0, 1), s0, der=1))  # Get a vector that is tangent to the contour
-            u = np.asarray([u[1], -u[0]]) / np.linalg.norm(u, axis=0)  # Derive an orthogonal vector with unit norm
-            res.displacement[:, k - 1] = np.sum((np.asarray(splev(np.mod(t, 1), s)) - np.asarray(splev(np.mod(t0, 1), s0))) * u, axis=0)  # Compute scalar product with displacement vector
+            u = np.asarray(
+                splev(np.mod(t0, 1), s0, der=1)
+            )  # Get a vector that is tangent to the contour
+            u = np.asarray([u[1], -u[0]]) / np.linalg.norm(
+                u, axis=0
+            )  # Derive an orthogonal vector with unit norm
+            res.displacement[:, k - 1] = np.sum(
+                (
+                    np.asarray(splev(np.mod(t, 1), s))
+                    - np.asarray(splev(np.mod(t0, 1), s0))
+                )
+                * u,
+                axis=0,
+            )  # Compute scalar product with displacement vector
 
         # Artifact generation
         if param.showSegmentation:
@@ -112,13 +173,17 @@ def analyze_morphodynamics(data, param):
         if param.showWindows:
             if 0 < k:
                 plt.figure(figsize=(12, 9))
-                plt.gca().set_title('Frame ' + str(k-1))
+                plt.gca().set_title("Frame " + str(k - 1))
                 plt.tight_layout()
                 b0 = find_boundaries(label_windows(x.shape, w0))
-                show_windows(w0, b0)  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
+                show_windows(
+                    w0, b0
+                )  # Show window boundaries and their indices; for a specific window, use: w0[0, 0].astype(dtype=np.uint8)
                 # plt.plot(p1[:,1], p1[:,0], 'oy')
                 # plt.plot(p1[0,1], p1[0,0], 'oc')
-                show_edge_scatter(param.n_curve, s0, s, t0, t, res.displacement[:, k - 1])  # Show edge structures (spline curves, displacement vectors)
+                show_edge_scatter(
+                    param.n_curve, s0, s, t0, t, res.displacement[:, k - 1]
+                )  # Show edge structures (spline curves, displacement vectors)
                 # c00 = splev(np.linspace(0, 1, 10001), s0)
                 # plt.plot(c00[0], c00[1], 'g')
                 # cc = splev(np.linspace(0, 1, 10001), s)
@@ -163,13 +228,13 @@ def segment_all(data, param, model):
 
     # check if distributed computing should be used
     distr = False
-    if param.distributed == 'local' or param.distributed == 'cluster':
+    if param.distributed == "local" or param.distributed == "cluster":
         distr = True
 
     # Segment all images but don't do tracking (selection of label)
     segmented = []
     for k in range(0, data.K):
-        
+
         if distr:
             x = dask.delayed(data.load_frame_morpho)(k)  # Input image
         else:
@@ -177,15 +242,27 @@ def segment_all(data, param, model):
 
         if param.cellpose:
             if distr:
-                m = dask.delayed(segment_cellpose)(None, x, param.diameter, None)
+                m = dask.delayed(segment_cellpose)(
+                    None, x, param.diameter, None
+                )
             else:
                 m = segment_cellpose(model, x, param.diameter, None)
         else:
             if distr:
-                m = dask.delayed(segment_threshold)(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
-                #m = dask.delayed(segment_farid)(x)            
+                m = dask.delayed(segment_threshold)(
+                    x,
+                    param.sigma,
+                    param.T(k) if callable(param.T) else param.T,
+                    None,
+                )
+                # m = dask.delayed(segment_farid)(x)
             else:
-                m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
-                #m = segment_farid(x)      
+                m = segment_threshold(
+                    x,
+                    param.sigma,
+                    param.T(k) if callable(param.T) else param.T,
+                    None,
+                )
+                # m = segment_farid(x)
         segmented.append(m)
     return segmented

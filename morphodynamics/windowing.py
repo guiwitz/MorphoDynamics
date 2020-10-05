@@ -52,9 +52,9 @@ def compute_discrete_arc_length(c):
 
     L = np.cumsum(
         np.linalg.norm(
-            np.diff(np.concatenate([[c[0]], c, [c[0]]]), axis=0),
-            axis=1)
+            np.diff(np.concatenate([[c[0]], c, [c[0]]]), axis=0), axis=1
         )
+    )
     return L
 
 
@@ -75,7 +75,9 @@ def create_arc_length_image(shape, c, L):
     """
 
     x = -np.ones(shape)
-    x[c[np.arange(c.shape[0]), 0], c[np.arange(c.shape[0]), 1]] = L[np.arange(c.shape[0])]
+    x[c[np.arange(c.shape[0]), 0], c[np.arange(c.shape[0]), 1]] = L[
+        np.arange(c.shape[0])
+    ]
 
     return x
 
@@ -127,13 +129,17 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
     D_main = distance_transform_edt(-1 == c_main)
 
     # Compute the mask corresponding to the main contour
-    mask_main = binary_fill_holes(-1 < c_main) # Maybe not necessary? Can't we just use the segmented mask here?
+    mask_main = binary_fill_holes(
+        -1 < c_main
+    )  # Maybe not necessary? Can't we just use the segmented mask here?
 
     # Divide the radial coordinate into J layers with specified depth
     Dmax = np.amax(D_main * mask_main)
     if J is None:
         J = int(math.ceil(Dmax / depth))
-    b = np.linspace(0, Dmax, J + 1)  # Boundaries of the layers in terms of distances to the main contour
+    b = np.linspace(
+        0, Dmax, J + 1
+    )  # Boundaries of the layers in terms of distances to the main contour
 
     if I is None:
         compute_num_win = True
@@ -150,8 +156,8 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
 
         # Extract the contour of the mask
         cvec = np.asarray(
-            find_contours(mask, 0, fully_connected='high')[0], dtype=np.int
-            )
+            find_contours(mask, 0, fully_connected="high")[0], dtype=np.int
+        )
 
         # Adjust the origin of the contour:
         # on the discrete contour cvec, find the closest point to the origin,
@@ -167,11 +173,13 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
 
         # Compute the feature transform of this image:
         # for each pixel position, we get the coordinates of the closest pixel on the contour
-        F = distance_transform_edt(-1 == arc, return_distances=False, return_indices=True)
+        F = distance_transform_edt(
+            -1 == arc, return_distances=False, return_indices=True
+        )
 
         # Fill array with arc lengths of closest points on the contour
-        #L = np.zeros(c.shape)
-        #for u in range(c.shape[0]):
+        # L = np.zeros(c.shape)
+        # for u in range(c.shape[0]):
         #    for v in range(c.shape[1]):
         #        L[u, v] = c[F[0, u, v], F[1, u, v]]
 
@@ -188,10 +196,11 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
             # w[-1].append(np.where(mask & (s1[i] <= L) & (L < s1[i+1]) & (b[0] <= D) & (D < b[1])))
             w[-1].append(
                 np.where(
-                    mask & (w_borders[i] <= L) &
-                    (L < w_borders[i+1]) &
-                    (b[j] <= D_main) &
-                    (D_main < b[j+1])
+                    mask
+                    & (w_borders[i] <= L)
+                    & (L < w_borders[i + 1])
+                    & (b[j] <= D_main)
+                    & (D_main < b[j + 1])
                 )
             )
             # plt.figure()
@@ -249,7 +258,7 @@ def extract_signals(y, w):
 def show_windows(w, b):
     """Display the sampling-window boundaries and indices."""
 
-    plt.imshow(b, cmap='gray', vmin=0, vmax=2)
+    plt.imshow(b, cmap="gray", vmin=0, vmax=2)
     for j in range(len(w)):
         for i in range(len(w[j])):
             if np.any(w[j][i]):
@@ -258,10 +267,11 @@ def show_windows(w, b):
                     p[1],
                     p[0],
                     str(i),
-                    color='yellow',
+                    color="yellow",
                     fontsize=4,
-                    horizontalalignment='center',
-                    verticalalignment='center')
+                    horizontalalignment="center",
+                    verticalalignment="center",
+                )
 
 
 def calculate_windows_index(w):

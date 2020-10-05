@@ -4,20 +4,23 @@ import matplotlib.pyplot as plt
 
 def correlate(x, y, normalization=None, removemean=True):
     def npcorrelate(u, v):
-        return np.correlate(u, v, mode='full')
+        return np.correlate(u, v, mode="full")
 
     if removemean:
         x = x - np.mean(x)
         y = y - np.mean(y)
     c = npcorrelate(x, y)
-    if normalization == 'unbiased':
+    if normalization == "unbiased":
         c /= npcorrelate(np.ones(x.shape), np.ones(y.shape))
-    elif normalization == 'Pearson':
+    elif normalization == "Pearson":
         if np.linalg.norm(x) * np.linalg.norm(y) == 0:
-            print('alert')
+            print("alert")
         c /= np.linalg.norm(x) * np.linalg.norm(y)
-    elif normalization == 'Pearson-unbiased':
-        e = np.sqrt(npcorrelate(x ** 2, np.ones(y.shape)) * npcorrelate(np.ones(x.shape), y ** 2))
+    elif normalization == "Pearson-unbiased":
+        e = np.sqrt(
+            npcorrelate(x ** 2, np.ones(y.shape))
+            * npcorrelate(np.ones(x.shape), y ** 2)
+        )
         e[e == 0] = 1
         c /= e
     return c
@@ -38,9 +41,9 @@ def test_correlate():
     plt.figure()
     plt.plot(correlate(x, y, removemean=False))
     # Verify autocorrelation of a sine with Pearson-unbiased normalization
-    x = np.sin(2*np.pi*np.array(range(K))/10)
+    x = np.sin(2 * np.pi * np.array(range(K)) / 10)
     plt.figure()
-    plt.plot(correlate(x, x, normalization='Pearson-unbiased'))
+    plt.plot(correlate(x, x, normalization="Pearson-unbiased"))
     plt.show()
     quit()
 
@@ -49,7 +52,9 @@ def correlate_arrays(x, y, normalization):
     I = x.shape[0]
     c = np.zeros((I, x.shape[1] + y.shape[1] - 1))
     for i in range(I):
-        c[i] = correlate(x[i], y[i], normalization=normalization, removemean=True)
+        c[i] = correlate(
+            x[i], y[i], normalization=normalization, removemean=True
+        )
     return c
 
 
@@ -60,13 +65,22 @@ def get_extent(A, B, I):
 
 def show_correlation_core(c, x, y, nx, ny, normalization):
     plt.clf()
-    plt.gca().set_title('Correlation between ' + nx + ' and ' + ny + ' at layer ' + str(0))  # + ' - Normalization: ' + str(normalization)
+    plt.gca().set_title(
+        "Correlation between " + nx + " and " + ny + " at layer " + str(0)
+    )  # + ' - Normalization: ' + str(normalization)
     cmax = np.max(np.abs(c))
-    plt.imshow(c, extent=get_extent(x.shape[1], y.shape[1], c.shape[0]), cmap='bwr', vmin=-cmax, vmax=cmax, interpolation='none')
-    plt.axis('auto')
-    plt.xlabel('Time lag [frames]')
-    plt.ylabel('Window index')
-    plt.colorbar(label='Correlation')
+    plt.imshow(
+        c,
+        extent=get_extent(x.shape[1], y.shape[1], c.shape[0]),
+        cmap="bwr",
+        vmin=-cmax,
+        vmax=cmax,
+        interpolation="none",
+    )
+    plt.axis("auto")
+    plt.xlabel("Time lag [frames]")
+    plt.ylabel("Window index")
+    plt.colorbar(label="Correlation")
 
 
 def get_range(A, B):
@@ -75,7 +89,7 @@ def get_range(A, B):
 
 
 def show_average_correlation(fh, c, x, y):
-    fh.open_figure('Cross-correlation', 1, (16, 9))
+    fh.open_figure("Cross-correlation", 1, (16, 9))
     t = get_range(x.shape[1], y.shape[1])
     cmean = np.mean(c, axis=0)
     plt.plot(t, cmean)

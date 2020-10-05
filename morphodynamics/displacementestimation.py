@@ -36,7 +36,7 @@ def splevper(t, s):
 
 
 def fit_spline(c, lambda_):
-    """"
+    """ "
     Fit a spline to a contour specified as a list of pixels.
 
     Parameters
@@ -53,30 +53,34 @@ def fit_spline(c, lambda_):
 
     """
 
-    s = splprep([c[:, 1], c[:, 0]], s=lambda_, per=c.shape[0])[0]  # Fitting with periodic boundary conditions
+    s = splprep([c[:, 1], c[:, 0]], s=lambda_, per=c.shape[0])[
+        0
+    ]  # Fitting with periodic boundary conditions
     return s
 
 
 def compute_length(N, s):
     """Compute length of spline s discretized in N segments."""
-    
+
     cprm = splev(np.linspace(0, 1, N, endpoint=False), s, der=1)
-    return np.sum(np.sqrt(cprm[0]**2 + cprm[1]**2)) / N
+    return np.sum(np.sqrt(cprm[0] ** 2 + cprm[1] ** 2)) / N
 
 
 def compute_area(N, s):
     """Compute area of spline s discretized in N segments."""
-    
+
     c = splev(np.linspace(0, 1, N, endpoint=False), s)
     cprm = splev(np.linspace(0, 1, N, endpoint=False), s, der=1)
-    return np.sum(c[0]*cprm[1] - c[1]*cprm[0]) / 2 / N
+    return np.sum(c[0] * cprm[1] - c[1] * cprm[0]) / 2 / N
 
 
 def compute_curvature(s, t):
     """Compute local curvature of spline s at paramters positions t."""
     cprm = splev(t, s, der=1)
     csec = splev(t, s, der=2)
-    return (cprm[0]*csec[1] - cprm[1]*csec[0]) / (cprm[0]**2 + cprm[1]**2)**1.5
+    return (cprm[0] * csec[1] - cprm[1] * csec[0]) / (
+        cprm[0] ** 2 + cprm[1] ** 2
+    ) ** 1.5
 
 
 def correlate(x, y):
@@ -87,7 +91,7 @@ def correlate(x, y):
 
 def find_origin(N, s1, s2, t0):
     """
-    Find the parameter for s2 that best approximates the origin on s1 
+    Find the parameter for s2 that best approximates the origin on s1
     given a shift t0.
 
     Parameters
@@ -111,7 +115,7 @@ def find_origin(N, s1, s2, t0):
     t = np.linspace(0, 1, N, endpoint=False)
     x = splev(t0, s1)
     c = splev(t, s2)
-    n = np.argmin((c[0]-x[0])**2 + (c[1]-x[1])**2)
+    n = np.argmin((c[0] - x[0]) ** 2 + (c[1] - x[1]) ** 2)
     orig_param = t[n]
     return orig_param
 
@@ -149,24 +153,26 @@ def align_curves(N, s1, s2, t1):
     t = np.linspace(0, 1, N, endpoint=False)
 
     def functional(v):
-        ''' Computes the difference between s1c and s2 with adjusted origin.
+        """Computes the difference between s1c and s2 with adjusted origin.
         Used to minimize this difference using scipy.optimize.least_squares.
 
         Parameters:
             v: Three-dimensional vector representing the translation of s1 and the new origin of s2.
-        '''
+        """
 
         s1c = deepcopy(s1)
         s1c[1][0] += v[0]
         s1c[1][1] += v[1]
         t2 = v[2]
-        c1 = splevper(t+t1, s1c)
-        c2 = splevper(t+t2, s2)
+        c1 = splevper(t + t1, s1c)
+        c2 = splevper(t + t2, s2)
 
         return np.concatenate(c2) - np.concatenate(c1)
 
     # Search for the optimal translation and change of origin
-    lsq = least_squares(functional, [0, 0, t1], method='lm', x_scale = [1, 1, 1e-4])  # , ftol=1e-3
+    lsq = least_squares(
+        functional, [0, 0, t1], method="lm", x_scale=[1, 1, 1e-4]
+    )  # , ftol=1e-3
     v = lsq.x
 
     # Construct the translated curve and the new origin
@@ -187,19 +193,23 @@ def map_contours(s1, s2, t1):
 
     # Weight for the cost function
     # w = 0
-    w = np.sum((np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2) / (N - 1)
+    w = np.sum(
+        (np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2
+    ) / (N - 1)
     # w = np.sum(1 / (np.concatenate(splev(t2, tck2)) - np.concatenate(splev(t1, s1)))**2) * (N-1)
     # w = 1e6
 
     # Lower and upper bounds for the least-squares problem
-    lb = np.zeros((N+1,))
+    lb = np.zeros((N + 1,))
     lb[0] = -np.inf
     lb[N] = -1
-    ub = np.inf * np.ones((N+1,))
+    ub = np.inf * np.ones((N + 1,))
 
     # Solve least-squares problem
     functional = Functional(s1, s2, t1, w)
-    result = least_squares(functional.f, functional.transform(t2), bounds=(lb, ub), ftol=1e-3)
+    result = least_squares(
+        functional.f, functional.transform(t2), bounds=(lb, ub), ftol=1e-3
+    )
     t2 = functional.inversetransform(result.x)
 
     return t2
@@ -236,7 +246,7 @@ def map_contours2(s1, s2, t1, t2):
     # of the functional
     w = np.sum(
         (np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2
-        ) / (N - 1)
+    ) / (N - 1)
 
     # The functional
     functional = Functional2(s1, s2, t1, w)
@@ -245,9 +255,9 @@ def map_contours2(s1, s2, t1, t2):
     A = np.zeros((N, N))
     for n in range(0, N):
         A[n, n] = 1
-    A[0, N-1] = -1
+    A[0, N - 1] = -1
     for n in range(1, N):
-        A[n, n-1] = -1
+        A[n, n - 1] = -1
 
     # Lower and upper bounds for the constraints
     lb = np.zeros((N,))
@@ -259,10 +269,10 @@ def map_contours2(s1, s2, t1, t2):
     result = minimize(
         fun=functional.f,
         x0=t2,
-        method='trust-constr',
+        method="trust-constr",
         constraints=LinearConstraint(A, lb, ub, keep_feasible=True),
-        options={'gtol': 1e-2, 'xtol': 1e-2}
-        )
+        options={"gtol": 1e-2, "xtol": 1e-2},
+    )
     # result = minimize(functional.f, t2, method='trust-constr', options={'gtol': 1e-12, 'xtol': 1e-12, 'barrier_tol': 1e-12})
     # result = minimize(functional.f, t2)
     t2 = result.x
@@ -272,7 +282,7 @@ def map_contours2(s1, s2, t1, t2):
 def map_contours3(s1, s2, t1, t2):
     N = len(t1)
     functional = Functional3(s1, s2, t1, 0)
-    result = least_squares(functional.f, t2, method='lm')
+    result = least_squares(functional.f, t2, method="lm")
     t2 = result.x
     return t2
 
@@ -284,13 +294,13 @@ def show_edge_scatter(N, s1, s2, t1, t2, d, dmax=None):
     # Evaluate splines at window locations and on fine-resolution grid
     c1 = splevper(t1, s1)
     c2 = splevper(t2, s2)
-    c1p = splev(np.linspace(0, 1, N+1), s1)
-    c2p = splev(np.linspace(0, 1, N+1), s2)
+    c1p = splev(np.linspace(0, 1, N + 1), s1)
+    c2p = splev(np.linspace(0, 1, N + 1), s2)
 
     # Interpolate displacements
     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
-    if len(d) < N+1:
-        d = np.interp(np.linspace(0, 1, N+1), t1, d, period=1)
+    if len(d) < N + 1:
+        d = np.interp(np.linspace(0, 1, N + 1), t1, d, period=1)
     if dmax is None:
         dmax = np.max(np.abs(d))
         if dmax == 0:
@@ -301,14 +311,30 @@ def show_edge_scatter(N, s1, s2, t1, t2, d, dmax=None):
     lw = 1
     s = 1  # Scaling factor for the vectors
 
-    plt.plot(c1p[0], c1p[1], 'b', zorder=50, lw=lw)
-    plt.plot(c2p[0], c2p[1], 'r', zorder=100, lw=lw)
+    plt.plot(c1p[0], c1p[1], "b", zorder=50, lw=lw)
+    plt.plot(c2p[0], c2p[1], "r", zorder=100, lw=lw)
     # plt.scatter(c1p[0], c1p[1], c=d, cmap='bwr', vmin=-dmax, vmax=dmax, zorder=50, s1=lw)
     # # plt.colorbar(label='Displacement [pixels]')
     for j in range(len(t2)):
-        plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='y', zorder=200, lw=lw)
+        plt.arrow(
+            c1[0][j],
+            c1[1][j],
+            s * (c2[0][j] - c1[0][j]),
+            s * (c2[1][j] - c1[1][j]),
+            color="y",
+            zorder=200,
+            lw=lw,
+        )
     # plt.arrow(c1[0][j], c1[1][j], s1 * u[0][j], s1 * u[1][j], color='y', zorder=200, lw=lw) # Show normal to curve
-    plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw)
+    plt.arrow(
+        c1[0][0],
+        c1[1][0],
+        s * (c2[0][0] - c1[0][0]),
+        s * (c2[1][0] - c1[1][0]),
+        color="c",
+        zorder=400,
+        lw=lw,
+    )
 
 
 def show_edge_scatter_init(N, p, s1, s2, t1, t2, d, dmax=None):
@@ -318,13 +344,13 @@ def show_edge_scatter_init(N, p, s1, s2, t1, t2, d, dmax=None):
     # Evaluate splines at window locations and on fine-resolution grid
     c1 = splevper(t1, s1)
     c2 = splevper(t2, s2)
-    c1p = splev(np.linspace(0, 1, N+1), s1)
-    c2p = splev(np.linspace(0, 1, N+1), s2)
+    c1p = splev(np.linspace(0, 1, N + 1), s1)
+    c2p = splev(np.linspace(0, 1, N + 1), s2)
 
     # Interpolate displacements
     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
-    if len(d) < N+1:
-        d = np.interp(np.linspace(0, 1, N+1), t1, d, period=1)
+    if len(d) < N + 1:
+        d = np.interp(np.linspace(0, 1, N + 1), t1, d, period=1)
     if dmax is None:
         dmax = np.max(np.abs(d))
         if dmax == 0:
@@ -335,15 +361,35 @@ def show_edge_scatter_init(N, p, s1, s2, t1, t2, d, dmax=None):
     lw = 1
     s = 1  # Scaling factor for the vectors
 
-    p.p1, = plt.plot(c1p[0], c1p[1], 'b', zorder=50, lw=lw)
-    p.p2, = plt.plot(c2p[0], c2p[1], 'r', zorder=100, lw=lw)
+    (p.p1,) = plt.plot(c1p[0], c1p[1], "b", zorder=50, lw=lw)
+    (p.p2,) = plt.plot(c2p[0], c2p[1], "r", zorder=100, lw=lw)
     # plt.scatter(c1p[0], c1p[1], c=d, cmap='bwr', vmin=-dmax, vmax=dmax, zorder=50, s1=lw)
     # # plt.colorbar(label='Displacement [pixels]')
     p.a = []
     for j in range(len(t2)):
-        p.a.append(plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='y', zorder=200, lw=lw))
+        p.a.append(
+            plt.arrow(
+                c1[0][j],
+                c1[1][j],
+                s * (c2[0][j] - c1[0][j]),
+                s * (c2[1][j] - c1[1][j]),
+                color="y",
+                zorder=200,
+                lw=lw,
+            )
+        )
     # plt.arrow(c1[0][j], c1[1][j], s1 * u[0][j], s1 * u[1][j], color='y', zorder=200, lw=lw) # Show normal to curve
-    p.a.append(plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw))
+    p.a.append(
+        plt.arrow(
+            c1[0][0],
+            c1[1][0],
+            s * (c2[0][0] - c1[0][0]),
+            s * (c2[1][0] - c1[1][0]),
+            color="c",
+            zorder=400,
+            lw=lw,
+        )
+    )
     return p
 
 
@@ -354,13 +400,13 @@ def show_edge_scatter_update(N, p, s1, s2, t1, t2, d, dmax=None):
     # Evaluate splines at window locations and on fine-resolution grid
     c1 = splevper(t1, s1)
     c2 = splevper(t2, s2)
-    c1p = splev(np.linspace(0, 1, N+1), s1)
-    c2p = splev(np.linspace(0, 1, N+1), s2)
+    c1p = splev(np.linspace(0, 1, N + 1), s1)
+    c2p = splev(np.linspace(0, 1, N + 1), s2)
 
     # Interpolate displacements
     # d = 0.5 + 0.5 * d / np.max(np.abs(d))
-    if len(d) < N+1:
-        d = np.interp(np.linspace(0, 1, N+1), t1, d, period=1)
+    if len(d) < N + 1:
+        d = np.interp(np.linspace(0, 1, N + 1), t1, d, period=1)
     if dmax is None:
         dmax = np.max(np.abs(d))
         if dmax == 0:
@@ -382,14 +428,34 @@ def show_edge_scatter_update(N, p, s1, s2, t1, t2, d, dmax=None):
         a.remove()
     p.a = []
     for j in range(len(t2)):
-        p.a.append(plt.arrow(c1[0][j], c1[1][j], s*(c2[0][j] - c1[0][j]), s*(c2[1][j] - c1[1][j]), color='y', zorder=200, lw=lw))
+        p.a.append(
+            plt.arrow(
+                c1[0][j],
+                c1[1][j],
+                s * (c2[0][j] - c1[0][j]),
+                s * (c2[1][j] - c1[1][j]),
+                color="y",
+                zorder=200,
+                lw=lw,
+            )
+        )
     # plt.arrow(c1[0][j], c1[1][j], s1 * u[0][j], s1 * u[1][j], color='y', zorder=200, lw=lw) # Show normal to curve
-    p.a.append(plt.arrow(c1[0][0], c1[1][0], s*(c2[0][0] - c1[0][0]), s*(c2[1][0] - c1[1][0]), color='c', zorder=400, lw=lw))
+    p.a.append(
+        plt.arrow(
+            c1[0][0],
+            c1[1][0],
+            s * (c2[0][0] - c1[0][0]),
+            s * (c2[1][0] - c1[1][0]),
+            color="c",
+            zorder=400,
+            lw=lw,
+        )
+    )
     return p
 
 
 def show_edge_line_aux(N, s, color, lw):
-    c = splev(np.linspace(0, 1, N+1), s)
+    c = splev(np.linspace(0, 1, N + 1), s)
     plt.plot(c[0], c[1], color=color, zorder=50, lw=lw)
 
 
@@ -398,11 +464,14 @@ def show_edge_line(N, s):
 
     # Evaluate splines at window locations and on fine-resolution grid
     K = len(s)
-    cmap = plt.cm.get_cmap('jet')
+    cmap = plt.cm.get_cmap("jet")
     lw = 0.1
     for k in range(K):
         show_edge_line_aux(N, s[k], cmap(k / (K - 1)), lw)
-    plt.gcf().colorbar(plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K-1), cmap=cmap), label='Frame index')
+    plt.gcf().colorbar(
+        plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K - 1), cmap=cmap),
+        label="Frame index",
+    )
 
 
 def show_edge_image(N, shape, s, t, d, thickness, dmax=None):
@@ -412,11 +481,11 @@ def show_edge_image(N, shape, s, t, d, thickness, dmax=None):
     c[np.logical_not(mask)] = 0
     if thickness > 1:
         f = np.ones((thickness, thickness))
-        n = convolve2d(mask, f, mode='same')
+        n = convolve2d(mask, f, mode="same")
         mask = 0 < n
         n[np.logical_not(mask)] = 1
-        c = convolve2d(c, f, mode='same') / n
-    cmap = plt.cm.get_cmap('seismic')  # 'bwr'
+        c = convolve2d(c, f, mode="same") / n
+    cmap = plt.cm.get_cmap("seismic")  # 'bwr'
     if dmax is None:
         dmax = np.max(np.abs(c))
     if dmax == 0:
@@ -445,6 +514,7 @@ def show_edge_image(N, shape, s, t, d, thickness, dmax=None):
 #             tau[pi[1, n], pi[0, n]] = t[n]
 #     return tau
 
+
 def rasterize_curve(N, shape, s, deltat):
     """
     Represent a contour as a grayscale image.
@@ -468,32 +538,46 @@ def rasterize_curve(N, shape, s, deltat):
 
     """
 
-    delta = np.inf * np.ones(shape)  # Will store the distance between edge pixels and the closest points on the contour
-    tau = - np.ones(shape) # Will store the parameters t of the closest points on the contour; pixels that are not part of the contour will take the value -1
-    t = np.linspace(0, 1, N+1)  # The parameters of the points on the curve
+    delta = np.inf * np.ones(
+        shape
+    )  # Will store the distance between edge pixels and the closest points on the contour
+    tau = -np.ones(
+        shape
+    )  # Will store the parameters t of the closest points on the contour; pixels that are not part of the contour will take the value -1
+    t = np.linspace(0, 1, N + 1)  # The parameters of the points on the curve
     p = np.asarray(splev(t, s))  # The points on the curve
-    t = np.mod(t - deltat, 1)  # Adjust the origin of the curve and account for periodicity of the parameterization
-    pi = np.round(p).astype(dtype=np.int) # Coordinates of the pixels that are part of the contour
-    d0 = np.linalg.norm(p-pi,axis = 0)  # Distances between the points on the contour and the nearest pixels
-    for n in range(N+1):  # For each point p[:, n] on the contour...
-        if d0[n] < delta[pi[1, n], pi[0, n]]:  # ... if the distance to the nearest pixel is the smallest so far...
+    t = np.mod(
+        t - deltat, 1
+    )  # Adjust the origin of the curve and account for periodicity of the parameterization
+    pi = np.round(p).astype(
+        dtype=np.int
+    )  # Coordinates of the pixels that are part of the contour
+    d0 = np.linalg.norm(
+        p - pi, axis=0
+    )  # Distances between the points on the contour and the nearest pixels
+    for n in range(N + 1):  # For each point p[:, n] on the contour...
+        if (
+            d0[n] < delta[pi[1, n], pi[0, n]]
+        ):  # ... if the distance to the nearest pixel is the smallest so far...
             delta[pi[1, n], pi[0, n]] = d0[n]  # ... remember this distance...
-            tau[pi[1, n], pi[0, n]] = t[n]  # ... and store the parameter t corresponding to p[:, n]
+            tau[pi[1, n], pi[0, n]] = t[
+                n
+            ]  # ... and store the parameter t corresponding to p[:, n]
     return tau
 
 
 def subdivide_curve(N, s, orig, I):
     """Define points on a contour that are equispaced with respect to the arc length."""
-    t = np.linspace(0, 1, N+1)
-    L = np.cumsum(np.linalg.norm(splevper(t+orig, s), axis=0))
+    t = np.linspace(0, 1, N + 1)
+    L = np.cumsum(np.linalg.norm(splevper(t + orig, s), axis=0))
     t0 = np.zeros((I,))
     n = 0
     for i in range(I):
         p = L[-1] / I * (0.5 + i)
-        while L[n]<p:
+        while L[n] < p:
             n += 1
         t0[i] = t[n]
-    return t0+orig
+    return t0 + orig
 
 
 def subdivide_curve_discrete(N, c_main, I, s, origin):
@@ -538,7 +622,9 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
     mask = (0 <= D_main) * mask_main
 
     # Extract the contour of the mask
-    cvec = np.asarray(find_contours(mask, 0, fully_connected='high')[0], dtype=np.int)
+    cvec = np.asarray(
+        find_contours(mask, 0, fully_connected="high")[0], dtype=np.int
+    )
 
     # Adjust the origin of the contour:
     # on the discrete contour cvec, find the closest point to the origin,
@@ -553,20 +639,24 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
     # Note that the arc length is being used as a coordinate along the curve
     n = np.zeros((I,), dtype=np.int)
     for i in range(I):
-        n[i] = np.argmin(np.abs(Lvec - Lvec[-1]/I*(0.5+i)))
+        n[i] = np.argmin(np.abs(Lvec - Lvec[-1] / I * (0.5 + i)))
     cvec_sel = cvec[n, :]
 
     # Compute the parameter of the first mid-point
     t = np.linspace(0, 1, N, endpoint=False)
     c = splevper(t, s)
-    m = np.argmin(np.linalg.norm(np.transpose(c)-np.flip(cvec[n[0]]), axis=1))
+    m = np.argmin(
+        np.linalg.norm(np.transpose(c) - np.flip(cvec[n[0]]), axis=1)
+    )
 
     # Convert the index along the discrete contour to a position along the continuous contour
-    t = np.linspace(t[m], t[m]+1, N, endpoint=False)
+    t = np.linspace(t[m], t[m] + 1, N, endpoint=False)
     c = splevper(t, s)
     m = np.zeros((I,), dtype=np.int)
     for i in range(I):
-        m[i] = np.argmin(np.linalg.norm(np.transpose(c)-np.flip(cvec[n[i]]), axis=1))
+        m[i] = np.argmin(
+            np.linalg.norm(np.transpose(c) - np.flip(cvec[n[i]]), axis=1)
+        )
     t_sel = t[m]
 
     return cvec_sel, t_sel

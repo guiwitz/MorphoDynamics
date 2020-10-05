@@ -19,18 +19,24 @@ def segment_threshold(x, sigma, T, location):
 
     # Determine the threshold based on the histogram, if not provided manually
     if T is None:
-        h, _ = histogram(x, source_range='dtype')  # Compute histogram of image
-        s = UnivariateSpline(range(0, 65536), h)  # Interpolate the histogram counts using a smoothing spline
-        n = np.arange(0, 65535, 1)  # Create array with positions of histogram bins
+        h, _ = histogram(x, source_range="dtype")  # Compute histogram of image
+        s = UnivariateSpline(
+            range(0, 65536), h
+        )  # Interpolate the histogram counts using a smoothing spline
+        n = np.arange(
+            0, 65535, 1
+        )  # Create array with positions of histogram bins
         hs = s(n)  # Evaluate smoothing spline
         n0 = np.argmax(hs)  # Find position of maximum
         m = argrelmin(hs)[0]  # Find positions of local minima
-        m = m[hs[m] < 0.2*hs[n0]]  # Remove local minima that are too strong
+        m = m[hs[m] < 0.2 * hs[n0]]  # Remove local minima that are too strong
         T = m[n0 < m][0]  # Select first local minimum after maximum
 
     # Segment image by thresholding
     if sigma > 0:
-        y = gaussian(x, sigma=sigma, preserve_range=True)  # Smooth input image with a Gaussian
+        y = gaussian(
+            x, sigma=sigma, preserve_range=True
+        )  # Smooth input image with a Gaussian
         # y = median_filter(x, 9)
     else:
         y = x
@@ -77,7 +83,7 @@ def segment_farid(x, threshold=1, minsize=500):
     return regions
 
 
-def tracking(regions, location=None, seg_type='farid'):
+def tracking(regions, location=None, seg_type="farid"):
     """
     Given a labelled mask, select one of the objects as cell.
     If a location is provided, pick closest object, otherwise
@@ -106,21 +112,21 @@ def tracking(regions, location=None, seg_type='farid'):
     if location is None:
         sr = np.zeros((nr,))
         for k in range(nr):
-            if seg_type == 'farid':
-                sr[k] = np.sum(binary_fill_holes(regions == k+1))
-            elif seg_type == 'cellpose':
-                sr[k] = np.sum(regions == k+1)
+            if seg_type == "farid":
+                sr[k] = np.sum(binary_fill_holes(regions == k + 1))
+            elif seg_type == "cellpose":
+                sr[k] = np.sum(regions == k + 1)
         k = np.argmax(sr)
-        sel_region = binary_fill_holes(regions == k+1)
+        sel_region = binary_fill_holes(regions == k + 1)
     else:
         cm = np.zeros((nr, 2))
         for k in range(nr):
-            cm[k] = center_of_mass(regions == k+1)
-        k = np.argmin([np.linalg.norm(cm0-location) for cm0 in cm])
-        if seg_type == 'farid':
-            sel_region = binary_fill_holes(regions == k+1)
-        elif seg_type == 'cellpose':
-            sel_region = regions == k+1
+            cm[k] = center_of_mass(regions == k + 1)
+        k = np.argmin([np.linalg.norm(cm0 - location) for cm0 in cm])
+        if seg_type == "farid":
+            sel_region = binary_fill_holes(regions == k + 1)
+        elif seg_type == "cellpose":
+            sel_region = regions == k + 1
 
     return sel_region
 
@@ -129,8 +135,10 @@ def segment_cellpose(model, x, diameter, location):
     """Segment image x using Cellpose. If model is None, a model is loaded"""
 
     if model is None:
-        model = models.Cellpose(model_type='cyto')
-    m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
+        model = models.Cellpose(model_type="cyto")
+    m, flows, styles, diams = model.eval(
+        [x], diameter=diameter, channels=[[0, 0]]
+    )
     m = m[0]
     return m
 
@@ -138,7 +146,9 @@ def segment_cellpose(model, x, diameter, location):
 def extract_contour(mask):
     """ Extract pixels along contour of mask. """
 
-    return np.asarray(find_contours(mask, 0, fully_connected='high')[0], dtype=np.int)
+    return np.asarray(
+        find_contours(mask, 0, fully_connected="high")[0], dtype=np.int
+    )
 
 
 def contour_spline(m, smoothing):
@@ -172,10 +182,10 @@ def estimateBleaching(filename, K, shape):
     c = np.zeros((K,) + shape + (3,), dtype=np.uint8)
     I = np.zeros((K,))
     for k in range(K):
-        x[k, :, :] = imread(filename + str(k + 1) + '.tif') # Input image
+        x[k, :, :] = imread(filename + str(k + 1) + ".tif")  # Input image
     xmax = np.max(x)
     for k in range(K):
-        c[k, :, :, 1] = 255. * x[k, :, :] / xmax
+        c[k, :, :, 1] = 255.0 * x[k, :, :] / xmax
         m = threshold_otsu(x[k, :, :]) < x[k, :, :]
         c[k, :, :, 0] = 255 * m
         I[k] = np.mean(x[k][m])
@@ -185,6 +195,7 @@ def estimateBleaching(filename, K, shape):
     # fh.open_figure('Average intensity in segmented region')
     # plt.plot(I)
     # fh.close_figure()
+
 
 # x = imread('C:\\Work\\UniBE 2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\w16TIRF-CFP\\RhoA_OP_his_02_w16TIRF-CFP_t53.tif')
 # segment(x)

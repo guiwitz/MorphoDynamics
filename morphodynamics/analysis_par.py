@@ -1,8 +1,20 @@
 import numpy as np
 from scipy.ndimage import center_of_mass
 from scipy.interpolate import splev
-from .segmentation import segment_threshold, segment_cellpose, tracking, segment_farid, contour_spline
-from .displacementestimation import map_contours2, rasterize_curve, align_curves, subdivide_curve_discrete, splevper
+from .segmentation import (
+    segment_threshold,
+    segment_cellpose,
+    tracking,
+    segment_farid,
+    contour_spline,
+)
+from .displacementestimation import (
+    map_contours2,
+    rasterize_curve,
+    align_curves,
+    subdivide_curve_discrete,
+    splevper,
+)
 from .windowing import create_windows, extract_signals
 from .results import Results
 import matplotlib.pyplot as plt
@@ -31,18 +43,20 @@ def analyze_morphodynamics(data, param):
 
     # check if dask is used for parallelization
     is_parallel = False
-    if param.distributed == 'local' or param.distributed == 'cluster':
-        is_parallel = True    
+    if param.distributed == "local" or param.distributed == "cluster":
+        is_parallel = True
 
     if param.cellpose:
-        model = models.Cellpose(model_type='cyto')
+        model = models.Cellpose(model_type="cyto")
     else:
         model = None
 
     location, J, I = calibration(data, param)
 
     # Result structures that will be saved to disk
-    res = Results(J=J, I=I, num_time_points=data.K, num_channels=len(data.signalfile))
+    res = Results(
+        J=J, I=I, num_time_points=data.K, num_channels=len(data.signalfile)
+    )
 
     # Segment all images but don't select cell
     segmented = dask.compute(segment_all(data, param, model))[0]
@@ -56,7 +70,7 @@ def analyze_morphodynamics(data, param):
     # align curves across frames and rasterize the windows
     s0prm_all, c_all, ori_all = align_all(
         s_all, data.shape, param.n_curve, is_parallel
-        )
+    )
 
     # origin shifts have been computed pair-wise. Calculate the cumulative
     # sum to get a "true" alignment on the first frame
@@ -67,7 +81,7 @@ def analyze_morphodynamics(data, param):
     # points on successive splines for displacement measurement
     w_all, t_all, t0_all = window_map_all(
         s_all, s0prm_all, J, I, c_all, res.orig, param.n_curve, is_parallel
-        )
+    )
 
     # Signals extracted from various imaging channels
     mean_signal, var_signal = extract_signal_all(data, w_all, J, I)
@@ -113,11 +127,11 @@ def calibration(data, param):
     x = data.load_frame_morpho(0)
     if param.cellpose:
         m = segment_cellpose(model, x, param.diameter, location)
-        m = tracking(m, location, seg_type='cellpose')
+        m = tracking(m, location, seg_type="cellpose")
     else:
-        #m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
+        # m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
         m = segment_farid(x)
-        m = tracking(m, location, seg_type='farid')
+        m = tracking(m, location, seg_type="farid")
 
     # update location
     if location is None:
@@ -125,7 +139,9 @@ def calibration(data, param):
 
     s, _ = contour_spline(m, param.lambda_)
     c = rasterize_curve(param.n_curve, m.shape, s, 0)
-    _, J, I = create_windows(c, splev(0, s), depth=param.depth, width=param.width)
+    _, J, I = create_windows(
+        c, splev(0, s), depth=param.depth, width=param.width
+    )
 
     return location, J, I
 
@@ -193,7 +209,9 @@ def align_all(s_all, im_shape, num_points, is_parallel):
     """
 
     if is_parallel:
-        fun_spline_align_rasterize = dask.delayed(spline_align_rasterize, nout=3)
+        fun_spline_align_rasterize = dask.delayed(
+            spline_align_rasterize, nout=3
+        )
     else:
         fun_spline_align_rasterize = spline_align_rasterize
 
@@ -203,13 +221,16 @@ def align_all(s_all, im_shape, num_points, is_parallel):
     ori_all = {k: None for k in range(0, num_frames)}
     for k in range(num_frames):
         s0prm_all[k], c_all[k], ori_all[k] = fun_spline_align_rasterize(
-            num_points, s_all[k-1], s_all[k], im_shape, k > 0)
+            num_points, s_all[k - 1], s_all[k], im_shape, k > 0
+        )
     s0prm_all, c_all, ori_all = dask.compute(s0prm_all, c_all, ori_all)
 
     return s0prm_all, c_all, ori_all
 
 
-def window_map_all(s_all, s_shift_all, J, I, c_all, origins, num_points, is_parallel):
+def window_map_all(
+    s_all, s_shift_all, J, I, c_all, origins, num_points, is_parallel
+):
     """
     Create windows for spline s and map its position to spline of
     previous frame s0 to measure displacements.
@@ -262,10 +283,17 @@ def window_map_all(s_all, s_shift_all, J, I, c_all, origins, num_points, is_para
     for k in range(num_frames):
         w_all[k], t_all[k], t0_all[k] = fun_windowing_mapping(
             num_points,
-            c_all[k], c_all[k-1],
-            s_all[k], s_all[k-1],
-            origins[k], origins[k-1],
-            s_shift_all[k], J, I, k > 0)
+            c_all[k],
+            c_all[k - 1],
+            s_all[k],
+            s_all[k - 1],
+            origins[k],
+            origins[k - 1],
+            s_shift_all[k],
+            J,
+            I,
+            k > 0,
+        )
     w_all, t_all, t0_all = dask.compute(w_all, t_all, t0_all)
 
     return w_all, t_all, t0_all
@@ -280,7 +308,7 @@ def extract_signal_all(data, w_all, J, I):
     data: data object
         as returned by morphodynamics.dataset
     w_all: dict of window-lists
-        each element is a window index list as 
+        each element is a window index list as
         output by create_windows()
     J: int
         number of window layers
@@ -301,7 +329,10 @@ def extract_signal_all(data, w_all, J, I):
 
     for k in range(data.K):
         for ell in range(len(data.signalfile)):
-            mean_signal[ell, :, :, k], var_signal[ell, :, :, k] = extract_signals(data.load_frame_signal(ell, k), w_all[k])
+            (
+                mean_signal[ell, :, :, k],
+                var_signal[ell, :, :, k],
+            ) = extract_signals(data.load_frame_signal(ell, k), w_all[k])
 
     return mean_signal, var_signal
 
@@ -333,12 +364,12 @@ def track_all(segmented, location, param):
 
         # select cell to track in mask
         if param.cellpose:
-            m = tracking(m, location, seg_type='cellpose')
+            m = tracking(m, location, seg_type="cellpose")
         else:
-            m = tracking(m, location, seg_type='farid')
+            m = tracking(m, location, seg_type="farid")
 
         # Set the location for the next iteration. Use reduced image for speed
-        location = 2*np.array(center_of_mass(m[::2, ::2]))
+        location = 2 * np.array(center_of_mass(m[::2, ::2]))
 
         # replace initial segmentation with aligned one
         segmented[k] = m
@@ -362,13 +393,13 @@ def compute_displacement(s_all, t_all, t0_all):
         windows of frame corresponding to s_all[t-1]
 
     """
-    num_time_points = len(s_all)-1
+    num_time_points = len(s_all) - 1
     displacements = np.zeros((len(t_all[1]), num_time_points - 1))
     for k in range(num_time_points):
         s = s_all[k]
         # Compute projection of displacement vectors onto normal of contour
         if 0 < k:
-            s0 = s_all[k-1]
+            s0 = s_all[k - 1]
             # Get a vector that is tangent to the contour
             u = np.asarray(splev(np.mod(t0_all[k], 1), s0, der=1))
             # Derive an orthogonal vector with unit norm
@@ -376,9 +407,12 @@ def compute_displacement(s_all, t_all, t0_all):
             # Compute scalar product with displacement vector
             displacements[:, k - 1] = np.sum(
                 (
-                    np.asarray(splev(np.mod(t_all[k], 1), s)) -
-                    np.asarray(splev(np.mod(t0_all[k], 1), s0))
-                ) * u, axis=0)
+                    np.asarray(splev(np.mod(t_all[k], 1), s))
+                    - np.asarray(splev(np.mod(t0_all[k], 1), s0))
+                )
+                * u,
+                axis=0,
+            )
 
     return displacements
 
@@ -435,7 +469,7 @@ def windowing_mapping(N, c, c0, s, s0, ori, ori0, s0_shifted, J, I, align):
     if align:
         p, t0 = subdivide_curve_discrete(N, c0, I[0], s0, splevper(ori0, s0))
         # Parameters of the endpoints of the displacement vectors
-        t = map_contours2(s0_shifted, s, t0, t0-ori0+ori)
+        t = map_contours2(s0_shifted, s, t0, t0 - ori0 + ori)
 
     return w, t, t0
 
@@ -462,7 +496,7 @@ def segment_all(data, param, model=None):
 
     # check if distributed computing should be used
     distr = False
-    if param.distributed == 'local' or param.distributed == 'cluster':
+    if param.distributed == "local" or param.distributed == "cluster":
         distr = True
 
     # Segment all images but don't do tracking (selection of label)
@@ -475,16 +509,18 @@ def segment_all(data, param, model=None):
 
         if param.cellpose:
             if distr:
-                m = dask.delayed(segment_cellpose)(None, x, param.diameter, None)
+                m = dask.delayed(segment_cellpose)(
+                    None, x, param.diameter, None
+                )
             else:
                 m = segment_cellpose(model, x, param.diameter, None)
         else:
             if distr:
-                #m = dask.delayed(segment_threshold)(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
-                m = dask.delayed(segment_farid)(x)            
+                # m = dask.delayed(segment_threshold)(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
+                m = dask.delayed(segment_farid)(x)
             else:
-                #m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
-                m = segment_farid(x)      
+                # m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
+                m = segment_farid(x)
         segmented.append(m)
     return segmented
 
