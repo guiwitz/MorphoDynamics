@@ -67,17 +67,22 @@ def movingEllipse(k):
     x[k][(i - k + 25) ** 2 + 4 * (j - k + 25) ** 2 < 25 ** 2] = 255
 
 
-K = 50
-L = 50
-i, j = np.meshgrid(range(-L, L + 1), range(-L, L + 1))
-x = np.zeros((K, 2 * L + 1, 2 * L + 1), dtype=np.uint8)
-for k in range(K):
-    # pumpingDisk(k)
-    # pumpingEllipse(k)
-    # largeTurningEllipse(k)
-    # turningSquare(k)
-    walkingRectangles(k)
-    # protrudingEllipse(k)
-    # signalEllipse(k)
-    # movingEllipse(k)
-    imsave("Phantom" + str(k + 1) + ".tif", x[k], compress=6)
+def main():
+    K = 50
+    L = 50
+    i, j = np.meshgrid(range(-L, L + 1), range(-L, L + 1))
+    x = np.zeros((K, 2 * L + 1, 2 * L + 1), dtype=np.uint8)
+    for k in range(K):
+        # pumpingDisk(k)
+        # pumpingEllipse(k)
+        # largeTurningEllipse(k)
+        # turningSquare(k)
+        walkingRectangles(k)
+        # protrudingEllipse(k)
+        # signalEllipse(k)
+        # movingEllipse(k)
+        imsave("Phantom" + str(k + 1) + ".tif", x[k], compress=6)
+
+
+if __name__ == "__main__":
+    main()
