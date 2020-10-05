@@ -77,3 +77,8 @@ class Folders:
                     self.file_list.observe(self.move_folders, names="value")
                 else:
                     self.cur_dir = old_dir
+
+    def go_to_folder(self, folder):
+
+        self.cur_dir = Path(folder).resolve()
+        self.refresh(None)
