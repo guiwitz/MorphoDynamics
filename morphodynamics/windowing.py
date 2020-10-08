@@ -4,6 +4,7 @@ import numpy as np
 from scipy.ndimage.morphology import distance_transform_edt, binary_fill_holes
 import matplotlib.pyplot as plt
 from skimage.measure import find_contours
+from skimage.segmentation import find_boundaries
 
 
 def label_windows(shape, windows):
@@ -272,6 +273,25 @@ def show_windows(w, b):
                     horizontalalignment="center",
                     verticalalignment="center",
                 )
+
+
+def boundaries_image(im_shape, window):
+    """
+    Create array where windows boundaries are set to 1 and
+    the background to nan
+
+    Parameters
+    ----------
+    im_shape: tuple
+        size of image to produce
+    window: 3d list
+        window indices list as produced by create_windows()
+    """
+    b0 = find_boundaries(label_windows(im_shape, window))
+    b0 = b0.astype(float)
+    b0[b0 == 0] = np.nan
+
+    return b0
 
 
 def calculate_windows_index(w):

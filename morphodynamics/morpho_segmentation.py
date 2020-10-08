@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 import ipywidgets as ipw
 from IPython.display import display, HTML, clear_output
-from skimage.segmentation import find_boundaries
 import dill
 from nd2reader import ND2Reader
 import yaml
@@ -15,14 +14,18 @@ from .dataset import MultipageTIFF, TIFFSeries, ND2
 from .folders import Folders
 
 from .analysis_par import analyze_morphodynamics
-from .morpho_plots import show_windows as show_windows2
-from .windowing import label_windows, calculate_windows_index, create_windows
+from .windowing import (
+    calculate_windows_index,
+    create_windows,
+    boundaries_image,
+)
 from .displacementestimation import rasterize_curve, splevper
 from . import utils
 
 from dask_jobqueue import SLURMCluster
 from dask.distributed import Client
-import mplcursors
+
+import plotly.graph_objects as go
 
 # fix MacOSX OMP bug (see e.g. https://github.com/dmlc/xgboost/issues/1715)
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
@@ -212,11 +215,9 @@ class InteractSeg:
         self.segparam = self.threshold
 
         self.location_x = ipw.FloatText(value=100, description="Location X")
-        # self.location_x.observe(self.update_params, names='value')
         self.location_x.observe(self.update_location, names="value")
 
         self.location_y = ipw.FloatText(value=100, description="Location Y")
-        # self.location_y.observe(self.update_params, names='value')
         self.location_y.observe(self.update_location, names="value")
 
         self.out_debug = ipw.Output()
@@ -227,22 +228,43 @@ class InteractSeg:
         # initialize image and interactivity
         self.shift_is_held = False
         with self.out:
-            self.fig, self.ax = plt.subplots(figsize=(5, 5))
-            self.ax.set_title(f"Time:")
-            # self.fig.tight_layout()
-            cid = self.fig.canvas.mpl_connect(
-                "button_press_event", self.onclick
-            )
-            cid2 = self.fig.canvas.mpl_connect(
-                "key_press_event", self.on_key_press
-            )
-            cid3 = self.fig.canvas.mpl_connect(
-                "key_release_event", self.on_key_release
-            )
 
-        self.implot = None
-        self.wplot = None
-        self.tplt = None
+            data = go.Heatmap(z=np.zeros((100, 100)), colorscale="Gray")
+
+            self.fig = go.FigureWidget(
+                data, layout=go.Layout(yaxis=dict(autorange="reversed"))
+            )
+            self.fig.add_trace(
+                go.Heatmap(
+                    z=np.zeros((100, 100)),
+                    opacity=0.5,
+                    showscale=False,
+                    uid="w",
+                    hoverinfo="skip",
+                )
+            )
+            self.fig.add_trace(
+                go.Scatter(
+                    x=[0],
+                    y=[0],
+                    text="0",
+                    mode="text",
+                    hoverinfo="skip",
+                    textfont=dict(
+                        family="sans serif", size=10, color="crimson"
+                    ),
+                )
+            )
+            self.fig.add_trace(go.Scatter(x=None, y=None))
+            self.fig.layout.coloraxis.showscale = False
+            self.fig.layout.width = 600
+            self.fig.layout.height = 600
+            self.fig.data[2].marker.color = "red"
+            self.fig.data[2].marker.size = 10
+
+            self.fig.data[0].on_click(self.update_point)
+
+            self.fig.show()
 
         # initialize dask
         self.initialize_dask()
@@ -337,26 +359,17 @@ class InteractSeg:
         windows_pos = None
         if self.res is not None:
             window = self.windows_for_plot(self.param.n_curve, image, t)
-            b0 = find_boundaries(label_windows(image.shape, window))
-            b0 = b0.astype(float)
-            b0[b0 == 0] = np.nan
-            windows_pos = calculate_windows_index(window)
+            b0 = boundaries_image(image.shape, window)
+            windows_pos = np.array(calculate_windows_index(window))
 
         # display image and windows and readjust zoom state
-        with self.out:
-            xlim = self.fig.axes[0].get_xlim()
-            ylim = self.fig.axes[0].get_ylim()
+        self.fig.data[0].z = image
+        self.fig.data[1].z = b0
+        self.fig.data[2].x = windows_pos[:, 0]
+        self.fig.data[2].y = windows_pos[:, 1]
+        self.fig.data[2].text = windows_pos[:, 2]
 
-            plt.figure(self.fig.number)
-            self.implot, self.wplot, self.tplt = show_windows2(
-                image, b0, windows_pos
-            )
-            if xlim[1] > 1:
-                self.fig.axes[0].set_xlim(xlim)
-                self.fig.axes[0].set_ylim(ylim)
-            self.fig.axes[0].set_title(f"Time:{self.data.valid_frames[t]}")
-            # self.fig.tight_layout()
-            mplcursors.cursor()
+        # self.fig.axes[0].set_title(f"Time:{self.data.valid_frames[t]}")
 
         # update max slider value with max image value
         self.intensity_range_slider.unobserve_all()
@@ -368,36 +381,29 @@ class InteractSeg:
         # when creating image use full intensity values
         if change == "init":
             self.intensity_range_slider.value = (0, int(image.max()))
-            self.fig.axes[0].set_xlim((-0.5, image.shape[1] - 0.5))
-            self.fig.axes[0].set_ylim((image.shape[0] - 0.5, -0.5))
 
         # set new frame to same intensity range as previous frame
-        self.implot.set_clim(
-            vmin=self.intensity_range_slider.value[0],
-            vmax=self.intensity_range_slider.value[1],
-        )
+        self.fig.data[0].zmin = self.intensity_range_slider.value[0]
+        self.fig.data[0].zmax = self.intensity_range_slider.value[1]
 
         # show cell center-of-mass if it exists
         if self.param.location is not None:
-            plt.plot(
+            self.fig.data[3].x, self.fig.data[3].y = (
                 [self.param.location[1]],
                 [self.param.location[0]],
-                "ro",
-                markersize=10,
             )
 
-    def onclick(self, event):
-        """Store click location"""
+    # create our callback function
+    def update_point(self, trace, points, selector):
+        """Callback for plotly plot onclick to select cell position."""
 
-        if self.shift_is_held:
-            self.param.location = np.array(
-                [int(event.ydata), int(event.xdata)]
-            )
-            self.show_segmentation()
-            self.location_x.value, self.location_y.value = (
-                self.param.location[0],
-                self.param.location[1],
-            )
+        self.fig.data[3].x, self.fig.data[3].y = points.xs, points.ys
+        self.param.location = [int(points.ys[0]), int(points.xs[0])]
+
+        self.location_y.value, self.location_x.value = (
+            points.xs[0],
+            points.ys[0],
+        )
 
     def on_key_press(self, event):
         """Record if shift key is pressed"""
@@ -535,22 +541,19 @@ class InteractSeg:
     def update_intensity_range(self, change=None):
         """Callback to update intensity range"""
 
-        self.intensity_range_slider.max = self.implot.get_array().max()
-        self.implot.set_clim(
-            vmin=self.intensity_range_slider.value[0],
-            vmax=self.intensity_range_slider.value[1],
-        )
+        self.intensity_range_slider.max = self.fig.data[0].z.max()
+        self.fig.data[0].zmin = self.intensity_range_slider.value[0]
+        self.fig.data[0].zmax = self.intensity_range_slider.value[1]
 
     def update_windows_vis(self, change=None):
         """Callback to turn windows visibility on/off"""
 
-        self.wplot.set_visible(change["new"])
+        self.fig.data[1].visible = change["new"]
 
     def update_text_vis(self, change=None):
         """Callback to turn windows labels visibility on/off"""
 
-        for x in self.tplt:
-            x.set_visible(change["new"])
+        self.fig.data[2].visible = change["new"]
 
     def export_data(self, b):
         """Callback to export Results and Parameters"""
@@ -717,7 +720,8 @@ class InteractSeg:
                                         self.run_button,
                                     ]
                                 ),
-                                self.out,
+                                # self.out,
+                                self.fig,  #
                                 ipw.VBox(
                                     [
                                         self.time_slider,
