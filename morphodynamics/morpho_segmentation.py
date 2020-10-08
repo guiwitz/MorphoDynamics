@@ -131,7 +131,11 @@ class InteractSeg:
 
         # intensity sliders
         self.intensity_range_slider = ipw.IntRangeSlider(
-            description="Intensity range", min=0, max=10, value=0
+            description="Intensity range",
+            min=0,
+            max=10,
+            value=0,
+            continuous_update=False,
         )
         self.intensity_range_slider.observe(
             self.update_intensity_range, names="value"
@@ -320,7 +324,7 @@ class InteractSeg:
         self.run_button.description = "Click to segment"
 
     def initialize_dask(self, change=None):
-        """Start a Dask client and display it in the UI when selected by the user"""
+        """If dask is used, start it and display UI."""
 
         self.param.distributed = self.distributed.value
         if self.param.distributed == "cluster":
@@ -419,7 +423,7 @@ class InteractSeg:
     def get_folders(self, change=None):
         """Update folder options when selecting new main folder"""
 
-        # if an nd2 file is selected, load it, and use metadata channels as choices
+        # if nd2 file, load and use metadata channels as choices
         if len(self.main_folder.file_list.value) > 0:
             if (self.main_folder.file_list.value[0]).split(".")[-1] == "nd2":
                 image = ND2Reader(
@@ -580,7 +584,7 @@ class InteractSeg:
         with open(
             self.saving_folder.cur_dir.joinpath("Parameters.yml"), "w"
         ) as file:
-            documents = yaml.dump(dict_file, file)
+            yaml.dump(dict_file, file)
 
         print("Your results have been saved in the following directory:")
         print(self.param.resultdir)
