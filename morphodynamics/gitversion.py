@@ -1,7 +1,7 @@
 
 import os
 from subprocess import Popen, PIPE
-from morphodynamics.version2 import __version__
+from morphodynamics.version import __version__
 
 
 def get_git_version():
