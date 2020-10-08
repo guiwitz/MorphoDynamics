@@ -13,5 +13,10 @@ setup(name='morphodynamics',
       license='BSD3',
       packages=['morphodynamics'],
       zip_safe=False,
-      install_requires=[],
+      install_requires=[
+          'tifffile',
+          'plotly',
+          'aicsimageio',
+          'nd2reader'
+          ]
       )
