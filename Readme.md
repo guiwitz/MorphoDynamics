@@ -50,3 +50,14 @@ jupyter notebook
 
 Two notebooks are provided in the [notebooks](notebooks) folder. [Morpho_segmentation.ipynb](notebooks/Morpho_segmentation.ipynb) allows you to perform cell segmentation and windowing. It accepts data in the form of series of tiffs, tiff stacks or nd2 files (still experimental). Once segmentation is done and saved, that information can be used to proceed to the data analysis per se in the [InterfaceFigures.ipynb](notebooks/InterfaceFigures.ipynb) notebooks. There you import the segmentation, and can choose from a variety of different analysis to plot.
 
+## Development
+
+When releasing a new version v.X.Y.Z, bump the version in the [version.txt](morphodynamics/version.txt) file, commit-push, and create an annotated tag:
+
+```
+git tag -m "git versioning" -a vX.Y.Z
+git push origin vX.Y.Z
+```
+
+As the git master is continuously updated between version releases, the verion in [version.txt](morphodynamics/version.txt) is superseded by one named v.X.Y.Z-n-xxxxxx where n is the number of commits since last tag (version) and xxxxx indicates the commmit. This versioning is achieved though the [version.py](morphodynamics/version.py) module that checks for tags when [setup.py](setup.py) is called for installation. This adjust both the package version listed in ```conda list``` and the ```morphodynamics.__version__``` variable.
+
