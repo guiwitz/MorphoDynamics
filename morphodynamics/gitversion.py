@@ -1,6 +1,7 @@
 
 import os
 from subprocess import Popen, PIPE
+from morphodynamics.version2 import __version__
 
 
 def get_git_version():
@@ -15,6 +16,7 @@ def get_git_version():
 
 
 def get_text_version():
+    print(os.path.abspath('.'))
     with open(os.path.join('morphodynamics', 'version.txt')) as version_file:
         version = version_file.read().strip()
         return version
@@ -22,12 +24,12 @@ def get_text_version():
 
 def get_version():
 
-    version_text = get_text_version()
+    #version_text = get_text_version()
     version_git = get_git_version()
     if version_git is None:
         return version_text
     else:
-        return version_git
+        return __version__
 
 
 if __name__ == "__main__":
