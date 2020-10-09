@@ -369,9 +369,10 @@ class InteractSeg:
         # display image and windows and readjust zoom state
         self.fig.data[0].z = image
         self.fig.data[1].z = b0
-        self.fig.data[2].x = windows_pos[:, 0]
-        self.fig.data[2].y = windows_pos[:, 1]
-        self.fig.data[2].text = windows_pos[:, 2]
+        if windows_pos is not None:
+            self.fig.data[2].x = windows_pos[:, 0]
+            self.fig.data[2].y = windows_pos[:, 1]
+            self.fig.data[2].text = windows_pos[:, 2]
 
         # self.fig.axes[0].set_title(f"Time:{self.data.valid_frames[t]}")
 
