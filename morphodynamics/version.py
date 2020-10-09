@@ -30,5 +30,17 @@ def get_version():
         return version_git
 
 
+def set_version():
+
+    current_folder = os.path.dirname(__file__)
+    try:
+        version_git = get_git_version()
+        with open(os.path.join(current_folder, 'version.txt'), 'w') as f:
+            f.write(version_git)
+            f.close()
+    except:
+        print("Can't read git version")
+
+
 if __name__ == "__main__":
     print(get_version())
