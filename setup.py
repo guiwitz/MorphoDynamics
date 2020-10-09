@@ -4,7 +4,6 @@ from morphodynamics.version import get_version
 version = get_version()
 
 setup(name='morphodynamics',
-      #version=version['__version__'],
       version=version,
       description='Cell segmentation and windowing',
       url='',
@@ -12,6 +11,7 @@ setup(name='morphodynamics',
       author_email='',
       license='BSD3',
       packages=['morphodynamics'],
+      package_data={'morphodynamics': ['version.txt']},
       zip_safe=False,
       install_requires=[
           'tifffile',
