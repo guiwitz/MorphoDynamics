@@ -6,7 +6,13 @@ This software can be used to analyze the dynamics of single-cells imaged by time
 
 We strongly recommend to install the necessary software via conda. If you don't have conda installed, follow [these instructions](https://docs.conda.io/en/latest/miniconda.html) to install a minimal version called miniconda.
 
-Then, download (or clone) this repository to your machine (green "Code" button at the top right of this page), unzip the folder, open a terminal and move to the downloaded folder (Morphodynamics-master). The latter contains an ```environment.yml``` file that can be used to setup a conda environment wih all necessary packages. For that, just execute the following line:
+Then, download (or clone) this repository to your machine. If you are working on a local laptopn you can use the green "Code" button at the top right of this page for download and then unzip the folder. If you are working on a remote machine you can type:
+
+```
+git clone https://github.com/guiwitz/MorphoDynamics.git
+```
+
+Open a terminal and move to the downloaded folder (Morphodynamics-master). The latter contains an ```environment.yml``` file that can be used to setup a conda environment wih all necessary packages. For that, just execute the following line:
 
 ```
 conda env create -f environment.yml
