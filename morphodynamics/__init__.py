@@ -1,4 +1,3 @@
-from .gitversion import get_version
-import os
+from .version import get_version
 
 __version__ = get_version()
