@@ -43,4 +43,5 @@ def set_version():
 
 
 if __name__ == "__main__":
+    set_version()
     print(get_version())

@@ -55,9 +55,14 @@ Two notebooks are provided in the [notebooks](notebooks) folder. [Morpho_segment
 When releasing a new version v.X.Y.Z, bump the version in the [version.txt](morphodynamics/version.txt) file, commit-push, and create an annotated tag:
 
 ```
-git tag -m "git versioning" -a vX.Y.Z
-git push origin vX.Y.Z
+git tag -m "git versioning" -a X.Y.Z
+git push origin X.Y.Z
 ```
 
-As the git master is continuously updated between version releases, the verion in [version.txt](morphodynamics/version.txt) is superseded by one named v.X.Y.Z-n-xxxxxx where n is the number of commits since last tag (version) and xxxxx indicates the commmit. This versioning is achieved though the [version.py](morphodynamics/version.py) module that checks for tags when [setup.py](setup.py) is called for installation. This adjust both the package version listed in ```conda list``` and the ```morphodynamics.__version__``` variable.
+When updating the master branch in between releases, automatically bump the version in the [version.txt](morphodynamics/version.txt) file by using the [version.py](morphodynamics/version.py) module: activate the environment, move to the project folder and execute:
 
+```
+python morphodynamics/version.py
+```
+
+The new version will be listed in ```conda list``` and the ```morphodynamics.__version__``` variable.
