@@ -37,7 +37,8 @@ import dask
 
 
 def analyze_morphodynamics(data, param):
-    # np.seterr(all='raise')
+    # Interrupt execution upon Numpy warnings
+    np.seterr(all='raise')
 
     # Figures and other artifacts
     if param.showSegmentation:

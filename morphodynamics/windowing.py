@@ -156,9 +156,24 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
         mask = (b[j] <= D_main) * mask_main
 
         # Extract the contour of the mask
-        cvec = np.asarray(
-            find_contours(mask, 0, fully_connected="high")[0], dtype=np.int
-        )
+        # We must fix certain frames where multiple contours are returned.
+        # So we choose the longest contour. Some pixels may be lost in the process,
+        # i.e., the windows may not cover the entire cell.
+        clist = find_contours(mask, 0, fully_connected='high')
+        cvec = np.asarray(clist[np.argmax([cel.shape[0] for cel in clist])], dtype=np.int)
+
+        # An alternative fix using OpenCV's findContours routine---doesn't solve the problem
+        # contours, hierarchy = cv.findContours(np.asarray(mask, dtype=np.uint8), cv.RETR_LIST, cv.CHAIN_APPROX_NONE)
+        # cvec = np.asarray(contours[np.argmax([cel.shape[0] for cel in contours])], dtype=np.int)
+        # cvec = cvec.reshape((cvec.shape[0], cvec.shape[2]))
+        # cvec = cvec[::-1, [1,0]]  # Sort boundary pixels in clockwise direction and switch (x, y) coordinates
+
+        # Lvec = compute_discrete_arc_length(cvec)
+        # c = create_arc_length_image(mask.shape, cvec, Lvec)
+        # plt.figure()
+        # plt.imshow(c, 'gray', vmin=-Lvec[-1], vmax=Lvec[-1])
+        # plt.plot(origin[1], origin[0], 'or')
+        # # plt.show()
 
         # Adjust the origin of the contour:
         # on the discrete contour cvec, find the closest point to the origin,
