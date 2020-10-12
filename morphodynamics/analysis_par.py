@@ -22,7 +22,7 @@ from cellpose import models
 import dask
 
 
-def analyze_morphodynamics(data, param):
+def analyze_morphodynamics(data, param, only_seg=False, keep_seg=False):
     """
     Main function performing segmentation, windowing, signal
     extraction and displacement matching.
@@ -33,6 +33,10 @@ def analyze_morphodynamics(data, param):
         as returned by morphodynamics.dataset
     param: Param object
         As created by morphodyanmics.parameters.Param
+    only_seg: bool
+        Perfrom only segmentation without windowing
+    keep_seg: bool
+        Store segmentation masks in memory
 
     Returns
     -------
@@ -60,6 +64,11 @@ def analyze_morphodynamics(data, param):
 
     # Segment all images but don't select cell
     segmented = dask.compute(segment_all(data, param, model))[0]
+    if keep_seg:
+        res.seg = segmented
+
+    if only_seg:
+        return res
 
     # do the tracking
     segmented = track_all(segmented, location, param)
