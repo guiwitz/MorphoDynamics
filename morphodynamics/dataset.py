@@ -224,7 +224,7 @@ class MultipageTIFF(Data):
         ]
 
         if self.max_time is None:
-            self.max_time = self.morpho_imobj.size_z
+            self.max_time = self.morpho_imobj.size_t
 
         self.set_valid_frames()
 
@@ -236,7 +236,7 @@ class MultipageTIFF(Data):
         """Load index k of valid frames of the segmentation channel"""
 
         time = self.valid_frames[k]
-        image = self.morpho_imobj.get_image_data("YX", S=0, T=0, C=0, Z=time)
+        image = self.morpho_imobj.get_image_data("YX", S=0, T=time, C=0, Z=0)
         return image.astype(dtype=np.uint16)
 
     def load_frame_signal(self, m, k):
@@ -245,7 +245,7 @@ class MultipageTIFF(Data):
         time = self.valid_frames[k]
 
         image = self.signal_imobj[m].get_image_data(
-            "YX", S=0, T=0, C=0, Z=time
+            "YX", S=0, T=time, C=0, Z=0
         )
         return image.astype(dtype=np.uint16)
 
