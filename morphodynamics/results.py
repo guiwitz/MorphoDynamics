@@ -24,6 +24,8 @@ class Results:
         number of window layers
     I: list of int
         number of windows in each layer
+    seg: list of 2d arrays
+        segmentation masks
     spline: list of spline objects
         splines for each time point
     spline_param0: list of arrays
@@ -59,6 +61,9 @@ class Results:
         # Number of windows per layer
         self.I = I
         Imax = np.max(I)
+
+        # segmentation masks
+        self.seg = []
 
         # List of spline objects for each time point
         self.spline = []
