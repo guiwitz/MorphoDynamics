@@ -55,7 +55,7 @@ def analyze_morphodynamics(data, param, only_seg=False, keep_seg=False):
     else:
         model = None
 
-    location, J, I = calibration(data, param)
+    location, J, I = calibration(data, param, model)
 
     # Result structures that will be saved to disk
     res = Results(
@@ -108,7 +108,7 @@ def analyze_morphodynamics(data, param, only_seg=False, keep_seg=False):
     return res
 
 
-def calibration(data, param):
+def calibration(data, param, model):
     """
     Segment the first frame to determine the initial location
     (if not provided) as well as the number of windows.
@@ -119,6 +119,7 @@ def calibration(data, param):
         as returned by morphodynamics.dataset
     param: Param object
         As created by morphodyanmics.parameters.Param
+    model: cellpose model, optional
 
     Returns
     -------
