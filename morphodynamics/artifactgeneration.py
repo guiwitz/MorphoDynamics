@@ -13,7 +13,7 @@ from PIL import Image
 from .correlation import show_correlation_core, correlate_arrays, get_range
 from .displacementestimation import (
     show_edge_line,
-    show_edge_image,
+    compute_edge_image,
     compute_curvature,
     compute_length,
     compute_area,
@@ -389,7 +389,7 @@ class EdgeVectorial:
 
 def show_edge_rasterized_aux(param, data, res, d, dmax, k, mode, display=True):
     if mode == "curvature":
-        x = show_edge_image(
+        x = compute_edge_image(
             param.n_curve,
             data.shape,
             res.spline[k],
@@ -399,7 +399,7 @@ def show_edge_rasterized_aux(param, data, res, d, dmax, k, mode, display=True):
             dmax,
         )
     else:
-        x = show_edge_image(
+        x = compute_edge_image(
             param.n_curve,
             data.shape,
             res.spline[k],

@@ -474,7 +474,7 @@ def show_edge_line(N, s):
     )
 
 
-def show_edge_image(N, shape, s, t, d, thickness, dmax=None):
+def compute_edge_image(N, shape, s, t, d, thickness, dmax=None):
     c = rasterize_curve(N, shape, s, 0)
     mask = -1 < c
     c[mask] = np.interp(c[mask], t, d, period=1)
