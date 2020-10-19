@@ -475,10 +475,36 @@ def show_edge_line(N, s):
 
 
 def compute_edge_image(N, shape, s, t, d, thickness, dmax=None):
+    """Compute edge image
+
+    Parameters
+    ----------
+    N: int
+        number of interpolation points
+    shape: tuple
+        size of image
+    s: spline object
+    t: array
+        vector of interpolation parameters
+    d: array
+        variable to use for contour coloring
+    thickness: float
+        thickness of contour
+    dmax: float
+        maximum of coloring variable
+
+    Returns
+    -------
+    c: 2d array
+        rasterized image
+    """
+    # create rasterized image
     c = rasterize_curve(N, shape, s, 0)
     mask = -1 < c
+    # assign color along contour by interpolating the variable d
     c[mask] = np.interp(c[mask], t, d, period=1)
     c[np.logical_not(mask)] = 0
+    # enlarge contour
     if thickness > 1:
         f = np.ones((thickness, thickness))
         n = convolve2d(mask, f, mode="same")
