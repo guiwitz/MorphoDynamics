@@ -147,11 +147,16 @@ def calibration(data, param, model):
     if location is None:
         location = center_of_mass(m)
 
-    s, _ = contour_spline(m, param.lambda_)
-    c = rasterize_curve(param.n_curve, m.shape, s, 0)
-    _, J, I = create_windows(
-        c, splev(0, s), depth=param.depth, width=param.width
-    )
+    I = [10, 0]
+    J = 10
+    try:
+        s, _ = contour_spline(m, param.lambda_)
+        c = rasterize_curve(param.n_curve, m.shape, s, 0)
+        _, J, I = create_windows(
+            c, splev(0, s), depth=param.depth, width=param.width
+        )
+    except Exception:
+        print('I and J not calculated. Using 10 as default value.')
 
     return location, J, I
 
