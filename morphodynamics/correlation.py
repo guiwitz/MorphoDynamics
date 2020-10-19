@@ -63,13 +63,27 @@ def get_extent(A, B, I):
     return -B + 1 - 0.5, -B + 1 + A + B - 2 + 0.5, I - 1 + 0.5, -0.5
 
 
-def show_correlation_core(c, x, y, nx, ny, normalization):
-    plt.clf()
-    plt.gca().set_title(
-        "Correlation between " + nx + " and " + ny + " at layer " + str(0)
-    )  # + ' - Normalization: ' + str(normalization)
+def show_correlation_core(c, x, y, nx, ny, normalization, fig=None, ax=None):
+    """Plot correlations between variables"""
+
+    if fig is None:
+        fig, ax = plt.subplots()
+    else:
+        ax = fig.axes[0]
+        ax.clear()
+
+    ax.set_title(
+        "Correlation between "
+        + nx
+        + " and \n "
+        + ny
+        + " at layer "
+        + str(0),
+        fontsize=20
+    )
+
     cmax = np.max(np.abs(c))
-    plt.imshow(
+    im = ax.imshow(
         c,
         extent=get_extent(x.shape[1], y.shape[1], c.shape[0]),
         cmap="bwr",
@@ -78,9 +92,15 @@ def show_correlation_core(c, x, y, nx, ny, normalization):
         interpolation="none",
     )
     plt.axis("auto")
-    plt.xlabel("Time lag [frames]")
-    plt.ylabel("Window index")
-    plt.colorbar(label="Correlation")
+    ax.set_xlabel("Time lag [frames]")
+    ax.set_ylabel("Window index")
+    '''if len(fig.axes) == 2:
+        fig.axes[1].clear()
+        fig.colorbar(im, cax=fig.axes[1], label='Correlation here2')
+    else:
+        plt.colorbar(im, label="Correlation here3")'''
+
+    return fig, ax
 
 
 def get_range(A, B):
