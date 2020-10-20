@@ -191,6 +191,12 @@ class InteractSeg:
         self.init_button = ipw.Button(description="Initialize data")
         self.init_button.on_click(self.initialize)
 
+        # toggle dimensions switch
+        self.switchTZ_check = ipw.Checkbox(
+            description="Switch Z and T dims", value=False
+        )
+        self.switchTZ_check.observe(self.update_switchTZ, names="value")
+
         # parameters
         self.maxtime = ipw.BoundedIntText(value=0, description="Max time")
         self.maxtime.observe(self.update_data_params, names="value")
@@ -295,6 +301,7 @@ class InteractSeg:
                 data_type=self.param.data_type,
                 step=self.param.step,
                 bad_frames=self.param.bad_frames,
+                switch_TZ=self.param.switch_TZ,
             )
         elif self.expdir.split(".")[-1] == "nd2":
             self.param.data_type = "nd2"
@@ -543,6 +550,11 @@ class InteractSeg:
 
         self.param.resultdir = self.saving_folder.cur_dir
 
+    def update_switchTZ(self, change=None):
+        """Callback to update ZT dimensions switching parameter"""
+
+        self.param.switch_TZ = change["new"]
+
     def update_intensity_range(self, change=None):
         """Callback to update intensity range"""
 
@@ -633,6 +645,7 @@ class InteractSeg:
 
         self.segm_folders.value = param_copy.morpho_name
         self.channels_folders.value = param_copy.signal_name
+        self.switchTZ_check.value = param_copy.switch_TZ
 
         # set segmentation type
         if param_copy.cellpose:
@@ -699,6 +712,7 @@ class InteractSeg:
                         ipw.HBox(
                             [
                                 self.init_button,
+                                # self.switchTZ_check
                             ]
                         ),
                         ipw.HTML(

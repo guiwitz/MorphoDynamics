@@ -13,6 +13,7 @@ class Param:
         morpho_name=None,
         signal_name=None,
         max_time=None,
+        switch_TZ=False
     ):
 
         """Standard __init__ method.
@@ -65,6 +66,9 @@ class Param:
 
         # max time
         self.max_time = max_time
+
+        # should Z and T dimensions be switched
+        self.switch_TZ = switch_TZ
 
         # cell location
         self.location = None

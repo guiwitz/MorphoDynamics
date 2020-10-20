@@ -29,7 +29,9 @@ class Data:
     max_time: int. optional
         last frame to consider
     data_type: str,
-            type of data considers ("series", "multi", "nd2")
+        type of data considers ("series", "multi", "nd2")
+    switch_TZ: bool,
+        for multipage tiff, switch T and Z dimensions
 
     Attributes
     ----------
@@ -69,6 +71,7 @@ class Data:
         step=1,
         max_time=None,
         data_type=None,
+        switch_TZ=False,
     ):
 
         self.data_type = data_type
@@ -85,6 +88,7 @@ class Data:
         self.signalfile = None
         self.morphofile = None
         self.data_type = data_type
+        self.switch_TZ = switch_TZ
 
     def set_valid_frames(self):
         """Create a list of indices of valid frames"""
@@ -128,6 +132,7 @@ class TIFFSeries(Data):
         step=1,
         max_time=None,
         data_type="series",
+        switch_TZ=False,
     ):
         Data.__init__(
             self,
@@ -138,6 +143,7 @@ class TIFFSeries(Data):
             step,
             max_time,
             data_type,
+            switch_TZ,
         )
 
         self.initialize()
@@ -198,6 +204,7 @@ class MultipageTIFF(Data):
         step=1,
         max_time=None,
         data_type="multi",
+        switch_TZ=False,
     ):
         Data.__init__(
             self,
@@ -208,6 +215,7 @@ class MultipageTIFF(Data):
             step,
             max_time,
             data_type,
+            switch_TZ,
         )
 
         self.initialize()
@@ -216,11 +224,17 @@ class MultipageTIFF(Data):
         self.morphofile = self.morpho_name
         self.signalfile = self.signal_name
 
+        # switch Z and T if necessary
+        #known_dims = None
+        #if self.switch_TZ:
+        #    known_dims = "SZCTYX"
+
         self.morpho_imobj = AICSImage(
-            os.path.join(self.expdir, self.morphofile)
+            os.path.join(self.expdir, self.morphofile), known_dims='TYX'
         )
         self.signal_imobj = [
-            AICSImage(os.path.join(self.expdir, x)) for x in self.signal_name
+            AICSImage(os.path.join(self.expdir, x), known_dims='TYX')
+            for x in self.signal_name
         ]
 
         if self.max_time is None:
@@ -265,6 +279,7 @@ class ND2(Data):
         step=1,
         max_time=None,
         data_type="nd2",
+        switch_TZ=False,
     ):
         Data.__init__(
             self,
@@ -275,6 +290,7 @@ class ND2(Data):
             step,
             max_time,
             data_type,
+            switch_TZ,
         )
 
         self.initialize()
