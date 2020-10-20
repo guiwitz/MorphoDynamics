@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from morphodynamics.version import get_version
 
 version = get_version()
@@ -10,7 +10,7 @@ setup(name='morphodynamics',
       author='Cedric Vonesch and Guillaume Witz',
       author_email='',
       license='BSD3',
-      packages=['morphodynamics'],
+      packages=find_packages(),
       package_data={'morphodynamics': ['version.txt']},
       zip_safe=False,
       install_requires=[
