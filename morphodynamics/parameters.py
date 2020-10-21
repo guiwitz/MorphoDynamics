@@ -13,7 +13,8 @@ class Param:
         morpho_name=None,
         signal_name=None,
         max_time=None,
-        switch_TZ=False
+        switch_TZ=False,
+        ilastik=False
     ):
 
         """Standard __init__ method.
@@ -69,6 +70,9 @@ class Param:
 
         # should Z and T dimensions be switched
         self.switch_TZ = switch_TZ
+
+        # use segmentation from ilastik
+        self.ilastik = ilastik
 
         # cell location
         self.location = None

@@ -1,6 +1,8 @@
 import os
+import pickle
 from copy import deepcopy
 import numpy as np
+import skimage.io
 import matplotlib.pyplot as plt
 from pathlib import Path
 import ipywidgets as ipw
@@ -197,6 +199,12 @@ class InteractSeg:
         )
         self.switchTZ_check.observe(self.update_switchTZ, names="value")
 
+        # toggle ilastik segmentation
+        self.ilastik_check = ipw.Checkbox(
+            description="Use ilastik", value=False
+        )
+        self.ilastik_check.observe(self.update_ilastik, names="value")
+
         # parameters
         self.maxtime = ipw.BoundedIntText(value=0, description="Max time")
         self.maxtime.observe(self.update_data_params, names="value")
@@ -326,6 +334,7 @@ class InteractSeg:
         """Run segmentation analysis"""
 
         self.run_button.description = "Segmenting..."
+        # with self.out_debug:
         self.res = analyze_morphodynamics(self.data, self.param)
         self.show_segmentation(change="init")
         self.run_button.description = "Click to segment"
@@ -344,12 +353,17 @@ class InteractSeg:
             with self.out_distributed:
                 display(self.client.cluster._widget())
 
-    def windows_for_plot(self, N, image, time):
+    def windows_for_plot(self, N, im_shape, time):
         """Create a window image"""
 
-        c = rasterize_curve(
-            N, image.shape, self.res.spline[time], self.res.orig[time]
+        """c = rasterize_curve(
+            N, im_shape, self.res.spline[time], self.res.orig[time]
+        )"""
+        save_path = os.path.join(self.param.expdir, "segmented")
+        c = skimage.io.imread(
+            os.path.join(save_path, "rasterized_k_" + str(time) + ".tif")
         )
+
         w, _, _ = create_windows(
             c,
             splevper(self.res.orig[time], self.res.spline[time]),
@@ -369,41 +383,59 @@ class InteractSeg:
         b0 = None
         windows_pos = None
         if self.res is not None:
-            window = self.windows_for_plot(self.param.n_curve, image, t)
-            b0 = boundaries_image(image.shape, window)
-            windows_pos = np.array(calculate_windows_index(window))
+            # window = self.windows_for_plot(self.param.n_curve, image.shape, t)
+            name = os.path.join(
+                self.param.resultdir,
+                "segmented",
+                "window_k_" + str(t) + ".pkl",
+            )
+            window = pickle.load(open(name, "rb"))
 
-        # display image and windows and readjust zoom state
-        self.fig.data[0].z = image
-        self.fig.data[1].z = b0
-        if windows_pos is not None:
-            self.fig.data[2].x = windows_pos[:, 0]
-            self.fig.data[2].y = windows_pos[:, 1]
-            self.fig.data[2].text = windows_pos[:, 2]
+            name = os.path.join(
+                self.param.resultdir,
+                "segmented",
+                "window_image_k_" + str(t) + ".tif",
+            )
+            # b0 = boundaries_image(image.shape, window)
+            b0 = skimage.io.imread(name)
+            b0 = b0.astype(float)
+            b0[b0 == 0] = np.nan
+            windows_pos = np.array(calculate_windows_index(window))
 
         # self.fig.axes[0].set_title(f"Time:{self.data.valid_frames[t]}")
 
-        # update max slider value with max image value
-        self.intensity_range_slider.unobserve_all()
-        self.intensity_range_slider.max = int(image.max())
-        self.intensity_range_slider.observe(
-            self.update_intensity_range, names="value"
-        )
+        with self.fig.batch_update():
+            # display image and windows and readjust zoom state
+            self.fig.data[0].z = image
+            self.fig.data[1].z = b0
 
-        # when creating image use full intensity values
-        if change == "init":
-            self.intensity_range_slider.value = (0, int(image.max()))
-
-        # set new frame to same intensity range as previous frame
-        self.fig.data[0].zmin = self.intensity_range_slider.value[0]
-        self.fig.data[0].zmax = self.intensity_range_slider.value[1]
-
-        # show cell center-of-mass if it exists
-        if self.param.location is not None:
-            self.fig.data[3].x, self.fig.data[3].y = (
-                [self.param.location[1]],
-                [self.param.location[0]],
+            # update max slider value with max image value
+            self.intensity_range_slider.unobserve_all()
+            self.intensity_range_slider.max = int(image.max())
+            # when creating image use full intensity values
+            if change == "init":
+                self.intensity_range_slider.value = (0, int(image.max()))
+            self.intensity_range_slider.observe(
+                self.update_intensity_range, names="value"
             )
+
+            
+
+            if windows_pos is not None:
+                self.fig.data[2].x = windows_pos[:, 0]
+                self.fig.data[2].y = windows_pos[:, 1]
+                self.fig.data[2].text = windows_pos[:, 2]
+
+            # set new frame to same intensity range as previous frame
+            self.fig.data[0].zmin = self.intensity_range_slider.value[0]
+            self.fig.data[0].zmax = self.intensity_range_slider.value[1]
+
+            # show cell center-of-mass if it exists
+            if self.param.location is not None:
+                self.fig.data[3].x, self.fig.data[3].y = (
+                    [self.param.location[1]],
+                    [self.param.location[0]],
+                )
 
     # create our callback function
     def update_point(self, trace, points, selector):
@@ -555,6 +587,11 @@ class InteractSeg:
 
         self.param.switch_TZ = change["new"]
 
+    def update_ilastik(self, change=None):
+        """Callback to update ilastik parameter"""
+
+        self.param.ilastik = change["new"]
+
     def update_intensity_range(self, change=None):
         """Callback to update intensity range"""
 
@@ -646,6 +683,7 @@ class InteractSeg:
         self.segm_folders.value = param_copy.morpho_name
         self.channels_folders.value = param_copy.signal_name
         self.switchTZ_check.value = param_copy.switch_TZ
+        self.ilastik_check.value = param_copy.ilastik
 
         # set segmentation type
         if param_copy.cellpose:
@@ -677,15 +715,35 @@ class InteractSeg:
             display(
                 ipw.VBox(
                     [
-                        ipw.HTML(
-                            '<font size="5"><b>Choose main folder<b></font>'
+                        ipw.HBox(
+                            [
+                                ipw.VBox(
+                                    [
+                                        ipw.HTML(
+                                            '<font size="5"><b>Choose main folder<b></font>'
+                                        ),
+                                        ipw.HTML(
+                                            '<font size="2"><b>Data folder or <br>\
+                            or folder containing segmentation to load<b></font>'
+                                        ),
+                                        self.main_folder.file_list,
+                                        self.load_button
+                                    ]
+                                ),
+                                ipw.VBox(
+                                    [
+                                        ipw.HTML(
+                                            '<br><font size="5"><b>Saving<b></font>'
+                                        ),
+                                        ipw.HTML(
+                                            '<font size="2"><b>Select folder where to save<b></font>'
+                                        ),
+                                        self.saving_folder.file_list,
+                                        self.ilastik_check
+                                    ]
+                                ),
+                            ]
                         ),
-                        ipw.HTML(
-                            '<font size="2"><b>This folder is either the folder containing the data\
-                    or the folder containing en existing segmentation to load<b></font>'
-                        ),
-                        self.main_folder.file_list,
-                        self.load_button,
                         ipw.HTML(
                             '<br><font size="5"><b>Chose segmentation and signal channels (folders or tifs)<b></font>'
                         ),
@@ -752,11 +810,6 @@ class InteractSeg:
                                 ),
                             ]
                         ),
-                        ipw.HTML('<br><font size="5"><b>Saving<b></font>'),
-                        ipw.HTML(
-                            '<font size="2"><b>Select folder where to save<b></font>'
-                        ),
-                        self.saving_folder.file_list,
                         self.export_button,
                     ]
                 )

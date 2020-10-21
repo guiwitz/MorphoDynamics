@@ -96,7 +96,7 @@ def tracking(regions, location=None, seg_type="farid"):
     location: 1d array, optional
         position vector
     seg_type: str
-        type of segmentation used, currently 'farid' or 'cellpose'
+        type of segmentation used, currently 'farid', 'cellpose' or 'ilastik'
 
     Returns
     -------
@@ -105,6 +105,8 @@ def tracking(regions, location=None, seg_type="farid"):
 
     """
 
+    if seg_type == "ilastik":
+        regions = label(regions)
     # number of regions
     nr = np.max(regions)
     # if not location is given, keep largest regions
@@ -112,7 +114,7 @@ def tracking(regions, location=None, seg_type="farid"):
     if location is None:
         sr = np.zeros((nr,))
         for k in range(nr):
-            if seg_type == "farid":
+            if seg_type in ["farid", "ilastik"]:
                 sr[k] = np.sum(binary_fill_holes(regions == k + 1))
             elif seg_type == "cellpose":
                 sr[k] = np.sum(regions == k + 1)
@@ -123,7 +125,7 @@ def tracking(regions, location=None, seg_type="farid"):
         for k in range(nr):
             cm[k] = center_of_mass(regions == k + 1)
         k = np.argmin([np.linalg.norm(cm0 - location) for cm0 in cm])
-        if seg_type == "farid":
+        if seg_type in ["farid", "ilastik"]:
             sel_region = binary_fill_holes(regions == k + 1)
         elif seg_type == "cellpose":
             sel_region = regions == k + 1

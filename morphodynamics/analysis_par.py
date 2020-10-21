@@ -1,6 +1,10 @@
+import os
+import pickle
+from pathlib import Path
 import numpy as np
 from scipy.ndimage import center_of_mass
 from scipy.interpolate import splev
+import skimage.io
 from .segmentation import (
     segment_threshold,
     segment_cellpose,
@@ -15,7 +19,7 @@ from .displacementestimation import (
     subdivide_curve_discrete,
     splevper,
 )
-from .windowing import create_windows, extract_signals
+from .windowing import create_windows, extract_signals, boundaries_image
 from .results import Results
 import matplotlib.pyplot as plt
 from cellpose import models
@@ -63,9 +67,10 @@ def analyze_morphodynamics(data, param, only_seg=False, keep_seg=False):
     )
 
     # Segment all images but don't select cell
-    segmented = dask.compute(segment_all(data, param, model))[0]
-    if keep_seg:
-        res.seg = segmented
+    if param.ilastik:
+        segmented = np.arange(0, data.K)
+    else:
+        segmented = dask.compute(segment_all(data, param, model))[0]
 
     if only_seg:
         return res
@@ -74,11 +79,11 @@ def analyze_morphodynamics(data, param, only_seg=False, keep_seg=False):
     segmented = track_all(segmented, location, param)
 
     # get all splines
-    s_all = spline_all(segmented, param.lambda_, is_parallel)
+    s_all = spline_all(segmented, param.lambda_, param, is_parallel)
 
     # align curves across frames and rasterize the windows
-    s0prm_all, c_all, ori_all = align_all(
-        s_all, data.shape, param.n_curve, is_parallel
+    s0prm_all, ori_all = align_all(
+        s_all, data.shape, param.n_curve, param, is_parallel
     )
 
     # origin shifts have been computed pair-wise. Calculate the cumulative
@@ -88,12 +93,20 @@ def analyze_morphodynamics(data, param, only_seg=False, keep_seg=False):
 
     # define windows for each frame and compute pairs of corresponding
     # points on successive splines for displacement measurement
-    w_all, t_all, t0_all = window_map_all(
-        s_all, s0prm_all, J, I, c_all, res.orig, param.n_curve, is_parallel
+    t_all, t0_all = window_map_all(
+        s_all,
+        s0prm_all,
+        J,
+        I,
+        res.orig,
+        param.n_curve,
+        data.shape,
+        param,
+        is_parallel,
     )
 
     # Signals extracted from various imaging channels
-    mean_signal, var_signal = extract_signal_all(data, w_all, J, I)
+    mean_signal, var_signal = extract_signal_all(data, param, J, I)
 
     # compute displacements
     res.displacement = compute_displacement(s_all, t_all, t0_all)
@@ -156,12 +169,12 @@ def calibration(data, param, model):
             c, splev(0, s), depth=param.depth, width=param.width
         )
     except Exception:
-        print('I and J not calculated. Using 10 as default value.')
+        print("I and J not calculated. Using 10 as default value.")
 
     return location, J, I
 
 
-def spline_all(segmented, smoothing, is_parallel):
+def spline_all(segmented, smoothing, param, is_parallel):
     """
     Convert a series of segmented binary masks into splines.
 
@@ -182,19 +195,31 @@ def spline_all(segmented, smoothing, is_parallel):
 
     """
 
-    if is_parallel:
+    """if is_parallel:
         fun_contour_spline = dask.delayed(contour_spline, nout=2)
     else:
-        fun_contour_spline = contour_spline
+        fun_contour_spline = contour_spline"""
+
+    save_path = os.path.join(param.resultdir, "segmented")
+
+    def import_and_spline(name, smoothing):
+
+        m = skimage.io.imread(name)
+        s, _ = contour_spline(m, smoothing)
+        return s
+
+    if is_parallel:
+        import_and_spline = dask.delayed(import_and_spline, nout=2)
 
     s_all = {k: None for k in range(-1, len(segmented))}
     for k in range(0, len(segmented)):
-        s_all[k], _ = fun_contour_spline(segmented[k], smoothing)
+        name = os.path.join(save_path, "tracked_k_" + str(k) + ".tif")
+        s_all[k] = import_and_spline(name, smoothing)
     s_all = dask.compute(s_all)[0]
     return s_all
 
 
-def align_all(s_all, im_shape, num_points, is_parallel):
+def align_all(s_all, im_shape, num_points, param, is_parallel):
     """
     Align all successive pairs of splines and generate for each spline
     a rasterized version.
@@ -207,6 +232,7 @@ def align_all(s_all, im_shape, num_points, is_parallel):
         intended shape of rasterized image
     num_points: int
         number of estimated spline points
+    param:
     is_parallel: bool
         use dask or not
 
@@ -223,28 +249,40 @@ def align_all(s_all, im_shape, num_points, is_parallel):
 
     """
 
-    if is_parallel:
+    """if is_parallel:
         fun_spline_align_rasterize = dask.delayed(
             spline_align_rasterize, nout=3
         )
     else:
-        fun_spline_align_rasterize = spline_align_rasterize
+        fun_spline_align_rasterize = spline_align_rasterize"""
+
+    save_path = os.path.join(param.resultdir, "segmented")
+
+    def spline_and_save(N, s0, s, im_shape, align, name):
+        s0prm, c, ori = spline_align_rasterize(N, s0, s, im_shape, align)
+        skimage.io.imsave(name, c, check_contrast=False)
+        return s0prm, ori
+
+    if is_parallel:
+        spline_and_save = dask.delayed(spline_and_save, nout=2)
 
     num_frames = len(s_all) - 1
     s0prm_all = {k: None for k in range(num_frames)}
-    c_all = {k: None for k in range(-1, num_frames)}
+    # c_all = {k: None for k in range(-1, num_frames)}
     ori_all = {k: None for k in range(0, num_frames)}
     for k in range(num_frames):
-        s0prm_all[k], c_all[k], ori_all[k] = fun_spline_align_rasterize(
-            num_points, s_all[k - 1], s_all[k], im_shape, k > 0
-        )
-    s0prm_all, c_all, ori_all = dask.compute(s0prm_all, c_all, ori_all)
 
-    return s0prm_all, c_all, ori_all
+        name = os.path.join(save_path, "rasterized_k_" + str(k) + ".tif")
+        s0prm_all[k], ori_all[k] = spline_and_save(
+            num_points, s_all[k - 1], s_all[k], im_shape, k > 0, name
+        )
+    s0prm_all, ori_all = dask.compute(s0prm_all, ori_all)
+
+    return s0prm_all, ori_all
 
 
 def window_map_all(
-    s_all, s_shift_all, J, I, c_all, origins, num_points, is_parallel
+    s_all, s_shift_all, J, I, origins, num_points, im_shape, param, is_parallel
 ):
     """
     Create windows for spline s and map its position to spline of
@@ -264,18 +302,19 @@ def window_map_all(
         number of window layers
     I: list of int
         number of windows per layer
-    c_all: dict of 2d arrays
-        each element is the rasterized contour
     origins: list of floats
         each element k is the spline parameter shift to align
         spline of frame k+1 on spine of frame k
+    num_points: int
+        number of interpolation points
+    im_shape: tuple
+        shape of output image with windows
+    param:
     is_parallel: bool
         use dask or not
 
     Returns
     -------
-    w_all: dict of 3d list
-        each element is a window-list as output by create_windows()
     t_all: dict of 1d array
         each element is a list of spline parameters defining closest locations
         on s_all[t] to points defined by t0_all on s_all[t-1]
@@ -285,21 +324,61 @@ def window_map_all(
 
     """
 
-    if is_parallel:
+    save_path = os.path.join(param.resultdir, "segmented")
+
+    """if is_parallel:
         fun_windowing_mapping = dask.delayed(windowing_mapping, nout=3)
     else:
-        fun_windowing_mapping = windowing_mapping
+        fun_windowing_mapping = windowing_mapping"""
+
+    def window_map_and_save(
+        N,
+        c,
+        c0,
+        s,
+        s0,
+        ori,
+        ori0,
+        s0_shifted,
+        J,
+        I,
+        align,
+        im_shape,
+        name,
+        name2,
+    ):
+        w, t, t0 = windowing_mapping(
+            N, c, c0, s, s0, ori, ori0, s0_shifted, J, I, align
+        )
+        pickle.dump(w, open(name, "wb"))
+        b0 = boundaries_image(im_shape, w)
+        skimage.io.imsave(name2, b0.astype(np.uint8), check_contrast=False)
+        return t, t0
+
+    if is_parallel:
+        window_map_and_save = dask.delayed(window_map_and_save, nout=2)
 
     num_frames = len(s_all) - 1
-    w_all = {k: None for k in range(num_frames)}
+    # w_all = {k: None for k in range(num_frames)}
     t_all = {k: None for k in range(num_frames)}
     t0_all = {k: None for k in range(num_frames)}
     # map windows accross frames
     for k in range(num_frames):
-        w_all[k], t_all[k], t0_all[k] = fun_windowing_mapping(
+        c0 = None
+        if k > 0:
+            c0 = skimage.io.imread(
+                os.path.join(save_path, "rasterized_k_" + str(k - 1) + ".tif")
+            )
+        c1 = skimage.io.imread(
+            os.path.join(save_path, "rasterized_k_" + str(k) + ".tif")
+        )
+
+        name = os.path.join(save_path, "window_k_" + str(k) + ".pkl")
+        name2 = os.path.join(save_path, "window_image_k_" + str(k) + ".tif")
+        t_all[k], t0_all[k] = window_map_and_save(
             num_points,
-            c_all[k],
-            c_all[k - 1],
+            c1,
+            c0,
             s_all[k],
             s_all[k - 1],
             origins[k],
@@ -308,13 +387,16 @@ def window_map_all(
             J,
             I,
             k > 0,
+            im_shape,
+            name,
+            name2,
         )
-    w_all, t_all, t0_all = dask.compute(w_all, t_all, t0_all)
+    t_all, t0_all = dask.compute(t_all, t0_all)
 
-    return w_all, t_all, t0_all
+    return t_all, t0_all
 
 
-def extract_signal_all(data, w_all, J, I):
+def extract_signal_all(data, param, J, I):
     """
     Extract signals from all frames.
 
@@ -322,9 +404,7 @@ def extract_signal_all(data, w_all, J, I):
     ----------
     data: data object
         as returned by morphodynamics.dataset
-    w_all: dict of window-lists
-        each element is a window index list as
-        output by create_windows()
+    param:
     J: int
         number of window layers
     I: list of int
@@ -339,15 +419,19 @@ def extract_signal_all(data, w_all, J, I):
 
     """
 
+    save_path = os.path.join(param.resultdir, "segmented")
+
     mean_signal = np.zeros((len(data.signalfile), J, np.max(I), data.K))
     var_signal = np.zeros((len(data.signalfile), J, np.max(I), data.K))
 
     for k in range(data.K):
+        name = os.path.join(save_path, "window_k_" + str(k) + ".pkl")
+        w = pickle.load(open(name, "rb"))
         for ell in range(len(data.signalfile)):
             (
                 mean_signal[ell, :, :, k],
                 var_signal[ell, :, :, k],
-            ) = extract_signals(data.load_frame_signal(ell, k), w_all[k])
+            ) = extract_signals(data.load_frame_signal(ell, k), w)
 
     return mean_signal, var_signal
 
@@ -375,19 +459,37 @@ def track_all(segmented, location, param):
 
     for k in range(0, len(segmented)):
 
-        m = segmented[k]
+        save_path = os.path.join(param.resultdir, "segmented")
+        # m = segmented[k]
+        num = k
+        if param.ilastik:
+            segpath = Path(save_path)
+            num = str(k).zfill(len(next(segpath.glob('segmented_k_*.tif')).name.split('_')[-1])-4)
+        m = skimage.io.imread(
+            os.path.join(save_path, "segmented_k_" + str(num) + ".tif")
+        )
 
         # select cell to track in mask
         if param.cellpose:
             m = tracking(m, location, seg_type="cellpose")
         else:
-            m = tracking(m, location, seg_type="farid")
+            if param.ilastik:
+                m = tracking(m, location, seg_type="ilastik")
+            else:
+                m = tracking(m, location, seg_type="farid")
 
         # Set the location for the next iteration. Use reduced image for speed
         location = 2 * np.array(center_of_mass(m[::2, ::2]))
 
         # replace initial segmentation with aligned one
-        segmented[k] = m
+        # segmented[k] = m
+        m = m.astype(np.uint8)
+        skimage.io.imsave(
+            os.path.join(save_path, "tracked_k_" + str(k) + ".tif"),
+            m,
+            check_contrast=False,
+        )
+
     return segmented
 
 
@@ -508,6 +610,10 @@ def segment_all(data, param, model=None):
         list of labelled arrays
 
     """
+    # create folder to store segmentation data
+    save_path = os.path.join(param.resultdir, "segmented")
+    if not os.path.isdir(save_path):
+        os.makedirs(save_path)
 
     # check if distributed computing should be used
     distr = False
@@ -536,6 +642,21 @@ def segment_all(data, param, model=None):
             else:
                 # m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
                 m = segment_farid(x)
+
+        m = m.astype(np.uint8)
+        if distr:
+            m = dask.delayed(skimage.io.imsave)(
+                os.path.join(save_path, "segmented_k_" + str(k) + ".tif"),
+                m,
+                check_contrast=False,
+            )
+        else:
+            m = skimage.io.imsave(
+                os.path.join(save_path, "segmented_k_" + str(k) + ".tif"),
+                m,
+                check_contrast=False,
+            )
+
         segmented.append(m)
     return segmented
 

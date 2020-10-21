@@ -114,7 +114,7 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
     Returns
     -------
     w: 3d list
-        w[i][j][0] and w[0][0][1] are 1d arrays representing
+        w[i][j][0] and w[i][j][1] are 1d arrays representing
         lists of x,y indices of pixels belonging to window in i'th layer
         in j'th window
     J: int
