@@ -65,7 +65,7 @@ class EdgeRasterized:
         time_slider = ipw.IntSlider(
             description="Time",
             min=0,
-            max=self.data.K - 1,
+            max=self.data.K - 2,
             continuous_update=False,
             layout=ipw.Layout(width="100%"),
         )
