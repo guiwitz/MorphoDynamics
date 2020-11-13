@@ -106,7 +106,7 @@ def tracking(regions, location=None, seg_type="farid"):
     """
 
     if seg_type == "ilastik":
-        regions = label(regions)
+        regions = label(regions == 1)
     # number of regions
     nr = np.max(regions)
     # if not location is given, keep largest regions
