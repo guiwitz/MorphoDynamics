@@ -158,7 +158,6 @@ def calibration(data, param, model):
             os.path.join(segpath, "segmented_k_" + num + ".tif")
         )
         m = tracking(m, location, seg_type="ilastik")
-        plt.imshow(m)
     else:
         # m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
         m = segment_farid(x)
