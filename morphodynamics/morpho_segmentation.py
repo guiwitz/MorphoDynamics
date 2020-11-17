@@ -352,7 +352,10 @@ class InteractSeg:
         self.run_button.description = "Segmenting..."
         # with self.out_debug:
         self.res = analyze_morphodynamics(
-            self.data, self.param, self.client, self.skip_trackseg
+            self.data,
+            self.param,
+            self.client,
+            skip_segtrack=self.skip_trackseg,
         )
         self.show_segmentation(change="init")
         self.run_button.description = "Click to segment"
