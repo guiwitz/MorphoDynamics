@@ -5,7 +5,7 @@ import numpy as np
 from pathlib import Path
 
 from .parameters import Param
-from .dataset import TIFFSeries, MultipageTIFF, ND2
+from .dataset import TIFFSeries, MultipageTIFF, ND2, H5
 
 
 def load_alldata(folder_path, load_results=False):
@@ -70,6 +70,17 @@ def load_alldata(folder_path, load_results=False):
 
     elif param.data_type == "nd2":
         data = ND2(
+            Path(param.expdir),
+            param.morpho_name,
+            param.signal_name,
+            data_type=param.data_type,
+            step=param.step,
+            bad_frames=param.bad_frames,
+            max_time=param.max_time,
+        )
+
+    elif param.data_type == "h5":
+        data = H5(
             Path(param.expdir),
             param.morpho_name,
             param.signal_name,
