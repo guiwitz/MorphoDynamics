@@ -180,6 +180,7 @@ class InteractSeg:
         self.depth_text.observe(self.update_params, names="value")
 
         # use distributed computing
+        self.client = None
         self.distributed = ipw.Select(
             options=["No", "local", "cluster"], value="No"
         )
@@ -345,7 +346,7 @@ class InteractSeg:
 
         self.run_button.description = "Segmenting..."
         # with self.out_debug:
-        self.res = analyze_morphodynamics(self.data, self.param)
+        self.res = analyze_morphodynamics(self.data, self.param, self.client)
         self.show_segmentation(change="init")
         self.run_button.description = "Click to segment"
 

@@ -26,7 +26,9 @@ from cellpose import models
 import dask
 
 
-def analyze_morphodynamics(data, param, only_seg=False, keep_seg=False):
+def analyze_morphodynamics(
+    data, param, client=None, only_seg=False, keep_seg=False
+):
     """
     Main function performing segmentation, windowing, signal
     extraction and displacement matching.
@@ -37,6 +39,7 @@ def analyze_morphodynamics(data, param, only_seg=False, keep_seg=False):
         as returned by morphodynamics.dataset
     param: Param object
         As created by morphodyanmics.parameters.Param
+    client: dask client
     only_seg: bool
         Perfrom only segmentation without windowing
     keep_seg: bool
@@ -103,6 +106,7 @@ def analyze_morphodynamics(data, param, only_seg=False, keep_seg=False):
         data.shape,
         param,
         is_parallel,
+        client,
     )
 
     # Signals extracted from various imaging channels
@@ -153,7 +157,10 @@ def calibration(data, param, model):
         m = tracking(m, location, seg_type="cellpose")
     elif param.ilastik:
         segpath = Path(param.resultdir).joinpath("segmented")
-        num = str(0).zfill(len(next(segpath.glob('segmented_k_*.tif')).name.split('_')[-1])-4)
+        num = str(0).zfill(
+            len(next(segpath.glob("segmented_k_*.tif")).name.split("_")[-1])
+            - 4
+        )
         m = skimage.io.imread(
             os.path.join(segpath, "segmented_k_" + num + ".tif")
         )
@@ -289,7 +296,16 @@ def align_all(s_all, im_shape, num_points, param, is_parallel):
 
 
 def window_map_all(
-    s_all, s_shift_all, J, I, origins, num_points, im_shape, param, is_parallel
+    s_all,
+    s_shift_all,
+    J,
+    I,
+    origins,
+    num_points,
+    im_shape,
+    param,
+    is_parallel,
+    client,
 ):
     """
     Create windows for spline s and map its position to spline of
@@ -319,6 +335,7 @@ def window_map_all(
     param:
     is_parallel: bool
         use dask or not
+    client: dask client
 
     Returns
     -------
@@ -339,21 +356,25 @@ def window_map_all(
         fun_windowing_mapping = windowing_mapping"""
 
     def window_map_and_save(
-        N,
-        c,
-        c0,
-        s,
-        s0,
-        ori,
-        ori0,
-        s0_shifted,
-        J,
-        I,
-        align,
-        im_shape,
-        name,
-        name2,
+        N, s, s0, ori, ori0, s0_shifted, J, I, k_iter, im_shape
     ):
+        align = k_iter > 0
+        c0 = None
+        if k_iter > 0:
+            c0 = skimage.io.imread(
+                os.path.join(
+                    save_path, "rasterized_k_" + str(k_iter - 1) + ".tif"
+                )
+            )
+        c = skimage.io.imread(
+            os.path.join(save_path, "rasterized_k_" + str(k_iter) + ".tif")
+        )
+
+        name = os.path.join(save_path, "window_k_" + str(k_iter) + ".pkl")
+        name2 = os.path.join(
+            save_path, "window_image_k_" + str(k_iter) + ".tif"
+        )
+
         w, t, t0 = windowing_mapping(
             N, c, c0, s, s0, ori, ori0, s0_shifted, J, I, align
         )
@@ -362,43 +383,49 @@ def window_map_all(
         skimage.io.imsave(name2, b0.astype(np.uint8), check_contrast=False)
         return t, t0
 
-    if is_parallel:
-        window_map_and_save = dask.delayed(window_map_and_save, nout=2)
+    # if is_parallel:
+    #    window_map_and_save = dask.delayed(window_map_and_save, nout=2)
 
     num_frames = len(s_all) - 1
     # w_all = {k: None for k in range(num_frames)}
     t_all = {k: None for k in range(num_frames)}
     t0_all = {k: None for k in range(num_frames)}
     # map windows accross frames
-    for k in range(num_frames):
-        c0 = None
-        if k > 0:
-            c0 = skimage.io.imread(
-                os.path.join(save_path, "rasterized_k_" + str(k - 1) + ".tif")
-            )
-        c1 = skimage.io.imread(
-            os.path.join(save_path, "rasterized_k_" + str(k) + ".tif")
-        )
 
-        name = os.path.join(save_path, "window_k_" + str(k) + ".pkl")
-        name2 = os.path.join(save_path, "window_image_k_" + str(k) + ".tif")
-        t_all[k], t0_all[k] = window_map_and_save(
-            num_points,
-            c1,
-            c0,
-            s_all[k],
-            s_all[k - 1],
-            origins[k],
-            origins[k - 1],
-            s_shift_all[k],
-            J,
-            I,
-            k > 0,
-            im_shape,
-            name,
-            name2,
-        )
-    t_all, t0_all = dask.compute(t_all, t0_all)
+    if client is not None:
+        test = [
+            client.submit(
+                window_map_and_save,
+                num_points,
+                s_all[k],
+                s_all[k - 1],
+                origins[k],
+                origins[k - 1],
+                s_shift_all[k],
+                J,
+                I,
+                k,
+                im_shape,
+            )
+            for k in range(num_frames)
+        ]
+        for k in range(num_frames):
+            t_all[k], t0_all[k] = test[k].result()
+            test[k].cancel()
+    else:
+        for k in range(num_frames):
+            t_all[k], t0_all[k] = window_map_and_save(
+                num_points,
+                s_all[k],
+                s_all[k - 1],
+                origins[k],
+                origins[k - 1],
+                s_shift_all[k],
+                J,
+                I,
+                k,
+                im_shape,
+            )
 
     return t_all, t0_all
 
@@ -471,7 +498,12 @@ def track_all(segmented, location, param):
         num = k
         if param.ilastik:
             segpath = Path(save_path)
-            num = str(k).zfill(len(next(segpath.glob('segmented_k_*.tif')).name.split('_')[-1])-4)
+            num = str(k).zfill(
+                len(
+                    next(segpath.glob("segmented_k_*.tif")).name.split("_")[-1]
+                )
+                - 4
+            )
         m = skimage.io.imread(
             os.path.join(save_path, "segmented_k_" + str(num) + ".tif")
         )
