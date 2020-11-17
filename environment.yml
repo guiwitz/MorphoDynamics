@@ -30,4 +30,5 @@ dependencies:
     - google-cloud-storage
     - tqdm
     - cellpose
+    - kaleido
     - .
