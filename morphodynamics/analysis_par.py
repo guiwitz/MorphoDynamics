@@ -27,7 +27,12 @@ import dask
 
 
 def analyze_morphodynamics(
-    data, param, client=None, only_seg=False, keep_seg=False
+    data,
+    param,
+    client=None,
+    only_seg=False,
+    keep_seg=False,
+    skip_segtrack=False,
 ):
     """
     Main function performing segmentation, windowing, signal
@@ -44,6 +49,8 @@ def analyze_morphodynamics(
         Perfrom only segmentation without windowing
     keep_seg: bool
         Store segmentation masks in memory
+    skip_segtrack: bool
+        Skip segmentation and tracking (only possible if done previously)
 
     Returns
     -------
@@ -69,20 +76,21 @@ def analyze_morphodynamics(
         J=J, I=I, num_time_points=data.K, num_channels=len(data.signalfile)
     )
 
-    # Segment all images but don't select cell
-    if param.ilastik:
-        segmented = np.arange(0, data.K)
-    else:
-        segmented = dask.compute(segment_all(data, param, model))[0]
+    if not skip_segtrack:
+        # Segment all images but don't select cell
+        if param.ilastik:
+            segmented = np.arange(0, data.K)
+        else:
+            segmented = dask.compute(segment_all(data, param, model))[0]
 
-    if only_seg:
-        return res
+        if only_seg:
+            return res
 
-    # do the tracking
-    segmented = track_all(segmented, location, param)
+        # do the tracking
+        segmented = track_all(segmented, location, param)
 
     # get all splines
-    s_all = spline_all(segmented, param.lambda_, param, is_parallel)
+    s_all = spline_all(data.K, param.lambda_, param, is_parallel)
 
     # align curves across frames and rasterize the windows
     s0prm_all, ori_all = align_all(
@@ -188,14 +196,14 @@ def calibration(data, param, model):
     return location, J, I
 
 
-def spline_all(segmented, smoothing, param, is_parallel):
+def spline_all(num_frames, smoothing, param, is_parallel):
     """
     Convert a series of segmented binary masks into splines.
 
     Parameters
     ----------
-    segmented: list of 2d arrays
-        each array is a segmented binary image
+    num_frames: int
+        number of frames to analyze
     smoothing: float
         smoothing parameter used by splprep
     is_parallel: bool
@@ -225,8 +233,8 @@ def spline_all(segmented, smoothing, param, is_parallel):
     if is_parallel:
         import_and_spline = dask.delayed(import_and_spline, nout=2)
 
-    s_all = {k: None for k in range(-1, len(segmented))}
-    for k in range(0, len(segmented)):
+    s_all = {k: None for k in range(-1, num_frames)}
+    for k in range(0, num_frames):
         name = os.path.join(save_path, "tracked_k_" + str(k) + ".tif")
         s_all[k] = import_and_spline(name, smoothing)
     s_all = dask.compute(s_all)[0]

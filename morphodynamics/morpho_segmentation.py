@@ -55,6 +55,9 @@ class InteractSeg:
         RAM to use on cluster
     cores : int
         number of cores to use per worker on cluster
+    skip_trackseg : bool
+        skip segmentation and tracking (only possible
+        if done previously)
 
     Attributes
     ----------
@@ -68,6 +71,7 @@ class InteractSeg:
         signal_name=None,
         memory="2 GB",
         cores=1,
+        skip_trackseg=False,
     ):
 
         style = {"description_width": "initial"}
@@ -80,6 +84,7 @@ class InteractSeg:
         self.expdir = expdir
         self.memory = memory
         self.cores = cores
+        self.skip_trackseg = skip_trackseg
 
         self.data = None
         self.res = None
@@ -346,7 +351,9 @@ class InteractSeg:
 
         self.run_button.description = "Segmenting..."
         # with self.out_debug:
-        self.res = analyze_morphodynamics(self.data, self.param, self.client)
+        self.res = analyze_morphodynamics(
+            self.data, self.param, self.client, self.skip_trackseg
+        )
         self.show_segmentation(change="init")
         self.run_button.description = "Click to segment"
 
@@ -429,8 +436,6 @@ class InteractSeg:
             self.intensity_range_slider.observe(
                 self.update_intensity_range, names="value"
             )
-
-            
 
             if windows_pos is not None:
                 self.fig.data[2].x = windows_pos[:, 0]
@@ -738,7 +743,7 @@ class InteractSeg:
                             or folder containing segmentation to load<b></font>'
                                         ),
                                         self.main_folder.file_list,
-                                        self.load_button
+                                        self.load_button,
                                     ]
                                 ),
                                 ipw.VBox(
@@ -750,7 +755,7 @@ class InteractSeg:
                                             '<font size="2"><b>Select folder where to save<b></font>'
                                         ),
                                         self.saving_folder.file_list,
-                                        self.ilastik_check
+                                        self.ilastik_check,
                                     ]
                                 ),
                             ]
