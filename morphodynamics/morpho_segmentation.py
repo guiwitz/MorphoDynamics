@@ -12,7 +12,7 @@ from nd2reader import ND2Reader
 import yaml
 
 from .parameters import Param
-from .dataset import MultipageTIFF, TIFFSeries, ND2
+from .dataset import MultipageTIFF, TIFFSeries, ND2, H5
 from .folders import Folders
 
 from .analysis_par import analyze_morphodynamics
@@ -311,9 +311,19 @@ class InteractSeg:
                 bad_frames=self.param.bad_frames,
                 switch_TZ=self.param.switch_TZ,
             )
-        elif self.expdir.split(".")[-1] == "nd2":
+        elif self.param.morpho_name.split(".")[-1] == "nd2":
             self.param.data_type = "nd2"
             self.data = ND2(
+                self.expdir,
+                self.param.morpho_name,
+                self.param.signal_name,
+                data_type=self.param.data_type,
+                step=self.param.step,
+                bad_frames=self.param.bad_frames,
+            )
+        elif self.param.morpho_name.split(".")[-1] == "h5":
+            self.param.data_type = "h5"
+            self.data = H5(
                 self.expdir,
                 self.param.morpho_name,
                 self.param.signal_name,

@@ -19,6 +19,7 @@ dependencies:
   - ipympl
   - python-graphviz
   - dask-jobqueue
+  - h5py
   - pip:
     - dill
     - bokeh>=0.13.0

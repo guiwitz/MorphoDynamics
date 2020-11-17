@@ -2,6 +2,7 @@ import os
 import re
 from aicsimageio import AICSImage
 from nd2reader import ND2Reader
+import h5py
 import skimage.io
 import numpy as np
 from pathlib import Path
@@ -335,6 +336,76 @@ class ND2(Data):
             x=0, y=0, z=0, c=ch_index, t=time, v=0
         )
         return image
+
+    def get_channel_name(self, m):
+        """Get name of channel index m"""
+
+        return self.signalfile[m]
+
+
+class H5(Data):
+    def __init__(
+        self,
+        expdir,
+        morpho_name,
+        signal_name,
+        bad_frames=[],
+        step=1,
+        max_time=None,
+        data_type="h5",
+        switch_TZ=False,
+    ):
+        Data.__init__(
+            self,
+            expdir,
+            morpho_name,
+            signal_name,
+            bad_frames,
+            step,
+            max_time,
+            data_type,
+            switch_TZ,
+        )
+
+        self.initialize()
+
+    def initialize(self):
+
+        self.morphofile = self.morpho_name
+        self.signalfile = (
+            self.signal_name
+        )  # TODO: is signalfile really needed; it looks like signal_name is enough
+
+        self.morpho_imobj = h5py.File(
+            os.path.join(self.expdir, self.morphofile), 'r'
+        ).get('volume')
+        self.signal_imobj = [
+            h5py.File(os.path.join(self.expdir, x), 'r').get('volume')
+            for x in self.signal_name
+        ]
+
+        if self.max_time is None:
+            self.max_time = self.morpho_imobj.shape[0]
+
+        self.set_valid_frames()
+
+        image = self.load_frame_morpho(0)
+        self.dims = image.shape
+        self.shape = image.shape
+
+    def load_frame_morpho(self, k):
+        """Load index k of valid frames of the segmentation channel"""
+
+        time = self.valid_frames[k]
+
+        return self.morpho_imobj[time, :, :]
+
+    def load_frame_signal(self, m, k):
+        """Load index k of valid frames of channel index m in self.signalfile"""
+
+        time = self.valid_frames[k]
+
+        return self.signal_imobj[m][time, :, :]
 
     def get_channel_name(self, m):
         """Get name of channel index m"""
