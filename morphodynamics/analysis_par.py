@@ -151,6 +151,14 @@ def calibration(data, param, model):
     if param.cellpose:
         m = segment_cellpose(model, x, param.diameter, location)
         m = tracking(m, location, seg_type="cellpose")
+    elif param.ilastik:
+        segpath = Path(param.resultdir).joinpath("segmented")
+        num = str(0).zfill(len(next(segpath.glob('segmented_k_*.tif')).name.split('_')[-1])-4)
+        m = skimage.io.imread(
+            os.path.join(segpath, "segmented_k_" + num + ".tif")
+        )
+        m = tracking(m, location, seg_type="ilastik")
+        plt.imshow(m)
     else:
         # m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
         m = segment_farid(x)
