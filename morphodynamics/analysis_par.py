@@ -405,7 +405,7 @@ def window_map_all(
                 I,
                 k,
                 im_shape,
-                param,
+                param
             )
             for k in range(num_frames)
         ]
@@ -425,6 +425,7 @@ def window_map_all(
                 I,
                 k,
                 im_shape,
+                param
             )
 
     return t_all, t0_all
