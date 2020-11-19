@@ -7,7 +7,7 @@ class Param:
         self,
         expdir=None,
         resultdir=None,
-        T=None,
+        T=100,
         data_type="series",
         n_curve=10000,
         morpho_name=None,
@@ -79,6 +79,9 @@ class Param:
 
         # use cellpose
         self.cellpose = False
+
+        # cell diameter to use for segmentation
+        self.diameter = 200
 
         # use distributed computing
         self.distributed = False
