@@ -43,7 +43,8 @@ class EdgeVectorialSlow:
 
         time_slider = ipw.IntSlider(
             description="Time",
-            min=0,
+            value=1,
+            min=1,
             max=self.data.K - 2,
             continuous_update=False,
             layout=ipw.Layout(width="100%"),
@@ -70,7 +71,7 @@ class EdgeVectorialSlow:
                 self.param,
                 self.data,
                 self.res,
-                0,
+                1,
                 curvature=False,
                 fig_ax=(self.fig, self.ax),
             )

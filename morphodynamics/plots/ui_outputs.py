@@ -1,5 +1,3 @@
-import dill
-import os
 from pathlib import Path
 
 from morphodynamics.folders import Folders
@@ -12,8 +10,6 @@ from morphodynamics.plots.ui_correlation import Correlation
 from morphodynamics.plots.ui_batch import BatchExport
 
 
-import morphodynamics.figurehelper
-from morphodynamics.settings import Struct, load_settings
 from morphodynamics.utils import load_alldata
 import matplotlib.pyplot as plt
 import ipywidgets as ipw

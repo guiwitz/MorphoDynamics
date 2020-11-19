@@ -7,18 +7,12 @@ from matplotlib.colors import Normalize
 import ipywidgets as ipw
 
 # from matplotlib.backends.backend_pdf import PdfPages
-from tifffile import TiffWriter, imsave
 from scipy.interpolate import splev
-from scipy.stats import norm
-from ..correlation import show_correlation_core, correlate_arrays, get_range
 from ..displacementestimation import (
-    compute_edge_image,
     compute_curvature,
     compute_length,
     compute_area,
     splevper,
-    show_edge_scatter_init,
-    show_edge_scatter_update,
 )
 
 out = ipw.Output()
