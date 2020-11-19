@@ -21,6 +21,7 @@ from .displacementestimation import (
 )
 from .windowing import create_windows, extract_signals, boundaries_image
 from .results import Results
+from .utils import load_alldata
 import matplotlib.pyplot as plt
 from cellpose import models
 import dask
@@ -78,7 +79,7 @@ def analyze_morphodynamics(
         if param.ilastik:
             segmented = np.arange(0, data.K)
         else:
-            segmented = dask.compute(segment_all(data, param, model))[0]
+            segmented = segment_all(data, param, client, model)
 
         if only_seg:
             return res
@@ -243,7 +244,7 @@ def spline_all(num_frames, smoothing, param, client):
         name = os.path.join(save_path, "tracked_k_" + str(k) + ".tif")
         s_all[k] = client.submit(import_and_spline, name, smoothing)
 
-    for k in tqdm(range(num_frames), "frames"):
+    for k in tqdm(range(num_frames), "frames splining"):
         future = s_all[k]
         s_all[k] = future.result()
         future.cancel()
@@ -379,6 +380,7 @@ def window_map_all(
     param: Param object
         As created by morphodyanmics.parameters.Param
     client: dask client
+        client connected to LocalCluster or SLURMCluster
 
     Returns
     -------
@@ -414,7 +416,7 @@ def window_map_all(
         )
         for k in range(num_frames)
     ]
-    for k in tqdm(range(num_frames), 'frames compute windows'):
+    for k in tqdm(range(num_frames), "frames compute windows"):
         t_all[k], t0_all[k] = compute_window[k].result()
         compute_window[k].cancel()
 
@@ -526,7 +528,7 @@ def track_all(segmented, location, param):
 
 def compute_displacement(s_all, t_all, t0_all):
     """
-    Compute displacment between pairs of successive splines.
+    Compute displacement between pairs of successive splines.
 
     Parameters
     ----------
@@ -622,7 +624,26 @@ def windowing_mapping(N, c, c0, s, s0, ori, ori0, s0_shifted, J, I, align):
     return w, t, t0
 
 
-def segment_all(data, param, model=None):
+def segment_single_frame(param, k, save_path):
+
+    _, _, data = load_alldata(folder_path=None, load_results=False, param=param)
+    x = data.load_frame_morpho(k)
+
+    if param.cellpose:
+        m = segment_cellpose(None, x, param.diameter, None)
+    else:
+        m = segment_farid(x)
+
+    m = m.astype(np.uint8)
+
+    m = skimage.io.imsave(
+        os.path.join(save_path, "segmented_k_" + str(k) + ".tif"),
+        m,
+        check_contrast=False,
+    )
+
+
+def segment_all(data, param, client, model=None):
     """
     Segment all frames and return a list of labelled masks. The correct
     label is not selected here
@@ -633,6 +654,8 @@ def segment_all(data, param, model=None):
         as returned by morphodynamics.dataset
     param: Param object
         As created by morphodyanmics.parameters.Param
+    client: dask client
+        client connected to LocalCluster or SLURMCluster
     model: cellpose model, optional
 
     Returns
@@ -646,49 +669,16 @@ def segment_all(data, param, model=None):
     if not os.path.isdir(save_path):
         os.makedirs(save_path)
 
-    # check if distributed computing should be used
-    distr = False
-    if param.distributed == "local" or param.distributed == "cluster":
-        distr = True
-
     # Segment all images but don't do tracking (selection of label)
-    segmented = []
-    for k in range(0, data.K):
-        if distr:
-            x = dask.delayed(data.load_frame_morpho)(k)  # Input image
-        else:
-            x = data.load_frame_morpho(k)  # Input image
+    segmented = [
+        client.submit(segment_single_frame, param, k, save_path)
+        for k in range(0, data.K)
+    ]
+    for k in tqdm(range(0, data.K), "frame segmentation"):
+        future = segmented[k]
+        segmented[k] = future.result()
+        future.cancel()
 
-        if param.cellpose:
-            if distr:
-                m = dask.delayed(segment_cellpose)(
-                    None, x, param.diameter, None
-                )
-            else:
-                m = segment_cellpose(model, x, param.diameter, None)
-        else:
-            if distr:
-                # m = dask.delayed(segment_threshold)(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
-                m = dask.delayed(segment_farid)(x)
-            else:
-                # m = segment_threshold(x, param.sigma, param.T(k) if callable(param.T) else param.T, None)
-                m = segment_farid(x)
-
-        m = m.astype(np.uint8)
-        if distr:
-            m = dask.delayed(skimage.io.imsave)(
-                os.path.join(save_path, "segmented_k_" + str(k) + ".tif"),
-                m,
-                check_contrast=False,
-            )
-        else:
-            m = skimage.io.imsave(
-                os.path.join(save_path, "segmented_k_" + str(k) + ".tif"),
-                m,
-                check_contrast=False,
-            )
-
-        segmented.append(m)
     return segmented
 
 
