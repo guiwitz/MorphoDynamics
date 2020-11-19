@@ -8,11 +8,12 @@ from .parameters import Param
 from .dataset import TIFFSeries, MultipageTIFF, ND2, H5
 
 
-def load_alldata(folder_path, load_results=False):
+def load_alldata(folder_path, load_results=False, param=None):
     """
     Given a folder, load the parameter information contained in
     Parameters.yml and optionally load results from the
-    Results.yml file.
+    Results.yml file. If a Param object is given, it is not loaded
+    again.
 
     Parameters
     ----------
@@ -32,15 +33,18 @@ def load_alldata(folder_path, load_results=False):
 
     """
 
-    folder_path = Path(folder_path)
+    if param is not None:
+        folder_path = Path(param.resultdir)
+    else:
+        folder_path = Path(folder_path)
 
-    param = Param()
-    with open(folder_path.joinpath("Parameters.yml")) as file:
-        documents = yaml.full_load(file)
-    for k in documents.keys():
-        setattr(param, k, documents[k])
-    param.bad_frames_txt = param.bad_frames
-    param.bad_frames = format_bad_frames(param.bad_frames)
+        param = Param()
+        with open(folder_path.joinpath("Parameters.yml")) as file:
+            documents = yaml.full_load(file)
+        for k in documents.keys():
+            setattr(param, k, documents[k])
+        param.bad_frames_txt = param.bad_frames
+        param.bad_frames = format_bad_frames(param.bad_frames)
 
     res = None
     if load_results:
