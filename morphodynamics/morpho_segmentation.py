@@ -187,7 +187,7 @@ class InteractSeg:
         # use distributed computing
         self.client = None
         self.distributed = ipw.Select(
-            options=["No", "local", "cluster"], value="No"
+            options=["local", "cluster"], value="local"
         )
         self.distributed.observe(self.initialize_dask, names="value")
 
@@ -291,7 +291,7 @@ class InteractSeg:
             self.fig.show()
 
         # initialize dask
-        self.initialize_dask()
+        # self.initialize_dask()
 
     def initialize(self, b=None):
         """Create a data object based on chosen directories/files"""
@@ -349,6 +349,8 @@ class InteractSeg:
     def run_segmentation(self, b=None):
         """Run segmentation analysis"""
 
+        if self.client is None:
+            self.initialize_dask()
         self.run_button.description = "Segmenting..."
         # with self.out_debug:
         self.res = analyze_morphodynamics(

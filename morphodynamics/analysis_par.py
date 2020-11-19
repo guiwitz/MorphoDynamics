@@ -24,6 +24,7 @@ from .results import Results
 import matplotlib.pyplot as plt
 from cellpose import models
 import dask
+from tqdm import tqdm
 
 
 def analyze_morphodynamics(
@@ -45,6 +46,7 @@ def analyze_morphodynamics(
     param: Param object
         As created by morphodyanmics.parameters.Param
     client: dask client
+        client can be connected to either LocalCluster or SLURMCLuster
     only_seg: bool
         Perfrom only segmentation without windowing
     keep_seg: bool
@@ -58,11 +60,6 @@ def analyze_morphodynamics(
         as created by morphodyanmics.results.Result
 
     """
-
-    # check if dask is used for parallelization
-    is_parallel = False
-    if param.distributed == "local" or param.distributed == "cluster":
-        is_parallel = True
 
     if param.cellpose:
         model = models.Cellpose(model_type="cyto")
@@ -90,11 +87,11 @@ def analyze_morphodynamics(
         segmented = track_all(segmented, location, param)
 
     # get all splines
-    s_all = spline_all(data.K, param.lambda_, param, is_parallel)
+    s_all = spline_all(data.K, param.lambda_, param, client)
 
     # align curves across frames and rasterize the windows
     s0prm_all, ori_all = align_all(
-        s_all, data.shape, param.n_curve, param, is_parallel
+        s_all, data.shape, param.n_curve, param, client
     )
 
     # origin shifts have been computed pair-wise. Calculate the cumulative
@@ -113,7 +110,6 @@ def analyze_morphodynamics(
         param.n_curve,
         data.shape,
         param,
-        is_parallel,
         client,
     )
 
@@ -196,7 +192,28 @@ def calibration(data, param, model):
     return location, J, I
 
 
-def spline_all(num_frames, smoothing, param, is_parallel):
+def import_and_spline(filepath, smoothing):
+    """[summary]
+
+    Parameters
+    ----------
+    filepath : path
+        path to binary image
+    smoothing : float
+        smoothing factor for spline (see splrep)
+
+    Returns
+    -------
+    s : spline object (tuple)
+        spline fitted to binary object in image
+    """
+
+    m = skimage.io.imread(filepath)
+    s, _ = contour_spline(m, smoothing)
+    return s
+
+
+def spline_all(num_frames, smoothing, param, client):
     """
     Convert a series of segmented binary masks into splines.
 
@@ -206,8 +223,10 @@ def spline_all(num_frames, smoothing, param, is_parallel):
         number of frames to analyze
     smoothing: float
         smoothing parameter used by splprep
-    is_parallel: bool
-        use dask or not
+    param: Param object
+        As created by morphodyanmics.parameters.Param
+    client: dask client
+        client connected to LocalCluster or SLURMCLuster
 
     Returns
     -------
@@ -217,31 +236,21 @@ def spline_all(num_frames, smoothing, param, is_parallel):
 
     """
 
-    """if is_parallel:
-        fun_contour_spline = dask.delayed(contour_spline, nout=2)
-    else:
-        fun_contour_spline = contour_spline"""
-
     save_path = os.path.join(param.resultdir, "segmented")
-
-    def import_and_spline(name, smoothing):
-
-        m = skimage.io.imread(name)
-        s, _ = contour_spline(m, smoothing)
-        return s
-
-    if is_parallel:
-        import_and_spline = dask.delayed(import_and_spline, nout=2)
 
     s_all = {k: None for k in range(-1, num_frames)}
     for k in range(0, num_frames):
         name = os.path.join(save_path, "tracked_k_" + str(k) + ".tif")
-        s_all[k] = import_and_spline(name, smoothing)
-    s_all = dask.compute(s_all)[0]
+        s_all[k] = client.submit(import_and_spline, name, smoothing)
+
+    for k in tqdm(range(num_frames), "frames"):
+        future = s_all[k]
+        s_all[k] = future.result()
+        future.cancel()
     return s_all
 
 
-def align_all(s_all, im_shape, num_points, param, is_parallel):
+def align_all(s_all, im_shape, num_points, param, client):
     """
     Align all successive pairs of splines and generate for each spline
     a rasterized version.
@@ -255,8 +264,8 @@ def align_all(s_all, im_shape, num_points, param, is_parallel):
     num_points: int
         number of estimated spline points
     param:
-    is_parallel: bool
-        use dask or not
+    client: dask client
+        client connected to LocalCluster or SLURMCluster
 
     Returns
     -------
@@ -271,34 +280,33 @@ def align_all(s_all, im_shape, num_points, param, is_parallel):
 
     """
 
-    """if is_parallel:
-        fun_spline_align_rasterize = dask.delayed(
-            spline_align_rasterize, nout=3
-        )
-    else:
-        fun_spline_align_rasterize = spline_align_rasterize"""
-
     save_path = os.path.join(param.resultdir, "segmented")
-
-    def spline_and_save(N, s0, s, im_shape, align, name):
-        s0prm, c, ori = spline_align_rasterize(N, s0, s, im_shape, align)
-        skimage.io.imsave(name, c, check_contrast=False)
-        return s0prm, ori
-
-    if is_parallel:
-        spline_and_save = dask.delayed(spline_and_save, nout=2)
 
     num_frames = len(s_all) - 1
     s0prm_all = {k: None for k in range(num_frames)}
     # c_all = {k: None for k in range(-1, num_frames)}
     ori_all = {k: None for k in range(0, num_frames)}
-    for k in range(num_frames):
-
-        name = os.path.join(save_path, "rasterized_k_" + str(k) + ".tif")
-        s0prm_all[k], ori_all[k] = spline_and_save(
-            num_points, s_all[k - 1], s_all[k], im_shape, k > 0, name
+    names = [
+        os.path.join(save_path, "rasterized_k_" + str(k) + ".tif")
+        for k in range(num_frames)
+    ]
+    spline_compute = [
+        client.submit(
+            spline_align_rasterize,
+            num_points,
+            s_all[k - 1],
+            s_all[k],
+            im_shape,
+            k > 0,
+            names[k],
         )
-    s0prm_all, ori_all = dask.compute(s0prm_all, ori_all)
+        for k in range(num_frames)
+    ]
+
+    for k in tqdm(range(num_frames), "frames rasterize"):
+        future = spline_compute[k]
+        s0prm_all[k], ori_all[k], _ = future.result()
+        future.cancel()
 
     return s0prm_all, ori_all
 
@@ -341,7 +349,6 @@ def window_map_all(
     num_points,
     im_shape,
     param,
-    is_parallel,
     client,
 ):
     """
@@ -369,9 +376,8 @@ def window_map_all(
         number of interpolation points
     im_shape: tuple
         shape of output image with windows
-    param:
-    is_parallel: bool
-        use dask or not
+    param: Param object
+        As created by morphodyanmics.parameters.Param
     client: dask client
 
     Returns
@@ -391,42 +397,26 @@ def window_map_all(
     t0_all = {k: None for k in range(num_frames)}
     # map windows accross frames
 
-    if client is not None:
-        test = [
-            client.submit(
-                window_map_and_save,
-                num_points,
-                s_all[k],
-                s_all[k - 1],
-                origins[k],
-                origins[k - 1],
-                s_shift_all[k],
-                J,
-                I,
-                k,
-                im_shape,
-                param
-            )
-            for k in range(num_frames)
-        ]
-        for k in range(num_frames):
-            t_all[k], t0_all[k] = test[k].result()
-            test[k].cancel()
-    else:
-        for k in range(num_frames):
-            t_all[k], t0_all[k] = window_map_and_save(
-                num_points,
-                s_all[k],
-                s_all[k - 1],
-                origins[k],
-                origins[k - 1],
-                s_shift_all[k],
-                J,
-                I,
-                k,
-                im_shape,
-                param
-            )
+    compute_window = [
+        client.submit(
+            window_map_and_save,
+            num_points,
+            s_all[k],
+            s_all[k - 1],
+            origins[k],
+            origins[k - 1],
+            s_shift_all[k],
+            J,
+            I,
+            k,
+            im_shape,
+            param,
+        )
+        for k in range(num_frames)
+    ]
+    for k in tqdm(range(num_frames), 'frames compute windows'):
+        t_all[k], t0_all[k] = compute_window[k].result()
+        compute_window[k].cancel()
 
     return t_all, t0_all
 
@@ -439,7 +429,8 @@ def extract_signal_all(data, param, J, I):
     ----------
     data: data object
         as returned by morphodynamics.dataset
-    param:
+    param: Param object
+        As created by morphodyanmics.parameters.Param
     J: int
         number of window layers
     I: list of int
@@ -701,7 +692,7 @@ def segment_all(data, param, model=None):
     return segmented
 
 
-def spline_align_rasterize(N, s0, s, im_shape, align):
+def spline_align_rasterize(N, s0, s, im_shape, align, filename):
     """
     Align a spline s with another spline s0 and provide a rasterized
     version of it.
@@ -718,6 +709,8 @@ def spline_align_rasterize(N, s0, s, im_shape, align):
         size of image for rasterization
     align: bool
         do alignement necessary or not
+    filename: path
+        file name to save rasterized image
 
     Returns
     -------
@@ -736,5 +729,6 @@ def spline_align_rasterize(N, s0, s, im_shape, align):
     if align:
         s0_shifted, origin = align_curves(N, s0, s, 0)
     c = rasterize_curve(N, im_shape, s, origin)
+    skimage.io.imsave(filename, c, check_contrast=False)
 
-    return s0_shifted, c, origin
+    return s0_shifted, origin, c
