@@ -14,7 +14,8 @@ class Param:
         signal_name=None,
         max_time=None,
         switch_TZ=False,
-        ilastik=False
+        ilastik=False,
+        seg_algo='farid'
     ):
 
         """Standard __init__ method.
@@ -72,13 +73,16 @@ class Param:
         self.switch_TZ = switch_TZ
 
         # use segmentation from ilastik
-        self.ilastik = ilastik
+        #self.ilastik = ilastik
+
+        # what type of segmentation is used (currently: farid, cellpose or ilastik)
+        self.seg_algo = seg_algo
 
         # cell location
         self.location = None
 
         # use cellpose
-        self.cellpose = False
+        #self.cellpose = False
 
         # cell diameter to use for segmentation
         self.diameter = 200

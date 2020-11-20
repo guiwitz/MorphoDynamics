@@ -62,7 +62,7 @@ def analyze_morphodynamics(
 
     """
 
-    if param.cellpose:
+    if param.seg_algo == 'cellpose':
         model = models.Cellpose(model_type="cyto")
     else:
         model = None
@@ -76,7 +76,7 @@ def analyze_morphodynamics(
 
     if not skip_segtrack:
         # Segment all images but don't select cell
-        if param.ilastik:
+        if param.seg_algo == "ilastik":
             segmented = np.arange(0, data.K)
         else:
             segmented = segment_all(data, param, client, model)
@@ -157,10 +157,10 @@ def calibration(data, param, model):
     # Calibration of the windowing procedure
     location = param.location
     x = data.load_frame_morpho(0)
-    if param.cellpose:
+    if param.seg_algo == 'cellpose':
         m = segment_cellpose(model, x, param.diameter, location)
         m = tracking(m, location, seg_type="cellpose")
-    elif param.ilastik:
+    elif param.seg_algo == "ilastik":
         segpath = Path(param.resultdir).joinpath("segmented")
         num = str(0).zfill(
             len(next(segpath.glob("segmented_k_*.tif")).name.split("_")[-1])
@@ -170,7 +170,7 @@ def calibration(data, param, model):
             os.path.join(segpath, "segmented_k_" + num + ".tif")
         )
         m = tracking(m, location, seg_type="ilastik")
-    else:
+    elif param.seg_algo == "farid":
         # m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
         m = segment_farid(x)
         m = tracking(m, location, seg_type="farid")
@@ -490,7 +490,7 @@ def track_all(segmented, location, param):
         save_path = os.path.join(param.resultdir, "segmented")
         # m = segmented[k]
         num = k
-        if param.ilastik:
+        if param.seg_algo == "ilastik":
             segpath = Path(save_path)
             num = str(k).zfill(
                 len(
@@ -503,13 +503,14 @@ def track_all(segmented, location, param):
         )
 
         # select cell to track in mask
-        if param.cellpose:
+        '''if param.seg_algo == "cellpose":
             m = tracking(m, location, seg_type="cellpose")
         else:
-            if param.ilastik:
+            if param.seg_algo == "ilastik":
                 m = tracking(m, location, seg_type="ilastik")
-            else:
-                m = tracking(m, location, seg_type="farid")
+            elif param.seg_algo == "farid":
+                m = tracking(m, location, seg_type="farid")'''
+        m = tracking(m, location, seg_type=param.seg_algo)
 
         # Set the location for the next iteration. Use reduced image for speed
         location = 2 * np.array(center_of_mass(m[::2, ::2]))
@@ -629,9 +630,9 @@ def segment_single_frame(param, k, save_path):
     _, _, data = load_alldata(folder_path=None, load_results=False, param=param)
     x = data.load_frame_morpho(k)
 
-    if param.cellpose:
+    if param.seg_algo == "cellpose":
         m = segment_cellpose(None, x, param.diameter, None)
-    else:
+    elif param.seg_algo == "farid":
         m = segment_farid(x)
 
     m = m.astype(np.uint8)

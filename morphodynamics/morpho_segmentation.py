@@ -58,6 +58,9 @@ class InteractSeg:
     skip_trackseg : bool
         skip segmentation and tracking (only possible
         if done previously)
+    seg_algo : str
+        type of segmentation algorithm to use
+        can be "fardi", "cellpose" or "ilastik"
 
     Attributes
     ----------
@@ -72,13 +75,14 @@ class InteractSeg:
         memory="2 GB",
         cores=1,
         skip_trackseg=False,
+        seg_algo="ilastik",
     ):
 
         style = {"description_width": "initial"}
         layout = {"width": "300px"}
 
         self.param = Param(
-            expdir=expdir, morpho_name=morpho_name, signal_name=signal_name
+            expdir=expdir, morpho_name=morpho_name, signal_name=signal_name, seg_algo=seg_algo
         )
 
         self.expdir = expdir
@@ -205,12 +209,6 @@ class InteractSeg:
         )
         self.switchTZ_check.observe(self.update_switchTZ, names="value")
 
-        # toggle ilastik segmentation
-        self.ilastik_check = ipw.Checkbox(
-            description="Use ilastik", value=False
-        )
-        self.ilastik_check.observe(self.update_ilastik, names="value")
-
         # parameters
         self.maxtime = ipw.BoundedIntText(value=0, description="Max time")
         self.maxtime.observe(self.update_data_params, names="value")
@@ -226,7 +224,9 @@ class InteractSeg:
         self.bad_frames.observe(self.update_data_params, names="value")
 
         self.segmentation = ipw.RadioButtons(
-            options=["Thresholding", "Cellpose"], description="Segmentation:"
+            value=seg_algo,
+            options=["farid", "cellpose", "ilastik"],
+            description="Segmentation:",
         )
         self.segmentation.observe(self.update_params, names="value")
 
@@ -576,14 +576,17 @@ class InteractSeg:
     def update_params(self, change=None):
         """Callback to update param paramters upon interactive editing"""
 
-        if self.segmentation.value == "Cellpose" and not self.param.cellpose:
-            self.segparam = self.diameter
+        if self.param.seg_algo != self.segmentation.value:
+            if self.segmentation.value == "cellpose":
+                self.segparam = self.diameter
+            elif self.segmentation.value == "farid":
+                self.segparam = ipw.VBox([])
+            elif self.segmentation.value == "ilastik":
+                self.segparam = ipw.VBox([])
             self.ui()
-        elif self.segmentation.value == "Thresholding" and self.param.cellpose:
-            self.segparam = self.threshold
-            self.ui()
+            self.param.seg_algo = self.segmentation.value
 
-        self.param.cellpose = self.segmentation.value == "Cellpose"
+        # self.param.cellpose = self.segmentation.value == "cellpose"
         self.param.diameter = self.diameter.value
         self.param.T = self.threshold.value
         self.param.width = self.width_text.value
@@ -607,11 +610,6 @@ class InteractSeg:
         """Callback to update ZT dimensions switching parameter"""
 
         self.param.switch_TZ = change["new"]
-
-    def update_ilastik(self, change=None):
-        """Callback to update ilastik parameter"""
-
-        self.param.ilastik = change["new"]
 
     def update_intensity_range(self, change=None):
         """Callback to update intensity range"""
@@ -704,13 +702,14 @@ class InteractSeg:
         self.segm_folders.value = param_copy.morpho_name
         self.channels_folders.value = param_copy.signal_name
         self.switchTZ_check.value = param_copy.switch_TZ
-        self.ilastik_check.value = param_copy.ilastik
 
         # set segmentation type
-        if param_copy.cellpose:
+        '''if param_copy.cellpose:
             self.segmentation.value = "Cellpose"
         else:
-            self.segmentation.value = "Thresholding"
+            self.segmentation.value = "Thresholding"'''
+
+        self.segmentation.value = param_copy.seg_algo
 
         # set segmentation parameters
         self.threshold.value = param_copy.T
@@ -760,7 +759,6 @@ class InteractSeg:
                                             '<font size="2"><b>Select folder where to save<b></font>'
                                         ),
                                         self.saving_folder.file_list,
-                                        self.ilastik_check,
                                     ]
                                 ),
                             ]
