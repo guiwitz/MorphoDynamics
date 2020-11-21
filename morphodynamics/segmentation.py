@@ -14,7 +14,7 @@ from cellpose import models
 from .displacementestimation import fit_spline
 
 
-def segment_threshold(x, sigma, T, location):
+def segment_threshold(x, sigma, T):
     """Segment the cell image, possibly with automatic threshold selection."""
 
     # Determine the threshold based on the histogram, if not provided manually
