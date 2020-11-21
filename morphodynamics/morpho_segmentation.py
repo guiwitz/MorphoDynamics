@@ -292,6 +292,7 @@ class InteractSeg:
 
         # initialize dask
         # self.initialize_dask()
+        self.ui()
 
     def initialize(self, b=None):
         """Create a data object based on chosen directories/files"""
