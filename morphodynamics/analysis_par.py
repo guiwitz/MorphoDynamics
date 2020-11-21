@@ -503,13 +503,6 @@ def track_all(segmented, location, param):
         )
 
         # select cell to track in mask
-        '''if param.seg_algo == "cellpose":
-            m = tracking(m, location, seg_type="cellpose")
-        else:
-            if param.seg_algo == "ilastik":
-                m = tracking(m, location, seg_type="ilastik")
-            elif param.seg_algo == "farid":
-                m = tracking(m, location, seg_type="farid")'''
         m = tracking(m, location, seg_type=param.seg_algo)
 
         # Set the location for the next iteration. Use reduced image for speed
