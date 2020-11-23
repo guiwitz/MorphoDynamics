@@ -1,0 +1,807 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analysis step by step &#8212; Morphodynamics documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.73d71520a4ca3b99cfee5594769eaaae.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.3da636dd464baa7582d2.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="General code structure" href="code_structure.html" />
+    <link rel="prev" title="Data analysis" href="Data_analysis.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">Morphodynamics documentation</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Introduction.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Getting started
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Analysis_with_morpho_segmentation.html">
+   Running an analysis
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Data_analysis.html">
+   Data analysis
+  </a>
+ </li>
+</ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Code and algorithms
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Analysis step by step
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="code_structure.html">
+   General code structure
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="segmentation.html">
+   Segmentation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Data.html">
+   Data formats
+  </a>
+ </li>
+</ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Reference
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../docs/source/morphodynamics.html">
+   morphodynamics package
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../docs/source/morphodynamics.plots.html">
+     morphodynamics.plots package
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/mydocs/usage_step_by_step.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/guiwitz/MorphoDynamics"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/guiwitz/MorphoDynamics/master?urlpath=tree/mydocs/usage_step_by_step.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#dataset">
+   Dataset
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#morphosegmentation-dataset">
+   morphosegmentation.dataset
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#preparation-steps">
+   Preparation steps
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#set-up-parameters-for-analysis">
+   Set-up parameters for analysis
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#calibrate-number-of-windows-and-cell-location">
+   Calibrate number of windows and cell location
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#set-up-results-structure">
+   Set-up results structure
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#start-dask">
+   Start dask
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#segmentation">
+   Segmentation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#tracking">
+   Tracking
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#splining">
+   Splining
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#aligning-splines-and-creating-rasterized-images">
+   Aligning splines and creating rasterized images
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#window-mapping">
+   Window mapping
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#extracting-signals">
+   Extracting signals
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#check-results">
+   Check results
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="analysis-step-by-step">
+<h1>Analysis step by step<a class="headerlink" href="#analysis-step-by-step" title="Permalink to this headline">¶</a></h1>
+<p>We provide here a step by step guide explaining how the different <a class="reference internal" href="code_structure.html"><span class="doc std std-doc">code components</span></a> to perform a complete analysis are used “under the hood” in case you want to re-use them or need a deeper understanding of the code.</p>
+<div class="section" id="dataset">
+<h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h2>
+<p>We use here a synthetic dataset that simulates microscopy observation of a cell. You can find the dataset in <span class="xref myst">this folder</span> and has been generated using the <a class="reference internal" href="../synthetic/simulate_data.html"><span class="doc std std-doc">simulate_data</span></a> notebook. The dataset is composed of 40 time points and three channels. A single cell starts as a circular object in the image center, and, over the 40 frames, the top cell edge moves upwards and downwards. The intensity in the first channel is homogeneous and is used for segmentation. In the two other channels, fluorescence is inhomogeneous and located at the cell bottom and also varies over time, including a time-shift between the second and third channels. The dataset is available <span class="xref myst">here</span> and has already been annotated and processed in ilastik with the result stored <span class="xref myst">here</span>.</p>
+</div>
+<div class="section" id="morphosegmentation-dataset">
+<h2>morphosegmentation.dataset<a class="headerlink" href="#morphosegmentation-dataset" title="Permalink to this headline">¶</a></h2>
+<p>The first step is to create a dataset object. For that we import the appropriate format from the module, in this case H5.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.dataset</span> <span class="kn">import</span> <span class="n">H5</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Then we need to specify the location of the dataset:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expdir</span> <span class="o">=</span> <span class="s1">&#39;../synthetic/data&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and specify which channels we intend to use. We need to provide the name of the stack used for segmentation:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">morpho_name</span> <span class="o">=</span> <span class="s1">&#39;synth_ch1.h5&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>as well as a list of stack names whose intensity we want to analyze:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">signal_name</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;synth_ch2.h5&#39;</span><span class="p">,</span><span class="s1">&#39;synth_ch3.h5&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can create our dataset using the H5 object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">H5</span><span class="p">(</span>
+    <span class="n">expdir</span><span class="o">=</span><span class="n">expdir</span><span class="p">,</span>
+    <span class="n">signal_name</span><span class="o">=</span><span class="n">signal_name</span><span class="p">,</span>
+    <span class="n">morpho_name</span><span class="o">=</span><span class="n">morpho_name</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The data object has several attributed and methods attached. For example we can import the images of the segmentation channel signal channels at time 8:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="n">time</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">image1</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">load_frame_morpho</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+<span class="n">image2</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">load_frame_signal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+<span class="n">image3</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">load_frame_signal</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image1</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Channel 1&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image2</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Channel 2&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image3</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Channel 3&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/usage_step_by_step_12_0.png" src="../_images/usage_step_by_step_12_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="preparation-steps">
+<h2>Preparation steps<a class="headerlink" href="#preparation-steps" title="Permalink to this headline">¶</a></h2>
+<p>We want to save the output of our analysis in a new results folder. We create it and then also copy the results of the ilastik segmentation there in a <code class="docutils literal notranslate"><span class="pre">segmented</span></code> subfolder.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">ilastik_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/Results_ilastik/segmented&quot;</span><span class="p">)</span>
+<span class="n">target_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/Results_step/segmented&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">target_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+    <span class="n">target_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ilastik_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;segmented*&#39;</span><span class="p">))</span>
+<span class="n">moved</span> <span class="o">=</span> <span class="p">[</span><span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">target_path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="set-up-parameters-for-analysis">
+<h2>Set-up parameters for analysis<a class="headerlink" href="#set-up-parameters-for-analysis" title="Permalink to this headline">¶</a></h2>
+<p>Now we create a Param object where we store parameters for our segmentation:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.parameters</span> <span class="kn">import</span> <span class="n">Param</span>
+
+<span class="n">result_dir</span> <span class="o">=</span> <span class="s1">&#39;../synthetic/data/Results_step&#39;</span>
+
+<span class="n">param</span> <span class="o">=</span> <span class="n">Param</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="n">expdir</span><span class="p">,</span> <span class="n">morpho_name</span><span class="o">=</span><span class="n">morpho_name</span><span class="p">,</span> <span class="n">signal_name</span><span class="o">=</span><span class="n">signal_name</span><span class="p">,</span>
+             <span class="n">resultdir</span><span class="o">=</span><span class="n">result_dir</span><span class="p">)</span>
+<span class="n">param</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">param</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">param</span><span class="o">.</span><span class="n">seg_algo</span> <span class="o">=</span> <span class="s1">&#39;ilastik&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="calibrate-number-of-windows-and-cell-location">
+<h2>Calibrate number of windows and cell location<a class="headerlink" href="#calibrate-number-of-windows-and-cell-location" title="Permalink to this headline">¶</a></h2>
+<p>Now we can finally run the analysis. In a first step, we need to estimate into how many layers (<code class="docutils literal notranslate"><span class="pre">J</span></code>) and how many windows per layer (<code class="docutils literal notranslate"><span class="pre">I</span></code>) our cell should be split based on the desired width and depth of a window. Here we also determine the center of mass position of the cell (<code class="docutils literal notranslate"><span class="pre">location</span></code>):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">calibration</span><span class="p">,</span> <span class="n">segment_all</span>
+
+<span class="n">location</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="n">calibration</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">StopIteration</span><span class="g g-Whitespace">                             </span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">9</span><span class="o">-</span><span class="mi">503</span><span class="n">ee6133cb8</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">calibration</span><span class="p">,</span> <span class="n">segment_all</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> 
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">location</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="n">calibration</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/analysis_par.py</span> in <span class="ni">calibration</span><span class="nt">(data, param, model)</span>
+<span class="g g-Whitespace">    </span><span class="mi">164</span>         <span class="n">segpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">resultdir</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;segmented&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">165</span>         <span class="n">num</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span>
+<span class="ne">--&gt; </span><span class="mi">166</span>             <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">segpath</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;segmented_k_*.tif&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="g g-Whitespace">    </span><span class="mi">167</span>             <span class="o">-</span> <span class="mi">4</span>
+<span class="g g-Whitespace">    </span><span class="mi">168</span>         <span class="p">)</span>
+
+<span class="ne">StopIteration</span>: 
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;cell location: </span><span class="si">{</span><span class="n">location</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;number of windows per layer I: </span><span class="si">{</span><span class="n">I</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;number of layer J: </span><span class="si">{</span><span class="n">J</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>cell location: (49.27272727272727, 49.86753246753247)
+number of windows per layer I: [16, 9]
+number of layer J: 2
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="set-up-results-structure">
+<h2>Set-up results structure<a class="headerlink" href="#set-up-results-structure" title="Permalink to this headline">¶</a></h2>
+<p>We also need to setup a data structure to save some output information such as windowing information (which pixels belong to which window) or signal per window values. For that we use the <code class="docutils literal notranslate"><span class="pre">Results</span></code> structure from the <code class="docutils literal notranslate"><span class="pre">morphodynamics.results</span></code> module. To create “empty” fields we need to know the numebr of windows, time points and signal channels:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.results</span> <span class="kn">import</span> <span class="n">Results</span>
+<span class="c1"># Result structures that will be saved to disk</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">Results</span><span class="p">(</span>
+    <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">I</span><span class="o">=</span><span class="n">I</span><span class="p">,</span> <span class="n">num_time_points</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">num_channels</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">signalfile</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="start-dask">
+<h2>Start dask<a class="headerlink" href="#start-dask" title="Permalink to this headline">¶</a></h2>
+<p>To make computation faster, the slow parts of the code are executed in parallel using the library Dask. One of the great advantages of that library is that it allows to seamlessly run the same code on a laptop and a cluster:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dask.distributed</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="segmentation">
+<h2>Segmentation<a class="headerlink" href="#segmentation" title="Permalink to this headline">¶</a></h2>
+<p>The first step of the pipeline is the cell segmentation. As we are using the ilastik pre-segmentation this step is automatically skipped here:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Segment all images but don&#39;t select cell</span>
+<span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">seg_algo</span> <span class="o">==</span> <span class="s1">&#39;ilastik&#39;</span><span class="p">:</span>
+    <span class="n">segmented</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">K</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">segmented</span> <span class="o">=</span> <span class="n">segment_all</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="tracking">
+<h2>Tracking<a class="headerlink" href="#tracking" title="Permalink to this headline">¶</a></h2>
+<p>We might have multiple cell in a field of view so that our segmentation output is not a simple binary mask but a labeled mask with multiple cells. We therefore have to decide which cell to consider. This can be done in the UI by picking a point in the image or by manually indicating the x-y location of a cell. Here we only have a single cell, so that selection is automatic. Once a cell has been selected in the first frame, we can track it across frames. This part of the analysis cannot be parallelized as the cell has to be tracked in successive frames:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">track_all</span>
+<span class="c1"># do the tracking</span>
+<span class="n">segmented</span> <span class="o">=</span> <span class="n">track_all</span><span class="p">(</span><span class="n">segmented</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The output of the tracking is stored as a series of binary masks names <code class="docutils literal notranslate"><span class="pre">tracked_k_0.tif</span></code>, <code class="docutils literal notranslate"><span class="pre">tracked_k_1.tif</span></code> etc.</p>
+</div>
+<div class="section" id="splining">
+<h2>Splining<a class="headerlink" href="#splining" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have binary masks, we can analyze their contour and fit a spline function to them. The spline information is also stored in the <code class="docutils literal notranslate"><span class="pre">res</span></code> structure to avoid the need for recalculation. Here <code class="docutils literal notranslate"><span class="pre">s_all</span></code> is a dictionary with frames as keys and containing the spline information.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">spline_all</span>
+<span class="c1"># get all splines</span>
+<span class="n">s_all</span> <span class="o">=</span> <span class="n">spline_all</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">lambda_</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:10&lt;00:00,  3.81it/s]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">skimage.io</span>
+<span class="kn">from</span> <span class="nn">morphodynamics.displacementestimation</span> <span class="kn">import</span> <span class="n">splevper</span>
+
+<span class="n">frame</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">tracked_image</span> <span class="o">=</span> <span class="n">skimage</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;../synthetic/data/Results_step/segmented/tracked_k_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.tif&#39;</span><span class="p">)</span>
+<span class="n">splined</span> <span class="o">=</span> <span class="n">splevper</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> <span class="n">s_all</span><span class="p">[</span><span class="n">frame</span><span class="p">])</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">tracked_image</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">splined</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">splined</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/usage_step_by_step_34_0.png" src="../_images/usage_step_by_step_34_0.png" />
+</div>
+</div>
+</div>
+<div class="section" id="aligning-splines-and-creating-rasterized-images">
+<h2>Aligning splines and creating rasterized images<a class="headerlink" href="#aligning-splines-and-creating-rasterized-images" title="Permalink to this headline">¶</a></h2>
+<p>Given all the splines, we need now to align them to account for x-y shifts (e.g. if the cell is moving) and shifts of the spline along the contour. Once the alignment is done, we can create a rasterized version of the contour, i.e. an image of the contour where the pixel value corresponds to the curvilinear distance from the spline origin. This is late used to create windows.</p>
+<p>The aligned splines are saved in <code class="docutils literal notranslate"><span class="pre">s0prm_all</span></code> and the shift in origin in <code class="docutils literal notranslate"><span class="pre">ori_all</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">align_all</span>
+<span class="c1"># align curves across frames and rasterize the windows</span>
+<span class="n">s0prm_all</span><span class="p">,</span> <span class="n">ori_all</span> <span class="o">=</span> <span class="n">align_all</span><span class="p">(</span>
+    <span class="n">s_all</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">n_curve</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">client</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize: 100%|██████████| 40/40 [00:01&lt;00:00, 21.14it/s]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">raster_image</span> <span class="o">=</span> <span class="n">skimage</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;../synthetic/data/Results_step/segmented/rasterized_k_0.tif&#39;</span><span class="p">)</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">raster_image</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Rasterized image&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/usage_step_by_step_37_0.png" src="../_images/usage_step_by_step_37_0.png" />
+</div>
+</div>
+<p>As we calculate the spline origin shift between pairs of successive frames (so that the operation can be parallelized), we need to calculate a cumulative sum to recover the shift between frame 0 and frame <code class="docutils literal notranslate"><span class="pre">f</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># origin shifts have been computed pair-wise. Calculate the cumulative</span>
+<span class="c1"># sum to get a &quot;true&quot; alignment on the first frame</span>
+<span class="n">res</span><span class="o">.</span><span class="n">orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ori_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">K</span><span class="p">)])</span>
+<span class="n">res</span><span class="o">.</span><span class="n">orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">orig</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="window-mapping">
+<h2>Window mapping<a class="headerlink" href="#window-mapping" title="Permalink to this headline">¶</a></h2>
+<p>The aligned splines and the rasterized images (made with the aligned splines) can now be used to:</p>
+<ol class="simple">
+<li><p>Create windows for each time point</p></li>
+<li><p>Find optimal points along successive splines to minimize some deformation metric.</p></li>
+</ol>
+<p>It is important to mention here that the windows are <strong>not</strong> adjusted using that optimization. Windows are simply calculated based on splines that have been shift-corrected (x-y) and “curvilinear”-corrected so that they have matching positions. On the other side the displacement is calculated by optimizing the location of points on the spline of frame = t+1 compared to <em>windows positions</em> at frame = t.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">window_map_all</span><span class="p">,</span> <span class="n">window_map_and_save</span>
+<span class="c1"># define windows for each frame and compute pairs of corresponding</span>
+<span class="c1"># points on successive splines for displacement measurement</span>
+<span class="n">t_all</span><span class="p">,</span> <span class="n">t0_all</span> <span class="o">=</span> <span class="n">window_map_all</span><span class="p">(</span>
+    <span class="n">s_all</span><span class="p">,</span>
+    <span class="n">s0prm_all</span><span class="p">,</span>
+    <span class="n">J</span><span class="p">,</span>
+    <span class="n">I</span><span class="p">,</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">orig</span><span class="p">,</span>
+    <span class="n">param</span><span class="o">.</span><span class="n">n_curve</span><span class="p">,</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+    <span class="n">param</span><span class="p">,</span>
+    <span class="n">client</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows: 100%|██████████| 40/40 [00:02&lt;00:00, 16.99it/s]
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="extracting-signals">
+<h2>Extracting signals<a class="headerlink" href="#extracting-signals" title="Permalink to this headline">¶</a></h2>
+<p>In a final step, we used calculate the mean and standard deviation of the signal present in all calculated windows. We can also now compute the actual “optimized” displacement between successive frames. All these results are saved in the <code class="docutils literal notranslate"><span class="pre">res</span></code> structure.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">extract_signal_all</span><span class="p">,</span> <span class="n">compute_displacement</span>
+
+<span class="c1"># Signals extracted from various imaging channels</span>
+<span class="n">mean_signal</span><span class="p">,</span> <span class="n">var_signal</span> <span class="o">=</span> <span class="n">extract_signal_all</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">I</span><span class="p">)</span>
+
+<span class="c1"># compute displacements</span>
+<span class="n">res</span><span class="o">.</span><span class="n">displacement</span> <span class="o">=</span> <span class="n">compute_displacement</span><span class="p">(</span><span class="n">s_all</span><span class="p">,</span> <span class="n">t_all</span><span class="p">,</span> <span class="n">t0_all</span><span class="p">)</span>
+
+<span class="c1"># Save variables for archival</span>
+<span class="n">res</span><span class="o">.</span><span class="n">spline</span> <span class="o">=</span> <span class="p">[</span><span class="n">s_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">K</span><span class="p">)]</span>
+<span class="n">res</span><span class="o">.</span><span class="n">param0</span> <span class="o">=</span> <span class="p">[</span><span class="n">t0_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">t0_all</span><span class="p">]</span>
+<span class="n">res</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="p">[</span><span class="n">t_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">t_all</span><span class="p">]</span>
+<span class="n">res</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">mean_signal</span>
+<span class="n">res</span><span class="o">.</span><span class="n">var</span> <span class="o">=</span> <span class="n">var_signal</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="check-results">
+<h2>Check results<a class="headerlink" href="#check-results" title="Permalink to this headline">¶</a></h2>
+<p>We can have a look at the results to estimate if everything worked as expected.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">skimage.io</span>
+
+<span class="n">t</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">param</span><span class="o">.</span><span class="n">resultdir</span><span class="p">,</span>
+    <span class="s2">&quot;segmented&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;window_image_k_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.tif&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">image</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">load_frame_morpho</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">b0</span> <span class="o">=</span> <span class="n">skimage</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="n">b0</span> <span class="o">=</span> <span class="n">b0</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<span class="n">b0</span><span class="p">[</span><span class="n">b0</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">b0</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Reds&#39;</span><span class="p">,</span><span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">vmax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/usage_step_by_step_47_0.png" src="../_images/usage_step_by_step_47_0.png" />
+</div>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./mydocs"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="Data_analysis.html" title="previous page">Data analysis</a>
+    <a class='right-next' id="next-link" href="code_structure.html" title="next page">General code structure</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Cédric Vonesch and Guillaume Witz<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.3da636dd464baa7582d2.js"></script>
+
+
+    
+  </body>
+</html>

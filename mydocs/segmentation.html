@@ -1,0 +1,413 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Segmentation &#8212; Morphodynamics documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.73d71520a4ca3b99cfee5594769eaaae.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.3da636dd464baa7582d2.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data formats" href="Data.html" />
+    <link rel="prev" title="General code structure" href="code_structure.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">Morphodynamics documentation</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Introduction.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Getting started
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Analysis_with_morpho_segmentation.html">
+   Running an analysis
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Data_analysis.html">
+   Data analysis
+  </a>
+ </li>
+</ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Code and algorithms
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="usage_step_by_step.html">
+   Analysis step by step
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="code_structure.html">
+   General code structure
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Segmentation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Data.html">
+   Data formats
+  </a>
+ </li>
+</ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Reference
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../docs/source/morphodynamics.html">
+   morphodynamics package
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../docs/source/morphodynamics.plots.html">
+     morphodynamics.plots package
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/mydocs/segmentation.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/guiwitz/MorphoDynamics"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/guiwitz/MorphoDynamics/master?urlpath=tree/mydocs/segmentation.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#custom-segmentation">
+   Custom segmentation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#cellpose-segmentation">
+   Cellpose segmentation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#ilastik-segmentation">
+   Ilastik segmentation
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#data-format">
+     Data format
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#create-project-and-annotate">
+     Create project and annotate
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#export">
+     Export
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#using-in-morphodynamics">
+     Using in Morphodynamics
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+        </nav>
+        
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="segmentation">
+<h1>Segmentation<a class="headerlink" href="#segmentation" title="Permalink to this headline">¶</a></h1>
+<p>In order to perform the core analysis, the windowing analysis, we first need to find the outline of the cell in all frames. Depending on the quality and type of acquisition this can be present different levels of complexity. A major complication is the requirement that the complete segmentation is nearly perfect to allow for a correct tracking. Three methods are currently available: a simple custom algorithm based on cell edge detection, a generalistic machine learning solution called Cellpose, and finally an Ilastik-based solution. They are all implemented in the <a class="reference external" href="../docs/source/morphodynamics.html#module-morphodynamics.segmentation">segmentation</a> module.</p>
+<div class="section" id="custom-segmentation">
+<h2>Custom segmentation<a class="headerlink" href="#custom-segmentation" title="Permalink to this headline">¶</a></h2>
+<p>In some cases e.g. with very bright and constant signal, it is possible to easily segment cells with standard approaches based on filtering, thresholding etc. Such an algorithm based on filtering with the Farid edge finder is currently available. Additional algorithms can easily be added to the software.</p>
+<p>To use this solution, either select it in the user interface or adjust the <code class="docutils literal notranslate"><span class="pre">param.seg_algo</span> <span class="pre">=</span> <span class="pre">&quot;farid&quot;</span></code>.</p>
+</div>
+<div class="section" id="cellpose-segmentation">
+<h2>Cellpose segmentation<a class="headerlink" href="#cellpose-segmentation" title="Permalink to this headline">¶</a></h2>
+<p>Cellpose is a generalistic deep learning based algorithm to segment a vast choice of cells and nuclei in microscopy images. Generalistic means that is has been pre-trained on a large and varied dataset and doesn’t need re-training. The only requirement is to provide a diameter estimate of cells in a given experiment. Of all methods it is by far the slowest but shows excellent results even in complex situation e.g. with touching cells. Beware that it tends to smooth the edges of the cell, so it is not very appropriate to use if you are interested in finer details at the edges.</p>
+<p>To use this solution, either select it in the user interface or adjust the <code class="docutils literal notranslate"><span class="pre">param.seg_algo</span> <span class="pre">=</span> <span class="pre">&quot;cellpose&quot;</span></code>. Don’t forget to also set the cell diameter e.g. <code class="docutils literal notranslate"><span class="pre">param.diameter</span> <span class="pre">=</span> <span class="pre">60</span></code> in pixel units.</p>
+</div>
+<div class="section" id="ilastik-segmentation">
+<h2>Ilastik segmentation<a class="headerlink" href="#ilastik-segmentation" title="Permalink to this headline">¶</a></h2>
+<p>The safest way to achieve good segmentation is to keep some level of manual control over it. This is offered by ilastik, a machine learning based solution which learns from manual annotations. The main advantage of this solution is that it allows you to verify that segmentation is accurate, in particular if there are effects like bleaching towards the end of the acquisition. Here we use the simplest workflow for pixel classification (you can find many tutorials online, starting on the Ilastik web site).</p>
+<div class="section" id="data-format">
+<h3>Data format<a class="headerlink" href="#data-format" title="Permalink to this headline">¶</a></h3>
+<p>You will need to add all frames of a given channel to the ilastik project. If your data are not in the appropriate format (e.g. ND2 files), first convert them (via standard solutions or custom ones like the solution provided in this package to convert ND2 files to H5).</p>
+</div>
+<div class="section" id="create-project-and-annotate">
+<h3>Create project and annotate<a class="headerlink" href="#create-project-and-annotate" title="Permalink to this headline">¶</a></h3>
+<p>Create a pixel classification project and add all your files to be segmented to the project. Make sure the format is <code class="docutils literal notranslate"><span class="pre">tyx</span></code> (or <code class="docutils literal notranslate"><span class="pre">tyxc</span></code>) and not <code class="docutils literal notranslate"><span class="pre">cyx</span></code> or <code class="docutils literal notranslate"><span class="pre">zyx</span></code> by double clicking on your dataset and fixing the dimensions if necessary. Follow the standard ilastik pixel classification workflow with two labels: <strong>use the first label for cell segmentation and the second label for backhround</strong>. Make sure that the segmentation provides well-segmented cell(s) by browsing through the data and turning the live segmentation ON (disable it when moving across frames as otherwise Ilastik will segment all traversed images).</p>
+</div>
+<div class="section" id="export">
+<h3>Export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h3>
+<p>Once you are satisfied with the segmentation, you can run the complete segmentation over all frames. Go to the “Prediction Export” tab, and select “Simple Segmentation” as Source. Then click on “Choose Export Image Settings…”. You can leave most defaults as they are but adjust (see <a class="reference internal" href="#ilastik-fig"><span class="std std-ref">screen capture below</span></a>):</p>
+<ul class="simple">
+<li><p>Format: tif sequence</p></li>
+<li><p>Directory: select a directory where to save all the output of the analysis (e.g. <code class="docutils literal notranslate"><span class="pre">Results</span></code>) and add a folder called <code class="docutils literal notranslate"><span class="pre">segmented</span></code> to it. Choose that <code class="docutils literal notranslate"><span class="pre">Results/segmented/</span></code> folder.</p></li>
+<li><p>File Pattern: segmented_k_{slice_index}.tif</p></li>
+</ul>
+<div class="figure align-default" id="ilastik-fig">
+<a class="reference internal image-reference" href="mydocs/images/ilastik.png"><img alt="mydocs/images/ilastik.png" src="mydocs/images/ilastik.png" style="height: 500px;" /></a>
+<p class="caption"><span class="caption-number">Fig. 1 </span><span class="caption-text">Export settings for Ilastik.</span><a class="headerlink" href="#ilastik-fig" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="using-in-morphodynamics">
+<h3>Using in Morphodynamics<a class="headerlink" href="#using-in-morphodynamics" title="Permalink to this headline">¶</a></h3>
+<p>If you want to use the Ilastik segmentation when analyzing your data, select the ilastik option in the User Interface or set <code class="docutils literal notranslate"><span class="pre">param.seg_algo</span> <span class="pre">=</span> <span class="pre">&quot;ilastik&quot;</span></code>. With that setting the segmentation part is automatically skipped and masks recovered from the ilastik output.</p>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./mydocs"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="code_structure.html" title="previous page">General code structure</a>
+    <a class='right-next' id="next-link" href="Data.html" title="next page">Data formats</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Cédric Vonesch and Guillaume Witz<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.3da636dd464baa7582d2.js"></script>
+
+
+    
+  </body>
+</html>

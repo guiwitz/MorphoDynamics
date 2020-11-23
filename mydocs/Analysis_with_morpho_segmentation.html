@@ -1,0 +1,571 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Running an analysis &#8212; Morphodynamics documentation</title>
+    
+  <link rel="stylesheet" href="../_static/css/index.73d71520a4ca3b99cfee5594769eaaae.css">
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+  <link rel="stylesheet"
+    href="../_static/vendor/open-sans_all/1.44.1/index.css">
+  <link rel="stylesheet"
+    href="../_static/vendor/lato_latin-ext/1.44.1/index.css">
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.40e2e510f6b7d1648584402491bb10fe.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.3da636dd464baa7582d2.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../_static/togglebutton.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
+    <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
+    <script >
+        const thebe_selector = ".thebe"
+        const thebe_selector_input = "pre"
+        const thebe_selector_output = ".output"
+    </script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data analysis" href="Data_analysis.html" />
+    <link rel="prev" title="Installation" href="Installation.html" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+
+
+
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+<a class="navbar-brand text-wrap" href="../index.html">
+  
+  <img src="../_static/logo.png" class="logo" alt="logo">
+  
+  
+  <h1 class="site-logo" id="site-title">Morphodynamics documentation</h1>
+  
+</a>
+</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
+</form>
+<nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Introduction.html">
+   Overview
+  </a>
+ </li>
+</ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Getting started
+ </span>
+</p>
+<ul class="current nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="Installation.html">
+   Installation
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   Running an analysis
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Data_analysis.html">
+   Data analysis
+  </a>
+ </li>
+</ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Code and algorithms
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1">
+  <a class="reference internal" href="usage_step_by_step.html">
+   Analysis step by step
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="code_structure.html">
+   General code structure
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="segmentation.html">
+   Segmentation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="Data.html">
+   Data formats
+  </a>
+ </li>
+</ul>
+<p class="caption collapsible-parent">
+ <span class="caption-text">
+  Reference
+ </span>
+</p>
+<ul class="nav sidenav_l1">
+ <li class="toctree-l1 collapsible-parent">
+  <a class="reference internal" href="../docs/source/morphodynamics.html">
+   morphodynamics package
+  </a>
+  <ul class="collapse-ul">
+   <li class="toctree-l2">
+    <a class="reference internal" href="../docs/source/morphodynamics.plots.html">
+     morphodynamics.plots package
+    </a>
+   </li>
+  </ul>
+  <i class="fas fa-chevron-down">
+  </i>
+ </li>
+</ul>
+
+</nav> <!-- To handle the deprecated key -->
+
+<div class="navbar_extra_footer">
+  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+</div>
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="row topbar fixed-top container-xl">
+    <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show">
+    </div>
+    <div class="col pl-2 topbar-main">
+        
+        <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+            data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+            aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+            title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+            <i class="fas fa-bars"></i>
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+        
+        
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/mydocs/Analysis_with_morpho_segmentation.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.ipynb</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+        <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/guiwitz/MorphoDynamics"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+
+        <!-- Full screen (wrap in <a> to have style consistency -->
+        <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+                data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+                title="Fullscreen mode"><i
+                    class="fas fa-expand"></i></button></a>
+
+        <!-- Launch buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
+    <div class="dropdown-buttons">
+        
+        <a class="binder-button" href="https://mybinder.org/v2/gh/guiwitz/MorphoDynamics/master?urlpath=tree/mydocs/Analysis_with_morpho_segmentation.ipynb"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
+                data-placement="left"><img class="binder-button-logo"
+                    src="../_static/images/logo_binder.svg"
+                    alt="Interact on binder">Binder</button></a>
+        
+        
+        
+        
+    </div>
+</div>
+
+    </div>
+
+    <!-- Table of contents -->
+    <div class="d-none d-md-block col-md-2 bd-toc show">
+        
+        <div class="tocsection onthispage pt-5 pb-3">
+            <i class="fas fa-list"></i> Contents
+        </div>
+        <nav id="bd-toc-nav">
+            <ul class="nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#creating-the-interface">
+   Creating the interface
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#running-a-new-analysis">
+   Running a new analysis
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#output">
+   Output
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#loading-an-existing-analysis">
+   Loading an existing analysis
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#running-an-analysis-without-ui">
+   Running an analysis without UI
+  </a>
+ </li>
+</ul>
+
+        </nav>
+        
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="running-an-analysis">
+<h1>Running an analysis<a class="headerlink" href="#running-an-analysis" title="Permalink to this headline">¶</a></h1>
+<p>Assuming that your data are in the right format (see the <span class="xref myst">Data chapter</span> for more details), you can now run an analysis. We first demo here the usage of the interface and at the end show how to run an analysis without the UI. If you are interested in the methods you can see more in-depth explanation of what is occurring behind the scenes in a <a class="reference internal" href="usage_step_by_step.html"><span class="doc std std-doc">step by step demo</span></a>.</p>
+<div class="section" id="creating-the-interface">
+<h2>Creating the interface<a class="headerlink" href="#creating-the-interface" title="Permalink to this headline">¶</a></h2>
+<p>The interface is generated via the <code class="docutils literal notranslate"><span class="pre">InteracSeg</span></code> class contained in the <code class="docutils literal notranslate"><span class="pre">morpho_segmentation</span></code> module:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.morpho_segmentation</span> <span class="kn">import</span> <span class="n">InteractSeg</span>
+<span class="n">myUI</span> <span class="o">=</span> <span class="n">InteracSeg</span><span class="p">()</span>
+<span class="n">myUI</span><span class="o">.</span><span class="n">interface</span>
+</pre></div>
+</div>
+<div class="cell tag_hide_input docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+<span class="n">HTML</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;UI_html.html&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">d00b35b569d8</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">HTML</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;UI_html.html&#39;</span><span class="p">)</span>
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/IPython/core/display.py</span> in <span class="ni">__init__</span><span class="nt">(self, data, url, filename, metadata)</span>
+<span class="g g-Whitespace">    </span><span class="mi">716</span>         <span class="k">if</span> <span class="n">warn</span><span class="p">():</span>
+<span class="g g-Whitespace">    </span><span class="mi">717</span>             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Consider using IPython.display.IFrame instead&quot;</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">718</span>         <span class="nb">super</span><span class="p">(</span><span class="n">HTML</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">719</span> 
+<span class="g g-Whitespace">    </span><span class="mi">720</span>     <span class="k">def</span> <span class="nf">_repr_html_</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/IPython/core/display.py</span> in <span class="ni">__init__</span><span class="nt">(self, data, url, filename, metadata)</span>
+<span class="g g-Whitespace">    </span><span class="mi">628</span>             <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="g g-Whitespace">    </span><span class="mi">629</span> 
+<span class="ne">--&gt; </span><span class="mi">630</span>         <span class="bp">self</span><span class="o">.</span><span class="n">reload</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">631</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_check_data</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">632</span> 
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/IPython/core/display.py</span> in <span class="ni">reload</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">653</span>         <span class="sd">&quot;&quot;&quot;Reload the raw data from file or URL.&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">654</span>         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">655</span>             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_flags</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">656</span>                 <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">657</span>         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;UI_html.html&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<p>The interface is composed of four parts:</p>
+<ol class="simple">
+<li><p>Data handling:</p>
+<ul class="simple">
+<li><p>In the <strong>Choose main folder</strong> you should browse to the folder containing your data.</p></li>
+<li><p>In the <strong>Saving</strong> folder you should select to which folder you want to export results.</p></li>
+<li><p>The <strong>Load Segmentation</strong> button allows to re-load an existing analysis.</p></li>
+</ul>
+</li>
+<li><p>Selecting channels in the <strong>Chose segmentation and signal channels (folders or tifs)</strong> section:</p>
+<ul class="simple">
+<li><p>You should choose which channel you want to use for <strong>segmentation</strong> (left)</p></li>
+<li><p>and from which channels you want to extract <strong>signal</strong> information (right). If you want to analyze the intensity of the segmentation channel, you have to select it as well as a <strong>signal</strong>.</p></li>
+<li><p>Once selection is done you can load the data with the <strong>Initialize</strong> button.</p></li>
+</ul>
+</li>
+<li><p><strong>Computing type</strong>: select cluster, if you want computations to be submitted via a SLURMCluster job-queue.</p></li>
+<li><p><strong>Set segmentation parameters</strong>:</p>
+<ul class="simple">
+<li><p><strong>Maxtime</strong>: select the last time point to be analyzed, by default the last available time point</p></li>
+<li><p><strong>Step</strong>: If for example you only want to analyze every second step, enter 2.</p></li>
+<li><p><strong>Bad frame</strong>: If you want to skip certain frames, enter them here, e.g. (e.g. 1,2,5-8,12)</p></li>
+<li><p><strong>Segmentation</strong>: Select your segmentation mode (see <a class="reference internal" href="segmentation.html"><span class="doc std std-doc">this chapter</span></a> for more details)</p></li>
+<li><p><strong>Location X/Y</strong>: Location of the cell to track can be entered here manually.</p></li>
+<li><p><strong>Window depth/width</strong>: Desired dimensions (in px) of the windows.</p></li>
+<li><p>Run the segmentation with the <strong>Click to segment</strong> button.</p></li>
+<li><p>Save the results with the <strong>Save the segmentation</strong> button.</p></li>
+</ul>
+</li>
+<li><p>Plot: The central plot shows an image and its current windowing. One can adjust:</p>
+<ul class="simple">
+<li><p>The <strong>Time</strong> (frame) and the <strong>intensity range</strong> of the current image.</p></li>
+<li><p>Whether to <strong>show windows</strong> or <strong>show labels</strong> of windows.</p></li>
+<li><p>Which channel should be displayed.</p></li>
+<li><p>Finally, you can click on the image to select which cell (if there are multiple ones) to track.</p></li>
+</ul>
+</li>
+</ol>
+<p>Note that when creating the interface <code class="docutils literal notranslate"><span class="pre">myUI</span> <span class="pre">=</span> <span class="pre">InteractSeg</span></code> you can pass additional arguments to avoid having to select them in the interface. This is particularly useful if you are running tests and have to repeatedly create the interface. For example you can use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.morpho_segmentation</span> <span class="kn">import</span> <span class="n">InteractSeg</span>
+<span class="n">myUI</span> <span class="o">=</span> <span class="n">InteracSeg</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="s2">&quot;path/to/my/data&quot;</span><span class="p">,</span> <span class="n">seg_algo</span><span class="o">=</span><span class="s1">&#39;ilastik&#39;</span><span class="p">)</span>
+<span class="n">myUI</span><span class="o">.</span><span class="n">interface</span>
+</pre></div>
+</div>
+<p>to specify where your data are and which algorithm to use. In that way you won’t have to browse to your data folder or change the algorithm.</p>
+</div>
+<div class="section" id="running-a-new-analysis">
+<h2>Running a new analysis<a class="headerlink" href="#running-a-new-analysis" title="Permalink to this headline">¶</a></h2>
+<p>In general follow these steps:</p>
+<ol class="simple">
+<li><p>Choose the data folder and the place where to save your results in the top two file browsers</p></li>
+<li><p>Choose which channels to use for segmentation and signal extraction in the <strong>Chose segmentation and signal channels (folders or tifs)</strong> part</p></li>
+<li><p>Now you can <strong>Initialize data</strong>, i.e. load the data set. Now you should see the first frame displayed in the figure.</p></li>
+<li><p>Select your computation resource and segmentation parameters.</p></li>
+<li><p>Select the cell to track (if necessary) by clicking on the image.</p></li>
+<li><p>Run the segmentation by clicking on <strong>Click to segment</strong>.</p></li>
+<li><p>Browse through the results.</p></li>
+<li><p>Save your data by clicking on <strong>Save segmentation</strong>.</p></li>
+</ol>
+</div>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p>The results of the analysis are saved in the following way:</p>
+<ul class="simple">
+<li><p>Segmentation images are saved in the <code class="docutils literal notranslate"><span class="pre">segmented</span></code> folder as <code class="docutils literal notranslate"><span class="pre">segmented_k_0.tif</span></code>, <code class="docutils literal notranslate"><span class="pre">segmented_k_1.tif</span></code> etc. Those images are labelled masks, i.e. each cell gets one label.</p></li>
+<li><p>Tracking information is saved as binary images where only the selected cell appear. Images are called <code class="docutils literal notranslate"><span class="pre">tracked_k_0.tif</span></code>, <code class="docutils literal notranslate"><span class="pre">tracked_k_1.tif</span></code> etc.</p></li>
+<li><p>The raasterized cell contours where pixel values correspond to curvilinear distance are stored as 32-bits images <code class="docutils literal notranslate"><span class="pre">rasterized_k_0.tif</span></code>, <code class="docutils literal notranslate"><span class="pre">rasterized_k_1.tif</span></code> etc.</p></li>
+<li><p>The binary window images with window boundaries are stored as <code class="docutils literal notranslate"><span class="pre">window_image_k_0.tif</span></code>, <code class="docutils literal notranslate"><span class="pre">window_image_k_1.tif</span></code> etc.</p></li>
+<li><p>The list of pixel indexes indicating to which window each pixel belongs are stored as pickle files <code class="docutils literal notranslate"><span class="pre">window_k_0.pkl</span></code>, <code class="docutils literal notranslate"><span class="pre">window_k_1.pkl</span></code> etc.</p></li>
+<li><p>Other information such as spline functions are stored in a pickled <code class="docutils literal notranslate"><span class="pre">Results.pkl</span></code> file.</p></li>
+<li><p>Parameters of the experiments are saved in a human readable <code class="docutils literal notranslate"><span class="pre">Parameters.yml</span></code> file.</p></li>
+</ul>
+</div>
+<div class="section" id="loading-an-existing-analysis">
+<h2>Loading an existing analysis<a class="headerlink" href="#loading-an-existing-analysis" title="Permalink to this headline">¶</a></h2>
+<p>In general follow these steps:</p>
+<ol class="simple">
+<li><p>Choose the folder that contains your results (<code class="docutils literal notranslate"><span class="pre">Results.pkl</span></code> and <code class="docutils literal notranslate"><span class="pre">Parameters.yml</span></code> files).</p></li>
+<li><p>Cick on <strong>Load segmentation</strong></p></li>
+</ol>
+<p>You should now see a UI updated with all parameters set when analyzing the dataset.</p>
+</div>
+<div class="section" id="running-an-analysis-without-ui">
+<h2>Running an analysis without UI<a class="headerlink" href="#running-an-analysis-without-ui" title="Permalink to this headline">¶</a></h2>
+<p>In some cases it is preferable to use the code without the interface. This is in particular true if you want to run a batch of analysis. We present here an example of how to do that.</p>
+<p>Just like before, we use the <code class="docutils literal notranslate"><span class="pre">InteractSeg</span></code> class defined in the <code class="docutils literal notranslate"><span class="pre">morpho_segmentation</span></code> module as an object that simplifies the handling of all the parts of the code. We need to provide the data location as well as a folder to save the data:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expdir</span> <span class="o">=</span> <span class="s1">&#39;../synthetic/data&#39;</span>
+<span class="n">result_dir</span> <span class="o">=</span> <span class="s1">&#39;../synthetic/data/Results_step&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>and specify which channels we intend to use. We need to provide the name of the stack used for segmentation:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">morpho_name</span> <span class="o">=</span> <span class="s1">&#39;synth_ch1.h5&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>as well as a list of stack names whose intensity we want to analyze:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">signal_name</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;synth_ch2.h5&#39;</span><span class="p">,</span><span class="s1">&#39;synth_ch3.h5&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can create our segmentation object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.morpho_segmentation</span> <span class="kn">import</span> <span class="n">InteractSeg</span>
+<span class="n">myUI</span> <span class="o">=</span> <span class="n">InteractSeg</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="n">expdir</span><span class="p">,</span> <span class="n">morpho_name</span><span class="o">=</span><span class="n">morpho_name</span><span class="p">,</span> <span class="n">signal_name</span><span class="o">=</span><span class="n">signal_name</span><span class="p">,</span>
+             <span class="n">resultdir</span><span class="o">=</span><span class="n">result_dir</span><span class="p">,</span> <span class="n">createUI</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is important to know that the <code class="docutils literal notranslate"><span class="pre">myUI</span></code> instance of <code class="docutils literal notranslate"><span class="pre">InteracSeg</span></code> contains itself the main objects used for the analysis, Parameters, Results and Data as parameters, so there is no need to create them separately.</p>
+<p>We can now load the data by <em>initializing</em> the experiment:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myUI</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can adjust the parameters for the segmentation (<code class="docutils literal notranslate"><span class="pre">seg_algo</span></code>) and windowing (<code class="docutils literal notranslate"><span class="pre">widht</span></code> and <code class="docutils literal notranslate"><span class="pre">depth</span></code>)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myUI</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">myUI</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">myUI</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">seg_algo</span> <span class="o">=</span> <span class="s1">&#39;ilastik&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally we can run the analysis:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myUI</span><span class="o">.</span><span class="n">run_segmentation</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/gw18g940/miniconda3/envs/morphodynamics/lib/python3.8/site-packages/distributed/node.py:151: UserWarning:
+
+Port 8787 is already in use.
+Perhaps you already have a cluster running?
+Hosting the HTTP server on port 55052 instead
+
+frames splining: 100%|██████████| 40/40 [00:09&lt;00:00,  4.28it/s]
+frames rasterize: 100%|██████████| 40/40 [00:01&lt;00:00, 24.50it/s]
+frames compute windows: 100%|██████████| 40/40 [00:02&lt;00:00, 19.17it/s]
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            kernelName: "python3",
+            path: "./mydocs"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+              </div>
+              
+        </div>
+    </div>
+    
+    
+    <div class='prev-next-bottom'>
+        
+    <a class='left-prev' id="prev-link" href="Installation.html" title="previous page">Installation</a>
+    <a class='right-next' id="next-link" href="Data_analysis.html" title="next page">Data analysis</a>
+
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+          By Cédric Vonesch and Guillaume Witz<br/>
+        
+            &copy; Copyright 2020.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+
+    
+  <script src="../_static/js/index.3da636dd464baa7582d2.js"></script>
+
+
+    
+  </body>
+</html>
