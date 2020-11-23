@@ -58,7 +58,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Analysis step by step" href="usage_step_by_step.html" />
-    <link rel="prev" title="Running an analysis" href="Analysis_with_morpho_segmentation.html" />
+    <link rel="prev" title="Segmentation and windowing" href="Analysis_with_morpho_segmentation.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -108,7 +108,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="Analysis_with_morpho_segmentation.html">
-   Running an analysis
+   Segmentation and windowing
   </a>
  </li>
  <li class="toctree-l1 current active">
@@ -294,7 +294,6 @@
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.plots.ui_outputs</span> <span class="kn">import</span> <span class="n">OutputUI</span>
-<span class="c1">#%matplotlib widget</span>
 </pre></div>
 </div>
 </div>
@@ -302,37 +301,45 @@
 <div class="output text_html"><style>div.jupyter-widgets.widget-label {display: none;}</style></div><div class="output text_html"><style>.container { width:100% !important; }</style></div></div>
 </div>
 <p>To create the interface, we just need to point to results folder, i.e. a folder that contains a <code class="docutils literal notranslate"><span class="pre">Results.pkl</span></code> structure and <code class="docutils literal notranslate"><span class="pre">Click</span> <span class="pre">to</span> <span class="pre">load</span></code>. The various outputs are split among tabs through which one can browse.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#ui = OutputUI(expdir=&#39;../synthetic/data/Results_ilastik&#39;)</span>
-<span class="c1">#ui.load_data()</span>
-<span class="c1">#ui.interface</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ui</span> <span class="o">=</span> <span class="n">OutputUI</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="s1">&#39;../synthetic/data/Results_ilastik&#39;</span><span class="p">)</span>
+<span class="n">ui</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+<span class="n">ui</span><span class="o">.</span><span class="n">interface</span>
 </pre></div>
 </div>
-</div>
-</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ipywidgets.embed</span> <span class="kn">import</span> <span class="n">embed_minimal_html</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">HTML</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;UI_analysis_html.html&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ui</span> <span class="o">=</span> <span class="n">OutputUI</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="s1">&#39;../synthetic/data/Results_ilastik&#39;</span><span class="p">)</span>
+<span class="n">ui</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+<span class="n">ui</span><span class="o">.</span><span class="n">interface</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html">UI_analysis_html.html</div></div>
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="mi">678</span><span class="n">dd0842ceb</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">ui</span> <span class="o">=</span> <span class="n">OutputUI</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="s1">&#39;../synthetic/data/Results_ilastik&#39;</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">ui</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">ui</span><span class="o">.</span><span class="n">interface</span>
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/plots/ui_outputs.py</span> in <span class="ni">load_data</span><span class="nt">(self, b)</span>
+<span class="g g-Whitespace">     </span><span class="mi">68</span> 
+<span class="g g-Whitespace">     </span><span class="mi">69</span>         <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">res</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">load_alldata</span><span class="p">(</span>
+<span class="ne">---&gt; </span><span class="mi">70</span>             <span class="bp">self</span><span class="o">.</span><span class="n">expdir</span><span class="p">,</span> <span class="n">load_results</span><span class="o">=</span><span class="kc">True</span>
+<span class="g g-Whitespace">     </span><span class="mi">71</span>         <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">72</span>         <span class="bp">self</span><span class="o">.</span><span class="n">create_ui</span><span class="p">()</span>
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/utils.py</span> in <span class="ni">load_alldata</span><span class="nt">(folder_path, load_results, param)</span>
+<span class="g g-Whitespace">     </span><span class="mi">40</span> 
+<span class="g g-Whitespace">     </span><span class="mi">41</span>         <span class="n">param</span> <span class="o">=</span> <span class="n">Param</span><span class="p">()</span>
+<span class="ne">---&gt; </span><span class="mi">42</span>         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">folder_path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;Parameters.yml&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">43</span>             <span class="n">documents</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">full_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">44</span>         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">documents</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;../synthetic/data/Results_ilastik/Parameters.yml&#39;
+</pre></div>
+</div>
+</div>
 </div>
 </div>
 <div class="section" id="manual-usage-of-analysis-functions">
@@ -343,25 +350,6 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.utils</span> <span class="kn">import</span> <span class="n">load_alldata</span>
 
 <span class="n">param</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">load_alldata</span><span class="p">(</span><span class="s1">&#39;../synthetic/data/Results_ilastik&#39;</span><span class="p">,</span> <span class="n">load_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">6</span><span class="o">-</span><span class="n">fe1b1ba65b43</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">morphodynamics.utils</span> <span class="kn">import</span> <span class="n">load_alldata</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> 
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">param</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">load_alldata</span><span class="p">(</span><span class="s1">&#39;../synthetic/data/Results_ilastik&#39;</span><span class="p">,</span> <span class="n">load_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/utils.py</span> in <span class="ni">load_alldata</span><span class="nt">(folder_path, load_results, param)</span>
-<span class="g g-Whitespace">     </span><span class="mi">40</span> 
-<span class="g g-Whitespace">     </span><span class="mi">41</span>         <span class="n">param</span> <span class="o">=</span> <span class="n">Param</span><span class="p">()</span>
-<span class="ne">---&gt; </span><span class="mi">42</span>         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">folder_path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;Parameters.yml&quot;</span><span class="p">))</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">43</span>             <span class="n">documents</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">full_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">44</span>         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">documents</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-
-<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;../synthetic/data/Results_ilastik/Parameters.yml&#39;
 </pre></div>
 </div>
 </div>
@@ -411,7 +399,7 @@
     
     <div class='prev-next-bottom'>
         
-    <a class='left-prev' id="prev-link" href="Analysis_with_morpho_segmentation.html" title="previous page">Running an analysis</a>
+    <a class='left-prev' id="prev-link" href="Analysis_with_morpho_segmentation.html" title="previous page">Segmentation and windowing</a>
     <a class='right-next' id="next-link" href="usage_step_by_step.html" title="next page">Analysis step by step</a>
 
     </div>

@@ -108,7 +108,7 @@
  </li>
  <li class="toctree-l1">
   <a class="reference internal" href="Analysis_with_morpho_segmentation.html">
-   Running an analysis
+   Segmentation and windowing
   </a>
  </li>
  <li class="toctree-l1">
@@ -473,25 +473,6 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">StopIteration</span><span class="g g-Whitespace">                             </span>Traceback (most recent call last)
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">9</span><span class="o">-</span><span class="mi">503</span><span class="n">ee6133cb8</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">calibration</span><span class="p">,</span> <span class="n">segment_all</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> 
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">location</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="n">calibration</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-
-<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/analysis_par.py</span> in <span class="ni">calibration</span><span class="nt">(data, param, model)</span>
-<span class="g g-Whitespace">    </span><span class="mi">164</span>         <span class="n">segpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">resultdir</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;segmented&quot;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">165</span>         <span class="n">num</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span>
-<span class="ne">--&gt; </span><span class="mi">166</span>             <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">segpath</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;segmented_k_*.tif&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-<span class="g g-Whitespace">    </span><span class="mi">167</span>             <span class="o">-</span> <span class="mi">4</span>
-<span class="g g-Whitespace">    </span><span class="mi">168</span>         <span class="p">)</span>
-
-<span class="ne">StopIteration</span>: 
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -578,7 +559,19 @@ number of layer J: 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:10&lt;00:00,  3.81it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   0%|          | 0/40 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   2%|▎         | 1/40 [00:05&lt;03:42,  5.71s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:  52%|█████▎    | 21/40 [00:05&lt;01:15,  4.00s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:05&lt;00:00,  6.77it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -618,7 +611,22 @@ number of layer J: 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize: 100%|██████████| 40/40 [00:01&lt;00:00, 21.14it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   0%|          | 0/40 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   2%|▎         | 1/40 [00:03&lt;02:26,  3.77s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:  50%|█████     | 20/40 [00:03&lt;00:52,  2.64s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize: 100%|██████████| 40/40 [00:03&lt;00:00,  1.85s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize: 100%|██████████| 40/40 [00:03&lt;00:00, 10.06it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -676,7 +684,22 @@ number of layer J: 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows: 100%|██████████| 40/40 [00:02&lt;00:00, 16.99it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:   0%|          | 0/40 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:   2%|▎         | 1/40 [00:04&lt;03:14,  5.00s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:   5%|▌         | 2/40 [00:05&lt;02:14,  3.55s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:  52%|█████▎    | 21/40 [00:05&lt;00:47,  2.48s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows: 100%|██████████| 40/40 [00:05&lt;00:00,  7.47it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>

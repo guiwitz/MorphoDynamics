@@ -17,18 +17,25 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply['content'])
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-from morphodynamics.utils import load_alldata
-
-param, res, data = load_alldata('../synthetic/data/Results_ilastik', load_results=True)
+ui = OutputUI(expdir='../synthetic/data/Results_ilastik')
+ui.load_data()
+ui.interface
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mFileNotFoundError[0m                         Traceback (most recent call last)
-[0;32m<ipython-input-6-fe1b1ba65b43>[0m in [0;36m<module>[0;34m[0m
-[1;32m      1[0m [0;32mfrom[0m [0mmorphodynamics[0m[0;34m.[0m[0mutils[0m [0;32mimport[0m [0mload_alldata[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      2[0m [0;34m[0m[0m
-[0;32m----> 3[0;31m [0mparam[0m[0;34m,[0m [0mres[0m[0;34m,[0m [0mdata[0m [0;34m=[0m [0mload_alldata[0m[0;34m([0m[0;34m'../synthetic/data/Results_ilastik'[0m[0;34m,[0m [0mload_results[0m[0;34m=[0m[0;32mTrue[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m
+[0;32m<ipython-input-2-678dd0842ceb>[0m in [0;36m<module>[0;34m[0m
+[1;32m      1[0m [0mui[0m [0;34m=[0m [0mOutputUI[0m[0;34m([0m[0mexpdir[0m[0;34m=[0m[0;34m'../synthetic/data/Results_ilastik'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 2[0;31m [0mui[0m[0;34m.[0m[0mload_data[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      3[0m [0mui[0m[0;34m.[0m[0minterface[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/plots/ui_outputs.py[0m in [0;36mload_data[0;34m(self, b)[0m
+[1;32m     68[0m [0;34m[0m[0m
+[1;32m     69[0m         self.param, self.res, self.data = load_alldata(
+[0;32m---> 70[0;31m             [0mself[0m[0;34m.[0m[0mexpdir[0m[0;34m,[0m [0mload_results[0m[0;34m=[0m[0;32mTrue[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     71[0m         )
+[1;32m     72[0m         [0mself[0m[0;34m.[0m[0mcreate_ui[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+
 [0;32m/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/utils.py[0m in [0;36mload_alldata[0;34m(folder_path, load_results, param)[0m
 [1;32m     40[0m [0;34m[0m[0m
 [1;32m     41[0m         [0mparam[0m [0;34m=[0m [0mParam[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
