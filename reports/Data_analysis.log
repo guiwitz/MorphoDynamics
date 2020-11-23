@@ -17,15 +17,15 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply['content'])
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-ui = OutputUI(expdir='../synthetic/data/Results_ilastik')
+ui = OutputUI(expdir='../synthetic/data/Results_step')
 ui.load_data()
 ui.interface
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mFileNotFoundError[0m                         Traceback (most recent call last)
-[0;32m<ipython-input-2-678dd0842ceb>[0m in [0;36m<module>[0;34m[0m
-[1;32m      1[0m [0mui[0m [0;34m=[0m [0mOutputUI[0m[0;34m([0m[0mexpdir[0m[0;34m=[0m[0;34m'../synthetic/data/Results_ilastik'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m<ipython-input-2-d80b0e06cc62>[0m in [0;36m<module>[0;34m[0m
+[1;32m      1[0m [0mui[0m [0;34m=[0m [0mOutputUI[0m[0;34m([0m[0mexpdir[0m[0;34m=[0m[0;34m'../synthetic/data/Results_step'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 [0;32m----> 2[0;31m [0mui[0m[0;34m.[0m[0mload_data[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 [0m[1;32m      3[0m [0mui[0m[0;34m.[0m[0minterface[0m[0;34m[0m[0;34m[0m[0m
 
@@ -43,6 +43,6 @@ ui.interface
 [0m[1;32m     43[0m             [0mdocuments[0m [0;34m=[0m [0myaml[0m[0;34m.[0m[0mfull_load[0m[0;34m([0m[0mfile[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 [1;32m     44[0m         [0;32mfor[0m [0mk[0m [0;32min[0m [0mdocuments[0m[0;34m.[0m[0mkeys[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
 
-[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: '../synthetic/data/Results_ilastik/Parameters.yml'
-FileNotFoundError: [Errno 2] No such file or directory: '../synthetic/data/Results_ilastik/Parameters.yml'
+[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: '../synthetic/data/Results_step/Parameters.yml'
+FileNotFoundError: [Errno 2] No such file or directory: '../synthetic/data/Results_step/Parameters.yml'
 

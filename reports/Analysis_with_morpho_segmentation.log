@@ -18,14 +18,14 @@ Traceback (most recent call last):
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
 from IPython.display import HTML
-HTML(filename='UI_html.html')
+HTML(filename='images/UI_html.html')
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mFileNotFoundError[0m                         Traceback (most recent call last)
-[0;32m<ipython-input-1-d00b35b569d8>[0m in [0;36m<module>[0;34m[0m
+[0;32m<ipython-input-1-fddae65c1cc9>[0m in [0;36m<module>[0;34m[0m
 [1;32m      1[0m [0;32mfrom[0m [0mIPython[0m[0;34m.[0m[0mdisplay[0m [0;32mimport[0m [0mHTML[0m[0;34m[0m[0;34m[0m[0m
-[0;32m----> 2[0;31m [0mHTML[0m[0;34m([0m[0mfilename[0m[0;34m=[0m[0;34m'UI_html.html'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 2[0;31m [0mHTML[0m[0;34m([0m[0mfilename[0m[0;34m=[0m[0;34m'images/UI_html.html'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 [0m
 [0;32m/usr/share/miniconda/lib/python3.7/site-packages/IPython/core/display.py[0m in [0;36m__init__[0;34m(self, data, url, filename, metadata)[0m
 [1;32m    716[0m         [0;32mif[0m [0mwarn[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
@@ -48,6 +48,6 @@ HTML(filename='UI_html.html')
 [0m[1;32m    656[0m                 [0mself[0m[0;34m.[0m[0mdata[0m [0;34m=[0m [0mf[0m[0;34m.[0m[0mread[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 [1;32m    657[0m         [0;32melif[0m [0mself[0m[0;34m.[0m[0murl[0m [0;32mis[0m [0;32mnot[0m [0;32mNone[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
 
-[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: 'UI_html.html'
-FileNotFoundError: [Errno 2] No such file or directory: 'UI_html.html'
+[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: 'images/UI_html.html'
+FileNotFoundError: [Errno 2] No such file or directory: 'images/UI_html.html'
 

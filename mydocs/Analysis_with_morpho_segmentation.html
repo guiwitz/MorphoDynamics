@@ -314,16 +314,16 @@
 <div class="cell tag_hide_input docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
-<span class="n">HTML</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;UI_html.html&#39;</span><span class="p">)</span>
+<span class="n">HTML</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;images/UI_html.html&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">d00b35b569d8</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">fddae65c1cc9</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
 <span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
-<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">HTML</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;UI_html.html&#39;</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">HTML</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="s1">&#39;images/UI_html.html&#39;</span><span class="p">)</span>
 
 <span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/IPython/core/display.py</span> in <span class="ni">__init__</span><span class="nt">(self, data, url, filename, metadata)</span>
 <span class="g g-Whitespace">    </span><span class="mi">716</span>         <span class="k">if</span> <span class="n">warn</span><span class="p">():</span>
@@ -346,7 +346,7 @@
 <span class="g g-Whitespace">    </span><span class="mi">656</span>                 <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="g g-Whitespace">    </span><span class="mi">657</span>         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
 
-<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;UI_html.html&#39;
+<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;images/UI_html.html&#39;
 </pre></div>
 </div>
 </div>
@@ -470,6 +470,8 @@
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>div.jupyter-widgets.widget-label {display: none;}</style></div><div class="output text_html"><style>.container { width:100% !important; }</style></div></div>
 </div>
 <p>It is important to know that the <code class="docutils literal notranslate"><span class="pre">myUI</span></code> instance of <code class="docutils literal notranslate"><span class="pre">InteracSeg</span></code> contains itself the main objects used for the analysis, Parameters, Results and Data as parameters, so there is no need to create them separately.</p>
 <p>We can now load the data by <em>initializing</em> the experiment:</p>
@@ -498,15 +500,23 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/Users/gw18g940/miniconda3/envs/morphodynamics/lib/python3.8/site-packages/distributed/node.py:151: UserWarning:
-
-Port 8787 is already in use.
-Perhaps you already have a cluster running?
-Hosting the HTTP server on port 55052 instead
-
-frames splining: 100%|██████████| 40/40 [00:09&lt;00:00,  4.28it/s]
-frames rasterize: 100%|██████████| 40/40 [00:01&lt;00:00, 24.50it/s]
-frames compute windows: 100%|██████████| 40/40 [00:02&lt;00:00, 19.17it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:15&lt;00:00,  2.58it/s]
+frames rasterize: 100%|██████████| 40/40 [00:03&lt;00:00, 10.37it/s]
+frames compute windows: 100%|██████████| 40/40 [00:06&lt;00:00,  6.07it/s]
+</pre></div>
+</div>
+</div>
+</div>
+<p>And save the output:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myUI</span><span class="o">.</span><span class="n">export_data</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Your results have been saved in the following directory:
+../synthetic/data/Results_step
 </pre></div>
 </div>
 </div>

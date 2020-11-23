@@ -301,14 +301,9 @@
 <div class="output text_html"><style>div.jupyter-widgets.widget-label {display: none;}</style></div><div class="output text_html"><style>.container { width:100% !important; }</style></div></div>
 </div>
 <p>To create the interface, we just need to point to results folder, i.e. a folder that contains a <code class="docutils literal notranslate"><span class="pre">Results.pkl</span></code> structure and <code class="docutils literal notranslate"><span class="pre">Click</span> <span class="pre">to</span> <span class="pre">load</span></code>. The various outputs are split among tabs through which one can browse.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ui</span> <span class="o">=</span> <span class="n">OutputUI</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="s1">&#39;../synthetic/data/Results_ilastik&#39;</span><span class="p">)</span>
-<span class="n">ui</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
-<span class="n">ui</span><span class="o">.</span><span class="n">interface</span>
-</pre></div>
-</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ui</span> <span class="o">=</span> <span class="n">OutputUI</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="s1">&#39;../synthetic/data/Results_ilastik&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ui</span> <span class="o">=</span> <span class="n">OutputUI</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="s1">&#39;../synthetic/data/Results_step&#39;</span><span class="p">)</span>
 <span class="n">ui</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
 <span class="n">ui</span><span class="o">.</span><span class="n">interface</span>
 </pre></div>
@@ -317,8 +312,8 @@
 <div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="mi">678</span><span class="n">dd0842ceb</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">ui</span> <span class="o">=</span> <span class="n">OutputUI</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="s1">&#39;../synthetic/data/Results_ilastik&#39;</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="n">d80b0e06cc62</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">ui</span> <span class="o">=</span> <span class="n">OutputUI</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="s1">&#39;../synthetic/data/Results_step&#39;</span><span class="p">)</span>
 <span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">ui</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
 <span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">ui</span><span class="o">.</span><span class="n">interface</span>
 
@@ -336,7 +331,7 @@
 <span class="g g-Whitespace">     </span><span class="mi">43</span>             <span class="n">documents</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">full_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
 <span class="g g-Whitespace">     </span><span class="mi">44</span>         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">documents</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
 
-<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;../synthetic/data/Results_ilastik/Parameters.yml&#39;
+<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;../synthetic/data/Results_step/Parameters.yml&#39;
 </pre></div>
 </div>
 </div>
@@ -349,7 +344,7 @@
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.utils</span> <span class="kn">import</span> <span class="n">load_alldata</span>
 
-<span class="n">param</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">load_alldata</span><span class="p">(</span><span class="s1">&#39;../synthetic/data/Results_ilastik&#39;</span><span class="p">,</span> <span class="n">load_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">param</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">load_alldata</span><span class="p">(</span><span class="s1">&#39;../synthetic/data/Results_step&#39;</span><span class="p">,</span> <span class="n">load_results</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -364,9 +359,8 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "d06e9788229d4477be9f76a2e7037674", "version_major": 2, "version_minor": 0}
-</script></div>
+<img alt="../_images/Data_analysis_7_0.png" src="../_images/Data_analysis_7_0.png" />
+</div>
 </div>
 </div>
 </div>
