@@ -783,7 +783,7 @@ class InteractSeg:
                         ),
                         self.load_button,
                         ipw.HTML(
-                            '<br><font size="5"><b>Chose segmentation and signal channels (folders or tifs)<b></font>'
+                            '<br><font size="5"><b>Choose segmentation and signal channels (folders or tifs)<b></font>'
                         ),
                         ipw.HBox(
                             [
