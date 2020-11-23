@@ -1,0 +1,18 @@
+- file: mydocs/Introduction
+
+- part: Getting started
+  chapters:
+    - file: mydocs/Installation
+    - file: mydocs/Analysis_with_morpho_segmentation
+    - file: mydocs/Data_analysis
+
+- part: Code and algorithms
+  chapters:
+    - file: mydocs/usage_step_by_step
+    - file: mydocs/code_structure
+    - file: mydocs/segmentation
+    - file: mydocs/Data
+
+- part: Reference
+  chapters:
+    - file: docs/source/morphodynamics

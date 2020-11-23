@@ -1,0 +1,22 @@
+# Book settings
+title: Morphodynamics documentation
+author: Cédric Vonesch and Guillaume Witz
+logo: 'images/logo.png'
+
+# Information about where the book exists on the web
+repository:
+  url : https://github.com/guiwitz/MorphoDynamics
+html:
+  use_repository_button: true
+
+sphinx:
+  extra_extensions: [
+  'sphinx.ext.autodoc',
+  'sphinx.ext.napoleon'
+  ]
+
+execute:
+  exclude_patterns:
+    - synthetic/*
+    - notebooks/*
+  execute_notebooks: 'auto'
