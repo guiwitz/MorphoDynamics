@@ -39,8 +39,16 @@ jobs:
     - name: Compile sphinx
       run: |
         $CONDA/bin/sphinx-apidoc -o docs/source morphodynamics/
-    
-        # Build the book
+
+    # Copy the dataset where necessary
+    - name: Copy files
+      run: |
+        mkdir -p synthetic/data/Results_cellpose
+        mkdir -p synthetic/data/Results_step
+        cp -R synthetic/data/Results_ilastik/segmented synthetic/data/Results_cellpose
+        cp -R synthetic/data/Results_ilastik/segmented synthetic/data/Results_step
+
+    # Build the book
     - name: Build the book
       run: |
         $CONDA/bin/jupyter-book build .
