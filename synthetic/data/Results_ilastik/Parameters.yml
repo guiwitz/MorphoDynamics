@@ -1,0 +1,33 @@
+T: 100
+bad_frames: ''
+data_type: h5
+depth: 5
+diameter: 200
+distributed: local
+edgeNormalization: frame-by-frame
+expdir: /Users/gw18g940/OneDrive - Universitaet Bern/MIC_projects/Kobus/MDVonesch/MorphoDynamics/synthetic/data
+lambda_: 100.0
+location: null
+max_time: 40
+morpho_name: synth_ch1.h5
+n_curve: 10000
+resultdir: /Users/gw18g940/OneDrive - Universitaet Bern/MIC_projects/Kobus/MDVonesch/MorphoDynamics/synthetic/data/Results_ilastik
+seg_algo: ilastik
+showCircularity: false
+showCorrelation: false
+showCurvature: false
+showDisplacement: false
+showEdgeOverview: false
+showEdgeRasterized: false
+showEdgeVectorial: false
+showFourierDescriptors: false
+showSegmentation: false
+showSignals: false
+showWindows: false
+sigma: 2
+signal_name:
+- synth_ch2.h5
+- synth_ch3.h5
+step: 1
+switch_TZ: false
+width: 5

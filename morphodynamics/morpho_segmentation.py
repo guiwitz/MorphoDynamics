@@ -651,7 +651,7 @@ class InteractSeg:
 
         self.fig.data[2].visible = change["new"]
 
-    def export_data(self, b):
+    def export_data(self, b=None):
         """Callback to export Results and Parameters"""
 
         if self.data.data_type == "nd2":
