@@ -47,6 +47,8 @@ class InteractSeg:
     ----------
     expdir: str
         path to folder containing data
+    resultdir: str
+        path to folder where to save data
     morpho_name: str
         name of folder or file used segmentation
     signal_name: list of str
@@ -61,6 +63,8 @@ class InteractSeg:
     seg_algo : str
         type of segmentation algorithm to use
         can be "fardi", "cellpose" or "ilastik"
+    createUI : bool
+        create or not a UI
 
     Attributes
     ----------
@@ -70,12 +74,14 @@ class InteractSeg:
     def __init__(
         self,
         expdir=None,
+        resultdir=None,
         morpho_name=None,
         signal_name=None,
         memory="2 GB",
         cores=1,
         skip_trackseg=False,
         seg_algo="ilastik",
+        createUI=True
     ):
 
         style = {"description_width": "initial"}
@@ -84,11 +90,14 @@ class InteractSeg:
         self.param = Param(
             expdir=expdir, morpho_name=morpho_name, signal_name=signal_name, seg_algo=seg_algo
         )
+        param_copy = deepcopy(self.param)
 
         self.expdir = expdir
+        self.resultdir = resultdir
         self.memory = memory
         self.cores = cores
         self.skip_trackseg = skip_trackseg
+        self.createUI = createUI
 
         self.data = None
         self.res = None
@@ -121,7 +130,12 @@ class InteractSeg:
             self.expdir = Path(self.expdir)
             self.main_folder.cur_dir = self.expdir
             self.main_folder.refresh(None)
-            self.saving_folder.cur_dir = self.expdir
+            if self.resultdir is None:
+                self.saving_folder.cur_dir = self.expdir
+                self.saving_folder.refresh(None)
+        if self.resultdir is not None:
+            self.resultdir = Path(self.resultdir)
+            self.saving_folder.cur_dir = self.resultdir
             self.saving_folder.refresh(None)
 
         # export, import buttons
@@ -236,7 +250,7 @@ class InteractSeg:
         self.diameter = ipw.FloatText(value=100, description="Diameter:")
         self.diameter.observe(self.update_params, names="value")
 
-        self.segparam = self.threshold
+        self.segparam = self.segparam = ipw.VBox([])
 
         self.location_x = ipw.FloatText(value=100, description="Location X")
         self.location_x.observe(self.update_location, names="value")
@@ -292,7 +306,15 @@ class InteractSeg:
 
         # initialize dask
         # self.initialize_dask()
-        self.ui()
+        if self.createUI:
+            self.ui()
+
+        if morpho_name is not None:
+            self.param.morpho_name = morpho_name
+            self.segm_folders.value = morpho_name
+        if signal_name is not None:
+            self.param.signal_name = signal_name
+            self.channels_folders.value = signal_name
 
     def initialize(self, b=None):
         """Create a data object based on chosen directories/files"""
@@ -691,25 +713,21 @@ class InteractSeg:
         # set paths, folders and channel selectors
         self.expdir = Path(param_copy.expdir)
 
-        if self.data.data_type == "nd2":
-            self.main_folder.cur_dir = self.expdir.parent
-            self.main_folder.refresh(None)
-            self.segm_folders.options = [param_copy.morpho_name]
-            self.channels_folders.options = param_copy.signal_name
-        else:
-            self.main_folder.cur_dir = self.expdir
-            self.main_folder.refresh(None)
+        if self.data is not None:
+            if self.data.data_type == "nd2":
+                self.main_folder.cur_dir = self.expdir.parent
+                self.main_folder.refresh(None)
+                self.segm_folders.options = [param_copy.morpho_name]
+                self.channels_folders.options = param_copy.signal_name
+            else:
+                self.main_folder.cur_dir = self.expdir
+                self.main_folder.refresh(None)
 
         self.segm_folders.value = param_copy.morpho_name
         self.channels_folders.value = param_copy.signal_name
         self.switchTZ_check.value = param_copy.switch_TZ
 
         # set segmentation type
-        '''if param_copy.cellpose:
-            self.segmentation.value = "Cellpose"
-        else:
-            self.segmentation.value = "Thresholding"'''
-
         self.segmentation.value = param_copy.seg_algo
 
         # set segmentation parameters
@@ -723,7 +741,8 @@ class InteractSeg:
         self.maxtime.value = param_copy.max_time
         self.bad_frames.value = param_copy.bad_frames_txt
 
-        self.time_slider.max = self.data.K - 1
+        if self.data is not None:
+            self.time_slider.max = self.data.K - 1
         self.step.value = param_copy.step
 
         self.update_display_channel_list()
@@ -744,26 +763,25 @@ class InteractSeg:
                                             '<font size="5"><b>Choose main folder<b></font>'
                                         ),
                                         ipw.HTML(
-                                            '<font size="2"><b>Data folder or <br>\
-                            or folder containing segmentation to load<b></font>'
+                                            '<font size="2"><b>Data or Results folder<b></font>'
                                         ),
-                                        self.main_folder.file_list,
-                                        self.load_button,
+                                        self.main_folder.file_list
                                     ]
                                 ),
                                 ipw.VBox(
                                     [
                                         ipw.HTML(
-                                            '<br><font size="5"><b>Saving<b></font>'
+                                            '<font size="5"><b>Saving<b></font>'
                                         ),
                                         ipw.HTML(
                                             '<font size="2"><b>Select folder where to save<b></font>'
                                         ),
-                                        self.saving_folder.file_list,
+                                        self.saving_folder.file_list
                                     ]
-                                ),
+                                )
                             ]
                         ),
+                        self.load_button,
                         ipw.HTML(
                             '<br><font size="5"><b>Chose segmentation and signal channels (folders or tifs)<b></font>'
                         ),
