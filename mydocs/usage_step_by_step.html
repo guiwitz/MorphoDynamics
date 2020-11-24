@@ -562,16 +562,16 @@ number of layer J: 2
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   0%|          | 0/40 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   2%|▎         | 1/40 [00:04&lt;03:07,  4.80s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   2%|▎         | 1/40 [00:04&lt;03:06,  4.77s/it]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   5%|▌         | 2/40 [00:04&lt;02:09,  3.40s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:  68%|██████▊   | 27/40 [00:05&lt;00:30,  2.38s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:  62%|██████▎   | 25/40 [00:05&lt;00:35,  2.38s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:05&lt;00:00,  7.89it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:05&lt;00:00,  7.76it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -614,19 +614,19 @@ number of layer J: 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   0%|          | 0/40 [00:00&lt;?, ?it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   0%|          | 0/39 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   2%|▎         | 1/40 [00:03&lt;02:21,  3.62s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   3%|▎         | 1/39 [00:00&lt;00:06,  5.71it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:  15%|█▌        | 6/40 [00:03&lt;01:26,  2.54s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   5%|▌         | 2/39 [00:03&lt;00:43,  1.17s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:  70%|███████   | 28/40 [00:03&lt;00:21,  1.78s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:  56%|█████▋    | 22/39 [00:03&lt;00:13,  1.22it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize: 100%|██████████| 40/40 [00:03&lt;00:00, 10.33it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize: 100%|██████████| 39/39 [00:03&lt;00:00, 10.13it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -644,7 +644,58 @@ number of layer J: 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/usage_step_by_step_37_0.png" src="../_images/usage_step_by_step_37_0.png" />
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">FileNotFoundError</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">18</span><span class="o">-</span><span class="mi">6616</span><span class="n">f00e0574</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">raster_image</span> <span class="o">=</span> <span class="n">skimage</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s1">&#39;../synthetic/data/Results_step/segmented/rasterized_k_0.tif&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">7</span><span class="p">))</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">raster_image</span><span class="p">,</span> <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Rasterized image&#39;</span><span class="p">);</span>
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/skimage/io/_io.py</span> in <span class="ni">imread</span><span class="nt">(fname, as_gray, plugin, **plugin_args)</span>
+<span class="g g-Whitespace">     </span><span class="mi">46</span> 
+<span class="g g-Whitespace">     </span><span class="mi">47</span>     <span class="k">with</span> <span class="n">file_or_url_context</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="k">as</span> <span class="n">fname</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">48</span>         <span class="n">img</span> <span class="o">=</span> <span class="n">call_plugin</span><span class="p">(</span><span class="s1">&#39;imread&#39;</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">plugin</span><span class="o">=</span><span class="n">plugin</span><span class="p">,</span> <span class="o">**</span><span class="n">plugin_args</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">49</span> 
+<span class="g g-Whitespace">     </span><span class="mi">50</span>     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="s1">&#39;ndim&#39;</span><span class="p">):</span>
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/skimage/io/manage_plugins.py</span> in <span class="ni">call_plugin</span><span class="nt">(kind, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">207</span>                                <span class="p">(</span><span class="n">plugin</span><span class="p">,</span> <span class="n">kind</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">208</span> 
+<span class="ne">--&gt; </span><span class="mi">209</span>     <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">210</span> 
+<span class="g g-Whitespace">    </span><span class="mi">211</span> 
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/skimage/io/_plugins/tifffile_plugin.py</span> in <span class="ni">imread</span><span class="nt">(fname, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">34</span> 
+<span class="g g-Whitespace">     </span><span class="mi">35</span>     <span class="c1"># read and return tiff as numpy array</span>
+<span class="ne">---&gt; </span><span class="mi">36</span>     <span class="k">with</span> <span class="n">TiffFile</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_tiff</span><span class="p">)</span> <span class="k">as</span> <span class="n">tif</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">37</span>         <span class="k">return</span> <span class="n">tif</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/tifffile/tifffile.py</span> in <span class="ni">__init__</span><span class="nt">(self, arg, name, offset, size, mode, _multifile, _useframes, _master, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2792</span>                     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;unexpected keyword argument: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2793</span> 
+<span class="ne">-&gt; </span><span class="mi">2794</span>         <span class="n">fh</span> <span class="o">=</span> <span class="n">FileHandle</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">2795</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_fh</span> <span class="o">=</span> <span class="n">fh</span>
+<span class="g g-Whitespace">   </span><span class="mi">2796</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_multifile</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">_multifile</span><span class="p">)</span>
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/tifffile/tifffile.py</span> in <span class="ni">__init__</span><span class="nt">(self, file, mode, name, offset, size)</span>
+<span class="g g-Whitespace">   </span><span class="mi">8295</span>         <span class="bp">self</span><span class="o">.</span><span class="n">is_file</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="g g-Whitespace">   </span><span class="mi">8296</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">NullContext</span><span class="p">()</span>
+<span class="ne">-&gt; </span><span class="mi">8297</span>         <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">8298</span> 
+<span class="g g-Whitespace">   </span><span class="mi">8299</span>     <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<span class="nn">/usr/share/miniconda/lib/python3.7/site-packages/tifffile/tifffile.py</span> in <span class="ni">open</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">   </span><span class="mi">8308</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">8309</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">8310</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">8311</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_close</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="g g-Whitespace">   </span><span class="mi">8312</span>             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_offset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+<span class="ne">FileNotFoundError</span>: [Errno 2] No such file or directory: &#39;/home/runner/work/MorphoDynamics/MorphoDynamics/synthetic/data/Results_step/segmented/rasterized_k_0.tif&#39;
+</pre></div>
+</div>
 </div>
 </div>
 <p>As we calculate the spline origin shift between pairs of successive frames (so that the operation can be parallelized), we need to calculate a cumulative sum to recover the shift between frame 0 and frame <code class="docutils literal notranslate"><span class="pre">f</span></code>:</p>
@@ -687,22 +738,7 @@ number of layer J: 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:   0%|          | 0/40 [00:00&lt;?, ?it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:   2%|▎         | 1/40 [00:03&lt;02:12,  3.39s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:   5%|▌         | 2/40 [00:03&lt;01:34,  2.49s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:  68%|██████▊   | 27/40 [00:03&lt;00:22,  1.75s/it]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows: 100%|██████████| 40/40 [00:03&lt;00:00, 10.16it/s]
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows: 100%|██████████| 40/40 [00:02&lt;00:00, 16.99it/s]
 </pre></div>
 </div>
 </div>

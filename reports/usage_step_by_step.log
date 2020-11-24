@@ -1,0 +1,77 @@
+Traceback (most recent call last):
+  File "/usr/share/miniconda/lib/python3.7/site-packages/jupyter_cache/executors/utils.py", line 56, in single_nb_execution
+    record_timing=False,
+  File "/usr/share/miniconda/lib/python3.7/site-packages/nbclient/client.py", line 1087, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/usr/share/miniconda/lib/python3.7/site-packages/nbclient/util.py", line 74, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/usr/share/miniconda/lib/python3.7/site-packages/nbclient/util.py", line 53, in just_run
+    return loop.run_until_complete(coro)
+  File "/usr/share/miniconda/lib/python3.7/asyncio/base_events.py", line 587, in run_until_complete
+    return future.result()
+  File "/usr/share/miniconda/lib/python3.7/site-packages/nbclient/client.py", line 541, in async_execute
+    cell, index, execution_count=self.code_cells_executed + 1
+  File "/usr/share/miniconda/lib/python3.7/site-packages/nbclient/client.py", line 832, in async_execute_cell
+    self._check_raise_for_error(cell, exec_reply)
+  File "/usr/share/miniconda/lib/python3.7/site-packages/nbclient/client.py", line 740, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply['content'])
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+raster_image = skimage.io.imread('../synthetic/data/Results_step/segmented/rasterized_k_0.tif')
+fig, ax = plt.subplots(figsize=(7,7))
+ax.imshow(raster_image, cmap = 'gray')
+ax.set_title('Rasterized image');
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mFileNotFoundError[0m                         Traceback (most recent call last)
+[0;32m<ipython-input-18-6616f00e0574>[0m in [0;36m<module>[0;34m[0m
+[0;32m----> 1[0;31m [0mraster_image[0m [0;34m=[0m [0mskimage[0m[0;34m.[0m[0mio[0m[0;34m.[0m[0mimread[0m[0;34m([0m[0;34m'../synthetic/data/Results_step/segmented/rasterized_k_0.tif'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      2[0m [0mfig[0m[0;34m,[0m [0max[0m [0;34m=[0m [0mplt[0m[0;34m.[0m[0msubplots[0m[0;34m([0m[0mfigsize[0m[0;34m=[0m[0;34m([0m[0;36m7[0m[0;34m,[0m[0;36m7[0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      3[0m [0max[0m[0;34m.[0m[0mimshow[0m[0;34m([0m[0mraster_image[0m[0;34m,[0m [0mcmap[0m [0;34m=[0m [0;34m'gray'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      4[0m [0max[0m[0;34m.[0m[0mset_title[0m[0;34m([0m[0;34m'Rasterized image'[0m[0;34m)[0m[0;34m;[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/share/miniconda/lib/python3.7/site-packages/skimage/io/_io.py[0m in [0;36mimread[0;34m(fname, as_gray, plugin, **plugin_args)[0m
+[1;32m     46[0m [0;34m[0m[0m
+[1;32m     47[0m     [0;32mwith[0m [0mfile_or_url_context[0m[0;34m([0m[0mfname[0m[0;34m)[0m [0;32mas[0m [0mfname[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 48[0;31m         [0mimg[0m [0;34m=[0m [0mcall_plugin[0m[0;34m([0m[0;34m'imread'[0m[0;34m,[0m [0mfname[0m[0;34m,[0m [0mplugin[0m[0;34m=[0m[0mplugin[0m[0;34m,[0m [0;34m**[0m[0mplugin_args[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     49[0m [0;34m[0m[0m
+[1;32m     50[0m     [0;32mif[0m [0;32mnot[0m [0mhasattr[0m[0;34m([0m[0mimg[0m[0;34m,[0m [0;34m'ndim'[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/share/miniconda/lib/python3.7/site-packages/skimage/io/manage_plugins.py[0m in [0;36mcall_plugin[0;34m(kind, *args, **kwargs)[0m
+[1;32m    207[0m                                (plugin, kind))
+[1;32m    208[0m [0;34m[0m[0m
+[0;32m--> 209[0;31m     [0;32mreturn[0m [0mfunc[0m[0;34m([0m[0;34m*[0m[0margs[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    210[0m [0;34m[0m[0m
+[1;32m    211[0m [0;34m[0m[0m
+
+[0;32m/usr/share/miniconda/lib/python3.7/site-packages/skimage/io/_plugins/tifffile_plugin.py[0m in [0;36mimread[0;34m(fname, **kwargs)[0m
+[1;32m     34[0m [0;34m[0m[0m
+[1;32m     35[0m     [0;31m# read and return tiff as numpy array[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
+[0;32m---> 36[0;31m     [0;32mwith[0m [0mTiffFile[0m[0;34m([0m[0mfname[0m[0;34m,[0m [0;34m**[0m[0mkwargs_tiff[0m[0;34m)[0m [0;32mas[0m [0mtif[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     37[0m         [0;32mreturn[0m [0mtif[0m[0;34m.[0m[0masarray[0m[0;34m([0m[0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/share/miniconda/lib/python3.7/site-packages/tifffile/tifffile.py[0m in [0;36m__init__[0;34m(self, arg, name, offset, size, mode, _multifile, _useframes, _master, **kwargs)[0m
+[1;32m   2792[0m                     [0;32mraise[0m [0mTypeError[0m[0;34m([0m[0;34mf'unexpected keyword argument: {key}'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   2793[0m [0;34m[0m[0m
+[0;32m-> 2794[0;31m         [0mfh[0m [0;34m=[0m [0mFileHandle[0m[0;34m([0m[0marg[0m[0;34m,[0m [0mmode[0m[0;34m=[0m[0mmode[0m[0;34m,[0m [0mname[0m[0;34m=[0m[0mname[0m[0;34m,[0m [0moffset[0m[0;34m=[0m[0moffset[0m[0;34m,[0m [0msize[0m[0;34m=[0m[0msize[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   2795[0m         [0mself[0m[0;34m.[0m[0m_fh[0m [0;34m=[0m [0mfh[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   2796[0m         [0mself[0m[0;34m.[0m[0m_multifile[0m [0;34m=[0m [0mbool[0m[0;34m([0m[0m_multifile[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/share/miniconda/lib/python3.7/site-packages/tifffile/tifffile.py[0m in [0;36m__init__[0;34m(self, file, mode, name, offset, size)[0m
+[1;32m   8295[0m         [0mself[0m[0;34m.[0m[0mis_file[0m [0;34m=[0m [0;32mNone[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   8296[0m         [0mself[0m[0;34m.[0m[0m_lock[0m [0;34m=[0m [0mNullContext[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 8297[0;31m         [0mself[0m[0;34m.[0m[0mopen[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   8298[0m [0;34m[0m[0m
+[1;32m   8299[0m     [0;32mdef[0m [0mopen[0m[0;34m([0m[0mself[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m/usr/share/miniconda/lib/python3.7/site-packages/tifffile/tifffile.py[0m in [0;36mopen[0;34m(self)[0m
+[1;32m   8308[0m             [0mself[0m[0;34m.[0m[0m_file[0m [0;34m=[0m [0mos[0m[0;34m.[0m[0mpath[0m[0;34m.[0m[0mrealpath[0m[0;34m([0m[0mself[0m[0;34m.[0m[0m_file[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   8309[0m             [0mself[0m[0;34m.[0m[0m_dir[0m[0;34m,[0m [0mself[0m[0;34m.[0m[0m_name[0m [0;34m=[0m [0mos[0m[0;34m.[0m[0mpath[0m[0;34m.[0m[0msplit[0m[0;34m([0m[0mself[0m[0;34m.[0m[0m_file[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m-> 8310[0;31m             [0mself[0m[0;34m.[0m[0m_fh[0m [0;34m=[0m [0mopen[0m[0;34m([0m[0mself[0m[0;34m.[0m[0m_file[0m[0;34m,[0m [0mself[0m[0;34m.[0m[0m_mode[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m   8311[0m             [0mself[0m[0;34m.[0m[0m_close[0m [0;34m=[0m [0;32mTrue[0m[0;34m[0m[0;34m[0m[0m
+[1;32m   8312[0m             [0;32mif[0m [0mself[0m[0;34m.[0m[0m_offset[0m [0;32mis[0m [0;32mNone[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: '/home/runner/work/MorphoDynamics/MorphoDynamics/synthetic/data/Results_step/segmented/rasterized_k_0.tif'
+FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/MorphoDynamics/MorphoDynamics/synthetic/data/Results_step/segmented/rasterized_k_0.tif'
+

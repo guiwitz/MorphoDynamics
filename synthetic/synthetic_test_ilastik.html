@@ -282,30 +282,16 @@
 <h1>Test segmentation and windowing with ilastik segmentation<a class="headerlink" href="#test-segmentation-and-windowing-with-ilastik-segmentation" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#%load_ext autoreload</span>
-<span class="c1">#%autoreload 2</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">skimage.io</span>
-<span class="kn">from</span> <span class="nn">skimage.measure</span> <span class="kn">import</span> <span class="n">find_contours</span>
-<span class="kn">import</span> <span class="nn">dask</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">pickle</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-
-<span class="kn">from</span> <span class="nn">morphodynamics.dataset</span> <span class="kn">import</span> <span class="n">H5</span>
-<span class="kn">from</span> <span class="nn">morphodynamics.parameters</span> <span class="kn">import</span> <span class="n">Param</span>
-
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">morphodynamics.morpho_segmentation</span> <span class="kn">import</span> <span class="n">InteractSeg</span>
-
-<span class="o">%</span><span class="k">matplotlib</span> widget
 </pre></div>
 </div>
 </div>
@@ -348,6 +334,7 @@
 
 <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">lambda_</span> <span class="o">=</span> <span class="mi">10</span>
 </pre></div>
 </div>
 </div>
@@ -359,22 +346,17 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:08&lt;00:00,  4.82it/s]
-frames rasterize: 100%|██████████| 40/40 [00:01&lt;00:00, 25.30it/s]
-frames compute windows: 100%|██████████| 40/40 [00:02&lt;00:00, 17.00it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:13&lt;00:00,  3.03it/s]
+frames rasterize: 100%|██████████| 39/39 [00:02&lt;00:00, 19.04it/s]
+frames compute windows: 100%|██████████| 40/40 [00:00&lt;00:00, 73.07it/s]
+frames compute mapping: 100%|██████████| 39/39 [00:03&lt;00:00, 12.47it/s]
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Your results have been saved in the following directory:
-/Users/gw18g940/OneDrive - Universitaet Bern/MIC_projects/Kobus/MDVonesch/MorphoDynamics/synthetic/data/Results_ilastik
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">export_data</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>

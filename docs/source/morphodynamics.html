@@ -386,7 +386,7 @@ a rasterized version.</p>
 <li><p><strong>s_all</strong> (<em>dict of splines</em>) – each element k is the spline of frame k</p></li>
 <li><p><strong>im_shape</strong> (<em>tuple</em>) – intended shape of rasterized image</p></li>
 <li><p><strong>num_points</strong> (<em>int</em>) – number of estimated spline points</p></li>
-<li><p><strong>param</strong> – </p></li>
+<li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
 <li><p><strong>client</strong> (<em>dask client</em>) – client connected to LocalCluster or SLURMCluster</p></li>
 </ul>
 </dd>
@@ -396,7 +396,7 @@ a rasterized version.</p>
 on spline of frame k+1</p></li>
 <li><p><strong>c_all</strong> (<em>dict of 2d arrays</em>) – each element is the rasterized contour</p></li>
 <li><p><strong>ori_all</strong> (<em>dict of floats</em>) – each element k is the spline parameter shift to align
-spline of frame k+1 on spine of frame k</p></li>
+spline of frame k on spline of frame k-1</p></li>
 </ul>
 </p>
 </dd>
@@ -495,12 +495,12 @@ windows of frame corresponding to s_all[t-1]</p></li>
 
 <dl class="py function">
 <dt id="morphodynamics.analysis_par.import_and_spline">
-<code class="sig-prename descclassname">morphodynamics.analysis_par.</code><code class="sig-name descname">import_and_spline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span></em>, <em class="sig-param"><span class="n">smoothing</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.import_and_spline" title="Permalink to this definition">¶</a></dt>
-<dd><p>[summary]</p>
+<code class="sig-prename descclassname">morphodynamics.analysis_par.</code><code class="sig-name descname">import_and_spline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">image_path</span></em>, <em class="sig-param"><span class="n">smoothing</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.import_and_spline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import binary image at image_path and fit a spline to its contour.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filepath</strong> (<em>path</em>) – path to binary image</p></li>
+<li><p><strong>image_path</strong> (<em>path</em>) – path to binary image</p></li>
 <li><p><strong>smoothing</strong> (<em>float</em>) – smoothing factor for spline (see splrep)</p></li>
 </ul>
 </dd>
@@ -539,7 +539,18 @@ label is not selected here</p>
 <dl class="py function">
 <dt id="morphodynamics.analysis_par.segment_single_frame">
 <code class="sig-prename descclassname">morphodynamics.analysis_par.</code><code class="sig-name descname">segment_single_frame</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">param</span></em>, <em class="sig-param"><span class="n">k</span></em>, <em class="sig-param"><span class="n">save_path</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.segment_single_frame" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Segment frame k of segmentation image defined in param object
+and save to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
+<li><p><strong>k</strong> (<em>int</em>) – frame index</p></li>
+<li><p><strong>save_path</strong> (<em>path</em>) – path to folder where to save segmented image</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="morphodynamics.analysis_par.spline_align_rasterize">
@@ -550,8 +561,8 @@ version of it.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>N</strong> (<em>int</em>) – number of points used for spline discretization</p></li>
-<li><p><strong>s0</strong> (<em>tuple bspline object</em>) – spline to align to</p></li>
-<li><p><strong>s</strong> (<em>tuple bspline object</em>) – spline to align</p></li>
+<li><p><strong>s0</strong> (<em>tuple bspline object</em>) – spline at time t-1</p></li>
+<li><p><strong>s</strong> (<em>tuple bspline object</em>) – spline at time t</p></li>
 <li><p><strong>im_shape</strong> (<em>tuple</em>) – size of image for rasterization</p></li>
 <li><p><strong>align</strong> (<em>bool</em>) – do alignement necessary or not</p></li>
 <li><p><strong>filename</strong> (<em>path</em>) – file name to save rasterized image</p></li>
@@ -615,10 +626,43 @@ where one labelled object has been selected as cell</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="morphodynamics.analysis_par.window_map_all">
-<code class="sig-prename descclassname">morphodynamics.analysis_par.</code><code class="sig-name descname">window_map_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s_all</span></em>, <em class="sig-param"><span class="n">s_shift_all</span></em>, <em class="sig-param"><span class="n">J</span></em>, <em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">origins</span></em>, <em class="sig-param"><span class="n">num_points</span></em>, <em class="sig-param"><span class="n">im_shape</span></em>, <em class="sig-param"><span class="n">param</span></em>, <em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.window_map_all" title="Permalink to this definition">¶</a></dt>
+<dt id="morphodynamics.analysis_par.window_map">
+<code class="sig-prename descclassname">morphodynamics.analysis_par.</code><code class="sig-name descname">window_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span></em>, <em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">s0</span></em>, <em class="sig-param"><span class="n">ori</span></em>, <em class="sig-param"><span class="n">ori0</span></em>, <em class="sig-param"><span class="n">s0_shifted</span></em>, <em class="sig-param"><span class="n">J</span></em>, <em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">k_iter</span></em>, <em class="sig-param"><span class="n">param</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.window_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create windows for spline s and map its position to spline of
 previous frame s0 to measure displacements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> (<em>int</em>) – number of points used for spline discretization</p></li>
+<li><p><strong>s</strong> (<em>tuple bspline object</em>) – spline to align</p></li>
+<li><p><strong>s0</strong> (<em>tuple bspline object</em>) – spline to align to</p></li>
+<li><p><strong>ori</strong> (<em>float</em>) – spline parameter shift to align s origin</p></li>
+<li><p><strong>ori0</strong> (<em>float</em>) – spline parameter shift to align s0 origin</p></li>
+<li><p><strong>s0_shifted</strong> (<em>tuple bspline object</em>) – shifted version of s0 xy-aligned on s</p></li>
+<li><p><strong>J</strong> (<em>int</em>) – number of window layers</p></li>
+<li><p><strong>I</strong> (<em>list of int</em>) – number of windows per layer</p></li>
+<li><p><strong>k_iter</strong> (<em>int</em>) – frame index</p></li>
+<li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>t</strong> (<em>1d array</em>) – list of spline parameters defining closest locations
+on s to points defined by t0 on s0</p></li>
+<li><p><strong>t0</strong> (<em>1d array</em>) – list of spline paramters defining points centered on
+windows of frame corresponding to s0</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="morphodynamics.analysis_par.window_map_all">
+<code class="sig-prename descclassname">morphodynamics.analysis_par.</code><code class="sig-name descname">window_map_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s_all</span></em>, <em class="sig-param"><span class="n">s_shift_all</span></em>, <em class="sig-param"><span class="n">J</span></em>, <em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">origins</span></em>, <em class="sig-param"><span class="n">num_points</span></em>, <em class="sig-param"><span class="n">im_shape</span></em>, <em class="sig-param"><span class="n">param</span></em>, <em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.window_map_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map all pairs of consecutive splines in s_all to minimize their
+“distance” as defined by a chosen functional. Return the set of
+optimized spline parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -632,7 +676,6 @@ on spline of frame k+1</p></li>
 <li><p><strong>origins</strong> (<em>list of floats</em>) – each element k is the spline parameter shift to align
 spline of frame k+1 on spine of frame k</p></li>
 <li><p><strong>num_points</strong> – number of interpolation points</p></li>
-<li><p><strong>im_shape</strong> (<em>tuple</em>) – shape of output image with windows</p></li>
 <li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
 <li><p><strong>client</strong> (<em>dask client</em>) – client connected to LocalCluster or SLURMCluster</p></li>
 </ul>
@@ -650,44 +693,39 @@ windows of frame corresponding to s_all[t-1]</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="morphodynamics.analysis_par.window_map_and_save">
-<code class="sig-prename descclassname">morphodynamics.analysis_par.</code><code class="sig-name descname">window_map_and_save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span></em>, <em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">s0</span></em>, <em class="sig-param"><span class="n">ori</span></em>, <em class="sig-param"><span class="n">ori0</span></em>, <em class="sig-param"><span class="n">s0_shifted</span></em>, <em class="sig-param"><span class="n">J</span></em>, <em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">k_iter</span></em>, <em class="sig-param"><span class="n">im_shape</span></em>, <em class="sig-param"><span class="n">param</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.window_map_and_save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform window mapping and spline alignment for single frame k_iter
-and save results</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="morphodynamics.analysis_par.windowing_mapping">
-<code class="sig-prename descclassname">morphodynamics.analysis_par.</code><code class="sig-name descname">windowing_mapping</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span></em>, <em class="sig-param"><span class="n">c</span></em>, <em class="sig-param"><span class="n">c0</span></em>, <em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">s0</span></em>, <em class="sig-param"><span class="n">ori</span></em>, <em class="sig-param"><span class="n">ori0</span></em>, <em class="sig-param"><span class="n">s0_shifted</span></em>, <em class="sig-param"><span class="n">J</span></em>, <em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">align</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.windowing_mapping" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create windows for spline s and map its position to spline of
-previous frame s0 to measure displacements.</p>
+<dt id="morphodynamics.analysis_par.windowing">
+<code class="sig-prename descclassname">morphodynamics.analysis_par.</code><code class="sig-name descname">windowing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">ori</span></em>, <em class="sig-param"><span class="n">param</span></em>, <em class="sig-param"><span class="n">J</span></em>, <em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">k_iter</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.windowing" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create windowing for frame k_iter and save results.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>N</strong> (<em>int</em>) – number of points used for spline discretization</p></li>
-<li><p><strong>c</strong> (<em>2d array</em>) – rasterized image of spline s</p></li>
-<li><p><strong>c0</strong> (<em>2d array</em>) – rasterized image of spline s0</p></li>
-<li><p><strong>s</strong> (<em>tuple bspline object</em>) – spline to align</p></li>
-<li><p><strong>s0</strong> (<em>tuple bspline object</em>) – spline to align to</p></li>
-<li><p><strong>ori</strong> (<em>float</em>) – spline parameter shift to align s origin</p></li>
-<li><p><strong>ori0</strong> (<em>float</em>) – spline parameter shift to align s0 origin</p></li>
-<li><p><strong>s0_shifted</strong> (<em>tuple bspline object</em>) – shifted version of s0 xy-aligned on s</p></li>
+<li><p><strong>s</strong> (<em>tuple</em>) – spline object</p></li>
+<li><p><strong>ori</strong> (<em>float</em>) – origin shift</p></li>
+<li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
 <li><p><strong>J</strong> (<em>int</em>) – number of window layers</p></li>
 <li><p><strong>I</strong> (<em>list of int</em>) – number of windows per layer</p></li>
-<li><p><strong>align</strong> (<em>bool</em>) – perform position matching or not</p></li>
+<li><p><strong>k_iter</strong> (<em>int</em>) – frame index</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>w</strong> (<em>3d list</em>) – w[i][j][0] and w[0][0][1] are 1d arrays representing
-lists of x,y indices of pixels belonging to window in i’th layer
-in j’th window</p></li>
-<li><p><strong>t</strong> (<em>1d array</em>) – list of spline parameters defining closest locations
-on s to points defined by t0 on s0</p></li>
-<li><p><strong>t0</strong> (<em>1d array</em>) – list of spline paramters defining points centered on
-windows of frame corresponding to s0</p></li>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="morphodynamics.analysis_par.windowing_all">
+<code class="sig-prename descclassname">morphodynamics.analysis_par.</code><code class="sig-name descname">windowing_all</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">s_all</span></em>, <em class="sig-param"><span class="n">ori_all</span></em>, <em class="sig-param"><span class="n">param</span></em>, <em class="sig-param"><span class="n">J</span></em>, <em class="sig-param"><span class="n">I</span></em>, <em class="sig-param"><span class="n">client</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.windowing_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create windowing for all splines in s_all.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>s_all</strong> (<em>dict of spline objects</em>) – each element k of the dictionary contains the spline of the
+corresponding frame k. The frame k-1 contains None</p></li>
+<li><p><strong>ori_all</strong> (<em>list of floats</em>) – each element k is the spline parameter shift to align
+spline of frame k+1 on spine of frame k</p></li>
+<li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
+<li><p><strong>J</strong> (<em>int</em>) – number of window layers</p></li>
+<li><p><strong>I</strong> (<em>list of int</em>) – number of windows per layer</p></li>
+<li><p><strong>client</strong> (<em>dask client</em>) – client connected to LocalCluster or SLURMCluster</p></li>
 </ul>
-</p>
 </dd>
 </dl>
 </dd></dl>
@@ -989,8 +1027,8 @@ The total displacement is the sum of both components.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>s1c</strong> (<em>bspline tuple</em>) – translated curve s1</p></li>
-<li><p><strong>t2</strong> (<em>float</em>) – is the new origin for curve s2.</p></li>
+<li><p><strong>s1c</strong> (<em>bspline tuple</em>) – translated curve s1 to match s2</p></li>
+<li><p><strong>t2</strong> (<em>float</em>) – origin shift for s2 to match s1</p></li>
 </ul>
 </p>
 </dd>
@@ -1889,6 +1927,18 @@ again.</p>
 </p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="morphodynamics.utils.load_rasterized">
+<code class="sig-prename descclassname">morphodynamics.utils.</code><code class="sig-name descname">load_rasterized</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">location</span></em>, <em class="sig-param"><span class="n">frame</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.utils.load_rasterized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load rasterized contour image at given frame</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="morphodynamics.utils.load_window_image">
+<code class="sig-prename descclassname">morphodynamics.utils.</code><code class="sig-name descname">load_window_image</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">location</span></em>, <em class="sig-param"><span class="n">frame</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.utils.load_window_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load rasterized contour image at given frame</p>
 </dd></dl>
 
 </div>
