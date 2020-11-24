@@ -224,8 +224,8 @@ def show_edge_vectorial_aux(param, data, res, k, curvature=False, fig_ax=None):
 
     fig, ax = show_edge_scatter(
         param.n_curve,
-        res.spline[k],
-        res.spline[k + 1],
+        res.spline[k-1],#res.spline[k],
+        res.spline[k],#res.spline[k + 1],
         res.param0[k],
         res.param[k],
         f,
