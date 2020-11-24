@@ -252,6 +252,7 @@ def map_contours2(s1, s2, t1, t2):
     functional = Functional2(s1, s2, t1, w)
 
     # Change-of-basis matrix for specifying the linear constraints
+    # ensure that spline parameters are monotonicialy growing (no crossings)
     A = np.zeros((N, N))
     for n in range(0, N):
         A[n, n] = 1
