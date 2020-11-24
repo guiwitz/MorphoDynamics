@@ -2,6 +2,7 @@ import dill
 import os
 import yaml
 import numpy as np
+import skimage.io
 from pathlib import Path
 
 from .parameters import Param
@@ -119,3 +120,23 @@ def format_bad_frames(bad_frames):
     bads = [x.item() for x in bads]
 
     return bads
+
+
+def load_rasterized(location, frame):
+    """Load rasterized contour image at given frame"""
+
+    image = skimage.io.imread(
+            os.path.join(location, "rasterized_k_" + str(frame) + ".tif")
+        )
+
+    return image
+
+
+def load_window_image(location, frame):
+    """Load rasterized contour image at given frame"""
+
+    image = skimage.io.imread(
+            os.path.join(location, "window_image_k_" + str(frame) + ".tif")
+        )
+
+    return image
