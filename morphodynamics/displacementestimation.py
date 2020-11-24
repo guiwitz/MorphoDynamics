@@ -144,9 +144,9 @@ def align_curves(N, s1, s2, t1):
     Returns
     -------
     s1c: bspline tuple
-        translated curve s1
+        translated curve s1 to match s2
     t2: float
-        is the new origin for curve s2.
+        origin shift for s2 to match s1
 
     """
 
