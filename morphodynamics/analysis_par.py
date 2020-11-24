@@ -6,7 +6,6 @@ from scipy.ndimage import center_of_mass
 from scipy.interpolate import splev
 import skimage.io
 from .segmentation import (
-    segment_threshold,
     segment_cellpose,
     tracking,
     segment_farid,
@@ -22,9 +21,9 @@ from .displacementestimation import (
 from .windowing import create_windows, extract_signals, boundaries_image
 from .results import Results
 from .utils import load_alldata
+from . import utils
 import matplotlib.pyplot as plt
 from cellpose import models
-import dask
 from tqdm import tqdm
 
 
@@ -62,7 +61,7 @@ def analyze_morphodynamics(
 
     """
 
-    if param.seg_algo == 'cellpose':
+    if param.seg_algo == "cellpose":
         model = models.Cellpose(model_type="cyto")
     else:
         model = None
@@ -70,9 +69,7 @@ def analyze_morphodynamics(
     location, J, I = calibration(data, param, model)
 
     # Result structures that will be saved to disk
-    res = Results(
-        J=J, I=I, num_time_points=data.K, num_channels=len(data.signalfile)
-    )
+    res = Results(J=J, I=I, num_time_points=data.K, num_channels=len(data.signalfile))
 
     if not skip_segtrack:
         # Segment all images but don't select cell
@@ -87,31 +84,24 @@ def analyze_morphodynamics(
         # do the tracking
         segmented = track_all(segmented, location, param)
 
-    # get all splines
+    # get all splines. s_all[k] is spline at frame k
     s_all = spline_all(data.K, param.lambda_, param, client)
 
     # align curves across frames and rasterize the windows
-    s0prm_all, ori_all = align_all(
-        s_all, data.shape, param.n_curve, param, client
-    )
+    s0prm_all, ori_all = align_all(s_all, data.shape, param.n_curve, param, client)
 
     # origin shifts have been computed pair-wise. Calculate the cumulative
     # sum to get a "true" alignment on the first frame
     res.orig = np.array([ori_all[k] for k in range(data.K)])
     res.orig = np.cumsum(res.orig)
 
+    # create windows
+    windowing_all(s_all, res.orig, param, J, I, client)
+
     # define windows for each frame and compute pairs of corresponding
     # points on successive splines for displacement measurement
     t_all, t0_all = window_map_all(
-        s_all,
-        s0prm_all,
-        J,
-        I,
-        res.orig,
-        param.n_curve,
-        data.shape,
-        param,
-        client,
+        s_all, s0prm_all, J, I, res.orig, param.n_curve, data.shape, param, client
     )
 
     # Signals extracted from various imaging channels
@@ -157,18 +147,15 @@ def calibration(data, param, model):
     # Calibration of the windowing procedure
     location = param.location
     x = data.load_frame_morpho(0)
-    if param.seg_algo == 'cellpose':
+    if param.seg_algo == "cellpose":
         m = segment_cellpose(model, x, param.diameter, location)
         m = tracking(m, location, seg_type="cellpose")
     elif param.seg_algo == "ilastik":
         segpath = Path(param.resultdir).joinpath("segmented")
         num = str(0).zfill(
-            len(next(segpath.glob("segmented_k_*.tif")).name.split("_")[-1])
-            - 4
+            len(next(segpath.glob("segmented_k_*.tif")).name.split("_")[-1]) - 4
         )
-        m = skimage.io.imread(
-            os.path.join(segpath, "segmented_k_" + num + ".tif")
-        )
+        m = skimage.io.imread(os.path.join(segpath, "segmented_k_" + num + ".tif"))
         m = tracking(m, location, seg_type="ilastik")
     elif param.seg_algo == "farid":
         # m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
@@ -184,21 +171,19 @@ def calibration(data, param, model):
     try:
         s, _ = contour_spline(m, param.lambda_)
         c = rasterize_curve(param.n_curve, m.shape, s, 0)
-        _, J, I = create_windows(
-            c, splev(0, s), depth=param.depth, width=param.width
-        )
+        _, J, I = create_windows(c, splev(0, s), depth=param.depth, width=param.width)
     except Exception:
         print("I and J not calculated. Using 10 as default value.")
 
     return location, J, I
 
 
-def import_and_spline(filepath, smoothing):
-    """[summary]
+def import_and_spline(image_path, smoothing):
+    """Import binary image at image_path and fit a spline to its contour.
 
     Parameters
     ----------
-    filepath : path
+    image_path : path
         path to binary image
     smoothing : float
         smoothing factor for spline (see splrep)
@@ -209,7 +194,7 @@ def import_and_spline(filepath, smoothing):
         spline fitted to binary object in image
     """
 
-    m = skimage.io.imread(filepath)
+    m = skimage.io.imread(image_path)
     s, _ = contour_spline(m, smoothing)
     return s
 
@@ -239,8 +224,8 @@ def spline_all(num_frames, smoothing, param, client):
 
     save_path = os.path.join(param.resultdir, "segmented")
 
-    s_all = {k: None for k in range(-1, num_frames)}
-    for k in range(0, num_frames):
+    s_all = {k: None for k in range(num_frames)}
+    for k in range(num_frames):
         name = os.path.join(save_path, "tracked_k_" + str(k) + ".tif")
         s_all[k] = client.submit(import_and_spline, name, smoothing)
 
@@ -264,7 +249,8 @@ def align_all(s_all, im_shape, num_points, param, client):
         intended shape of rasterized image
     num_points: int
         number of estimated spline points
-    param:
+    param : Param object
+        As created by morphodyanmics.parameters.Param
     client: dask client
         client connected to LocalCluster or SLURMCluster
 
@@ -277,22 +263,21 @@ def align_all(s_all, im_shape, num_points, param, client):
         each element is the rasterized contour
     ori_all: dict of floats
         each element k is the spline parameter shift to align
-        spline of frame k+1 on spine of frame k
+        spline of frame k on spline of frame k-1
 
     """
 
     save_path = os.path.join(param.resultdir, "segmented")
 
-    num_frames = len(s_all) - 1
+    num_frames = len(s_all)
     s0prm_all = {k: None for k in range(num_frames)}
-    # c_all = {k: None for k in range(-1, num_frames)}
-    ori_all = {k: None for k in range(0, num_frames)}
+    ori_all = {k: 0 for k in range(0, num_frames)}
     names = [
         os.path.join(save_path, "rasterized_k_" + str(k) + ".tif")
         for k in range(num_frames)
     ]
-    spline_compute = [
-        client.submit(
+    spline_compute = {
+        k: client.submit(
             spline_align_rasterize,
             num_points,
             s_all[k - 1],
@@ -301,43 +286,126 @@ def align_all(s_all, im_shape, num_points, param, client):
             k > 0,
             names[k],
         )
-        for k in range(num_frames)
-    ]
+        for k in range(1, num_frames)
+    }
 
-    for k in tqdm(range(num_frames), "frames rasterize"):
+    for k in tqdm(range(1, num_frames), "frames rasterize"):
         future = spline_compute[k]
-        s0prm_all[k], ori_all[k], _ = future.result()
+        s0prm_all[k - 1], ori_all[k], _ = future.result()
         future.cancel()
 
     return s0prm_all, ori_all
 
 
-def window_map_and_save(
-    N, s, s0, ori, ori0, s0_shifted, J, I, k_iter, im_shape, param
-):
-    """Perform window mapping and spline alignment for single frame k_iter
-    and save results"""
+def windowing(s, ori, param, J, I, k_iter):
+    """Create windowing for frame k_iter and save results.
+
+    Parameters
+    ----------
+    s : tuple
+        spline object
+    ori : float
+        origin shift
+    param : Param object
+        As created by morphodyanmics.parameters.Param
+    J : int
+        number of window layers
+    I : list of int
+        number of windows per layer
+    k_iter : int
+        frame index
+
+    """
 
     save_path = os.path.join(param.resultdir, "segmented")
-    align = k_iter > 0
-    c0 = None
-    if k_iter > 0:
-        c0 = skimage.io.imread(
-            os.path.join(save_path, "rasterized_k_" + str(k_iter - 1) + ".tif")
-        )
-    c = skimage.io.imread(
-        os.path.join(save_path, "rasterized_k_" + str(k_iter) + ".tif")
-    )
-
     name = os.path.join(save_path, "window_k_" + str(k_iter) + ".pkl")
     name2 = os.path.join(save_path, "window_image_k_" + str(k_iter) + ".tif")
 
-    w, t, t0 = windowing_mapping(
-        N, c, c0, s, s0, ori, ori0, s0_shifted, J, I, align
-    )
+    c = utils.load_rasterized(save_path, k_iter)
+    w, _, _ = create_windows(c, splevper(ori, s), J, I)
+
     pickle.dump(w, open(name, "wb"))
-    b0 = boundaries_image(im_shape, w)
+    b0 = boundaries_image(c.shape, w)
     skimage.io.imsave(name2, b0.astype(np.uint8), check_contrast=False)
+
+
+def windowing_all(s_all, ori_all, param, J, I, client):
+    """
+    Create windowing for all splines in s_all.
+
+    Parameters
+    ----------
+    s_all: dict of spline objects
+        each element k of the dictionary contains the spline of the
+        corresponding frame k. The frame k-1 contains None
+    ori_all: list of floats
+        each element k is the spline parameter shift to align
+        spline of frame k+1 on spine of frame k
+    param: Param object
+        As created by morphodyanmics.parameters.Param
+    J: int
+        number of window layers
+    I: list of int
+        number of windows per layer
+    client: dask client
+        client connected to LocalCluster or SLURMCluster
+
+    """
+    compute_windows = [
+        client.submit(windowing, s_all[k], ori_all[k], param, J, I, k)
+        for k in range(len(s_all))
+    ]
+    for k in tqdm(range(len(s_all)), "frames compute windows"):
+        compute_windows[k].result()
+        compute_windows[k].cancel()
+
+
+def window_map(N, s, s0, ori, ori0, s0_shifted, J, I, k_iter, param):
+    """
+    Create windows for spline s and map its position to spline of
+    previous frame s0 to measure displacements.
+
+    Parameters
+    ----------
+    N: int
+        number of points used for spline discretization
+    s: tuple bspline object
+        spline to align
+    s0: tuple bspline object
+        spline to align to
+    ori: float
+        spline parameter shift to align s origin
+    ori0: float
+        spline parameter shift to align s0 origin
+    s0_shifted: tuple bspline object
+        shifted version of s0 xy-aligned on s
+    J: int
+        number of window layers
+    I: list of int
+        number of windows per layer
+    k_iter: int
+        frame index
+    param: Param object
+        As created by morphodyanmics.parameters.Param
+
+    Returns
+    -------
+    t: 1d array
+        list of spline parameters defining closest locations
+        on s to points defined by t0 on s0
+    t0: 1d array
+        list of spline paramters defining points centered on
+        windows of frame corresponding to s0
+
+    """
+
+    save_path = os.path.join(param.resultdir, "segmented")
+    c0 = utils.load_rasterized(save_path, k_iter - 1)
+
+    p, t0 = subdivide_curve_discrete(N, c0, I[0], s0, splevper(ori0, s0))
+    # Parameters of the endpoints of the displacement vectors
+    t = map_contours2(s0_shifted, s, t0, t0 - ori0 + ori)
+
     return t, t0
 
 
@@ -353,8 +421,9 @@ def window_map_all(
     client,
 ):
     """
-    Create windows for spline s and map its position to spline of
-    previous frame s0 to measure displacements.
+    Map all pairs of consecutive splines in s_all to minimize their
+    "distance" as defined by a chosen functional. Return the set of
+    optimized spline parameters.
 
     Parameters
     ----------
@@ -375,8 +444,6 @@ def window_map_all(
         spline of frame k+1 on spine of frame k
     num_points: int
         number of interpolation points
-    im_shape: tuple
-        shape of output image with windows
     param: Param object
         As created by morphodyanmics.parameters.Param
     client: dask client
@@ -393,30 +460,29 @@ def window_map_all(
 
     """
 
-    num_frames = len(s_all) - 1
+    num_frames = len(s_all)
     # w_all = {k: None for k in range(num_frames)}
     t_all = {k: None for k in range(num_frames)}
     t0_all = {k: None for k in range(num_frames)}
     # map windows accross frames
 
-    compute_window = [
-        client.submit(
-            window_map_and_save,
+    compute_window = {
+        k: client.submit(
+            window_map,
             num_points,
             s_all[k],
             s_all[k - 1],
             origins[k],
             origins[k - 1],
-            s_shift_all[k],
+            s_shift_all[k - 1],
             J,
             I,
             k,
-            im_shape,
             param,
         )
-        for k in range(num_frames)
-    ]
-    for k in tqdm(range(num_frames), "frames compute windows"):
+        for k in range(1, num_frames)
+    }
+    for k in tqdm(range(1, num_frames), "frames compute mapping"):
         t_all[k], t0_all[k] = compute_window[k].result()
         compute_window[k].cancel()
 
@@ -493,10 +559,7 @@ def track_all(segmented, location, param):
         if param.seg_algo == "ilastik":
             segpath = Path(save_path)
             num = str(k).zfill(
-                len(
-                    next(segpath.glob("segmented_k_*.tif")).name.split("_")[-1]
-                )
-                - 4
+                len(next(segpath.glob("segmented_k_*.tif")).name.split("_")[-1]) - 4
             )
         m = skimage.io.imread(
             os.path.join(save_path, "segmented_k_" + str(num) + ".tif")
@@ -537,88 +600,42 @@ def compute_displacement(s_all, t_all, t0_all):
         windows of frame corresponding to s_all[t-1]
 
     """
-    num_time_points = len(s_all) - 1
+    num_time_points = len(s_all)
     displacements = np.zeros((len(t_all[1]), num_time_points - 1))
-    for k in range(num_time_points):
+    for k in range(1, num_time_points):
         s = s_all[k]
         # Compute projection of displacement vectors onto normal of contour
-        if 0 < k:
-            s0 = s_all[k - 1]
-            # Get a vector that is tangent to the contour
-            u = np.asarray(splev(np.mod(t0_all[k], 1), s0, der=1))
-            # Derive an orthogonal vector with unit norm
-            u = np.asarray([u[1], -u[0]]) / np.linalg.norm(u, axis=0)
-            # Compute scalar product with displacement vector
-            displacements[:, k - 1] = np.sum(
-                (
-                    np.asarray(splev(np.mod(t_all[k], 1), s))
-                    - np.asarray(splev(np.mod(t0_all[k], 1), s0))
-                )
-                * u,
-                axis=0,
+        s0 = s_all[k - 1]
+        # Get a vector that is tangent to the contour
+        u = np.asarray(splev(np.mod(t0_all[k], 1), s0, der=1))
+        # Derive an orthogonal vector with unit norm
+        u = np.asarray([u[1], -u[0]]) / np.linalg.norm(u, axis=0)
+        # Compute scalar product with displacement vector
+        displacements[:, k - 1] = np.sum(
+            (
+                np.asarray(splev(np.mod(t_all[k], 1), s))
+                - np.asarray(splev(np.mod(t0_all[k], 1), s0))
             )
+            * u,
+            axis=0,
+        )
 
     return displacements
 
 
-def windowing_mapping(N, c, c0, s, s0, ori, ori0, s0_shifted, J, I, align):
-    """
-    Create windows for spline s and map its position to spline of
-    previous frame s0 to measure displacements.
+def segment_single_frame(param, k, save_path):
+    """Segment frame k of segmentation image defined in param object 
+    and save to disk.
 
     Parameters
     ----------
-    N: int
-        number of points used for spline discretization
-    c: 2d array
-        rasterized image of spline s
-    c0 : 2d array
-        rasterized image of spline s0
-    s: tuple bspline object
-        spline to align
-    s0: tuple bspline object
-        spline to align to
-    ori: float
-        spline parameter shift to align s origin
-    ori0: float
-        spline parameter shift to align s0 origin
-    s0_shifted: tuple bspline object
-        shifted version of s0 xy-aligned on s
-    J: int
-        number of window layers
-    I: list of int
-        number of windows per layer
-    align: bool
-        perform position matching or not
-
-    Returns
-    -------
-    w: 3d list
-        w[i][j][0] and w[0][0][1] are 1d arrays representing
-        lists of x,y indices of pixels belonging to window in i'th layer
-        in j'th window
-    t: 1d array
-        list of spline parameters defining closest locations
-        on s to points defined by t0 on s0
-    t0: 1d array
-        list of spline paramters defining points centered on
-        windows of frame corresponding to s0
-
+    param: Param object
+        As created by morphodyanmics.parameters.Param
+    k : int
+        frame index
+    save_path : path
+        path to folder where to save segmented image
     """
-
-    w, _, _ = create_windows(c, splevper(ori, s), J, I)
-
-    t = None
-    t0 = None
-    if align:
-        p, t0 = subdivide_curve_discrete(N, c0, I[0], s0, splevper(ori0, s0))
-        # Parameters of the endpoints of the displacement vectors
-        t = map_contours2(s0_shifted, s, t0, t0 - ori0 + ori)
-
-    return w, t, t0
-
-
-def segment_single_frame(param, k, save_path):
 
     _, _, data = load_alldata(folder_path=None, load_results=False, param=param)
     x = data.load_frame_morpho(k)
@@ -627,6 +644,14 @@ def segment_single_frame(param, k, save_path):
         m = segment_cellpose(None, x, param.diameter, None)
     elif param.seg_algo == "farid":
         m = segment_farid(x)
+    elif param.seg_algo == "ilastik":
+        filename = Path(save_path).joinpath("segmented_k_" + str(k) + ".tif")
+        if filename.is_file():
+            return None
+        else:
+            raise Exception(
+                f"No segmentation file at {filename}. Run segmentation in ilastik first."
+            )
 
     m = m.astype(np.uint8)
 
@@ -686,9 +711,9 @@ def spline_align_rasterize(N, s0, s, im_shape, align, filename):
     N: int
         number of points used for spline discretization
     s0: tuple bspline object
-        spline to align to
+        spline at time t-1
     s: tuple bspline object
-        spline to align
+        spline at time t
     im_shape: tuple
         size of image for rasterization
     align: bool
