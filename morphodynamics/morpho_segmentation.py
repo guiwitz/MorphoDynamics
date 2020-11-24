@@ -87,6 +87,7 @@ class InteractSeg:
         style = {"description_width": "initial"}
         layout = {"width": "300px"}
 
+        resultdir = Path(resultdir)
         self.param = Param(
             expdir=expdir, morpho_name=morpho_name, signal_name=signal_name, seg_algo=seg_algo
         )
