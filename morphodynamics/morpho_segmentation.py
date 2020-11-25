@@ -25,7 +25,7 @@ from .displacementestimation import rasterize_curve, splevper
 from . import utils
 
 from dask_jobqueue import SLURMCluster
-from dask.distributed import Client
+from dask.distributed import Client, LocalCluster
 
 import plotly.graph_objects as go
 
@@ -56,7 +56,7 @@ class InteractSeg:
     memory : str
         RAM to use on cluster
     cores : int
-        number of cores to use per worker on cluster
+        number of cores to use per worker
     skip_trackseg : bool
         skip segmentation and tracking (only possible
         if done previously)
@@ -92,7 +92,6 @@ class InteractSeg:
         self.param = Param(
             expdir=expdir, morpho_name=morpho_name, signal_name=signal_name, seg_algo=seg_algo
         )
-        param_copy = deepcopy(self.param)
 
         self.expdir = expdir
         self.resultdir = resultdir
@@ -399,7 +398,9 @@ class InteractSeg:
             with self.out_distributed:
                 display(self.client.cluster._widget())
         elif self.param.distributed == "local":
-            self.client = Client()
+            cluster = LocalCluster()
+            cluster.scale(self.cores)
+            self.client = Client(cluster)
             with self.out_distributed:
                 display(self.client.cluster._widget())
 
