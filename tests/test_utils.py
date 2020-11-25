@@ -3,7 +3,7 @@ import numpy as np
 from morphodynamics import utils
 from pathlib import Path
 
-exec(open("tests/create_dataset.py").read())
+#exec(open("tests/create_dataset.py").read())
 
 resultdir = Path('synthetic/data/Results_ilastik')
 
