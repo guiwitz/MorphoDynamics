@@ -444,7 +444,16 @@
 </div>
 </div>
 </div>
+<p>And we can also explicity start Dask and check its status (that’s not absolutely necessary, as Dask starts by default when starting the segmentation):</p>
 <p>Now we can adjust the parameters for the segmentation (<code class="docutils literal notranslate"><span class="pre">seg_algo</span></code>) and windowing (<code class="docutils literal notranslate"><span class="pre">widht</span></code> and <code class="docutils literal notranslate"><span class="pre">depth</span></code>)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myUI</span><span class="o">.</span><span class="n">initialize_dask</span><span class="p">()</span>
+<span class="n">myUI</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">scheduler_info</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myUI</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">5</span>
