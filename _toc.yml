@@ -4,6 +4,7 @@
   chapters:
     - file: mydocs/Installation
     - file: mydocs/Analysis_with_morpho_segmentation
+    - file: mydocs/Analysis_without_UI
     - file: mydocs/Data_analysis
 
 - part: Code and algorithms
