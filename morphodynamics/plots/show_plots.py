@@ -103,6 +103,8 @@ def show_edge_line(N, s, lw=0.1, fig_ax=None):
     Draw the cell-edge contour of all time points
     using a colored line.
 
+    Parameters
+    ----------
     N: int
         number of interpolation points
     s: spline object
