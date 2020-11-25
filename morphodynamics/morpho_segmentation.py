@@ -311,6 +311,8 @@ class InteractSeg:
         if self.createUI:
             self.ui()
 
+        # some param values are rest when creating interactive features
+        # we put them back to original values here
         if morpho_name is not None:
             self.param.morpho_name = morpho_name
             self.segm_folders.value = morpho_name
