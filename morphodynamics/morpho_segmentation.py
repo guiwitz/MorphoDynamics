@@ -266,48 +266,46 @@ class InteractSeg:
 
         # initialize image and interactivity
         self.shift_is_held = False
-        with self.out:
-
-            data = go.Heatmap(z=np.zeros((100, 100)), colorscale="Gray")
-
-            self.fig = go.FigureWidget(
-                data, layout=go.Layout(yaxis=dict(autorange="reversed"))
-            )
-            self.fig.add_trace(
-                go.Heatmap(
-                    z=np.zeros((100, 100)),
-                    opacity=0.5,
-                    showscale=False,
-                    uid="w",
-                    hoverinfo="skip",
-                )
-            )
-            self.fig.add_trace(
-                go.Scatter(
-                    x=[0],
-                    y=[0],
-                    text="0",
-                    mode="text",
-                    hoverinfo="skip",
-                    textfont=dict(
-                        family="sans serif", size=10, color="crimson"
-                    ),
-                )
-            )
-            self.fig.add_trace(go.Scatter(x=None, y=None))
-            self.fig.layout.coloraxis.showscale = False
-            self.fig.layout.width = 600
-            self.fig.layout.height = 600
-            self.fig.data[2].marker.color = "red"
-            self.fig.data[2].marker.size = 10
-
-            self.fig.data[0].on_click(self.update_point)
-
-            self.fig.show()
-
-        # initialize dask
-        # self.initialize_dask()
         if self.createUI:
+            with self.out:
+
+                data = go.Heatmap(z=np.zeros((100, 100)), colorscale="Gray")
+
+                self.fig = go.FigureWidget(
+                    data, layout=go.Layout(yaxis=dict(autorange="reversed"))
+                )
+                self.fig.add_trace(
+                    go.Heatmap(
+                        z=np.zeros((100, 100)),
+                        opacity=0.5,
+                        showscale=False,
+                        uid="w",
+                        hoverinfo="skip",
+                    )
+                )
+                self.fig.add_trace(
+                    go.Scatter(
+                        x=[0],
+                        y=[0],
+                        text="0",
+                        mode="text",
+                        hoverinfo="skip",
+                        textfont=dict(
+                            family="sans serif", size=10, color="crimson"
+                        ),
+                    )
+                )
+                self.fig.add_trace(go.Scatter(x=None, y=None))
+                self.fig.layout.coloraxis.showscale = False
+                self.fig.layout.width = 600
+                self.fig.layout.height = 600
+                self.fig.data[2].marker.color = "red"
+                self.fig.data[2].marker.size = 10
+
+                self.fig.data[0].on_click(self.update_point)
+
+                self.fig.show()
+
             self.ui()
 
         # some param values are rest when creating interactive features
@@ -370,7 +368,8 @@ class InteractSeg:
         self.maxtime.value = self.data.max_time
 
         # display image
-        self.show_segmentation(change="init")
+        if self.createUI:
+            self.show_segmentation(change="init")
 
     def run_segmentation(self, b=None):
         """Run segmentation analysis"""
@@ -385,7 +384,8 @@ class InteractSeg:
             self.client,
             skip_segtrack=self.skip_trackseg,
         )
-        self.show_segmentation(change="init")
+        if self.createUI:
+            self.show_segmentation(change="init")
         self.run_button.description = "Click to segment"
 
     def initialize_dask(self, change=None):
@@ -395,15 +395,17 @@ class InteractSeg:
         if self.param.distributed == "cluster":
             cluster = SLURMCluster(cores=self.cores, memory=self.memory)
             self.client = Client(cluster)
-            with self.out_distributed:
-                display(self.client.cluster._widget())
+            if self.createUI:
+                with self.out_distributed:
+                    display(self.client.cluster._widget())
         elif self.param.distributed == "local":
             cluster = LocalCluster()
             if self.cores is not None:
                 cluster.scale(self.cores)
             self.client = Client(cluster)
-            with self.out_distributed:
-                display(self.client.cluster._widget())
+            if self.createUI:
+                with self.out_distributed:
+                    display(self.client.cluster._widget())
 
     def windows_for_plot(self, N, im_shape, time):
         """Create a window image"""
@@ -698,9 +700,10 @@ class InteractSeg:
         self.param.bad_frames = utils.format_bad_frames(self.param.bad_frames)
 
         param_copy = deepcopy(self.param)
-        self.update_interface(param_copy)
 
-        self.show_segmentation(change="init")
+        if self.createUI:
+            self.update_interface(param_copy)
+            self.show_segmentation(change="init")
 
     def load_params(self, b=None):
         """Callback to load only params and data """
