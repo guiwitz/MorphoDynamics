@@ -46,8 +46,6 @@
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -1396,7 +1394,7 @@ Note that here periodic boundary conditions are enforced.</p>
 <li><p><strong>morpho_name</strong> (<em>str</em>) – name of folder or file used segmentation</p></li>
 <li><p><strong>signal_name</strong> (<em>list of str</em>) – names of folders or files used as signal</p></li>
 <li><p><strong>memory</strong> (<em>str</em>) – RAM to use on cluster</p></li>
-<li><p><strong>cores</strong> (<em>int</em>) – number of cores to use per worker on cluster</p></li>
+<li><p><strong>cores</strong> (<em>int</em>) – number of cores to use per worker</p></li>
 <li><p><strong>skip_trackseg</strong> (<em>bool</em>) – skip segmentation and tracking (only possible
 if done previously)</p></li>
 <li><p><strong>seg_algo</strong> (<em>str</em>) – type of segmentation algorithm to use
@@ -1441,7 +1439,7 @@ can be “fardi”, “cellpose” or “ilastik”</p></li>
 
 <dl class="py method">
 <dt id="morphodynamics.morpho_segmentation.InteractSeg.load_data">
-<code class="sig-name descname">load_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.morpho_segmentation.InteractSeg.load_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.morpho_segmentation.InteractSeg.load_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback to load params, data and results</p>
 </dd></dl>
 
@@ -1453,7 +1451,7 @@ can be “fardi”, “cellpose” or “ilastik”</p></li>
 
 <dl class="py method">
 <dt id="morphodynamics.morpho_segmentation.InteractSeg.load_params">
-<code class="sig-name descname">load_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.morpho_segmentation.InteractSeg.load_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">b</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.morpho_segmentation.InteractSeg.load_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Callback to load only params and data</p>
 </dd></dl>
 
