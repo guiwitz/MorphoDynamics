@@ -46,8 +46,6 @@
     <script src="../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -320,6 +318,11 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#creating-windows">
+   Creating windows
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#window-mapping">
    Window mapping
   </a>
@@ -562,13 +565,16 @@ number of layer J: 2
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   0%|          | 0/40 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   2%|▎         | 1/40 [00:04&lt;02:48,  4.32s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   2%|▎         | 1/40 [00:05&lt;03:22,  5.19s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:  48%|████▊     | 19/40 [00:04&lt;01:03,  3.03s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   5%|▌         | 2/40 [00:05&lt;02:21,  3.72s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:04&lt;00:00,  8.89it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:  62%|██████▎   | 25/40 [00:05&lt;00:39,  2.61s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:05&lt;00:00,  7.07it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -614,13 +620,16 @@ number of layer J: 2
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   0%|          | 0/40 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   2%|▎         | 1/40 [00:03&lt;02:07,  3.26s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   2%|▎         | 1/40 [00:03&lt;02:29,  3.84s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:  35%|███▌      | 14/40 [00:03&lt;00:59,  2.28s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   5%|▌         | 2/40 [00:04&lt;01:44,  2.75s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize: 100%|██████████| 40/40 [00:03&lt;00:00, 11.58it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:  50%|█████     | 20/40 [00:04&lt;00:38,  1.93s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize: 100%|██████████| 40/40 [00:04&lt;00:00,  9.41it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -653,17 +662,43 @@ number of layer J: 2
 </div>
 </div>
 </div>
-<div class="section" id="window-mapping">
-<h2>Window mapping<a class="headerlink" href="#window-mapping" title="Permalink to this headline">¶</a></h2>
-<p>The aligned splines and the rasterized images (made with the aligned splines) can now be used to:</p>
-<ol class="simple">
-<li><p>Create windows for each time point</p></li>
-<li><p>Find optimal points along successive splines to minimize some deformation metric.</p></li>
-</ol>
-<p>It is important to mention here that the windows are <strong>not</strong> adjusted using that optimization. Windows are simply calculated based on splines that have been shift-corrected (x-y) and “curvilinear”-corrected so that they have matching positions. On the other side the displacement is calculated by optimizing the location of points on the spline of frame = t+1 compared to <em>windows positions</em> at frame = t.</p>
+<div class="section" id="creating-windows">
+<h2>Creating windows<a class="headerlink" href="#creating-windows" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have the rasterized image and the spline information, we can split each cell into layers with windows (using distance transform and curvilinear distance as “coordinates”):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">window_map_all</span><span class="p">,</span> <span class="n">window_map_and_save</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">windowing_all</span>
+<span class="c1"># create the windows</span>
+<span class="n">windowing_all</span><span class="p">(</span><span class="n">s_all</span><span class="p">,</span> <span class="n">res</span><span class="o">.</span><span class="n">orig</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:   0%|          | 0/40 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:   5%|▌         | 2/40 [00:00&lt;00:04,  9.44it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:  68%|██████▊   | 27/40 [00:00&lt;00:00, 13.26it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows: 100%|██████████| 40/40 [00:00&lt;00:00, 107.13it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="window-mapping">
+<h2>Window mapping<a class="headerlink" href="#window-mapping" title="Permalink to this headline">¶</a></h2>
+<p>With the splines and the windows information, we can now find optimal points along successive splines that minimize deformation defined according to a certain metric combining xy-displacement across frames and curvilinear distance between points in a given frame.</p>
+<p>It is important to mention here that the windows are <strong>not</strong> adjusted using that optimization. Windows are simply calculated based on splines that have been shift-corrected (x-y) and “curvilinear”-corrected so that they have matching positions. On the other hand the displacement is calculated by optimizing the location of points on the spline of frame = t+1 compared to <em>windows positions</em> at frame = t.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">window_map_all</span>
 <span class="c1"># define windows for each frame and compute pairs of corresponding</span>
 <span class="c1"># points on successive splines for displacement measurement</span>
 <span class="n">t_all</span><span class="p">,</span> <span class="n">t0_all</span> <span class="o">=</span> <span class="n">window_map_all</span><span class="p">(</span>
@@ -681,16 +716,19 @@ number of layer J: 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">20</span><span class="o">-</span><span class="mi">0</span><span class="n">c384dc813be</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">window_map_all</span><span class="p">,</span> <span class="n">window_map_and_save</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="c1"># define windows for each frame and compute pairs of corresponding</span>
-<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="c1"># points on successive splines for displacement measurement</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">t_all</span><span class="p">,</span> <span class="n">t0_all</span> <span class="o">=</span> <span class="n">window_map_all</span><span class="p">(</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">s_all</span><span class="p">,</span>
-
-<span class="ne">ImportError</span>: cannot import name &#39;window_map_and_save&#39; from &#39;morphodynamics.analysis_par&#39; (/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/analysis_par.py)
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:   0%|          | 0/39 [00:00&lt;?, ?it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:   3%|▎         | 1/39 [00:04&lt;02:37,  4.15s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:  54%|█████▍    | 21/39 [00:04&lt;00:52,  2.91s/it]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping: 100%|██████████| 39/39 [00:04&lt;00:00,  8.99it/s]
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
 </pre></div>
 </div>
 </div>
@@ -758,7 +796,7 @@ number of layer J: 2
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/usage_step_by_step_47_0.png" src="../_images/usage_step_by_step_47_0.png" />
+<img alt="../_images/usage_step_by_step_49_0.png" src="../_images/usage_step_by_step_49_0.png" />
 </div>
 </div>
 </div>

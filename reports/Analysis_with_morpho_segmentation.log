@@ -17,31 +17,22 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply['content'])
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-from morphodynamics.analysis_par import window_map_all, window_map_and_save
-# define windows for each frame and compute pairs of corresponding
-# points on successive splines for displacement measurement
-t_all, t0_all = window_map_all(
-    s_all,
-    s0prm_all,
-    J,
-    I,
-    res.orig,
-    param.n_curve,
-    data.shape,
-    param,
-    client
-)
+cluster  = LocalCluster()
+#client = Client(cluster)
+
+cluster.scale(1)
+client = Client(cluster)
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
-[0;31mImportError[0m                               Traceback (most recent call last)
-[0;32m<ipython-input-20-0c384dc813be>[0m in [0;36m<module>[0;34m[0m
-[0;32m----> 1[0;31m [0;32mfrom[0m [0mmorphodynamics[0m[0;34m.[0m[0manalysis_par[0m [0;32mimport[0m [0mwindow_map_all[0m[0;34m,[0m [0mwindow_map_and_save[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m      2[0m [0;31m# define windows for each frame and compute pairs of corresponding[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      3[0m [0;31m# points on successive splines for displacement measurement[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      4[0m t_all, t0_all = window_map_all(
-[1;32m      5[0m     [0ms_all[0m[0;34m,[0m[0;34m[0m[0;34m[0m[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+[0;32m<ipython-input-8-b72fa59d656b>[0m in [0;36m<module>[0;34m[0m
+[0;32m----> 1[0;31m [0mcluster[0m  [0;34m=[0m [0mLocalCluster[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      2[0m [0;31m#client = Client(cluster)[0m[0;34m[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      3[0m [0;34m[0m[0m
+[1;32m      4[0m [0mcluster[0m[0;34m.[0m[0mscale[0m[0;34m([0m[0;36m1[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      5[0m [0mclient[0m [0;34m=[0m [0mClient[0m[0;34m([0m[0mcluster[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 
-[0;31mImportError[0m: cannot import name 'window_map_and_save' from 'morphodynamics.analysis_par' (/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/analysis_par.py)
-ImportError: cannot import name 'window_map_and_save' from 'morphodynamics.analysis_par' (/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/analysis_par.py)
+[0;31mNameError[0m: name 'LocalCluster' is not defined
+NameError: name 'LocalCluster' is not defined
 
