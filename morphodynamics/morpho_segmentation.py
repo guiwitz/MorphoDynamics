@@ -30,7 +30,7 @@ from dask.distributed import Client, LocalCluster
 import plotly.graph_objects as go
 
 # fix MacOSX OMP bug (see e.g. https://github.com/dmlc/xgboost/issues/1715)
-#os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
+os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
 # suppress figure titles in widgets rendering and enlarge notebook
 display(
