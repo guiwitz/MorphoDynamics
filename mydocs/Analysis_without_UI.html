@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Define a default folder &#8212; Morphodynamics documentation</title>
+    <title>Segmentation and windowing without UI &#8212; Morphodynamics documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.73d71520a4ca3b99cfee5594769eaaae.css">
 
@@ -57,6 +57,8 @@
     <script async="async" src="../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Data analysis" href="Data_analysis.html" />
+    <link rel="prev" title="Segmentation and windowing" href="Analysis_with_morpho_segmentation.html" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="en" />
@@ -88,7 +90,7 @@
 <nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
     <ul class="nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="../mydocs/Introduction.html">
+  <a class="reference internal" href="Introduction.html">
    Overview
   </a>
  </li>
@@ -98,24 +100,24 @@
   Getting started
  </span>
 </p>
-<ul class="nav sidenav_l1">
+<ul class="current nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="../mydocs/Installation.html">
+  <a class="reference internal" href="Installation.html">
    Installation
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../mydocs/Analysis_with_morpho_segmentation.html">
+  <a class="reference internal" href="Analysis_with_morpho_segmentation.html">
    Segmentation and windowing
   </a>
  </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../mydocs/Analysis_without_UI.html">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
    Segmentation and windowing without UI
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../mydocs/Data_analysis.html">
+  <a class="reference internal" href="Data_analysis.html">
    Data analysis
   </a>
  </li>
@@ -127,22 +129,22 @@
 </p>
 <ul class="nav sidenav_l1">
  <li class="toctree-l1">
-  <a class="reference internal" href="../mydocs/usage_step_by_step.html">
+  <a class="reference internal" href="usage_step_by_step.html">
    Analysis step by step
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../mydocs/code_structure.html">
+  <a class="reference internal" href="code_structure.html">
    General code structure
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../mydocs/segmentation.html">
+  <a class="reference internal" href="segmentation.html">
    Segmentation
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../mydocs/Data.html">
+  <a class="reference internal" href="Data.html">
    Data formats
   </a>
  </li>
@@ -207,7 +209,7 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/notebooks/Morpho_segmentation.ipynb"><button type="button"
+        <a class="dropdown-buttons" href="../_sources/mydocs/Analysis_without_UI.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.ipynb</button></a>
         <!-- Download PDF via print -->
@@ -245,7 +247,7 @@
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/guiwitz/MorphoDynamics/master?urlpath=tree/notebooks/Morpho_segmentation.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/guiwitz/MorphoDynamics/master?urlpath=tree/mydocs/Analysis_without_UI.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="../_static/images/logo_binder.svg"
@@ -269,48 +271,93 @@
         
               <div>
                 
-  <div class="cell docutils container">
+  <div class="section" id="segmentation-and-windowing-without-ui">
+<h1>Segmentation and windowing without UI<a class="headerlink" href="#segmentation-and-windowing-without-ui" title="Permalink to this headline">¶</a></h1>
+<p>In some cases it is preferable to use the code without the interface. This is in particular true if you want to run a batch of analysis. We present here an example of how to do that.</p>
+<p>Just like before, we use the <code class="docutils literal notranslate"><span class="pre">InteractSeg</span></code> class defined in the <code class="docutils literal notranslate"><span class="pre">morpho_segmentation</span></code> module as an object that simplifies the handling of all the parts of the code. We need to provide the data location as well as a folder to save the data:</p>
+<div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">javascript</span>
-<span class="n">IPython</span><span class="o">.</span><span class="n">OutputArea</span><span class="o">.</span><span class="n">prototype</span><span class="o">.</span><span class="n">_should_scroll</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">false</span><span class="p">;</span>
-<span class="p">}</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">expdir</span> <span class="o">=</span> <span class="s1">&#39;../synthetic/data&#39;</span>
+<span class="n">result_dir</span> <span class="o">=</span> <span class="s1">&#39;../synthetic/data/Results_step&#39;</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>and specify which channels we intend to use. We need to provide the name of the stack used for segmentation:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#%load_ext autoreload</span>
-<span class="c1">#%autoreload 2</span>
-<span class="c1">#import warnings</span>
-<span class="c1">#warnings.filterwarnings(&quot;ignore&quot;)</span>
-<span class="c1">#%matplotlib widget</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">morpho_name</span> <span class="o">=</span> <span class="s1">&#39;synth_ch1.h5&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>as well as a list of stack names whose intensity we want to analyze:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">signal_name</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;synth_ch2.h5&#39;</span><span class="p">,</span><span class="s1">&#39;synth_ch3.h5&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can create our segmentation object:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.morpho_segmentation</span> <span class="kn">import</span> <span class="n">InteractSeg</span>
+<span class="n">myUI</span> <span class="o">=</span> <span class="n">InteractSeg</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="n">expdir</span><span class="p">,</span> <span class="n">morpho_name</span><span class="o">=</span><span class="n">morpho_name</span><span class="p">,</span> <span class="n">signal_name</span><span class="o">=</span><span class="n">signal_name</span><span class="p">,</span>
+             <span class="n">resultdir</span><span class="o">=</span><span class="n">result_dir</span><span class="p">,</span> <span class="n">createUI</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>div.jupyter-widgets.widget-label {display: none;}</style></div><div class="output text_html"><style>.container { width:100% !important; }</style></div></div>
+</div>
+<p>It is important to know that the <code class="docutils literal notranslate"><span class="pre">myUI</span></code> instance of <code class="docutils literal notranslate"><span class="pre">InteracSeg</span></code> contains itself the main objects used for the analysis, Parameters, Results and Data as parameters, so there is no need to create them separately.</p>
+<p>We can now load the data by <em>initializing</em> the experiment:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myUI</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>And we can also explicity start Dask and check its status (that’s not absolutely necessary, as Dask starts by default when starting the segmentation):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># it&#39;s possible to start Dask independently and assign the client to the morpho_segmentation object. For example:</span>
+<span class="c1"># from dask.distributed import Client, LocalCluster</span>
+<span class="c1"># cluster  = LocalCluster()</span>
+<span class="c1"># cluster.scale(1)</span>
+<span class="c1"># client = Client(cluster)</span>
+<span class="c1"># myUI.client = client</span>
 
-<span class="kn">from</span> <span class="nn">morphodynamics.morpho_segmentation</span> <span class="kn">import</span> <span class="n">InteractSeg</span>
-<span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="k">as</span> <span class="nn">ipw</span>
+<span class="n">myUI</span><span class="o">.</span><span class="n">initialize_dask</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="define-a-default-folder">
-<h1>Define a default folder<a class="headerlink" href="#define-a-default-folder" title="Permalink to this headline">¶</a></h1>
-<p>You can define a path to a folder containing your data to avoid repeatedly browsing to it.</p>
+<p>Now we can adjust the parameters for the segmentation (<code class="docutils literal notranslate"><span class="pre">seg_algo</span></code>) and windowing (<code class="docutils literal notranslate"><span class="pre">widht</span></code> and <code class="docutils literal notranslate"><span class="pre">depth</span></code>)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#default_path = None</span>
-<span class="n">default_path</span> <span class="o">=</span> <span class="s1">&#39;/Users/gw18g940/Desktop/Test_data/Kobus/Histamine/Expt2/&#39;</span>
-<span class="c1">#default_path = &#39;/Users/kobuspro/Documents/General Files/PERTZ_position/MY_DATA&#39; # Kobus</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myUI</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">myUI</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">myUI</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">lambda_</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">myUI</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">seg_algo</span> <span class="o">=</span> <span class="s1">&#39;ilastik&#39;</span>
 </pre></div>
 </div>
 </div>
 </div>
+<p>Finally we can run the analysis:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># create interface</span>
-<span class="n">interactseg</span> <span class="o">=</span> <span class="n">InteractSeg</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="n">default_path</span><span class="p">)</span>
-<span class="n">interactseg</span><span class="o">.</span><span class="n">ui</span><span class="p">()</span>
-<span class="n">interactseg</span><span class="o">.</span><span class="n">interface</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myUI</span><span class="o">.</span><span class="n">run_segmentation</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>And save the output:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myUI</span><span class="o">.</span><span class="n">export_data</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -330,7 +377,7 @@
         },
         kernelOptions: {
             kernelName: "python3",
-            path: "./notebooks"
+            path: "./mydocs"
         },
         predefinedOutput: true
     }
@@ -345,6 +392,8 @@
     
     <div class='prev-next-bottom'>
         
+    <a class='left-prev' id="prev-link" href="Analysis_with_morpho_segmentation.html" title="previous page">Segmentation and windowing</a>
+    <a class='right-next' id="next-link" href="Data_analysis.html" title="next page">Data analysis</a>
 
     </div>
     <footer class="footer mt-5 mt-md-0">

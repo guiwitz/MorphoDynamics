@@ -32,15 +32,13 @@ nbclient.exceptions.CellTimeoutError: A cell timed out while it was being execut
 The message was: Cell execution timed out.
 Here is a preview of the cell contents:
 -------------------
-'''from dask.distributed import Client, LocalCluster
+# it's possible to start Dask independently and assign the client to the morpho_segmentation object. For example:
+# from dask.distributed import Client, LocalCluster
+# cluster  = LocalCluster()
+# cluster.scale(1)
+# client = Client(cluster)
+# myUI.client = client
 
-cluster  = LocalCluster()
-
-cluster.scale(1)
-client = Client(cluster)
-
-myUI.client = client
-'''
 myUI.initialize_dask()
 -------------------
 
