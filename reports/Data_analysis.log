@@ -17,27 +17,24 @@ Traceback (most recent call last):
     raise CellExecutionError.from_cell_and_msg(cell, exec_reply['content'])
 nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
 ------------------
-self = InteractSeg(None)
-self.main_folder.go_to_folder('../synthetic/data/Results_ilastik')
-self.saving_folder.go_to_folder('../synthetic/data/Results_ilastik')
-self.load_data(None)
-self.ui()
+ui = OutputUI(expdir='../synthetic/data/Results_step')
+ui.load_data()
+ui.interface
 ------------------
 
 [0;31m---------------------------------------------------------------------------[0m
 [0;31mFileNotFoundError[0m                         Traceback (most recent call last)
-[0;32m<ipython-input-2-bc5daa28a6a7>[0m in [0;36m<module>[0;34m[0m
-[1;32m      2[0m [0mself[0m[0;34m.[0m[0mmain_folder[0m[0;34m.[0m[0mgo_to_folder[0m[0;34m([0m[0;34m'../synthetic/data/Results_ilastik'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[1;32m      3[0m [0mself[0m[0;34m.[0m[0msaving_folder[0m[0;34m.[0m[0mgo_to_folder[0m[0;34m([0m[0;34m'../synthetic/data/Results_ilastik'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0;32m----> 4[0;31m [0mself[0m[0;34m.[0m[0mload_data[0m[0;34m([0m[0;32mNone[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m      5[0m [0mself[0m[0;34m.[0m[0mui[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m<ipython-input-2-d80b0e06cc62>[0m in [0;36m<module>[0;34m[0m
+[1;32m      1[0m [0mui[0m [0;34m=[0m [0mOutputUI[0m[0;34m([0m[0mexpdir[0m[0;34m=[0m[0;34m'../synthetic/data/Results_step'[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 2[0;31m [0mui[0m[0;34m.[0m[0mload_data[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      3[0m [0mui[0m[0;34m.[0m[0minterface[0m[0;34m[0m[0;34m[0m[0m
 
-[0;32m/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/morpho_segmentation.py[0m in [0;36mload_data[0;34m(self, b)[0m
-[1;32m    696[0m [0;34m[0m[0m
-[1;32m    697[0m         self.param, self.res, self.data = utils.load_alldata(
-[0;32m--> 698[0;31m             [0mfolder_load[0m[0;34m,[0m [0mload_results[0m[0;34m=[0m[0;32mTrue[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    699[0m         )
-[1;32m    700[0m         [0mself[0m[0;34m.[0m[0mparam[0m[0;34m.[0m[0mbad_frames[0m [0;34m=[0m [0mutils[0m[0;34m.[0m[0mformat_bad_frames[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mparam[0m[0;34m.[0m[0mbad_frames[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/plots/ui_outputs.py[0m in [0;36mload_data[0;34m(self, b)[0m
+[1;32m     68[0m [0;34m[0m[0m
+[1;32m     69[0m         self.param, self.res, self.data = load_alldata(
+[0;32m---> 70[0;31m             [0mself[0m[0;34m.[0m[0mexpdir[0m[0;34m,[0m [0mload_results[0m[0;34m=[0m[0;32mTrue[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     71[0m         )
+[1;32m     72[0m         [0mself[0m[0;34m.[0m[0mcreate_ui[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 
 [0;32m/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/utils.py[0m in [0;36mload_alldata[0;34m(folder_path, load_results, param)[0m
 [1;32m     41[0m [0;34m[0m[0m
@@ -46,6 +43,6 @@ self.ui()
 [0m[1;32m     44[0m             [0mdocuments[0m [0;34m=[0m [0myaml[0m[0;34m.[0m[0mfull_load[0m[0;34m([0m[0mfile[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 [1;32m     45[0m         [0;32mfor[0m [0mk[0m [0;32min[0m [0mdocuments[0m[0;34m.[0m[0mkeys[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
 
-[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: '/home/runner/work/MorphoDynamics/MorphoDynamics/synthetic/data/Results_ilastik/Parameters.yml'
-FileNotFoundError: [Errno 2] No such file or directory: '/home/runner/work/MorphoDynamics/MorphoDynamics/synthetic/data/Results_ilastik/Parameters.yml'
+[0;31mFileNotFoundError[0m: [Errno 2] No such file or directory: '../synthetic/data/Results_step/Parameters.yml'
+FileNotFoundError: [Errno 2] No such file or directory: '../synthetic/data/Results_step/Parameters.yml'
 

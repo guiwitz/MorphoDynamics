@@ -46,8 +46,6 @@
     <script src="../../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -367,20 +365,17 @@
 <code class="sig-prename descclassname">morphodynamics.plots.show_plots.</code><code class="sig-name descname">show_edge_line</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">N</span></em>, <em class="sig-param"><span class="n">s</span></em>, <em class="sig-param"><span class="n">lw</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">fig_ax</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_edge_line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draw the cell-edge contour of all time points
 using a colored line.</p>
-<dl class="simple">
-<dt>N: int</dt><dd><p>number of interpolation points</p>
-</dd>
-<dt>s: spline object</dt><dd><p>as returned by splprep</p>
-</dd>
-</dl>
-<p>lw: curve thickness
-fig_ax: tuple</p>
-<blockquote>
-<div><p>matplotlib figure and axes</p>
-</div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><ul class="simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> (<em>int</em>) – number of interpolation points</p></li>
+<li><p><strong>s</strong> (<em>spline object</em>) – as returned by splprep</p></li>
+<li><p><strong>lw</strong> (<em>curve thickness</em>) – </p></li>
+<li><p><strong>fig_ax</strong> (<em>tuple</em>) – matplotlib figure and axes</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
 <li><p><strong>fig</strong> (<em>matplotlib figure</em>)</p></li>
 <li><p><strong>ax</strong> (<em>matplotlib axis</em>)</p></li>
 </ul>

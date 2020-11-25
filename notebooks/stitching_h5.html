@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Specify source and target folders &#8212; Morphodynamics documentation</title>
+    <title>Convert ND2 to H5 format &#8212; Morphodynamics documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.73d71520a4ca3b99cfee5594769eaaae.css">
 
@@ -46,8 +46,6 @@
     <script src="../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -262,24 +260,24 @@
         </div>
         <nav id="bd-toc-nav">
             <ul class="nav section-nav flex-column">
- <li class="toc-h1 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#specify-source-and-target-folders">
    Specify source and target folders
   </a>
   <ul class="nav section-nav flex-column">
-   <li class="toc-h2 nav-item toc-entry">
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#source">
      Source
     </a>
    </li>
-   <li class="toc-h2 nav-item toc-entry">
+   <li class="toc-h3 nav-item toc-entry">
     <a class="reference internal nav-link" href="#target">
      Target
     </a>
    </li>
   </ul>
  </li>
- <li class="toc-h1 nav-item toc-entry">
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#run-nd2-to-h5-conversion">
    Run nd2 to h5 conversion
   </a>
@@ -295,7 +293,9 @@
         
               <div>
                 
-  <div class="cell docutils container">
+  <div class="section" id="convert-nd2-to-h5-format">
+<h1>Convert ND2 to H5 format<a class="headerlink" href="#convert-nd2-to-h5-format" title="Permalink to this headline">¶</a></h1>
+<div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -311,10 +311,10 @@
 </div>
 </div>
 <div class="section" id="specify-source-and-target-folders">
-<h1>Specify source and target folders<a class="headerlink" href="#specify-source-and-target-folders" title="Permalink to this headline">¶</a></h1>
+<h2>Specify source and target folders<a class="headerlink" href="#specify-source-and-target-folders" title="Permalink to this headline">¶</a></h2>
 <p>It is expected that all nd2 files in a folder should be stiched together. It is also expected that file names conform to <code class="docutils literal notranslate"><span class="pre">XXX_ind.nd1</span></code> where <code class="docutils literal notranslate"><span class="pre">ind</span></code> is a numeric index. By default <strong>only channels that appear in all nd1 files are exported as h5 stacks</strong>.</p>
 <div class="section" id="source">
-<h2>Source<a class="headerlink" href="#source" title="Permalink to this headline">¶</a></h2>
+<h3>Source<a class="headerlink" href="#source" title="Permalink to this headline">¶</a></h3>
 <p>Point to folder containing datasets</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -325,7 +325,7 @@
 </div>
 </div>
 <div class="section" id="target">
-<h2>Target<a class="headerlink" href="#target" title="Permalink to this headline">¶</a></h2>
+<h3>Target<a class="headerlink" href="#target" title="Permalink to this headline">¶</a></h3>
 <p>If you leave <code class="docutils literal notranslate"><span class="pre">save_folder</span> <span class="pre">=</span> <span class="pre">None</span></code>, by default a subfolder called H5 is created in the <code class="docutils literal notranslate"><span class="pre">main_folder</span></code>. If you prefer to store in another place, provide a path.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -338,8 +338,8 @@
 </div>
 </div>
 <div class="section" id="run-nd2-to-h5-conversion">
-<h1>Run nd2 to h5 conversion<a class="headerlink" href="#run-nd2-to-h5-conversion" title="Permalink to this headline">¶</a></h1>
-<p>One h5 file per channel is created.</p>
+<h2>Run nd2 to h5 conversion<a class="headerlink" href="#run-nd2-to-h5-conversion" title="Permalink to this headline">¶</a></h2>
+<p>One h5 file per channel is created. By default only the channels that appear in <strong>all</strong> ND2 files are exported. You can also manually indicate a series of channels to export.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># if desired you can manualyl specify a set of channels to export</span>
@@ -362,13 +362,8 @@
 <span class="n">unique_ch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">all_ch</span><span class="p">))</span>
 <span class="k">if</span> <span class="n">tokeep</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">tokeep</span> <span class="o">=</span> <span class="n">unique_ch</span><span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">([</span><span class="n">x</span> <span class="ow">in</span> <span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_ch</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">unique_ch</span><span class="p">]]</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create target folder</span>
+
+<span class="c1"># Create target folder</span>
 <span class="k">if</span> <span class="n">save_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">save_folder</span> <span class="o">=</span> <span class="n">main_folder</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s1">&#39;H5&#39;</span><span class="p">)</span>
     
@@ -398,6 +393,7 @@
                     <span class="n">dset</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">dset</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>   
                     <span class="n">dset</span><span class="p">[</span><span class="o">-</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:]</span> <span class="o">=</span> <span class="n">image</span>
 </pre></div>
+</div>
 </div>
 </div>
 </div>
