@@ -1,0 +1,54 @@
+name: deploy-book
+
+# Only run this when the master branch changes
+on: [workflow_dispatch]
+#on:
+#  push:
+#    branches:
+#    - master
+
+# This job installs dependencies, build the book, and pushes it to `gh-pages`
+jobs:
+  deploy-book:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    # Install dependencies
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
+
+    # Install conda dependencies
+    - name: Install dependencies
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        $CONDA/bin/conda env update --file environment.yml --name base
+    
+    # Install pip dependencies
+    - name: Install dependencies
+      run: |
+        $CONDA/bin/pip install -r requirements.txt
+
+    # Show packages
+    - name: Show packages
+      run: |
+        $CONDA/bin/conda list
+
+    # Compile the docs
+    - name: Compile sphinx
+      run: |
+        $CONDA/bin/sphinx-apidoc -o docs/source morphodynamics/
+
+    # Copy the dataset where necessary
+    - name: Copy files
+      run: |
+        mkdir -p synthetic/data/Results_cellpose
+        mkdir -p synthetic/data/Results_step
+        cp -R synthetic/data/Results_ilastik/segmented synthetic/data/Results_cellpose
+        cp -R synthetic/data/Results_ilastik/segmented synthetic/data/Results_step
+
+    # debug using tmate
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
