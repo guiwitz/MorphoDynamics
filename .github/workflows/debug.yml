@@ -1,4 +1,4 @@
-name: deploy-book
+name: debug
 
 # Only run this when the master branch changes
 on: [workflow_dispatch]
