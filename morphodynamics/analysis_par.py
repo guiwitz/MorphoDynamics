@@ -224,7 +224,7 @@ def spline_all(num_frames, smoothing, param, client):
 
     save_path = os.path.join(param.resultdir, "segmented")
 
-    s_all = {k: None for k in range(num_frames)}
+    s_all = {k: None for k in range(-1, num_frames)}
     for k in range(num_frames):
         name = os.path.join(save_path, "tracked_k_" + str(k) + ".tif")
         s_all[k] = client.submit(import_and_spline, name, smoothing)
@@ -269,8 +269,8 @@ def align_all(s_all, im_shape, num_points, param, client):
 
     save_path = os.path.join(param.resultdir, "segmented")
 
-    num_frames = len(s_all)
-    s0prm_all = {k: None for k in range(num_frames)}
+    num_frames = np.max(list(s_all.keys()))+1
+    s0prm_all = {k: None for k in range(-1, num_frames)}
     ori_all = {k: 0 for k in range(0, num_frames)}
     names = [
         os.path.join(save_path, "rasterized_k_" + str(k) + ".tif")
@@ -286,10 +286,10 @@ def align_all(s_all, im_shape, num_points, param, client):
             k > 0,
             names[k],
         )
-        for k in range(1, num_frames)
+        for k in range(0, num_frames)
     }
 
-    for k in tqdm(range(1, num_frames), "frames rasterize"):
+    for k in tqdm(range(0, num_frames), "frames rasterize"):
         future = spline_compute[k]
         s0prm_all[k - 1], ori_all[k], _ = future.result()
         future.cancel()
@@ -351,11 +351,12 @@ def windowing_all(s_all, ori_all, param, J, I, client):
         client connected to LocalCluster or SLURMCluster
 
     """
+    max_index = np.max(list(s_all.keys()))+1
     compute_windows = [
         client.submit(windowing, s_all[k], ori_all[k], param, J, I, k)
-        for k in range(len(s_all))
+        for k in range(max_index)
     ]
-    for k in tqdm(range(len(s_all)), "frames compute windows"):
+    for k in tqdm(range(max_index), "frames compute windows"):
         compute_windows[k].result()
         compute_windows[k].cancel()
 
@@ -460,7 +461,7 @@ def window_map_all(
 
     """
 
-    num_frames = len(s_all)
+    num_frames = np.max(list(s_all.keys()))+1
     # w_all = {k: None for k in range(num_frames)}
     t_all = {k: None for k in range(num_frames)}
     t0_all = {k: None for k in range(num_frames)}
@@ -600,7 +601,7 @@ def compute_displacement(s_all, t_all, t0_all):
         windows of frame corresponding to s_all[t-1]
 
     """
-    num_time_points = len(s_all)
+    num_time_points = np.max(list(s_all.keys()))+1
     displacements = np.zeros((len(t_all[1]), num_time_points - 1))
     for k in range(1, num_time_points):
         s = s_all[k]
