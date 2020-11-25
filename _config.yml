@@ -19,4 +19,4 @@ execute:
   exclude_patterns:
     - synthetic/*
     - notebooks/*
-  execute_notebooks: 'force'
+  execute_notebooks: 'auto'
