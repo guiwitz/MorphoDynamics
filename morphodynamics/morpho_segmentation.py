@@ -687,7 +687,7 @@ class InteractSeg:
         print("Your results have been saved in the following directory:")
         print(self.param.resultdir)
 
-    def load_data(self, b):
+    def load_data(self, b=None):
         """Callback to load params, data and results"""
 
         folder_load = self.main_folder.cur_dir
@@ -702,7 +702,7 @@ class InteractSeg:
 
         self.show_segmentation(change="init")
 
-    def load_params(self, b):
+    def load_params(self, b=None):
         """Callback to load only params and data """
 
         folder_load = self.main_folder.cur_dir
