@@ -388,7 +388,7 @@ class InteractSeg:
                     display(self.client.cluster._widget())
         elif self.param.distributed == "local":
             cluster = LocalCluster()
-            #if self.cores is not None:
+            # if self.cores is not None:
             #    cluster.scale(self.cores)
             self.client = Client(cluster)
             if self.createUI:
