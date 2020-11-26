@@ -698,6 +698,7 @@ def segment_all(data, param, client, model=None):
         future = segmented[k]
         segmented[k] = future.result()
         future.cancel()
+        del future
 
     return segmented
 
