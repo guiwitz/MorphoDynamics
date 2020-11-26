@@ -46,6 +46,8 @@
     <script src="../_static/copybutton.js"></script>
     <script >var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../_static/sphinx-book-theme.d31b09fe5c1d09cb49b26a786de4a05d.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.18.0/dist/embed-amd.js"></script>
     <script async="async" src="https://unpkg.com/thebelab@latest/lib/index.js"></script>
     <script >
         const thebe_selector = ".thebe"
@@ -571,13 +573,13 @@ number of layer J: 2
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   0%|          | 0/40 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   2%|▎         | 1/40 [00:04&lt;03:05,  4.75s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:   2%|▎         | 1/40 [00:05&lt;03:42,  5.71s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:  40%|████      | 16/40 [00:04&lt;01:19,  3.33s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining:  52%|█████▎    | 21/40 [00:05&lt;01:15,  4.00s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:04&lt;00:00,  8.09it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames splining: 100%|██████████| 40/40 [00:05&lt;00:00,  6.76it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -623,16 +625,16 @@ number of layer J: 2
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   0%|          | 0/40 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   5%|▌         | 2/40 [00:03&lt;01:01,  1.62s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   2%|▎         | 1/40 [00:03&lt;02:27,  3.78s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:   8%|▊         | 3/40 [00:03&lt;00:44,  1.21s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:  18%|█▊        | 7/40 [00:03&lt;01:27,  2.65s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:  62%|██████▎   | 25/40 [00:03&lt;00:12,  1.18it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize:  65%|██████▌   | 26/40 [00:03&lt;00:25,  1.86s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize: 100%|██████████| 40/40 [00:03&lt;00:00, 10.95it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames rasterize: 100%|██████████| 40/40 [00:04&lt;00:00,  9.85it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -680,13 +682,13 @@ number of layer J: 2
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:   0%|          | 0/40 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:   2%|▎         | 1/40 [00:00&lt;00:06,  5.83it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:   5%|▌         | 2/40 [00:00&lt;00:04,  9.17it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:  65%|██████▌   | 26/40 [00:00&lt;00:01,  8.24it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows:  65%|██████▌   | 26/40 [00:00&lt;00:01, 12.88it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows: 100%|██████████| 40/40 [00:00&lt;00:00, 125.85it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute windows: 100%|██████████| 40/40 [00:00&lt;00:00, 105.14it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
@@ -722,19 +724,19 @@ number of layer J: 2
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:   0%|          | 0/39 [00:00&lt;?, ?it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:   3%|▎         | 1/39 [00:02&lt;01:29,  2.36s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:   3%|▎         | 1/39 [00:00&lt;00:07,  5.14it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:   5%|▌         | 2/39 [00:02&lt;01:02,  1.70s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:   5%|▌         | 2/39 [00:00&lt;00:13,  2.71it/s]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:  10%|█         | 4/39 [00:02&lt;00:43,  1.24s/it]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:   8%|▊         | 3/39 [00:04&lt;00:51,  1.43s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:  62%|██████▏   | 24/39 [00:02&lt;00:13,  1.15it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping:  54%|█████▍    | 21/39 [00:04&lt;00:18,  1.00s/it]
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping: 100%|██████████| 39/39 [00:03&lt;00:00, 12.90it/s]
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frames compute mapping: 100%|██████████| 39/39 [00:05&lt;00:00,  7.71it/s]
 </pre></div>
 </div>
 <div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
