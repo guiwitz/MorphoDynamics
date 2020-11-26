@@ -130,9 +130,7 @@ def show_edge_line(N, s, lw=0.1, fig_ax=None):
     cmap = plt.cm.get_cmap("jet")
 
     for k in range(K):
-        fig, ax = show_edge_line_aux(
-            N, s[k], cmap(k / (K - 1)), lw, fig_ax=(fig, ax)
-        )
+        fig, ax = show_edge_line_aux(N, s[k], cmap(k / (K - 1)), lw, fig_ax=(fig, ax))
     fig.colorbar(
         plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K - 1), cmap=cmap),
         label="Frame index",
@@ -218,16 +216,14 @@ def show_edge_vectorial_aux(param, data, res, k, curvature=False, fig_ax=None):
     ax.imshow(data.load_frame_morpho(k), cmap="gray")
 
     if curvature:
-        f = compute_curvature(
-            res.spline[k], np.linspace(0, 1, param.n_curve + 1)
-        )
+        f = compute_curvature(res.spline[k], np.linspace(0, 1, param.n_curve + 1))
     else:
         f = res.displacement[:, k]
 
     fig, ax = show_edge_scatter(
         param.n_curve,
-        res.spline[k-1],#res.spline[k],
-        res.spline[k],#res.spline[k + 1],
+        res.spline[k - 1],  # res.spline[k],
+        res.spline[k],  # res.spline[k + 1],
         res.param0[k],
         res.param[k],
         f,
@@ -245,9 +241,7 @@ def save_edge_vectorial_movie(param, data, res, curvature=False, size=(12, 9)):
 
     with out:
         fig, ax = plt.subplots(figsize=size)
-        writer = imageio.get_writer(
-            os.path.join(param.resultdir, name + ".gif")
-        )
+        writer = imageio.get_writer(os.path.join(param.resultdir, name + ".gif"))
 
         for k in range(data.K - 1):
             fig, ax = show_edge_vectorial_aux(
@@ -415,9 +409,7 @@ def show_signals_aux(
     if layer_title:
         ax.set_title("Layer: " + str(j))
     else:
-        ax.set_title(
-            "Signal: " + data.get_channel_name(m) + " - Layer: " + str(j)
-        )
+        ax.set_title("Signal: " + data.get_channel_name(m) + " - Layer: " + str(j))
 
     im = ax.imshow(f, cmap="jet")
     if len(fig.axes) == 2:
@@ -468,13 +460,7 @@ def save_signals(param, data, res, modes=None, size=(16, 9)):
                 os.path.join(
                     param.resultdir,
                     "signals",
-                    "Signal_"
-                    + str(m)
-                    + "_"
-                    + mode
-                    + "_layer_"
-                    + str(j)
-                    + ".png",
+                    "Signal_" + str(m) + "_" + mode + "_layer_" + str(j) + ".png",
                 )
             )
 

@@ -33,9 +33,7 @@ import plotly.graph_objects as go
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
 # suppress figure titles in widgets rendering and enlarge notebook
-display(
-    HTML("<style>div.jupyter-widgets.widget-label {display: none;}</style>")
-)
+display(HTML("<style>div.jupyter-widgets.widget-label {display: none;}</style>"))
 display(HTML("<style>.container { width:100% !important; }</style>"))
 
 
@@ -81,7 +79,7 @@ class InteractSeg:
         cores=1,
         skip_trackseg=False,
         seg_algo="ilastik",
-        createUI=True
+        createUI=True,
     ):
 
         style = {"description_width": "initial"}
@@ -90,7 +88,10 @@ class InteractSeg:
         if resultdir is not None:
             resultdir = Path(resultdir)
         self.param = Param(
-            expdir=expdir, morpho_name=morpho_name, signal_name=signal_name, seg_algo=seg_algo
+            expdir=expdir,
+            morpho_name=morpho_name,
+            signal_name=signal_name,
+            seg_algo=seg_algo,
         )
 
         self.expdir = expdir
@@ -112,18 +113,12 @@ class InteractSeg:
 
         # update choices of segmentation and analysis folders when changin
         # main folder
-        self.main_folder.file_list.observe(
-            self.get_folders, names=("options", "value")
-        )
+        self.main_folder.file_list.observe(self.get_folders, names=("options", "value"))
         self.segm_folders.observe(self.update_segm_file_list, names="value")
-        self.channels_folders.observe(
-            self.update_signal_file_list, names="value"
-        )
+        self.channels_folders.observe(self.update_signal_file_list, names="value")
 
         # update saving folder
-        self.saving_folder.file_list.observe(
-            self.update_saving_folder, names="options"
-        )
+        self.saving_folder.file_list.observe(self.update_saving_folder, names="options")
         self.update_saving_folder(None)
 
         # update folder if given at init
@@ -163,34 +158,20 @@ class InteractSeg:
             value=0,
             continuous_update=False,
         )
-        self.intensity_range_slider.observe(
-            self.update_intensity_range, names="value"
-        )
+        self.intensity_range_slider.observe(self.update_intensity_range, names="value")
 
         # channel to display
         self.display_channel = ipw.Select(options=[])
-        self.segm_folders.observe(
-            self.update_display_channel_list, names="value"
-        )
-        self.channels_folders.observe(
-            self.update_display_channel_list, names="value"
-        )
-        self.display_channel.observe(
-            self.update_display_channel, names="value"
-        )
+        self.segm_folders.observe(self.update_display_channel_list, names="value")
+        self.channels_folders.observe(self.update_display_channel_list, names="value")
+        self.display_channel.observe(self.update_display_channel, names="value")
 
         # show windows or nots
-        self.show_windows_choice = ipw.Checkbox(
-            description="Show windows", value=True
-        )
-        self.show_windows_choice.observe(
-            self.update_windows_vis, names="value"
-        )
+        self.show_windows_choice = ipw.Checkbox(description="Show windows", value=True)
+        self.show_windows_choice.observe(self.update_windows_vis, names="value")
 
         # show windows or not
-        self.show_text_choice = ipw.Checkbox(
-            description="Show labels", value=True
-        )
+        self.show_text_choice = ipw.Checkbox(description="Show labels", value=True)
         self.show_text_choice.observe(self.update_text_vis, names="value")
 
         self.width_text = ipw.IntText(
@@ -205,9 +186,7 @@ class InteractSeg:
 
         # use distributed computing
         self.client = None
-        self.distributed = ipw.Select(
-            options=["local", "cluster"], value="local"
-        )
+        self.distributed = ipw.Select(options=["local", "cluster"], value="local")
         self.distributed.observe(self.initialize_dask, names="value")
 
         # run the analysis button
@@ -233,9 +212,7 @@ class InteractSeg:
         self.step.observe(self.update_data_params, names="value")
 
         # parameters
-        self.bad_frames = ipw.Text(
-            value="", description="Bad frames (e.g. 1,2,5-8,12)"
-        )
+        self.bad_frames = ipw.Text(value="", description="Bad frames (e.g. 1,2,5-8,12)")
         self.bad_frames.observe(self.update_data_params, names="value")
 
         self.segmentation = ipw.RadioButtons(
@@ -290,9 +267,7 @@ class InteractSeg:
                         text="0",
                         mode="text",
                         hoverinfo="skip",
-                        textfont=dict(
-                            family="sans serif", size=10, color="crimson"
-                        ),
+                        textfont=dict(family="sans serif", size=10, color="crimson"),
                     )
                 )
                 self.fig.add_trace(go.Scatter(x=None, y=None))
@@ -579,9 +554,7 @@ class InteractSeg:
         if self.display_channel.value == self.param.morpho_name:
             image = self.data.load_frame_morpho(time)
         else:
-            channel_index = self.param.signal_name.index(
-                self.display_channel.value
-            )
+            channel_index = self.param.signal_name.index(self.display_channel.value)
             image = self.data.load_frame_signal(channel_index, time)
 
         return image
@@ -681,9 +654,7 @@ class InteractSeg:
 
         dict_file["bad_frames"] = self.bad_frames.value
 
-        with open(
-            self.saving_folder.cur_dir.joinpath("Parameters.yml"), "w"
-        ) as file:
+        with open(self.saving_folder.cur_dir.joinpath("Parameters.yml"), "w") as file:
             yaml.dump(dict_file, file)
 
         print("Your results have been saved in the following directory:")
@@ -709,9 +680,7 @@ class InteractSeg:
         """Callback to load only params and data """
 
         folder_load = self.main_folder.cur_dir
-        self.param, _, self.data = utils.load_alldata(
-            folder_load, load_results=False
-        )
+        self.param, _, self.data = utils.load_alldata(folder_load, load_results=False)
 
         param_copy = deepcopy(self.param)
         self.update_interface(param_copy)
@@ -774,20 +743,18 @@ class InteractSeg:
                                         ipw.HTML(
                                             '<font size="2"><b>Data or Results folder<b></font>'
                                         ),
-                                        self.main_folder.file_list
+                                        self.main_folder.file_list,
                                     ]
                                 ),
                                 ipw.VBox(
                                     [
-                                        ipw.HTML(
-                                            '<font size="5"><b>Saving<b></font>'
-                                        ),
+                                        ipw.HTML('<font size="5"><b>Saving<b></font>'),
                                         ipw.HTML(
                                             '<font size="2"><b>Select folder where to save<b></font>'
                                         ),
-                                        self.saving_folder.file_list
+                                        self.saving_folder.file_list,
                                     ]
-                                )
+                                ),
                             ]
                         ),
                         self.load_button,
@@ -806,9 +773,7 @@ class InteractSeg:
                                 ),
                                 ipw.VBox(
                                     [
-                                        ipw.HTML(
-                                            '<font size="2"><b>Signal<b></font>'
-                                        ),
+                                        ipw.HTML('<font size="2"><b>Signal<b></font>'),
                                         self.channels_folders,
                                     ]
                                 ),
@@ -820,9 +785,7 @@ class InteractSeg:
                                 # self.switchTZ_check
                             ]
                         ),
-                        ipw.HTML(
-                            '<br><font size="5"><b>Computing type<b></font>'
-                        ),
+                        ipw.HTML('<br><font size="5"><b>Computing type<b></font>'),
                         self.distributed,
                         self.out_distributed,
                         ipw.HTML(

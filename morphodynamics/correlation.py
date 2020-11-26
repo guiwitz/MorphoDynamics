@@ -52,9 +52,7 @@ def correlate_arrays(x, y, normalization):
     I = x.shape[0]
     c = np.zeros((I, x.shape[1] + y.shape[1] - 1))
     for i in range(I):
-        c[i] = correlate(
-            x[i], y[i], normalization=normalization, removemean=True
-        )
+        c[i] = correlate(x[i], y[i], normalization=normalization, removemean=True)
     return c
 
 
@@ -73,13 +71,8 @@ def show_correlation_core(c, x, y, nx, ny, normalization, fig=None, ax=None):
         ax.clear()
 
     ax.set_title(
-        "Correlation between "
-        + nx
-        + " and \n "
-        + ny
-        + " at layer "
-        + str(0),
-        fontsize=20
+        "Correlation between " + nx + " and \n " + ny + " at layer " + str(0),
+        fontsize=20,
     )
 
     cmax = np.max(np.abs(c))
@@ -94,11 +87,11 @@ def show_correlation_core(c, x, y, nx, ny, normalization, fig=None, ax=None):
     plt.axis("auto")
     ax.set_xlabel("Time lag [frames]")
     ax.set_ylabel("Window index")
-    '''if len(fig.axes) == 2:
+    """if len(fig.axes) == 2:
         fig.axes[1].clear()
         fig.colorbar(im, cax=fig.axes[1], label='Correlation here2')
     else:
-        plt.colorbar(im, label="Correlation here3")'''
+        plt.colorbar(im, label="Correlation here3")"""
 
     return fig, ax
 

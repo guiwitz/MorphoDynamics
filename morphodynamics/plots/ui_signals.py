@@ -106,6 +106,4 @@ class Signals:
                 fig_ax=(self.fig, self.ax),
             )
 
-        self.interface = ipw.VBox(
-            [signal_selector, layer_text, mode_selector, out]
-        )
+        self.interface = ipw.VBox([signal_selector, layer_text, mode_selector, out])

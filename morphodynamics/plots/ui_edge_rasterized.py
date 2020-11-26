@@ -39,9 +39,7 @@ class EdgeRasterized:
             with out:
                 self.set_mode(change["new"])
                 self.set_normalization(normalization_selector.value)
-                self.fig, self.ax = self.plot(
-                    time_slider.value, (self.fig, self.ax)
-                )
+                self.fig, self.ax = self.plot(time_slider.value, (self.fig, self.ax))
 
         mode_selector.observe(mode_change, names="value")
 
@@ -56,9 +54,7 @@ class EdgeRasterized:
         def normalization_change(change):
             with out:
                 self.set_normalization(change["new"])
-                self.fig, self.ax = self.plot(
-                    time_slider.value, (self.fig, self.ax)
-                )
+                self.fig, self.ax = self.plot(time_slider.value, (self.fig, self.ax))
 
         normalization_selector.observe(normalization_change, names="value")
 
@@ -72,9 +68,7 @@ class EdgeRasterized:
 
         def time_change(change):
             with out:
-                self.fig, self.ax = self.plot(
-                    change["new"], (self.fig, self.ax)
-                )
+                self.fig, self.ax = self.plot(change["new"], (self.fig, self.ax))
 
         time_slider.observe(time_change, names="value")
 
@@ -208,9 +202,7 @@ class EdgeRasterized:
                 fig, ax = self.plot(k, (fig, ax))
                 fig.savefig(os.path.join(self.param.resultdir, "temp.png"))
                 writer.append_data(
-                    imageio.imread(
-                        os.path.join(self.param.resultdir, "temp.png")
-                    )
+                    imageio.imread(os.path.join(self.param.resultdir, "temp.png"))
                 )
         writer.close()
         plt.close(fig)

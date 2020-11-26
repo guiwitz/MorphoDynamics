@@ -107,9 +107,7 @@ class Data:
         image_names = os.listdir(folderpath)
         image_names = np.array([x for x in image_names if x[0] != "."])
         if len(image_names) > 0:
-            times = [
-                re.findall(".*\_t*(\d+)\.(?:tif|TIF)", x) for x in image_names
-            ]
+            times = [re.findall(".*\_t*(\d+)\.(?:tif|TIF)", x) for x in image_names]
             times = [int(x[0]) for x in times if len(x) > 0]
             image_names = image_names[np.argsort(times)]
         return image_names
@@ -151,12 +149,9 @@ class TIFFSeries(Data):
 
     def initialize(self):
 
-        self.morphofile = self.find_files(
-            os.path.join(self.expdir, self.morpho_name)
-        )
+        self.morphofile = self.find_files(os.path.join(self.expdir, self.morpho_name))
         self.signalfile = [
-            self.find_files(os.path.join(self.expdir, x))
-            for x in self.signal_name
+            self.find_files(os.path.join(self.expdir, x)) for x in self.signal_name
         ]
 
         if self.max_time is None:
@@ -174,9 +169,7 @@ class TIFFSeries(Data):
 
         time = self.valid_frames[k]
         # print('load_frame_morpho: ' + str(time))
-        full_path = os.path.join(
-            self.expdir, self.morpho_name, self.morphofile[time]
-        )
+        full_path = os.path.join(self.expdir, self.morpho_name, self.morphofile[time])
         # print('path: ' + full_path)
         return skimage.io.imread(full_path).astype(dtype=np.uint16)
 
@@ -226,15 +219,15 @@ class MultipageTIFF(Data):
         self.signalfile = self.signal_name
 
         # switch Z and T if necessary
-        #known_dims = None
-        #if self.switch_TZ:
+        # known_dims = None
+        # if self.switch_TZ:
         #    known_dims = "SZCTYX"
 
         self.morpho_imobj = AICSImage(
-            os.path.join(self.expdir, self.morphofile), known_dims='TYX'
+            os.path.join(self.expdir, self.morphofile), known_dims="TYX"
         )
         self.signal_imobj = [
-            AICSImage(os.path.join(self.expdir, x), known_dims='TYX')
+            AICSImage(os.path.join(self.expdir, x), known_dims="TYX")
             for x in self.signal_name
         ]
 
@@ -259,9 +252,7 @@ class MultipageTIFF(Data):
 
         time = self.valid_frames[k]
 
-        image = self.signal_imobj[m].get_image_data(
-            "YX", S=0, T=time, C=0, Z=0
-        )
+        image = self.signal_imobj[m].get_image_data("YX", S=0, T=time, C=0, Z=0)
         return image.astype(dtype=np.uint16)
 
     def get_channel_name(self, m):
@@ -321,9 +312,7 @@ class ND2(Data):
         time = self.valid_frames[k]
 
         ch_index = self.nd2file.metadata["channels"].index(self.morphofile)
-        image = self.nd2file.get_frame_2D(
-            x=0, y=0, z=0, c=ch_index, t=time, v=0
-        )
+        image = self.nd2file.get_frame_2D(x=0, y=0, z=0, c=ch_index, t=time, v=0)
         return image
 
     def load_frame_signal(self, m, k):
@@ -332,9 +321,7 @@ class ND2(Data):
         time = self.valid_frames[k]
 
         ch_index = self.nd2file.metadata["channels"].index(self.signalfile[m])
-        image = self.nd2file.get_frame_2D(
-            x=0, y=0, z=0, c=ch_index, t=time, v=0
-        )
+        image = self.nd2file.get_frame_2D(x=0, y=0, z=0, c=ch_index, t=time, v=0)
         return image
 
     def get_channel_name(self, m):
@@ -377,10 +364,10 @@ class H5(Data):
         )  # TODO: is signalfile really needed; it looks like signal_name is enough
 
         self.morpho_imobj = h5py.File(
-            os.path.join(self.expdir, self.morphofile), 'r'
-        ).get('volume')
+            os.path.join(self.expdir, self.morphofile), "r"
+        ).get("volume")
         self.signal_imobj = [
-            h5py.File(os.path.join(self.expdir, x), 'r').get('volume')
+            h5py.File(os.path.join(self.expdir, x), "r").get("volume")
             for x in self.signal_name
         ]
 

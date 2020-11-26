@@ -6,9 +6,7 @@ from tifffile import imsave
 
 
 def pumpingDisk(k):
-    x[k][
-        i ** 2 + j ** 2 < (25 + 10 * math.sin(2 * math.pi * k / 50)) ** 2
-    ] = 255
+    x[k][i ** 2 + j ** 2 < (25 + 10 * math.sin(2 * math.pi * k / 50)) ** 2] = 255
 
 
 def pumpingEllipse(k):
@@ -42,10 +40,7 @@ def turningSquare(k):
 def walkingRectangles(k):
     x[k][(np.abs(i - 10) < 30) & (np.abs(j + 10 + 15) < 15)] = 255
     x[k][(np.abs(i - 10 - 20) < 10) & (np.abs(j + 10) < 20)] = 255
-    x[k][
-        (np.abs(i - 10 + 20) < 10)
-        & (np.abs(j + 10) < 20 + 5 * math.sin(k / 2))
-    ] = 255
+    x[k][(np.abs(i - 10 + 20) < 10) & (np.abs(j + 10) < 20 + 5 * math.sin(k / 2))] = 255
 
 
 def tri(t):
@@ -58,9 +53,9 @@ def protrudingEllipse(k):
 
 
 def signalEllipse(k):
-    x[k][
-        i ** 2 + 4 * j ** 2 < (25 + 10 * tri((k - 25) / 15)) ** 2
-    ] = 255 * tri((k - 15) / 15)
+    x[k][i ** 2 + 4 * j ** 2 < (25 + 10 * tri((k - 25) / 15)) ** 2] = 255 * tri(
+        (k - 15) / 15
+    )
 
 
 def movingEllipse(k):

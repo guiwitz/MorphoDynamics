@@ -60,12 +60,8 @@ class Correlation:
         )
 
         def mode_change(change):
-            self.f1 = self.get_signal(
-                self.signal1_selector.value, change["new"]
-            )
-            self.f2 = self.get_signal(
-                self.signal2_selector.value, change["new"]
-            )
+            self.f1 = self.get_signal(self.signal1_selector.value, change["new"])
+            self.f2 = self.get_signal(self.signal2_selector.value, change["new"])
             self.update_plots()
 
         mode_selector.observe(mode_change, names="value")
@@ -99,12 +95,8 @@ class Correlation:
 
         self.window_slider.observe(window_change, names="value")
 
-        self.f1 = self.get_signal(
-            self.signal1_selector.value, mode_selector.value
-        )
-        self.f2 = self.get_signal(
-            self.signal2_selector.value, mode_selector.value
-        )
+        self.f1 = self.get_signal(self.signal1_selector.value, mode_selector.value)
+        self.f2 = self.get_signal(self.signal2_selector.value, mode_selector.value)
         self.update_plots()
 
         self.interface = ipw.VBox(
@@ -215,9 +207,7 @@ class Correlation:
 
         return fig, ax
 
-    def show_correlation_compl(
-        self, f1, f2, f1_name, f2_name, r, fig=None, ax=None
-    ):
+    def show_correlation_compl(self, f1, f2, f1_name, f2_name, r, fig=None, ax=None):
 
         if fig is None:
             fig, ax = plt.subplots()
@@ -260,9 +250,7 @@ class Correlation:
                 "k--",
             )
             A, B = self.compute_confidence_interval(c)
-            ax.fill_between(
-                t, A, B, facecolor="orange", color="red", alpha=0.2
-            )
+            ax.fill_between(t, A, B, facecolor="orange", color="red", alpha=0.2)
             # plt.grid()
             ax.set_xlabel("Time lag [frames]")
             ax.set_ylabel("Correlation")
@@ -292,9 +280,7 @@ class Correlation:
         i = np.random.randint(0, M, (N, M))
         idx = np.abs(rho) > 0.99999
         rho[idx] = np.sign(rho[idx]) * 0.99999
-        R = np.arctanh(
-            rho
-        )  # Expecting problems if correlation equals +1 or -1
+        R = np.arctanh(rho)  # Expecting problems if correlation equals +1 or -1
         T = np.mean(R, axis=0)
         Tbs = np.zeros((N, rho.shape[1]))
         for n in range(N):

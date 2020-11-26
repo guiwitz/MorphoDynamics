@@ -18,9 +18,7 @@ from IPython.display import display, HTML
 
 
 # suppress figure titles in widgets rendering and enlarge notebook
-display(
-    HTML("<style>div.jupyter-widgets.widget-label {display: none;}</style>")
-)
+display(HTML("<style>div.jupyter-widgets.widget-label {display: none;}</style>"))
 display(HTML("<style>.container { width:100% !important; }</style>"))
 
 
@@ -57,18 +55,14 @@ class OutputUI:
                 self.result_folder.file_list,
                 self.load_button,
                 self.tab,
-                ipw.HTML(
-                            '<font size="5"><b>Batch export<b></font>'
-                        ),
+                ipw.HTML('<font size="5"><b>Batch export<b></font>'),
                 self.batch_out,
             ]
         )
 
     def load_data(self, b=None):
 
-        self.param, self.res, self.data = load_alldata(
-            self.expdir, load_results=True
-        )
+        self.param, self.res, self.data = load_alldata(self.expdir, load_results=True)
         self.create_ui()
 
         self.batch = BatchExport(self.param, self.data, self.res)
@@ -118,17 +112,13 @@ class OutputUI:
 
         self.out3 = ipw.Output()
         with self.out3:
-            self.fig3, _ = show_displacement(
-                self.param, self.res, size=(8, 4.5)
-            )
+            self.fig3, _ = show_displacement(self.param, self.res, size=(8, 4.5))
         self.outputs.append(self.out3)
         self.names.append("Displacement")
 
         self.out4 = ipw.Output()
         with self.out4:
-            self.fig4, _ = show_cumdisplacement(
-                self.param, self.res, size=(8, 4.5)
-            )
+            self.fig4, _ = show_cumdisplacement(self.param, self.res, size=(8, 4.5))
         self.outputs.append(self.out4)
         self.names.append("Cumul. Displacement")
 

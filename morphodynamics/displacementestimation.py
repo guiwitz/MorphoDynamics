@@ -193,9 +193,9 @@ def map_contours(s1, s2, t1):
 
     # Weight for the cost function
     # w = 0
-    w = np.sum(
-        (np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2
-    ) / (N - 1)
+    w = np.sum((np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2) / (
+        N - 1
+    )
     # w = np.sum(1 / (np.concatenate(splev(t2, tck2)) - np.concatenate(splev(t1, s1)))**2) * (N-1)
     # w = 1e6
 
@@ -244,9 +244,9 @@ def map_contours2(s1, s2, t1, t2):
 
     # The weight that balances the two terms (displacement and strain)
     # of the functional
-    w = np.sum(
-        (np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2
-    ) / (N - 1)
+    w = np.sum((np.concatenate(splev(t2, s2)) - np.concatenate(splev(t1, s1))) ** 2) / (
+        N - 1
+    )
 
     # The functional
     functional = Functional2(s1, s2, t1, w)
@@ -649,9 +649,7 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
     mask = (0 <= D_main) * mask_main
 
     # Extract the contour of the mask
-    cvec = np.asarray(
-        find_contours(mask, 0, fully_connected="high")[0], dtype=np.int
-    )
+    cvec = np.asarray(find_contours(mask, 0, fully_connected="high")[0], dtype=np.int)
 
     # Adjust the origin of the contour:
     # on the discrete contour cvec, find the closest point to the origin,
@@ -672,18 +670,14 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
     # Compute the parameter of the first mid-point
     t = np.linspace(0, 1, N, endpoint=False)
     c = splevper(t, s)
-    m = np.argmin(
-        np.linalg.norm(np.transpose(c) - np.flip(cvec[n[0]]), axis=1)
-    )
+    m = np.argmin(np.linalg.norm(np.transpose(c) - np.flip(cvec[n[0]]), axis=1))
 
     # Convert the index along the discrete contour to a position along the continuous contour
     t = np.linspace(t[m], t[m] + 1, N, endpoint=False)
     c = splevper(t, s)
     m = np.zeros((I,), dtype=np.int)
     for i in range(I):
-        m[i] = np.argmin(
-            np.linalg.norm(np.transpose(c) - np.flip(cvec[n[i]]), axis=1)
-        )
+        m[i] = np.argmin(np.linalg.norm(np.transpose(c) - np.flip(cvec[n[i]]), axis=1))
     t_sel = t[m]
 
     return cvec_sel, t_sel

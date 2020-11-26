@@ -23,9 +23,7 @@ def segment_threshold(x, sigma, T):
         s = UnivariateSpline(
             range(0, 65536), h
         )  # Interpolate the histogram counts using a smoothing spline
-        n = np.arange(
-            0, 65535, 1
-        )  # Create array with positions of histogram bins
+        n = np.arange(0, 65535, 1)  # Create array with positions of histogram bins
         hs = s(n)  # Evaluate smoothing spline
         n0 = np.argmax(hs)  # Find position of maximum
         m = argrelmin(hs)[0]  # Find positions of local minima
@@ -138,9 +136,7 @@ def segment_cellpose(model, x, diameter, location):
 
     if model is None:
         model = models.Cellpose(model_type="cyto")
-    m, flows, styles, diams = model.eval(
-        [x], diameter=diameter, channels=[[0, 0]]
-    )
+    m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
     m = m[0]
     return m
 
@@ -148,9 +144,7 @@ def segment_cellpose(model, x, diameter, location):
 def extract_contour(mask):
     """ Extract pixels along contour of mask. """
 
-    return np.asarray(
-        find_contours(mask, 0, fully_connected="high")[0], dtype=np.int
-    )
+    return np.asarray(find_contours(mask, 0, fully_connected="high")[0], dtype=np.int)
 
 
 def contour_spline(m, smoothing):

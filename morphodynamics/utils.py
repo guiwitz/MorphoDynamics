@@ -126,8 +126,8 @@ def load_rasterized(location, frame):
     """Load rasterized contour image at given frame"""
 
     image = skimage.io.imread(
-            os.path.join(location, "rasterized_k_" + str(frame) + ".tif")
-        )
+        os.path.join(location, "rasterized_k_" + str(frame) + ".tif")
+    )
 
     return image
 
@@ -136,7 +136,7 @@ def load_window_image(location, frame):
     """Load rasterized contour image at given frame"""
 
     image = skimage.io.imread(
-            os.path.join(location, "window_image_k_" + str(frame) + ".tif")
-        )
+        os.path.join(location, "window_image_k_" + str(frame) + ".tif")
+    )
 
     return image

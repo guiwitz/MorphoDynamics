@@ -33,12 +33,8 @@ class Folders:
 
     def get_files(self):
 
-        current_files = [
-            x.name for x in self.cur_dir.glob("*") if not x.is_dir()
-        ]
-        current_folders = [
-            x.name for x in self.cur_dir.glob("*") if x.is_dir()
-        ]
+        current_files = [x.name for x in self.cur_dir.glob("*") if not x.is_dir()]
+        current_folders = [x.name for x in self.cur_dir.glob("*") if x.is_dir()]
         current_files = sorted(current_files, key=str.lower)
         current_folders = sorted(current_folders, key=str.lower)
 

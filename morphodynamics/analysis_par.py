@@ -269,7 +269,7 @@ def align_all(s_all, im_shape, num_points, param, client):
 
     save_path = os.path.join(param.resultdir, "segmented")
 
-    num_frames = np.max(list(s_all.keys()))+1
+    num_frames = np.max(list(s_all.keys())) + 1
     s0prm_all = {k: None for k in range(-1, num_frames)}
     ori_all = {k: 0 for k in range(0, num_frames)}
     names = [
@@ -351,7 +351,7 @@ def windowing_all(s_all, ori_all, param, J, I, client):
         client connected to LocalCluster or SLURMCluster
 
     """
-    max_index = np.max(list(s_all.keys()))+1
+    max_index = np.max(list(s_all.keys())) + 1
     compute_windows = [
         client.submit(windowing, s_all[k], ori_all[k], param, J, I, k)
         for k in range(max_index)
@@ -461,7 +461,7 @@ def window_map_all(
 
     """
 
-    num_frames = np.max(list(s_all.keys()))+1
+    num_frames = np.max(list(s_all.keys())) + 1
     # w_all = {k: None for k in range(num_frames)}
     t_all = {k: None for k in range(num_frames)}
     t0_all = {k: None for k in range(num_frames)}
@@ -601,7 +601,7 @@ def compute_displacement(s_all, t_all, t0_all):
         windows of frame corresponding to s_all[t-1]
 
     """
-    num_time_points = np.max(list(s_all.keys()))+1
+    num_time_points = np.max(list(s_all.keys())) + 1
     displacements = np.zeros((len(t_all[1]), num_time_points - 1))
     for k in range(1, num_time_points):
         s = s_all[k]
@@ -625,7 +625,7 @@ def compute_displacement(s_all, t_all, t0_all):
 
 
 def segment_single_frame(param, k, save_path):
-    """Segment frame k of segmentation image defined in param object 
+    """Segment frame k of segmentation image defined in param object
     and save to disk.
 
     Parameters

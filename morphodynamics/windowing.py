@@ -52,9 +52,7 @@ def compute_discrete_arc_length(c):
     """
 
     L = np.cumsum(
-        np.linalg.norm(
-            np.diff(np.concatenate([[c[0]], c, [c[0]]]), axis=0), axis=1
-        )
+        np.linalg.norm(np.diff(np.concatenate([[c[0]], c, [c[0]]]), axis=0), axis=1)
     )
     return L
 
@@ -159,8 +157,10 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
         # We must fix certain frames where multiple contours are returned.
         # So we choose the longest contour. Some pixels may be lost in the process,
         # i.e., the windows may not cover the entire cell.
-        clist = find_contours(mask, 0, fully_connected='high')
-        cvec = np.asarray(clist[np.argmax([cel.shape[0] for cel in clist])], dtype=np.int)
+        clist = find_contours(mask, 0, fully_connected="high")
+        cvec = np.asarray(
+            clist[np.argmax([cel.shape[0] for cel in clist])], dtype=np.int
+        )
 
         # An alternative fix using OpenCV's findContours routine---doesn't solve the problem
         # contours, hierarchy = cv.findContours(np.asarray(mask, dtype=np.uint8), cv.RETR_LIST, cv.CHAIN_APPROX_NONE)
