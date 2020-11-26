@@ -33,11 +33,11 @@ self.ui()
 [0m[1;32m      5[0m [0mself[0m[0;34m.[0m[0mui[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 
 [0;32m/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/morpho_segmentation.py[0m in [0;36mload_data[0;34m(self, b)[0m
-[1;32m    696[0m [0;34m[0m[0m
-[1;32m    697[0m         self.param, self.res, self.data = utils.load_alldata(
-[0;32m--> 698[0;31m             [0mfolder_load[0m[0;34m,[0m [0mload_results[0m[0;34m=[0m[0;32mTrue[0m[0;34m[0m[0;34m[0m[0m
-[0m[1;32m    699[0m         )
-[1;32m    700[0m         [0mself[0m[0;34m.[0m[0mparam[0m[0;34m.[0m[0mbad_frames[0m [0;34m=[0m [0mutils[0m[0;34m.[0m[0mformat_bad_frames[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mparam[0m[0;34m.[0m[0mbad_frames[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    716[0m [0;34m[0m[0m
+[1;32m    717[0m         self.param, self.res, self.data = utils.load_alldata(
+[0;32m--> 718[0;31m             [0mfolder_load[0m[0;34m,[0m [0mload_results[0m[0;34m=[0m[0;32mTrue[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m    719[0m         )
+[1;32m    720[0m         [0mself[0m[0;34m.[0m[0mparam[0m[0;34m.[0m[0mbad_frames[0m [0;34m=[0m [0mutils[0m[0;34m.[0m[0mformat_bad_frames[0m[0;34m([0m[0mself[0m[0;34m.[0m[0mparam[0m[0;34m.[0m[0mbad_frames[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
 
 [0;32m/usr/share/miniconda/lib/python3.7/site-packages/morphodynamics/utils.py[0m in [0;36mload_alldata[0;34m(folder_path, load_results, param)[0m
 [1;32m     41[0m [0;34m[0m[0m

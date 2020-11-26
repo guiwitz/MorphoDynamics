@@ -314,47 +314,60 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_html"><style>div.jupyter-widgets.widget-label {display: none;}</style></div><div class="output text_html"><style>.container { width:100% !important; }</style></div></div>
 </div>
 <div class="section" id="with-user-interface-used-as-an-api">
 <h2>With user interface used as an API<a class="headerlink" href="#with-user-interface-used-as-an-api" title="Permalink to this headline">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">results_folder</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;../synthetic/data/Results_cellpose&#39;</span><span class="p">)</span>
-<span class="k">if</span> <span class="ow">not</span> <span class="n">results_folder</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-    <span class="n">results_folder</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resultdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;../synthetic/data/Results_cellpose&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">resultdir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+    <span class="n">resultdir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span> <span class="o">=</span> <span class="n">InteractSeg</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">main_folder</span><span class="o">.</span><span class="n">go_to_folder</span><span class="p">(</span><span class="s1">&#39;../synthetic/data&#39;</span><span class="p">)</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">saving_folder</span><span class="o">.</span><span class="n">go_to_folder</span><span class="p">(</span><span class="n">results_folder</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">segm_folders</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s1">&#39;synth_ch1.h5&#39;</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">channels_folders</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;synth_ch2.h5&#39;</span><span class="p">,</span><span class="s1">&#39;synth_ch3.h5&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># set paths and create morpho_segmentation object</span>
+<span class="n">expdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;../synthetic/data&#39;</span><span class="p">)</span>
+<span class="n">signal_name</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;synth_ch2.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;synth_ch3.h5&#39;</span><span class="p">]</span>
+<span class="n">morpho_name</span> <span class="o">=</span> <span class="s1">&#39;synth_ch1.h5&#39;</span>
 
-<span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">seg_algo</span> <span class="o">=</span> <span class="s2">&quot;cellpose&quot;</span>
+<span class="c1"># 1. Either pass arguments at object creation</span>
+<span class="c1">#self = InteractSeg(expdir=expdir, resultdir=resultdir, morpho_name=morpho_name,</span>
+<span class="c1">#                   signal_name=signal_name, createUI=False, cores=1)</span>
+
+<span class="c1"># 2. Or update them with setters</span>
+<span class="bp">self</span> <span class="o">=</span> <span class="n">InteractSeg</span><span class="p">(</span><span class="n">createUI</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">set_expdir</span><span class="p">(</span><span class="n">expdir</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">set_resultdir</span><span class="p">(</span><span class="n">resultdir</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">set_morpho_name</span><span class="p">(</span><span class="n">morpho_name</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">set_signal_name</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">seg_algo</span> <span class="o">=</span> <span class="s2">&quot;cellpose&quot;</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">diameter</span> <span class="o">=</span> <span class="mi">10</span>
 
-<span class="c1">#self.maxtime.value = 4</span>
+<span class="c1"># adjust max time for speed</span>
+<span class="c1">#self.param.max_time = 4</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># manually start dask to adjust it</span>
+<span class="c1"># self.param.distributed = &#39;local&#39;#or &#39;cluster&#39;</span>
+<span class="c1"># self.initialize_dask()</span>
+<span class="c1"># self.client.cluster</span>
 </pre></div>
 </div>
 </div>
@@ -365,28 +378,10 @@
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt;&gt; using CPU
-processing 1 image(s)
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>frame segmentation: 100%|██████████| 40/40 [03:26&lt;00:00,  5.16s/it]  
-frames splining: 100%|██████████| 40/40 [00:00&lt;00:00, 102.94it/s]
-frames rasterize: 100%|██████████| 40/40 [00:01&lt;00:00, 22.51it/s]
-frames compute windows: 100%|██████████| 40/40 [00:01&lt;00:00, 31.06it/s]
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">export_data</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Your results have been saved in the following directory:
-/Users/gw18g940/OneDrive - Universitaet Bern/MIC_projects/Kobus/MDVonesch/MorphoDynamics/synthetic/data/Results_cellpose
 </pre></div>
 </div>
 </div>

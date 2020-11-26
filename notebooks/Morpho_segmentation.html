@@ -271,9 +271,9 @@
                 
   <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">%%</span><span class="n">javascript</span>
-<span class="n">IPython</span><span class="o">.</span><span class="n">OutputArea</span><span class="o">.</span><span class="n">prototype</span><span class="o">.</span><span class="n">_should_scroll</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="n">false</span><span class="p">;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%javascript</span>
+<span class="nx">IPython</span><span class="p">.</span><span class="nx">OutputArea</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">_should_scroll</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">lines</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -281,14 +281,13 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#%load_ext autoreload</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#%load_ext autoreload</span>
 <span class="c1">#%autoreload 2</span>
 <span class="c1">#import warnings</span>
 <span class="c1">#warnings.filterwarnings(&quot;ignore&quot;)</span>
 <span class="c1">#%matplotlib widget</span>
 
 <span class="kn">from</span> <span class="nn">morphodynamics.morpho_segmentation</span> <span class="kn">import</span> <span class="n">InteractSeg</span>
-<span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="k">as</span> <span class="nn">ipw</span>
 </pre></div>
 </div>
 </div>
@@ -298,7 +297,7 @@
 <p>You can define a path to a folder containing your data to avoid repeatedly browsing to it.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">#default_path = None</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#default_path = None</span>
 <span class="n">default_path</span> <span class="o">=</span> <span class="s1">&#39;/Users/gw18g940/Desktop/Test_data/Kobus/Histamine/Expt2/&#39;</span>
 <span class="c1">#default_path = &#39;/Users/kobuspro/Documents/General Files/PERTZ_position/MY_DATA&#39; # Kobus</span>
 </pre></div>
@@ -307,9 +306,8 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># create interface</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create interface</span>
 <span class="n">interactseg</span> <span class="o">=</span> <span class="n">InteractSeg</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="n">default_path</span><span class="p">)</span>
-<span class="n">interactseg</span><span class="o">.</span><span class="n">ui</span><span class="p">()</span>
 <span class="n">interactseg</span><span class="o">.</span><span class="n">interface</span>
 </pre></div>
 </div>

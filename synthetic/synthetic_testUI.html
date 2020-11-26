@@ -5,7 +5,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Test segmentation and windowing with ilastik segmentation &#8212; Morphodynamics documentation</title>
+    <title>Test segmentation UI &#8212; Morphodynamics documentation</title>
     
   <link rel="stylesheet" href="../_static/css/index.73d71520a4ca3b99cfee5594769eaaae.css">
 
@@ -207,7 +207,7 @@
         <!-- ipynb file if we had a myst markdown file -->
         
         <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/synthetic/synthetic_test_ilastik.ipynb"><button type="button"
+        <a class="dropdown-buttons" href="../_sources/synthetic/synthetic_testUI.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
                 data-placement="left">.ipynb</button></a>
         <!-- Download PDF via print -->
@@ -245,7 +245,7 @@
         aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
     <div class="dropdown-buttons">
         
-        <a class="binder-button" href="https://mybinder.org/v2/gh/guiwitz/MorphoDynamics/master?urlpath=tree/synthetic/synthetic_test_ilastik.ipynb"><button type="button"
+        <a class="binder-button" href="https://mybinder.org/v2/gh/guiwitz/MorphoDynamics/master?urlpath=tree/synthetic/synthetic_testUI.ipynb"><button type="button"
                 class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
                 data-placement="left"><img class="binder-button-logo"
                     src="../_static/images/logo_binder.svg"
@@ -262,20 +262,6 @@
     <!-- Table of contents -->
     <div class="d-none d-md-block col-md-2 bd-toc show">
         
-        <div class="tocsection onthispage pt-5 pb-3">
-            <i class="fas fa-list"></i> Contents
-        </div>
-        <nav id="bd-toc-nav">
-            <ul class="nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#with-user-interface-used-as-an-api">
-   With user interface used as an API
-  </a>
- </li>
-</ul>
-
-        </nav>
-        
     </div>
 </div>
     <div id="main-content" class="row">
@@ -283,8 +269,8 @@
         
               <div>
                 
-  <div class="section" id="test-segmentation-and-windowing-with-ilastik-segmentation">
-<h1>Test segmentation and windowing with ilastik segmentation<a class="headerlink" href="#test-segmentation-and-windowing-with-ilastik-segmentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="test-segmentation-ui">
+<h1>Test segmentation UI<a class="headerlink" href="#test-segmentation-ui" title="Permalink to this headline">¶</a></h1>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#%load_ext autoreload</span>
@@ -295,83 +281,47 @@
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">morphodynamics.morpho_segmentation</span> <span class="kn">import</span> <span class="n">InteractSeg</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%javascript</span>
+<span class="nx">IPython</span><span class="p">.</span><span class="nx">OutputArea</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">_should_scroll</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">lines</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<script type="application/javascript">IPython.OutputArea.prototype._should_scroll = function(lines) {
+    return false;
+}
+</script></div>
 </div>
-<div class="section" id="with-user-interface-used-as-an-api">
-<h2>With user interface used as an API<a class="headerlink" href="#with-user-interface-used-as-an-api" title="Permalink to this headline">¶</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># create directory if missing</span>
-<span class="n">resultdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;../synthetic/data/Results_ilastik&#39;</span><span class="p">)</span>
-<span class="k">if</span> <span class="ow">not</span> <span class="n">resultdir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-    <span class="n">resultdir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.morpho_segmentation</span> <span class="kn">import</span> <span class="n">InteractSeg</span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_html"><style>div.jupyter-widgets.widget-label {display: none;}</style></div><div class="output text_html"><style>.container { width:100% !important; }</style></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># set paths and create morpho_segmentation object</span>
-<span class="n">expdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">&#39;../synthetic/data&#39;</span><span class="p">)</span>
-<span class="n">signal_name</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;synth_ch2.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;synth_ch3.h5&#39;</span><span class="p">]</span>
-<span class="n">morpho_name</span> <span class="o">=</span> <span class="s1">&#39;synth_ch1.h5&#39;</span>
-
-<span class="c1"># 1. Either pass arguments at object creation</span>
-<span class="c1">#self = InteractSeg(expdir=expdir, resultdir=resultdir, morpho_name=morpho_name,</span>
-<span class="c1">#                   signal_name=signal_name, createUI=False, cores=1)</span>
-
-<span class="c1"># 2. Or update them with setters</span>
-<span class="bp">self</span> <span class="o">=</span> <span class="n">InteractSeg</span><span class="p">(</span><span class="n">createUI</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">set_expdir</span><span class="p">(</span><span class="n">expdir</span><span class="p">)</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">set_resultdir</span><span class="p">(</span><span class="n">resultdir</span><span class="p">)</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">set_morpho_name</span><span class="p">(</span><span class="n">morpho_name</span><span class="p">)</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">set_signal_name</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span> <span class="o">=</span> <span class="n">InteractSeg</span><span class="p">(</span><span class="n">expdir</span><span class="o">=</span><span class="s1">&#39;../synthetic/data/Results_ilastik/&#39;</span><span class="p">,</span> <span class="n">seg_algo</span><span class="o">=</span><span class="s1">&#39;ilastik&#39;</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+<span class="c1">#self.ui()</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># set paramteres and initialize</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">seg_algo</span> <span class="o">=</span> <span class="s2">&quot;ilastik&quot;</span>
-
-<span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">width</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">depth</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">lambda_</span> <span class="o">=</span> <span class="mi">10</span>
-
-<span class="bp">self</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">interface</span>
 </pre></div>
 </div>
 </div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># manually start dask to adjust it</span>
-<span class="c1"># self.param.distributed = &#39;local&#39;#or &#39;cluster&#39;</span>
-<span class="c1"># self.initialize_dask()</span>
-<span class="c1"># self.client.cluster</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">run_segmentation</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">export_data</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-</div>
+<div class="cell_output docutils container">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "6429c3169ae44e46904a5a4d7a93eb5a", "version_major": 2, "version_minor": 0}
+</script></div>
 </div>
 </div>
 
