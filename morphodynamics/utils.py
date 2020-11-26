@@ -44,6 +44,8 @@ def load_alldata(folder_path, load_results=False, param=None):
             documents = yaml.full_load(file)
         for k in documents.keys():
             setattr(param, k, documents[k])
+        param.resultdir = Path(param.resultdir)
+        param.expdir = Path(param.expdir)
         param.bad_frames_txt = param.bad_frames
         param.bad_frames = format_bad_frames(param.bad_frames)
 
