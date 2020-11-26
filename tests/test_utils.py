@@ -2,10 +2,14 @@ import numpy as np
 
 from morphodynamics import utils
 from pathlib import Path
-
-#exec(open("tests/create_dataset.py").read())
+import create_dataset
 
 resultdir = Path('synthetic/data/Results_ilastik')
+
+
+def setup_module(module):
+
+    create_dataset.make_dataset()
 
 
 def count_files():

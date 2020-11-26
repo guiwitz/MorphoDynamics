@@ -1,7 +1,15 @@
 from pathlib import Path
 from morphodynamics.morpho_segmentation import InteractSeg
+from dask.distributed import Client, LocalCluster
 
-if __name__ == "__main__":
+
+def make_dataset():
+     
+    # start Dask
+    cluster = LocalCluster()
+    cluster.scale(1)
+    client = Client(cluster)
+
     # create the dataset
     resultdir = Path("synthetic/data/Results_ilastik/")
     expdir = Path("synthetic/data")
@@ -15,6 +23,7 @@ if __name__ == "__main__":
         createUI=False,
         cores=1,
     )
+    self.client = client
 
     self.initialize()
 
@@ -25,3 +34,7 @@ if __name__ == "__main__":
 
     self.run_segmentation()
     self.export_data()
+
+
+if __name__ == "__main__":
+    make_dataset()
