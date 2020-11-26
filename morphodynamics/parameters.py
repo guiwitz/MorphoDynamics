@@ -88,7 +88,7 @@ class Param:
         self.diameter = 200
 
         # use distributed computing
-        self.distributed = False
+        self.distributed = None
 
         # time step
         self.step = 1

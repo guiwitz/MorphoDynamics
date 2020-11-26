@@ -189,7 +189,7 @@ class InteractSeg:
 
         # use distributed computing
         self.client = None
-        self.distributed = ipw.Select(options=["local", "cluster"], value="local")
+        self.distributed = ipw.Select(options=["local", "cluster"], value=None)
         self.distributed.observe(self.initialize_dask, names="value")
 
         # run the analysis button
@@ -373,7 +373,13 @@ class InteractSeg:
     def initialize_dask(self, change=None):
         """If dask is used, start it and display UI."""
 
-        self.param.distributed = self.distributed.value
+        # with no manual selection use local. if param.distributed
+        # has been set before, use that setting
+        if self.distributed.value is None:
+            self.distributed.value = "local"
+        if self.param.distributed is None:
+            self.param.distributed = self.distributed.value
+
         if self.param.distributed == "cluster":
             cluster = SLURMCluster(cores=self.cores, memory=self.memory)
             self.client = Client(cluster)
