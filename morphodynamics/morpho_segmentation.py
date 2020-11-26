@@ -87,6 +87,8 @@ class InteractSeg:
 
         if resultdir is not None:
             resultdir = Path(resultdir)
+        if expdir is not None:
+            expdir = Path(expdir)
         self.param = Param(
             expdir=expdir,
             morpho_name=morpho_name,
@@ -119,20 +121,21 @@ class InteractSeg:
 
         # update saving folder
         self.saving_folder.file_list.observe(self.update_saving_folder, names="options")
-        self.update_saving_folder(None)
 
         # update folder if given at init
         if self.expdir is not None:
-            self.expdir = Path(self.expdir)
             self.main_folder.cur_dir = self.expdir
             self.main_folder.refresh(None)
             if self.resultdir is None:
                 self.saving_folder.cur_dir = self.expdir
                 self.saving_folder.refresh(None)
         if self.resultdir is not None:
-            self.resultdir = Path(self.resultdir)
             self.saving_folder.cur_dir = self.resultdir
             self.saving_folder.refresh(None)
+
+        # update folder lists and params in case None were passed
+        self.update_saving_folder(None)
+        self.get_folders()
 
         # export, import buttons
         self.export_button = ipw.Button(description="Save segmentation")
@@ -304,6 +307,7 @@ class InteractSeg:
                 data_type=self.param.data_type,
                 step=self.param.step,
                 bad_frames=self.param.bad_frames,
+                max_time=self.param.max_time,
             )
         elif self.param.morpho_name.split(".")[-1] == "tif":
             self.param.data_type = "multi"
@@ -315,6 +319,7 @@ class InteractSeg:
                 step=self.param.step,
                 bad_frames=self.param.bad_frames,
                 switch_TZ=self.param.switch_TZ,
+                max_time=self.param.max_time,
             )
         elif self.param.morpho_name.split(".")[-1] == "nd2":
             self.param.data_type = "nd2"
@@ -325,6 +330,7 @@ class InteractSeg:
                 data_type=self.param.data_type,
                 step=self.param.step,
                 bad_frames=self.param.bad_frames,
+                max_time=self.param.max_time,
             )
         elif self.param.morpho_name.split(".")[-1] == "h5":
             self.param.data_type = "h5"
@@ -335,6 +341,7 @@ class InteractSeg:
                 data_type=self.param.data_type,
                 step=self.param.step,
                 bad_frames=self.param.bad_frames,
+                max_time=self.param.max_time,
             )
 
         self.maxtime.max = self.data.max_time
@@ -505,8 +512,7 @@ class InteractSeg:
                 self.channels_folders.options = image.metadata["channels"]
                 self.channels_folders.value = ()
 
-                self.expdir = os.path.join(
-                    self.main_folder.cur_dir,
+                self.expdir = self.main_folder.cur_dir.joinpath(
                     self.main_folder.file_list.value[0],
                 )
                 self.param.expdir = self.expdir
@@ -523,7 +529,43 @@ class InteractSeg:
             self.channels_folders.options = folder_names
 
             self.expdir = self.main_folder.cur_dir
-            self.param.expdir = self.expdir.as_posix()
+            self.param.expdir = self.expdir  # .as_posix()
+
+    def set_expdir(self, expdir):
+        """Set the expdir parameter and update UI"""
+
+        # updating main_folder updates expdir automatically via callback
+        self.main_folder.go_to_folder(expdir)
+
+    def set_resultdir(self, resultdir):
+        """Set the resultdir parameter and update UI"""
+
+        # updating main_folder updates expdir automatically via callback
+        self.saving_folder.go_to_folder(resultdir)
+
+    def set_morpho_name(self, ch_name):
+        """Set the channel used for segmentation"""
+
+        # self.param.segm_folders is automatically updated via callback
+        self.segm_folders.value = ch_name
+
+    def set_signal_name(self, ch_name):
+        """Set the channels used for signal extraction
+
+        Parameters
+        ----------
+        ch_name : list of str
+            channel names to use for signal extraction
+        """
+
+        # self.param.signal_name is automatically updated via callback
+        self.channels_folders.value = tuple(ch_name)
+
+    def set_max_time(self, max_time):
+        """Set max time of experiment"""
+
+        # self.param.max_time is automatically updated via callback
+        self.maxtime.value = max_time
 
     def update_segm_file_list(self, change=None):
         """Calback to update segmentation file lists depending on selections"""
@@ -608,6 +650,7 @@ class InteractSeg:
     def update_saving_folder(self, change=None):
         """Callback to update saving directory paramters"""
 
+        self.resultdir = self.saving_folder.cur_dir
         self.param.resultdir = self.saving_folder.cur_dir
 
     def update_switchTZ(self, change=None):
@@ -647,7 +690,7 @@ class InteractSeg:
         for x in dir(self.param):
             if x[0] == "_":
                 None
-            elif x == "resultdir":
+            elif (x == "resultdir") or (x == "expdir"):
                 dict_file[x] = getattr(self.param, x).as_posix()
             else:
                 dict_file[x] = getattr(self.param, x)
