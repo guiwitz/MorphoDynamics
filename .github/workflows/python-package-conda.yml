@@ -20,12 +20,6 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         $CONDA/bin/conda env update --file environment.yml --name base
-    
-    - name: Create dataset
-      run: |
-        $CONDA/bin/python tests/create_dataset.py
-        cd synthetic/data/Results_ilastik/segmented
-        ls
 
     - name: Test with pytest
       run: |
