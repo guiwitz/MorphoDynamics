@@ -112,6 +112,7 @@ def analyze_morphodynamics(
 
     # Save variables for archival
     res.spline = [s_all[k] for k in range(data.K)]
+    res.s0prm = [s0prm_all[k] for k in range(data.K)]
     res.param0 = [t0_all[k] for k in t0_all]
     res.param = [t_all[k] for k in t_all]
     res.mean = mean_signal
@@ -604,22 +605,23 @@ def compute_displacement(s_all, t_all, t0_all):
     num_time_points = np.max(list(s_all.keys())) + 1
     displacements = np.zeros((len(t_all[1]), num_time_points - 1))
     for k in range(1, num_time_points):
-        s = s_all[k]
-        # Compute projection of displacement vectors onto normal of contour
-        s0 = s_all[k - 1]
-        # Get a vector that is tangent to the contour
-        u = np.asarray(splev(np.mod(t0_all[k], 1), s0, der=1))
-        # Derive an orthogonal vector with unit norm
-        u = np.asarray([u[1], -u[0]]) / np.linalg.norm(u, axis=0)
-        # Compute scalar product with displacement vector
-        displacements[:, k - 1] = np.sum(
-            (
-                np.asarray(splev(np.mod(t_all[k], 1), s))
-                - np.asarray(splev(np.mod(t0_all[k], 1), s0))
+        if t_all[k] is not None:
+            s = s_all[k]
+            # Compute projection of displacement vectors onto normal of contour
+            s0 = s_all[k - 1]
+            # Get a vector that is tangent to the contour
+            u = np.asarray(splev(np.mod(t0_all[k], 1), s0, der=1))
+            # Derive an orthogonal vector with unit norm
+            u = np.asarray([u[1], -u[0]]) / np.linalg.norm(u, axis=0)
+            # Compute scalar product with displacement vector
+            displacements[:, k - 1] = np.sum(
+                (
+                    np.asarray(splev(np.mod(t_all[k], 1), s))
+                    - np.asarray(splev(np.mod(t0_all[k], 1), s0))
+                )
+                * u,
+                axis=0,
             )
-            * u,
-            axis=0,
-        )
 
     return displacements
 

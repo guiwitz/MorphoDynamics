@@ -267,17 +267,20 @@ def map_contours2(s1, s2, t1, t2):
 
     # Minimization of the functional; we use high tolerances to
     # get the results faster
-    result = minimize(
-        fun=functional.f,
-        x0=t2,
-        method="trust-constr",
-        constraints=LinearConstraint(A, lb, ub, keep_feasible=True),
-        options={"gtol": 1e-2, "xtol": 1e-2},
-    )
-    # result = minimize(functional.f, t2, method='trust-constr', options={'gtol': 1e-12, 'xtol': 1e-12, 'barrier_tol': 1e-12})
-    # result = minimize(functional.f, t2)
-    t2 = result.x
-    return t2
+    try:
+        result = minimize(
+            fun=functional.f,
+            x0=t2,
+            method="trust-constr",
+            constraints=LinearConstraint(A, lb, ub, keep_feasible=True),
+            options={"gtol": 1e-2, "xtol": 1e-2},
+        )
+        # result = minimize(functional.f, t2, method='trust-constr', options={'gtol': 1e-12, 'xtol': 1e-12, 'barrier_tol': 1e-12})
+        # result = minimize(functional.f, t2)
+        t2 = result.x
+        return t2
+    except Exception:
+        return None
 
 
 def map_contours3(s1, s2, t1, t2):
