@@ -429,8 +429,6 @@ def window_map_all(
 
     Parameters
     ----------
-    num_points: int
-        number of points used for spline discretization
     s_all: dict of spline objects
         each element k of the dictionary contains the spline of the
         corresponding frame k. The frame k-1 contains None
