@@ -685,7 +685,9 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
     m = np.zeros((I,), dtype=np.int)
     for i in range(I):
         m[i] = np.argmin(np.linalg.norm(np.transpose(c) - np.flip(cvec[n[i]]), axis=1))
-        c = [c[0][m[i]::], c[1][m[i]::]]
+        c = [c[0][m[i]+1::], c[1][m[i]+1::]]
+    m = m+1
+    m[0] = 0
     m = np.cumsum(m)
     t_sel = t[m]
 
