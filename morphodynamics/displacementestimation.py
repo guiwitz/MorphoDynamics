@@ -623,6 +623,8 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
 
     Parameters
     ----------
+    N: int
+        number of points for spline discretization
     c_main: 2d array
         A rasterized version of the contour, as obtained by rasterize_curve.
     I: int
@@ -676,11 +678,15 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
     m = np.argmin(np.linalg.norm(np.transpose(c) - np.flip(cvec[n[0]]), axis=1))
 
     # Convert the index along the discrete contour to a position along the continuous contour
+    # When searching for the closest spline position to a window, remove already "used" locations
+    # so that the path does not come back on itself
     t = np.linspace(t[m], t[m] + 1, N, endpoint=False)
     c = splevper(t, s)
     m = np.zeros((I,), dtype=np.int)
     for i in range(I):
         m[i] = np.argmin(np.linalg.norm(np.transpose(c) - np.flip(cvec[n[i]]), axis=1))
+        c = [c[0][m[i]::], c[1][m[i]::]]
+    m = np.cumsum(m)
     t_sel = t[m]
 
     return cvec_sel, t_sel
