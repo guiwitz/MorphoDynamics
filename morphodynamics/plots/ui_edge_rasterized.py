@@ -149,7 +149,7 @@ class EdgeRasterized:
                 self.param.n_curve,
                 self.data.shape,
                 self.res.spline[k],
-                self.res.param0[k],
+                self.res.param0[k+1],
                 d[:, k],
                 3,
                 dmax,
