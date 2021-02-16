@@ -73,7 +73,7 @@ class Correlation:
         def export_as_csv(change):
             c = correlate_arrays(self.f1, self.f2, "Pearson")
             np.savetxt(
-                os.path.join(self.param.resultdir, "Correlation.csv"),
+                os.path.join(self.param.analysis_folder, "Correlation.csv"),
                 c,
                 delimiter=",",
             )

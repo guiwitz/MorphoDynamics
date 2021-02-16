@@ -52,13 +52,13 @@ class Curvature:
         plt.clf()
         plt.gca().set_title("Curvature")
         if export:
-            pp = PdfPages(os.path.join(self.param.resultdir, "Curvature.pdf"))
+            pp = PdfPages(os.path.join(self.param.analysis_folder, "Curvature.pdf"))
         plt.imshow(self.curvature, cmap="seismic", vmin=-cmax, vmax=cmax)
         plt.colorbar(label="Curvature")
         plt.axis("auto")
         plt.xlabel("Frame index")
         plt.ylabel("Position on contour")
-        # imsave(param.resultdir + 'Curvature.tif', curvature.astype(np.float32), compress=6)
+        # imsave(param.analysis_folder + 'Curvature.tif', curvature.astype(np.float32), compress=6)
         if export:
             pp.savefig()
             pp.close()

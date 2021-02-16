@@ -241,15 +241,15 @@ def save_edge_vectorial_movie(param, data, res, curvature=False, size=(12, 9)):
 
     with out:
         fig, ax = plt.subplots(figsize=size)
-        writer = imageio.get_writer(os.path.join(param.resultdir, name + ".gif"))
+        writer = imageio.get_writer(os.path.join(param.analysis_folder, name + ".gif"))
 
         for k in range(data.K - 1):
             fig, ax = show_edge_vectorial_aux(
                 param, data, res, k, curvature, fig_ax=(fig, ax)
             )
-            fig.savefig(os.path.join(param.resultdir, "temp.png"))
+            fig.savefig(os.path.join(param.analysis_folder, "temp.png"))
             writer.append_data(
-                imageio.imread(os.path.join(param.resultdir, "temp.png"))
+                imageio.imread(os.path.join(param.analysis_folder, "temp.png"))
             )
         writer.close()
         plt.close(fig)
@@ -429,8 +429,8 @@ def show_signals_aux(
 
 def save_signals(param, data, res, modes=None, size=(16, 9)):
 
-    if not os.path.isdir(os.path.join(param.resultdir, "signals")):
-        os.makedirs(os.path.join(param.resultdir, "signals"))
+    if not os.path.isdir(os.path.join(param.analysis_folder, "signals")):
+        os.makedirs(os.path.join(param.analysis_folder, "signals"))
 
     if modes is None:
         modes = ["Mean", "Variance"]
@@ -458,7 +458,7 @@ def save_signals(param, data, res, modes=None, size=(16, 9)):
 
             fig.savefig(
                 os.path.join(
-                    param.resultdir,
+                    param.analysis_folder,
                     "signals",
                     "Signal_" + str(m) + "_" + mode + "_layer_" + str(j) + ".png",
                 )

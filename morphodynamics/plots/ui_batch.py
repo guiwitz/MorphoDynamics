@@ -20,13 +20,13 @@ def show_analysis(data, param, res):
     if param.showCircularity:
         # with out:
         fig, ax = show_circularity(param, data, res)
-        fig.savefig(os.path.join(param.resultdir, "Circularity.png"))
+        fig.savefig(os.path.join(param.analysis_folder, "Circularity.png"))
         plt.close()
 
     if param.showEdgeOverview:
         # with out:
         fig, ax = show_edge_overview(param, data, res)
-        fig.savefig(os.path.join(param.resultdir, "Edge_overview.png"))
+        fig.savefig(os.path.join(param.analysis_folder, "Edge_overview.png"))
         plt.close()
 
     if param.showEdgeVectorial:
@@ -34,11 +34,11 @@ def show_analysis(data, param, res):
 
     if param.showDisplacement:
         fig, ax = show_displacement(param, res)
-        fig.savefig(os.path.join(param.resultdir, "Displacement.png"))
+        fig.savefig(os.path.join(param.analysis_folder, "Displacement.png"))
         plt.close()
 
         fig, ax = show_cumdisplacement(param, res)
-        fig.savefig(os.path.join(param.resultdir, "Cumul_Displacement.png"))
+        fig.savefig(os.path.join(param.analysis_folder, "Cumul_Displacement.png"))
         plt.close()
 
     if param.showEdgeRasterized:
@@ -51,7 +51,7 @@ def show_analysis(data, param, res):
 
     if param.showCurvature:
         fig, ax = show_curvature(param, data, res)
-        fig.savefig(os.path.join(param.resultdir, "Curvature.png"))
+        fig.savefig(os.path.join(param.analysis_folder, "Curvature.png"))
         plt.close()
 
     if param.showSignals:

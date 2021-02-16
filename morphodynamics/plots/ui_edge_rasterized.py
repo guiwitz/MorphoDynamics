@@ -169,7 +169,7 @@ class EdgeRasterized:
         return x
 
     def save(self):
-        tw = TiffWriter(self.param.resultdir + self.name + ".tif")
+        tw = TiffWriter(self.param.analysis_folder + self.name + ".tif")
         for k in range(self.data.K - 1):
             tw.save(self.get_image(k), compress=6)
         tw.close()
@@ -196,13 +196,13 @@ class EdgeRasterized:
         with out:
             fig, ax = plt.subplots()
             writer = imageio.get_writer(
-                os.path.join(self.param.resultdir, name + ".gif")
+                os.path.join(self.param.analysis_folder, name + ".gif")
             )
             for k in range(self.data.K - 1):
                 fig, ax = self.plot(k, (fig, ax))
-                fig.savefig(os.path.join(self.param.resultdir, "temp.png"))
+                fig.savefig(os.path.join(self.param.analysis_folder, "temp.png"))
                 writer.append_data(
-                    imageio.imread(os.path.join(self.param.resultdir, "temp.png"))
+                    imageio.imread(os.path.join(self.param.analysis_folder, "temp.png"))
                 )
         writer.close()
         plt.close(fig)

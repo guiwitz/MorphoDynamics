@@ -4,7 +4,7 @@ from morphodynamics import utils
 from pathlib import Path
 import create_dataset
 
-resultdir = Path('synthetic/data/Results_ilastik')
+analysis_folder = Path('synthetic/data/Results_ilastik')
 
 
 def setup_module(module):
@@ -14,26 +14,26 @@ def setup_module(module):
 
 def count_files():
 
-    tracked_files = resultdir.joinpath('segmented').glob('tracked*')
+    tracked_files = analysis_folder.joinpath('segmented').glob('tracked*')
     assert len(list(tracked_files)) == 40
 
-    raster_files = resultdir.joinpath('segmented').glob('raster*')
+    raster_files = analysis_folder.joinpath('segmented').glob('raster*')
     assert len(list(raster_files)) == 40
 
-    window_image_files = resultdir.joinpath('segmented').glob('window_image*')
+    window_image_files = analysis_folder.joinpath('segmented').glob('window_image*')
     assert len(list(window_image_files)) == 40
 
-    window_files = resultdir.joinpath('segmented').glob('window_k*')
+    window_files = analysis_folder.joinpath('segmented').glob('window_k*')
     assert len(list(window_files)) == 40
 
-    assert resultdir.joinpath('Results.pkl').is_file()
-    assert resultdir.joinpath('Parameters.yml').is_file()
+    assert analysis_folder.joinpath('Results.pkl').is_file()
+    assert analysis_folder.joinpath('Parameters.yml').is_file()
 
 
 def test_load_rasterized():
     """Check that image is loaded"""
 
-    image = utils.load_rasterized(resultdir.joinpath('segmented'), 1)
+    image = utils.load_rasterized(analysis_folder.joinpath('segmented'), 1)
     assert type(image) is np.ndarray
     assert len(image.shape) == 2
 
@@ -41,6 +41,6 @@ def test_load_rasterized():
 def test_load_window_image():
     """Check that image is loaded"""
 
-    image = utils.load_window_image(resultdir.joinpath('segmented'), 1)
+    image = utils.load_window_image(analysis_folder.joinpath('segmented'), 1)
     assert type(image) is np.ndarray
     assert len(image.shape) == 2

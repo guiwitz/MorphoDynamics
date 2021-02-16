@@ -11,13 +11,13 @@ def make_dataset():
     client = Client(cluster)
 
     # create the dataset
-    resultdir = Path("synthetic/data/Results_ilastik/")
+    analysis_folder = Path("synthetic/data/Results_ilastik/")
     expdir = Path("synthetic/data")
     signal_name = ["synth_ch2.h5", "synth_ch3.h5"]
     morpho_name = "synth_ch1.h5"
     self = InteractSeg(
         expdir=expdir,
-        resultdir=resultdir,
+        analysis_folder=analysis_folder,
         morpho_name=morpho_name,
         signal_name=signal_name,
         createUI=False,
