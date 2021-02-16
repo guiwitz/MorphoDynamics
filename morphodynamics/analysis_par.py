@@ -556,9 +556,13 @@ def track_all(segmented, location, param):
 
     """
 
+    # create analysis folder if note existant
+    save_path = os.path.join(param.analysis_folder, "segmented")
+    if not os.path.isdir(save_path):
+        os.makedirs(save_path)
+
     for k in range(0, len(segmented)):
 
-        save_path = os.path.join(param.analysis_folder, "segmented")
         segpath = param.seg_folder
         # m = segmented[k]
         num = k
