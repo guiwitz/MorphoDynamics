@@ -11,12 +11,15 @@ from pathlib import Path
 
 
 class Folders:
-    def __init__(self, rows=10, window_width=300):
+    def __init__(self, rows=10, window_width=300, init_path=None):
 
         style = {"description_width": "initial"}
         layout = {"width": "300px"}
 
-        self.cur_dir = Path(".").resolve()
+        if init_path is None:
+            self.cur_dir = Path(".").resolve()
+        else:
+            self.cur_dir = Path(init_path).resolve()
         self.out = ipw.Output()
 
         self.file_list = ipw.SelectMultiple(

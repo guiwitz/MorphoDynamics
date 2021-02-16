@@ -1,18 +1,19 @@
 name: morphodynamics
 channels:
+  - pytorch
   - conda-forge
 dependencies:
   - python>3.4,<3.8
+  - pytorch
   - scipy
   - numpy
-#  - mkl=2019.3
   - numba>=0.43.1
   - pyqt
   - matplotlib
   - pandas
   - scikit-image
   - jupyter
-  - jupyterlab
+  - jupyterlab=2.*
   - ipywidgets
   - nodejs
   - pip
@@ -23,12 +24,12 @@ dependencies:
   - pip:
     - dill
     - bokeh>=0.13.0
-    - mxnet-mkl
     - opencv-python-headless
     - pyqtgraph==0.11.0rc0
     - natsort
     - google-cloud-storage
     - tqdm
     - cellpose
-    - kaleido
     - .
+    - jedi==0.17.2
+    - tifffile

@@ -29,6 +29,9 @@ from dask.distributed import Client, LocalCluster
 
 import plotly.graph_objects as go
 
+import matplotlib
+cmap2 = matplotlib.colors.ListedColormap (np.array([[1,0,0],[1,0,0]]))
+
 # fix MacOSX OMP bug (see e.g. https://github.com/dmlc/xgboost/issues/1715)
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
@@ -136,6 +139,14 @@ class InteractSeg:
         # update folder lists and params in case None were passed
         self.update_saving_folder(None)
         self.get_folders()
+
+        # type of work: segmentation or loading
+        self.switch_new_load = ipw.RadioButtons(
+            value="New analysis",
+            options=["New analysis", "Load analysis"],
+            description="Usage type:"
+        )
+        self.switch_new_load.observe(self.ui, names="value")
 
         # export, import buttons
         self.export_button = ipw.Button(description="Save segmentation")
@@ -249,38 +260,12 @@ class InteractSeg:
         if self.createUI:
             with self.out:
 
-                data = go.Heatmap(z=np.zeros((100, 100)), colorscale="Gray")
+                self.fig, self.ax = plt.subplots(figsize=(5, 5))
+                self.ax.set_title(f"Time:")
 
-                self.fig = go.FigureWidget(
-                    data, layout=go.Layout(yaxis=dict(autorange="reversed"))
-                )
-                self.fig.add_trace(
-                    go.Heatmap(
-                        z=np.zeros((100, 100)),
-                        opacity=0.5,
-                        showscale=False,
-                        uid="w",
-                        hoverinfo="skip",
-                    )
-                )
-                self.fig.add_trace(
-                    go.Scatter(
-                        x=[0],
-                        y=[0],
-                        text="0",
-                        mode="text",
-                        hoverinfo="skip",
-                        textfont=dict(family="sans serif", size=10, color="crimson"),
-                    )
-                )
-                self.fig.add_trace(go.Scatter(x=None, y=None))
-                self.fig.layout.coloraxis.showscale = False
-                self.fig.layout.width = 600
-                self.fig.layout.height = 600
-                self.fig.data[2].marker.color = "red"
-                self.fig.data[2].marker.size = 10
-
-                self.fig.data[0].on_click(self.update_point)
+                self.implot = self.ax.imshow(np.zeros((20,20)), cmap='gray')
+                self.wplot = None#self.ax.imshow(np.zeros((20,20)), cmap=cmap2)
+                self.tplt = None
 
                 self.fig.show()
 
@@ -445,23 +430,52 @@ class InteractSeg:
             windows_pos = np.array(calculate_windows_index(window))
 
         # self.fig.axes[0].set_title(f"Time:{self.data.valid_frames[t]}")
-
-        with self.fig.batch_update():
-            # display image and windows and readjust zoom state
-            self.fig.data[0].z = image
-            self.fig.data[1].z = b0
+        with self.out:
+            self.implot.set_array(image)
 
             # update max slider value with max image value
             self.intensity_range_slider.unobserve_all()
             self.intensity_range_slider.max = int(image.max())
             # when creating image use full intensity values
             if change == "init":
+
                 self.intensity_range_slider.value = (0, int(image.max()))
+                self.implot.set_extent((0, image.shape[1], 0, image.shape[0]))
+
+                if windows_pos is not None:
+                    self.wplot = self.ax.imshow(b0, cmap=cmap2)
+                    self.wplot.set_extent((0, image.shape[1], 0, image.shape[0]))
+
+            else:
+                if windows_pos is not None:
+                    if self.wplot is None:
+                        self.wplot = self.ax.imshow(b0, cmap=cmap2)
+                    else:
+                        self.wplot.set_array(b0)
+
             self.intensity_range_slider.observe(
                 self.update_intensity_range, names="value"
             )
 
+            self.implot.set_clim(vmin=self.intensity_range_slider.value[0], vmax=self.intensity_range_slider.value[1])
+
             if windows_pos is not None:
+                if self.tplt is None:
+                    self.tplt = [self.ax.text(
+                        p[0],
+                        p[1],
+                        int(p[2]),
+                        color="yellow",
+                        fontsize=8,
+                        horizontalalignment="center",
+                        verticalalignment="center",
+                    ) for p in windows_pos]
+                else:
+                    for ind, p in enumerate(windows_pos):
+                        self.tplt[ind].set_x(p[0])
+                        self.tplt[ind].set_y(image.shape[0]-p[1])
+                        self.tplt[ind].set_text(str(int(p[2])))
+            '''if windows_pos is not None:
                 self.fig.data[2].x = windows_pos[:, 0]
                 self.fig.data[2].y = windows_pos[:, 1]
                 self.fig.data[2].text = windows_pos[:, 2]
@@ -475,7 +489,7 @@ class InteractSeg:
                 self.fig.data[3].x, self.fig.data[3].y = (
                     [self.param.location[1]],
                     [self.param.location[0]],
-                )
+                )'''
 
     # create our callback function
     def update_point(self, trace, points, selector):
@@ -667,9 +681,13 @@ class InteractSeg:
     def update_intensity_range(self, change=None):
         """Callback to update intensity range"""
 
-        self.intensity_range_slider.max = self.fig.data[0].z.max()
-        self.fig.data[0].zmin = self.intensity_range_slider.value[0]
-        self.fig.data[0].zmax = self.intensity_range_slider.value[1]
+        self.intensity_range_slider.max = self.implot.get_array().max()
+
+        self.implot.set_clim(vmin=self.intensity_range_slider.value[0], vmax=self.intensity_range_slider.value[1])
+
+        
+        #self.fig.data[0].zmin = self.intensity_range_slider.value[0]
+        #self.fig.data[0].zmax = self.intensity_range_slider.value[1]
 
     def update_windows_vis(self, change=None):
         """Callback to turn windows visibility on/off"""
@@ -696,7 +714,7 @@ class InteractSeg:
         for x in dir(self.param):
             if x[0] == "_":
                 None
-            elif (x == "resultdir") or (x == "expdir"):
+            elif (x == "resultdir") or (x == "expdir") or (x == "segdir"):
                 dict_file[x] = getattr(self.param, x).as_posix()
             else:
                 dict_file[x] = getattr(self.param, x)
@@ -774,38 +792,21 @@ class InteractSeg:
 
         self.update_display_channel_list()
 
-    def ui(self):
+    def ui(self, change=None):
         """Create interface"""
+
+        if self.switch_new_load.value == "New analysis":
+            self.folder_panel = self.ui_folder_panel('new')
+        else:
+            self.folder_panel = self.ui_folder_panel('load')
 
         with self.interface:
             clear_output()
             display(
                 ipw.VBox(
                     [
-                        ipw.HBox(
-                            [
-                                ipw.VBox(
-                                    [
-                                        ipw.HTML(
-                                            '<font size="5"><b>Choose main folder<b></font>'
-                                        ),
-                                        ipw.HTML(
-                                            '<font size="2"><b>Data or Results folder<b></font>'
-                                        ),
-                                        self.main_folder.file_list,
-                                    ]
-                                ),
-                                ipw.VBox(
-                                    [
-                                        ipw.HTML('<font size="5"><b>Saving<b></font>'),
-                                        ipw.HTML(
-                                            '<font size="2"><b>Select folder where to save<b></font>'
-                                        ),
-                                        self.saving_folder.file_list,
-                                    ]
-                                ),
-                            ]
-                        ),
+                        self.switch_new_load,
+                        self.folder_panel,
                         self.load_button,
                         ipw.HTML(
                             '<br><font size="5"><b>Choose segmentation and signal channels (folders or tifs)<b></font>'
@@ -814,9 +815,7 @@ class InteractSeg:
                             [
                                 ipw.VBox(
                                     [
-                                        ipw.HTML(
-                                            '<font size="2"><b>Segmentation<b></font>'
-                                        ),
+                                        ipw.HTML('<font size="2"><b>Segmentation<b></font>'),
                                         self.segm_folders,
                                     ]
                                 ),
@@ -837,9 +836,7 @@ class InteractSeg:
                         ipw.HTML('<br><font size="5"><b>Computing type<b></font>'),
                         self.distributed,
                         self.out_distributed,
-                        ipw.HTML(
-                            '<br><font size="5"><b>Set segmentation parameters<b></font>'
-                        ),
+                        ipw.HTML('<br><font size="5"><b>Set segmentation parameters<b></font>'),
                         ipw.HBox(
                             [
                                 ipw.VBox(
@@ -856,8 +853,8 @@ class InteractSeg:
                                         self.run_button,
                                     ]
                                 ),
-                                # self.out,
-                                self.fig,  #
+                                self.out,
+                                #self.fig,  #
                                 ipw.VBox(
                                     [
                                         self.time_slider,
@@ -873,3 +870,40 @@ class InteractSeg:
                     ]
                 )
             )
+
+    def ui_folder_panel(self, work_type):
+        
+        if work_type == "new":
+            panel = ipw.HBox(
+                [
+                    ipw.VBox(
+                        [
+                            ipw.HTML('<font size="5"><b>Data folder<b></font>'),
+                            ipw.HTML('<font size="2"><b>Choose folder containing images or image folders<b></font>'),
+                            self.main_folder.file_list
+                        ]
+                    ),
+                    ipw.VBox(
+                        [
+                            ipw.HTML('<font size="5"><b>Results folder<b></font>'),
+                            ipw.HTML('<font size="2"><b>Choose folder where results should be saved<b></font>'),
+                            self.saving_folder.file_list,
+                        ]
+                    ),
+                ]
+            )
+        else:
+            panel = ipw.HBox(
+                [
+                    ipw.VBox(
+                        [
+                            ipw.HTML('<font size="5"><b>Loading folder<b></font>'),
+                            ipw.HTML('<font size="2"><b>Choose folder from where results should be loaded<b></font>'),
+                            self.main_folder.file_list
+                        ]
+                    ),
+                ]
+            )
+        
+        return panel
+

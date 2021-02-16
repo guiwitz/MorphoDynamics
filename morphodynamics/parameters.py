@@ -5,8 +5,9 @@ class Param:
 
     def __init__(
         self,
-        expdir=None,
-        resultdir=None,
+        data_folder=None,
+        analysis_folder=None,
+        seg_folder=None,
         T=100,
         data_type="series",
         n_curve=10000,
@@ -27,13 +28,16 @@ class Param:
         """
 
         # Output directory
-        self.resultdir = resultdir
+        self.analysis_folder = analysis_folder
 
         # type of data
         self.data_type = data_type
 
         # path to data
-        self.expdir = expdir
+        self.data_folder = data_folder
+
+        # path to segmentation
+        self.seg_folder = seg_folder
 
         # set threshold
         self.T = T

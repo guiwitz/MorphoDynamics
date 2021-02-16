@@ -71,6 +71,11 @@ def analyze_morphodynamics(
     # Result structures that will be saved to disk
     res = Results(J=J, I=I, num_time_points=data.K, num_channels=len(data.signalfile))
 
+    # create analysis folder if note existant
+    analysis_path = param.analysis_folder.joinpath('segmented')
+    if not os.path.isdir(analysis_path):
+        os.makedirs(analysis_path)
+
     if not skip_segtrack:
         # Segment all images but don't select cell
         if param.seg_algo == "ilastik":
@@ -152,7 +157,7 @@ def calibration(data, param, model):
         m = segment_cellpose(model, x, param.diameter, location)
         m = tracking(m, location, seg_type="cellpose")
     elif param.seg_algo == "ilastik":
-        segpath = Path(param.resultdir).joinpath("segmented")
+        segpath = param.seg_folder
         num = str(0).zfill(
             len(next(segpath.glob("segmented_k_*.tif")).name.split("_")[-1]) - 4
         )
@@ -223,7 +228,7 @@ def spline_all(num_frames, smoothing, param, client):
 
     """
 
-    save_path = os.path.join(param.resultdir, "segmented")
+    save_path = os.path.join(param.analysis_folder, "segmented")
 
     s_all = {k: None for k in range(-1, num_frames)}
     for k in range(num_frames):
@@ -268,7 +273,7 @@ def align_all(s_all, im_shape, num_points, param, client):
 
     """
 
-    save_path = os.path.join(param.resultdir, "segmented")
+    save_path = os.path.join(param.analysis_folder, "segmented")
 
     num_frames = np.max(list(s_all.keys())) + 1
     s0prm_all = {k: None for k in range(-1, num_frames)}
@@ -318,7 +323,7 @@ def windowing(s, ori, param, J, I, k_iter):
 
     """
 
-    save_path = os.path.join(param.resultdir, "segmented")
+    save_path = os.path.join(param.analysis_folder, "segmented")
     name = os.path.join(save_path, "window_k_" + str(k_iter) + ".pkl")
     name2 = os.path.join(save_path, "window_image_k_" + str(k_iter) + ".tif")
 
@@ -401,7 +406,7 @@ def window_map(N, s, s0, ori, ori0, s0_shifted, J, I, k_iter, param):
 
     """
 
-    save_path = os.path.join(param.resultdir, "segmented")
+    save_path = os.path.join(param.analysis_folder, "segmented")
     c0 = utils.load_rasterized(save_path, k_iter - 1)
 
     p, t0 = subdivide_curve_discrete(N, c0, I[0], s0, splevper(ori0, s0))
@@ -513,7 +518,7 @@ def extract_signal_all(data, param, J, I):
 
     """
 
-    save_path = os.path.join(param.resultdir, "segmented")
+    save_path = os.path.join(param.analysis_folder, "segmented")
 
     mean_signal = np.zeros((len(data.signalfile), J, np.max(I), data.K))
     var_signal = np.zeros((len(data.signalfile), J, np.max(I), data.K))
@@ -553,16 +558,16 @@ def track_all(segmented, location, param):
 
     for k in range(0, len(segmented)):
 
-        save_path = os.path.join(param.resultdir, "segmented")
+        save_path = os.path.join(param.analysis_folder, "segmented")
+        segpath = param.seg_folder
         # m = segmented[k]
         num = k
         if param.seg_algo == "ilastik":
-            segpath = Path(save_path)
             num = str(k).zfill(
                 len(next(segpath.glob("segmented_k_*.tif")).name.split("_")[-1]) - 4
             )
         m = skimage.io.imread(
-            os.path.join(save_path, "segmented_k_" + str(num) + ".tif")
+            os.path.join(segpath, "segmented_k_" + str(num) + ".tif")
         )
 
         # select cell to track in mask
@@ -685,7 +690,7 @@ def segment_all(data, param, client, model=None):
 
     """
     # create folder to store segmentation data
-    save_path = os.path.join(param.resultdir, "segmented")
+    save_path = param.seg_folder
     if not os.path.isdir(save_path):
         os.makedirs(save_path)
 

@@ -35,7 +35,7 @@ def load_alldata(folder_path, load_results=False, param=None):
     """
 
     if param is not None:
-        folder_path = Path(param.resultdir)
+        folder_path = Path(param.analysis_folder)
     else:
         folder_path = Path(folder_path)
 
@@ -44,8 +44,9 @@ def load_alldata(folder_path, load_results=False, param=None):
             documents = yaml.full_load(file)
         for k in documents.keys():
             setattr(param, k, documents[k])
-        param.resultdir = Path(param.resultdir)
-        param.expdir = Path(param.expdir)
+        param.analysis_folder = Path(param.analysis_folder)
+        param.data_folder = Path(param.data_folder)
+        param.seg_folder = Path(param.seg_folder)
         param.bad_frames_txt = param.bad_frames
         param.bad_frames = format_bad_frames(param.bad_frames)
 
@@ -55,7 +56,7 @@ def load_alldata(folder_path, load_results=False, param=None):
 
     if param.data_type == "series":
         data = TIFFSeries(
-            Path(param.expdir),
+            Path(param.data_folder),
             param.morpho_name,
             param.signal_name,
             data_type=param.data_type,
@@ -66,7 +67,7 @@ def load_alldata(folder_path, load_results=False, param=None):
 
     elif param.data_type == "multi":
         data = MultipageTIFF(
-            Path(param.expdir),
+            Path(param.data_folder),
             param.morpho_name,
             param.signal_name,
             data_type=param.data_type,
@@ -77,7 +78,7 @@ def load_alldata(folder_path, load_results=False, param=None):
 
     elif param.data_type == "nd2":
         data = ND2(
-            Path(param.expdir),
+            Path(param.data_folder),
             param.morpho_name,
             param.signal_name,
             data_type=param.data_type,
@@ -88,7 +89,7 @@ def load_alldata(folder_path, load_results=False, param=None):
 
     elif param.data_type == "h5":
         data = H5(
-            Path(param.expdir),
+            Path(param.data_folder),
             param.morpho_name,
             param.signal_name,
             data_type=param.data_type,

@@ -488,6 +488,7 @@ def compute_edge_image(N, shape, s, t, d, thickness, dmax=None):
     shape: tuple
         size of image
     s: spline object
+        spline object as returned by splprep
     t: array
         vector of interpolation parameters
     d: array
