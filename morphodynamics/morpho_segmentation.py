@@ -451,8 +451,8 @@ class InteractSeg:
                         p[0],
                         p[1],
                         int(p[2]),
-                        color="yellow",
-                        fontsize=8,
+                        color="green",
+                        fontsize=10,
                         horizontalalignment="center",
                         verticalalignment="center",
                     ) for p in windows_pos]
