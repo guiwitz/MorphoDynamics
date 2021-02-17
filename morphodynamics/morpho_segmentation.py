@@ -96,9 +96,9 @@ class InteractSeg:
                 directories[d1] = Path(d2)
 
         self.param = Param(
-            data_folder=data_folder,
-            analysis_folder=analysis_folder,
-            seg_folder=seg_folder,
+            data_folder=directories['data_folder'],
+            analysis_folder=directories['analysis_folder'],
+            seg_folder=directories['seg_folder'],
             morpho_name=seg_channel_name,
             signal_name=signal_channel_names,
             seg_algo=seg_algo
@@ -188,6 +188,15 @@ class InteractSeg:
                 self.fig.show()
 
             self.ui()
+
+        # some param values are rest when creating interactive features
+        # we put them back to original values here
+        if seg_channel_name is not None:
+            self.param.morpho_name = seg_channel_name
+            self.seg_folder_ipw.value = seg_channel_name
+        if signal_channel_names is not None:
+            self.param.signal_name = signal_channel_names
+            self.channel_list_signal_ipw.value = signal_channel_names
 
     def create_ui_options(self):
 
@@ -815,7 +824,7 @@ class InteractSeg:
 
         else:
             panel = ipw.VBox([
-                ipw.HTML('<br><font size="5"><b>2. Choose location<b></font>\
+                ipw.HTML('<br><font size="5"><b>2. Select locations<b></font>\
                     <br><font size="3"><b>Choose the location of the analysis that you want to import. That folder should\
                         contain e.g. a Parameters.yml file.\
                             <p style="color:lightgreen;">Once you are done, hit the "Load analysis" button.</p>. .<b></font>'),
