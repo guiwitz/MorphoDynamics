@@ -46,8 +46,6 @@ jobs:
       run: |
         mkdir -p synthetic/data/Results_cellpose
         mkdir -p synthetic/data/Results_step
-        cp -R synthetic/data/Results_ilastik/segmented synthetic/data/Results_cellpose
-        cp -R synthetic/data/Results_ilastik/segmented synthetic/data/Results_step
 
     # Build the book
     - name: Build the book
