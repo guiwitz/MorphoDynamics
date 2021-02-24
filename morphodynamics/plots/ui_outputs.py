@@ -8,6 +8,7 @@ from morphodynamics.plots.ui_curvature import Curvature
 from morphodynamics.plots.ui_signals import Signals
 from morphodynamics.plots.ui_correlation import Correlation
 from morphodynamics.plots.ui_batch import BatchExport
+from morphodynamics.plots.ui_wimage import Wimage
 
 
 from morphodynamics.utils import load_alldata
@@ -15,6 +16,8 @@ import matplotlib.pyplot as plt
 import ipywidgets as ipw
 
 from IPython.display import display, HTML
+from ipywidgets import Layout
+box_layout = Layout(align_items = 'flex-end')
 
 
 # suppress figure titles in widgets rendering and enlarge notebook
@@ -40,8 +43,7 @@ class OutputUI:
 
         if self.expdir is not None:
             self.expdir = Path(self.expdir)
-            self.result_folder.cur_dir = self.expdir
-            self.result_folder.refresh(None)
+            self.result_folder.go_to_folder(self.expdir)
 
         # run the analysis button
         self.load_button = ipw.Button(description="Click to load")
@@ -49,10 +51,11 @@ class OutputUI:
 
         self.tab = ipw.Tab()
         self.batch_out = ipw.Output()
+        self.wimage_out = ipw.Output()
 
         self.interface = ipw.VBox(
             [
-                self.result_folder.file_list,
+                ipw.HBox([self.result_folder.file_list, self.wimage_out]),
                 self.load_button,
                 self.tab,
                 ipw.HTML('<font size="5"><b>Batch export<b></font>'),
@@ -63,6 +66,10 @@ class OutputUI:
     def load_data(self, b=None):
 
         self.param, self.res, self.data = load_alldata(self.expdir, load_results=True)
+        self.wimage = Wimage(self.param, self.data, self.res)
+        with self.wimage_out:
+            display(self.wimage.interface)
+        self.wimage.show_segmentation()
         self.create_ui()
 
         self.batch = BatchExport(self.param, self.data, self.res)
@@ -113,23 +120,23 @@ class OutputUI:
         self.out3 = ipw.Output()
         with self.out3:
             self.fig3, _ = show_displacement(self.param, self.res, size=(8, 4.5))
-        self.outputs.append(self.out3)
+        self.outputs.append(ipw.HBox([self.out3, self.wimage_out], layout=box_layout))
+
         self.names.append("Displacement")
 
         self.out4 = ipw.Output()
         with self.out4:
             self.fig4, _ = show_cumdisplacement(self.param, self.res, size=(8, 4.5))
-        self.outputs.append(self.out4)
+        self.outputs.append(ipw.HBox([self.out4, self.wimage_out], layout=box_layout))
         self.names.append("Cumul. Displacement")
 
         self.s = Signals(self.param, self.data, self.res)
         self.s.create_interface()
-        self.outputs.append(self.s.interface)
+        self.outputs.append(ipw.HBox([self.s.interface, self.wimage_out], layout=box_layout))
         self.names.append("Signals")
 
         self.c = Correlation(self.param, self.data, self.res)
         self.c.create_interface()
-        self.c.interface
         self.outputs.append(self.c.interface)
         self.names.append("Correlation")
 

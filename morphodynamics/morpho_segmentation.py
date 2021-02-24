@@ -23,12 +23,13 @@ from .windowing import (
 )
 from .displacementestimation import rasterize_curve, splevper
 from . import utils
+from .plots.ui_wimage import Wimage
 
 from dask_jobqueue import SLURMCluster
 from dask.distributed import Client, LocalCluster
 
 import matplotlib
-cmap2 = matplotlib.colors.ListedColormap (np.array([[1,0,0],[1,0,0]]))
+cmap2 = matplotlib.colors.ListedColormap (np.array([[1,0,0,0.5],[1,0,0,0.5]]))
 
 # fix MacOSX OMP bug (see e.g. https://github.com/dmlc/xgboost/issues/1715)
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
@@ -171,22 +172,14 @@ class InteractSeg:
         self.out_debug = ipw.Output()
         self.out = ipw.Output()
         self.out_distributed = ipw.Output()
+        self.wimage_out = ipw.Output()
         self.interface = ipw.Output()
+        self.wimage = Wimage(self.param, self.data, self.res)
+
 
         self.create_ui_options()
 
         if self.do_createUI:
-            with self.out:
-
-                self.fig, self.ax = plt.subplots(figsize=(5, 5))
-                self.ax.set_title(f"Time:")
-
-                self.implot = self.ax.imshow(np.zeros((2, 2)), cmap='gray')
-                self.wplot = None#self.ax.imshow(np.zeros((20,20)), cmap=cmap2)
-                self.tplt = None
-
-                self.fig.show()
-
             self.ui()
 
         # some param values are rest when creating interactive features
@@ -200,35 +193,10 @@ class InteractSeg:
 
     def create_ui_options(self):
 
-        # slider for time limits to analyze
-        self.time_slider = ipw.IntSlider(
-            description="Time", min=0, max=0, value=0, continuous_update=True
-        )
-        self.time_slider.observe(self.show_segmentation, names="value")
-
-        # intensity sliders
-        self.intensity_range_slider = ipw.IntRangeSlider(
-            description="Intensity range",
-            min=0,
-            max=0,
-            value=(0, 0),
-            continuous_update=False,
-        )
-        self.intensity_range_slider.observe(self.update_intensity_range, names="value")
-
         # channel to display
-        self.display_channel_ipw = ipw.Select(options=[])
         self.channel_list_seg_ipw.observe(self.update_display_channel_list, names="value")
         self.channel_list_signal_ipw.observe(self.update_display_channel_list, names="value")
-        self.display_channel_ipw.observe(self.update_display_channel, names="value")
-
-        # show windows or nots
-        self.show_windows_choice = ipw.Checkbox(description="Show windows", value=True)
-        self.show_windows_choice.observe(self.update_windows_vis, names="value")
-
-        # show windows or not
-        self.show_text_choice = ipw.Checkbox(description="Show labels", value=True)
-        self.show_text_choice.observe(self.update_text_vis, names="value")
+        #self.display_channel_ipw.observe(self.update_display_channel, names="value")
 
         self.width_text = ipw.IntText(
             value=10, description="Window depth", layout=layout, style=style
@@ -336,7 +304,10 @@ class InteractSeg:
 
         # display image
         if self.do_createUI:
-            self.show_segmentation()
+            self.wimage.update_dataset(self.param, self.data, self.res)
+            with self.wimage_out:
+                display(self.wimage.interface)
+            self.wimage.show_segmentation()
 
     def run_segmentation(self, b=None):
         """Run segmentation analysis"""
@@ -352,7 +323,8 @@ class InteractSeg:
             skip_segtrack=self.skip_trackseg,
         )
         if self.do_createUI:
-            self.show_segmentation()
+            self.wimage.res = self.res
+            self.wimage.show_segmentation()
         self.run_button.description = "Click to segment"
 
     def initialize_dask(self, change=None):
@@ -361,7 +333,10 @@ class InteractSeg:
         # with no manual selection use local. if param.distributed
         # has been set before, use that setting
         if self.distributed.value is None:
+            self.distributed.unobserve_all() #avoid triggering display twice
             self.distributed.value = "local"
+            self.distributed.observe(self.initialize_dask, names="value")
+
         if self.param.distributed is None:
             self.param.distributed = self.distributed.value
 
@@ -398,89 +373,6 @@ class InteractSeg:
             self.res.I,
         )
         return w
-
-    def show_segmentation(self, change=None):
-        """Update segmentation plot"""
-
-        t = self.time_slider.value
-        # load image of channel selected in self.display_channel_ipw
-        image = self.load_image(t)
-
-        # calculate windows
-        b0 = None
-        windows_pos = None
-        if self.res is not None:
-            # window = self.windows_for_plot(self.param.n_curve, image.shape, t)
-            name = os.path.join(
-                self.param.analysis_folder,
-                "segmented",
-                "window_k_" + str(t) + ".pkl",
-            )
-            window = pickle.load(open(name, "rb"))
-
-            name = os.path.join(
-                self.param.analysis_folder,
-                "segmented",
-                "window_image_k_" + str(t) + ".tif",
-            )
-            # b0 = boundaries_image(image.shape, window)
-            b0 = skimage.io.imread(name)
-            b0 = b0.astype(float)
-            b0[b0 == 0] = np.nan
-            windows_pos = np.array(calculate_windows_index(window))
-
-        # self.fig.axes[0].set_title(f"Time:{self.data.valid_frames[t]}")
-        with self.out:
-            self.implot.set_array(image)
-
-            # update max slider value and current value
-            self.intensity_range_slider.unobserve_all()
-            self.intensity_range_slider.max = np.max(
-                [int(image.max()), self.intensity_range_slider.max])
-            if self.intensity_range_slider.value[1] == 0:
-                self.intensity_range_slider.value = (0, int(image.max()))
-            self.intensity_range_slider.observe(
-                self.update_intensity_range, names="value"
-            )
-            self.implot.set_clim(vmin=self.intensity_range_slider.value[0], vmax=self.intensity_range_slider.value[1])
-
-            #adjust plot size if created
-            if self.implot.get_extent()[1] < 3:
-                self.implot.set_extent((0, image.shape[1], 0, image.shape[0]))
-            if b0 is not None:
-                if self.wplot is None:
-                    self.wplot = self.ax.imshow(b0, cmap=cmap2)
-                    self.wplot.set_extent((0, image.shape[1], 0, image.shape[0]))
-                else:
-                    self.wplot.set_array(b0)
-
-            if windows_pos is not None:
-                if self.tplt is None:
-                    self.tplt = [self.ax.text(
-                        p[0],
-                        p[1],
-                        int(p[2]),
-                        color="green",
-                        fontsize=10,
-                        horizontalalignment="center",
-                        verticalalignment="center",
-                    ) for p in windows_pos]
-                else:
-                    for ind, p in enumerate(windows_pos):
-                        self.tplt[ind].set_x(p[0])
-                        self.tplt[ind].set_y(image.shape[0]-p[1])
-                        self.tplt[ind].set_text(str(int(p[2])))
-
-    def load_image(self, time):
-        """Load image selected in self.display_channel_ipw widget"""
-
-        if self.display_channel_ipw.value == self.param.morpho_name:
-            image = self.data.load_frame_morpho(time)
-        else:
-            channel_index = self.param.signal_name.index(self.display_channel_ipw.value)
-            image = self.data.load_frame_signal(channel_index, time)
-
-        return image
 
     def get_folders(self, change=None):
         """Update channel options when selecting new main folder"""
@@ -519,15 +411,15 @@ class InteractSeg:
     def update_display_channel_list(self, change=None):
         """Callback to update available channels to display"""
 
-        self.display_channel_ipw.options = [str(self.channel_list_seg_ipw.value)] + [
+        self.wimage.display_channel_ipw.options = [str(self.channel_list_seg_ipw.value)] + [
             str(x) for x in self.channel_list_signal_ipw.value
         ]
-        self.display_channel_ipw.value = str(self.channel_list_seg_ipw.value)
+        self.wimage.display_channel_ipw.value = str(self.channel_list_seg_ipw.value)
 
     def update_display_channel(self, change=None):
         """Callback to update displayed channel"""
         if self.data is not None:
-            self.show_segmentation()
+            self.wimage.show_segmentation()
 
     def update_param_simple(self, change=None):
         """Calback to update segmentation file lists depending on selections"""
@@ -543,7 +435,7 @@ class InteractSeg:
 
         self.param.max_time = self.max_time_ipw.value
         self.data.update_params(self.param)
-        self.time_slider.max = self.data.K-1
+        self.wimage.time_slider.max = self.data.K-1
 
     def update_param_bad_frames(self, change=None):
         # parse bad frames
@@ -595,32 +487,10 @@ class InteractSeg:
             self.segparam = ipw.VBox([])
         self.ui()
 
-    def update_intensity_range(self, change=None):
-        """Callback to update intensity range"""
-
-        self.intensity_range_slider.max = self.implot.get_array().max()
-        self.implot.set_clim(vmin=self.intensity_range_slider.value[0], vmax=self.intensity_range_slider.value[1])
-
     def update_location(self, change=None):
         """Callback to update cm location after manual location entering"""
 
         self.param.location = [self.location_x_ipw.value, self.location_y_ipw.value]
-        self.show_segmentation()
-
-    def update_windows_vis(self, change=None):
-        """Callback to turn windows visibility on/off"""
-        if self.wplot.get_alpha() == 0:
-            self.wplot.set_alpha(1)
-        else:
-            self.wplot.set_alpha(0)
-
-    def update_text_vis(self, change=None):
-        """Callback to turn windows labels visibility on/off"""
-
-        if self.tplt[0].get_alpha() == 0:
-            turnonoff = [t.set_alpha(1) for t in self.tplt]
-        else:
-            turnonoff = [t.set_alpha(0) for t in self.tplt]
 
     def on_key_press(self, event):
         """Record if shift key is pressed"""
@@ -671,11 +541,16 @@ class InteractSeg:
         )
         self.param.bad_frames = utils.format_bad_frames(self.param.bad_frames)
 
+        self.wimage = Wimage(self.param, self.data, self.res)
+            
+        with self.wimage_out:
+            display(self.wimage.interface)
+
         param_copy = deepcopy(self.param)
 
         if self.do_createUI:
             self.update_interface(param_copy)
-            self.show_segmentation()
+            self.wimage.show_segmentation()
 
     def load_params(self, b=None):
         """Callback to load only params and data """
@@ -685,6 +560,8 @@ class InteractSeg:
 
         param_copy = deepcopy(self.param)
         self.update_interface(param_copy)
+        self.wimage.update_dataset(self.param, self.data)
+        self.wimage.show_segmentation()
 
     def update_interface(self, param_copy):
         """Set interface parameters using information from param object"""
@@ -716,7 +593,7 @@ class InteractSeg:
         self.bad_frames_ipw.value = param_copy.bad_frames_txt
 
         if self.data is not None:
-            self.time_slider.max = self.data.K - 1
+            self.wimage.time_slider.max = self.data.K - 1
         self.step_ipw.value = param_copy.step
 
         self.update_display_channel_list()
@@ -756,17 +633,7 @@ class InteractSeg:
                                         self.run_button,
                                     ]
                                 ),
-                                self.out,
-                                #self.fig,  #
-                                ipw.VBox(
-                                    [
-                                        self.time_slider,
-                                        self.intensity_range_slider,
-                                        self.show_windows_choice,
-                                        self.show_text_choice,
-                                        self.display_channel_ipw,
-                                    ]
-                                ),
+                                self.wimage_out,
                             ]
                         ),
                         self.export_button,
