@@ -107,7 +107,7 @@ class Data:
         image_names = os.listdir(folderpath)
         image_names = np.array([x for x in image_names if x[0] != "."])
         if len(image_names) > 0:
-            times = [re.findall(".*\_t*(\d+)\.(?:tif|TIF)", x) for x in image_names]
+            times = [re.findall(".*\_t*(\d+)\.(?:tif|TIF|tiff)", x) for x in image_names]
             times = [int(x[0]) for x in times if len(x) > 0]
             image_names = image_names[np.argsort(times)]
         return image_names
