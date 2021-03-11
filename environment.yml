@@ -30,6 +30,6 @@ dependencies:
     - google-cloud-storage
     - tqdm
     - cellpose
-    - .
+    - git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
     - jedi==0.17.2
     - tifffile
