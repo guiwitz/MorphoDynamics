@@ -1,10 +1,11 @@
 from setuptools import setup, find_packages
 from morphodynamics.version import get_version
 
-version = get_version()
+#version = get_version()
+use_scm = {"write_to": "morphodynamics/_version.py"}
 
 setup(name='morphodynamics',
-      version=version,
+      #version=version,
       description='Cell segmentation and windowing',
       url='',
       author='Cedric Vonesch and Guillaume Witz',
@@ -13,10 +14,12 @@ setup(name='morphodynamics',
       packages=find_packages(),
       package_data={'morphodynamics': ['version.txt']},
       zip_safe=False,
+      use_scm_version=use_scm,
       install_requires=[
           'tifffile',
           'plotly',
           'aicsimageio',
-          'nd2reader'
+          'nd2reader',
+          'setuptools_scm'
           ]
       )
