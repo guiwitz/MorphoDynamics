@@ -528,6 +528,10 @@ class InteractSeg:
         with open(self.param.analysis_folder.joinpath("Parameters.yml"), "w") as file:
             yaml.dump(dict_file, file)
 
+        # export CSV data table
+        signal_df = utils.signalarray_to_dataframe({'mean': self.res.mean, 'var': self.res.var})
+        signal_df.to_csv(os.path.join(self.param.analysis_folder, "Signals.csv"), index=False)
+
         print("Your results have been saved in the following directory:")
         print(self.param.analysis_folder)
 

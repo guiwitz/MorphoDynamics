@@ -3,6 +3,7 @@ import os
 import yaml
 import numpy as np
 import skimage.io
+import pandas as pd
 from pathlib import Path
 
 from .parameters import Param
@@ -143,3 +144,29 @@ def load_window_image(location, frame):
     )
 
     return image
+
+
+def signalarray_to_dataframe(signal_dict):
+    """Turn a signal array with channel, layer, window, time dimensions
+    into Dataframe"""
+
+    dict_keys = list(signal_dict.keys())
+    sarray = signal_dict[dict_keys[0]]
+    # create array with indices
+    timepoints = sarray.shape[3]
+    windows = sarray.shape[2]
+    layers = sarray.shape[1]
+    colors = sarray.shape[0]
+    all_indices = np.array([[[[[t, w, l, c] for t in range(timepoints)] for w in range(windows)] for l in range(layers)] for c in range(colors)])
+
+    signal_df = pd.DataFrame(np.stack([
+        np.ravel(all_indices[:,:,:,:,0]),
+        np.ravel(all_indices[:,:,:,:,1]),
+        np.ravel(all_indices[:,:,:,:,2]),
+        np.ravel(all_indices[:,:,:,:,3])]).T, 
+        columns=['time', 'window_index', 'layer_index', 'channel'])
+
+    for k in dict_keys:
+        signal_df[k] = np.ravel(signal_dict[k])
+
+    return signal_df
