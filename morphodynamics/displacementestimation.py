@@ -598,9 +598,30 @@ def rasterize_curve(N, shape, s, deltat):
 
 
 def subdivide_curve(N, s, orig, I):
-    """Define points on a contour that are equispaced with respect to the arc length."""
+    """
+    Define points on a contour that are equispaced with respect to the arc length.
+    
+    Parameters
+    ----------
+    N: int
+        number of points for spline discretization
+    s: tuple
+        spline tuple as returned by splprep
+    origin: float
+        shift of parameter origin
+    I: int
+        Number of windows in the first (outer) layer.
+
+    Returns
+    -------
+    t_shifted: 1d array
+        list of spline parameters on s defining the same points as cvec_sel
+    
+    """
+
     t = np.linspace(0, 1, N + 1)
-    L = np.cumsum(np.linalg.norm(splevper(t + orig, s), axis=0))
+    #L = np.cumsum(np.linalg.norm(splevper(t + orig, s), axis=0))
+    L = np.cumsum(np.linalg.norm(np.diff(np.stack(splevper(t, s)).T, axis=0), axis=1))
     t0 = np.zeros((I,))
     n = 0
     for i in range(I):
@@ -608,7 +629,8 @@ def subdivide_curve(N, s, orig, I):
         while L[n] < p:
             n += 1
         t0[i] = t[n]
-    return t0 + orig
+    t_shifted = t0 + orig
+    return t_shifted
 
 
 def subdivide_curve_discrete(N, c_main, I, s, origin):
@@ -632,7 +654,8 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
         Number of windows in the first (outer) layer.
     s: tuple
         spline tuple as returned by splprep
-    origin: (y, x) coordinates of the origin of the curve.
+    origin: ndarray
+        [y, x] coordinates of the origin of the curve.
 
     Returns
     -------
