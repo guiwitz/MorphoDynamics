@@ -19,7 +19,6 @@ setup(name='morphodynamics',
           'tifffile',
           'plotly',
           'aicsimageio',
-          'nd2reader',
           'setuptools_scm'
           ]
       )

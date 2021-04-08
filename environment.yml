@@ -31,5 +31,6 @@ dependencies:
     - tqdm
     - cellpose
     - git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
+    - git+https://github.com/guiwitz/nd2reader.git@master#egg=nd2reader
     - jedi==0.17.2
     - tifffile
