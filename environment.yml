@@ -9,7 +9,6 @@ dependencies:
   - numpy
   - numba>=0.43.1
   - pyqt
-  - matplotlib
   - pandas
   - scikit-image
   - jupyter
@@ -19,8 +18,6 @@ dependencies:
   - pip
   - ipympl
   - python-graphviz
-  - dask-jobqueue
-  - h5py
   - pip:
     - dill
     - bokeh>=0.13.0
@@ -31,6 +28,5 @@ dependencies:
     - tqdm
     - cellpose
     - git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
-    - git+https://github.com/guiwitz/nd2reader.git@master#egg=nd2reader
     - jedi==0.17.2
     - tifffile

@@ -16,9 +16,17 @@ setup(name='morphodynamics',
       zip_safe=False,
       use_scm_version=use_scm,
       install_requires=[
+          'numpy',
+          'pandas',
+          'matploltib',
+          'scikit-image',
           'tifffile',
+          'h5py',
           'plotly',
           'aicsimageio',
-          'setuptools_scm'
+          'setuptools_scm',
+          'dask[complete]',
+          'dask-jobqueue',
+          'nd2reader@git+https://github.com/guiwitz/nd2reader.git@master#egg=nd2reader'
           ]
       )
