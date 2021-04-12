@@ -28,5 +28,6 @@ dependencies:
     - tqdm
     - cellpose
     - git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
+    - git+https://github.com/guiwitz/microfilm.git@master#egg=microfilm
     - jedi==0.17.2
     - tifffile
