@@ -11,7 +11,7 @@ def show_signals(param, data, res, mode, size=(16, 9), export=True):
 
     if export:
         pp = PdfPages(os.path.join(param.analysis_folder, "Signal " + mode + ".pdf"))
-    for m in range(len(data.signalfile)):
+    for m in range(len(data.signal_name)):
         for j in range(res.mean.shape[1]):
             plt.figure(f.number)
             show_signals_aux(param, data, res, m, j, mode)

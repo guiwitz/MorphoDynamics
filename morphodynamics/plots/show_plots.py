@@ -438,12 +438,12 @@ def save_signals(param, data, res, modes=None, size=(16, 9)):
         for j in range(res.mean.shape[1]):
 
             with out:
-                fig, ax = plt.subplots(len(data.signalfile), 1, figsize=(4, 4))
-                if len(data.signalfile) == 1:
+                fig, ax = plt.subplots(len(data.signal_name), 1, figsize=(4, 4))
+                if len(data.signal_name) == 1:
                     ax = np.array([ax])
                     ax = ax[np.newaxis, :]
 
-                for m in range(len(data.signalfile)):
+                for m in range(len(data.signal_name)):
 
                     show_signals_aux(
                         param,

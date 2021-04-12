@@ -69,7 +69,7 @@ def analyze_morphodynamics(
     location, J, I = calibration(data, param, model)
 
     # Result structures that will be saved to disk
-    res = Results(J=J, I=I, num_time_points=data.K, num_channels=len(data.signalfile))
+    res = Results(J=J, I=I, num_time_points=data.K, num_channels=len(data.signal_name))
 
     # create analysis folder if note existant
     analysis_path = param.analysis_folder.joinpath('segmented')
@@ -520,13 +520,13 @@ def extract_signal_all(data, param, J, I):
 
     save_path = os.path.join(param.analysis_folder, "segmented")
 
-    mean_signal = np.zeros((len(data.signalfile), J, np.max(I), data.K))
-    var_signal = np.zeros((len(data.signalfile), J, np.max(I), data.K))
+    mean_signal = np.zeros((len(data.signal_name), J, np.max(I), data.K))
+    var_signal = np.zeros((len(data.signal_name), J, np.max(I), data.K))
 
     for k in range(data.K):
         name = os.path.join(save_path, "window_k_" + str(k) + ".pkl")
         w = pickle.load(open(name, "rb"))
-        for ell in range(len(data.signalfile)):
+        for ell in range(len(data.signal_name)):
             (
                 mean_signal[ell, :, :, k],
                 var_signal[ell, :, :, k],
