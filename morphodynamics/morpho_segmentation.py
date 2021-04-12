@@ -255,8 +255,8 @@ class InteractSeg:
             self.param.data_type = "series"
             self.data = TIFFSeries(
                 self.param.data_folder,
-                self.param.morpho_name,
-                self.param.signal_name,
+                morpho_name=self.param.morpho_name,
+                signal_name=self.param.signal_name,
                 data_type=self.param.data_type,
                 step=self.param.step,
                 bad_frames=self.param.bad_frames,
@@ -266,8 +266,8 @@ class InteractSeg:
             self.param.data_type = "multi"
             self.data = MultipageTIFF(
                 self.param.data_folder,
-                self.param.morpho_name,
-                self.param.signal_name,
+                morpho_name=self.param.morpho_name,
+                signal_name=self.param.signal_name,
                 data_type=self.param.data_type,
                 step=self.param.step,
                 bad_frames=self.param.bad_frames,
@@ -278,8 +278,8 @@ class InteractSeg:
             self.param.data_type = "nd2"
             self.data = ND2(
                 self.param.data_folder,
-                self.param.morpho_name,
-                self.param.signal_name,
+                morpho_name=self.param.morpho_name,
+                signal_name=self.param.signal_name,
                 data_type=self.param.data_type,
                 step=self.param.step,
                 bad_frames=self.param.bad_frames,
@@ -289,8 +289,8 @@ class InteractSeg:
             self.param.data_type = "h5"
             self.data = H5(
                 self.param.data_folder,
-                self.param.morpho_name,
-                self.param.signal_name,
+                morpho_name=self.param.morpho_name,
+                signal_name=self.param.signal_name,
                 data_type=self.param.data_type,
                 step=self.param.step,
                 bad_frames=self.param.bad_frames,
