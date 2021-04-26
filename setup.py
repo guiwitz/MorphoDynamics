@@ -1,30 +1,10 @@
-from setuptools import setup, find_packages
-from morphodynamics.version import get_version
+"""
+PEP 517 doesn’t support editable installs
+so this file is currently here to support "pip install -e ."
+"""
+from setuptools import setup
 
-#version = get_version()
-use_scm = {"write_to": "morphodynamics/_version.py"}
-
-setup(name='morphodynamics',
-      #version=version,
-      description='Cell segmentation and windowing',
-      url='',
-      author='Cedric Vonesch and Guillaume Witz',
-      author_email='',
-      license='BSD3',
-      packages=find_packages(),
-      zip_safe=False,
-      use_scm_version=use_scm,
-      install_requires=[
-          'numpy',
-          'pandas',
-          'matplotlib',
-          'scikit-image',
-          'tifffile',
-          'aicsimageio',
-          'setuptools_scm',
-          'dask[complete]',
-          'dask-jobqueue',
-          'nd2reader@git+https://github.com/guiwitz/nd2reader.git@master#egg=nd2reader',
-          'microfilm@git+https://github.com/guiwitz/microfilm.git@master#egg=microfilm'
-          ]
-      )
+setup(
+    use_scm_version={"write_to": "morphodynamics/version.py"},
+    setup_requires=["setuptools_scm"],
+)
