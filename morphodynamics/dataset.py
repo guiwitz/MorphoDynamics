@@ -4,7 +4,6 @@ from microfilm.dataset import TIFFSeries as TIFFSeries_or
 from microfilm.dataset import MultipageTIFF as MultipageTIFF_or
 from microfilm.dataset import ND2 as ND2_or
 from microfilm.dataset import H5 as H5_or
-from microfilm.dataset import Data as Data_or
 from types import MethodType
 
 
