@@ -12,7 +12,6 @@ setup(name='morphodynamics',
       author_email='',
       license='BSD3',
       packages=find_packages(),
-      package_data={'morphodynamics': ['version.txt']},
       zip_safe=False,
       use_scm_version=use_scm,
       install_requires=[
@@ -21,11 +20,11 @@ setup(name='morphodynamics',
           'matplotlib',
           'scikit-image',
           'tifffile',
-          'h5py',
           'aicsimageio',
           'setuptools_scm',
           'dask[complete]',
           'dask-jobqueue',
-          'nd2reader@git+https://github.com/guiwitz/nd2reader.git@master#egg=nd2reader'
+          'nd2reader@git+https://github.com/guiwitz/nd2reader.git@master#egg=nd2reader',
+          'microfilm@git+https://github.com/guiwitz/microfilm.git@master#egg=microfilm'
           ]
       )
