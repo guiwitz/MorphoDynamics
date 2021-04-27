@@ -271,7 +271,7 @@ class InteractSeg:
                 data_type=self.param.data_type,
                 step=self.param.step,
                 bad_frames=self.param.bad_frames,
-                switch_TZ=self.param.switch_TZ,
+                #switch_TZ=self.param.switch_TZ,
                 max_time=self.param.max_time,
             )
         elif self.param.morpho_name.split(".")[-1] == "nd2":

@@ -14,7 +14,7 @@ class Param:
         morpho_name=None,
         signal_name=None,
         max_time=None,
-        switch_TZ=False,
+        #switch_TZ=False,
         ilastik=False,
         seg_algo="farid",
     ):
@@ -74,7 +74,7 @@ class Param:
         self.max_time = max_time
 
         # should Z and T dimensions be switched
-        self.switch_TZ = switch_TZ
+        #self.switch_TZ = switch_TZ
 
         # use segmentation from ilastik
         # self.ilastik = ilastik
