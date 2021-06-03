@@ -42,11 +42,11 @@ class TIFFSeries(TIFFSeries_or):
     ):
         super().__init__(
             expdir,
-            channel_name=None,
-            bad_frames=[],
-            step=1,
-            max_time=None,
-            data_type=None,
+            channel_name=channel_name,
+            bad_frames=bad_frames,
+            step=step,
+            max_time=max_time,
+            data_type=data_type,
         )
         self.morpho_name = morpho_name
         self.signal_name = signal_name
@@ -68,11 +68,11 @@ class MultipageTIFF(MultipageTIFF_or):
     ):
         super().__init__(
             expdir,
-            channel_name=None,
-            bad_frames=[],
-            step=1,
-            max_time=None,
-            data_type=None,
+            channel_name=channel_name,
+            bad_frames=bad_frames,
+            step=step,
+            max_time=max_time,
+            data_type=data_type,
         )
         self.morpho_name = morpho_name
         self.signal_name = signal_name
@@ -93,11 +93,11 @@ class ND2(ND2_or):
     ):
         super().__init__(
             expdir,
-            channel_name=None,
-            bad_frames=[],
-            step=1,
-            max_time=None,
-            data_type=None,
+            channel_name=channel_name,
+            bad_frames=bad_frames,
+            step=step,
+            max_time=max_time,
+            data_type=data_type,
         )
         self.morpho_name = morpho_name
         self.signal_name = signal_name
@@ -118,11 +118,11 @@ class H5(H5_or):
     ):
         super().__init__(
             expdir,
-            channel_name=None,
-            bad_frames=[],
-            step=1,
-            max_time=None,
-            data_type=None,
+            channel_name=channel_name,
+            bad_frames=bad_frames,
+            step=step,
+            max_time=max_time,
+            data_type=data_type,
         )
         self.morpho_name = morpho_name
         self.signal_name = signal_name
