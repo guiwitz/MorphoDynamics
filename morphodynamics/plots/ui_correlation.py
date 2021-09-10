@@ -31,7 +31,7 @@ class Correlation:
             self.fig_compl, self.ax_compl = plt.subplots(figsize=(4, 3))
 
         options = ["displacement", "cumulative displacement"]
-        for m in range(len(self.data.signalfile)):
+        for m in range(len(self.data.signal_name)):
             options.append(self.data.get_channel_name(m))
 
         # update signal 1
@@ -140,7 +140,7 @@ class Correlation:
             return self.res.displacement
         if name == "cumulative displacement":
             return np.cumsum(self.res.displacement, axis=1)
-        for m in range(len(self.data.signalfile)):
+        for m in range(len(self.data.signal_name)):
             if name == self.data.get_channel_name(m):
                 if mode == "Mean":
                     return self.res.mean[m, 0]

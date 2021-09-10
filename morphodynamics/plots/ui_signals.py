@@ -28,7 +28,7 @@ class Signals:
         self.res = res
 
     def get_signal(self, name):
-        for m in range(len(self.data.signalfile)):
+        for m in range(len(self.data.signal_name)):
             if name == self.data.get_channel_name(m):
                 return m
 
