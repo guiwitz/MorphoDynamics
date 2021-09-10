@@ -58,8 +58,8 @@ def load_alldata(folder_path, load_results=False, param=None):
     if param.data_type == "series":
         data = TIFFSeries(
             Path(param.data_folder),
-            morpho_name=self.param.morpho_name,
-            signal_name=self.param.signal_name,
+            morpho_name=param.morpho_name,
+            signal_name=param.signal_name,
             data_type=param.data_type,
             step=param.step,
             bad_frames=param.bad_frames,
@@ -69,8 +69,8 @@ def load_alldata(folder_path, load_results=False, param=None):
     elif param.data_type == "multi":
         data = MultipageTIFF(
             Path(param.data_folder),
-            morpho_name=self.param.morpho_name,
-            signal_name=self.param.signal_name,
+            morpho_name=param.morpho_name,
+            signal_name=param.signal_name,
             data_type=param.data_type,
             step=param.step,
             bad_frames=param.bad_frames,
@@ -80,8 +80,8 @@ def load_alldata(folder_path, load_results=False, param=None):
     elif param.data_type == "nd2":
         data = ND2(
             Path(param.data_folder),
-            morpho_name=self.param.morpho_name,
-            signal_name=self.param.signal_name,
+            morpho_name=param.morpho_name,
+            signal_name=param.signal_name,
             data_type=param.data_type,
             step=param.step,
             bad_frames=param.bad_frames,
@@ -91,8 +91,8 @@ def load_alldata(folder_path, load_results=False, param=None):
     elif param.data_type == "h5":
         data = H5(
             Path(param.data_folder),
-            morpho_name=self.param.morpho_name,
-            signal_name=self.param.signal_name,
+            morpho_name=param.morpho_name,
+            signal_name=param.signal_name,
             data_type=param.data_type,
             step=param.step,
             bad_frames=param.bad_frames,
