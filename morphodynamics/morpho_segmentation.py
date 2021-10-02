@@ -262,7 +262,7 @@ class InteractSeg:
                 bad_frames=self.param.bad_frames,
                 max_time=self.param.max_time,
             )
-        elif self.param.morpho_name.split(".")[-1] == "tif":
+        elif self.param.morpho_name.split(".")[-1].lower() == "tif" or "tiff":
             self.param.data_type = "multi"
             self.data = MultipageTIFF(
                 self.param.data_folder,
