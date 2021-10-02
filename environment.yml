@@ -3,7 +3,7 @@ channels:
   - pytorch
   - conda-forge
 dependencies:
-  - python>3.4,<3.8
+  - python>3.7,<3.10
   - pytorch
   - scipy
   - numpy
@@ -28,6 +28,5 @@ dependencies:
     - tqdm
     - cellpose
     - git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
-    - git+https://github.com/guiwitz/microfilm.git@master#egg=microfilm
     - jedi==0.17.2
     - tifffile
