@@ -1,0 +1,16 @@
+name: morphodynamics
+channels:
+  - conda-forge
+dependencies:
+  - jupyter
+  - jupyterlab=3.2
+  - ipywidgets
+  - pip
+  - ipympl
+  - python-graphviz
+  - pip:
+    - cellpose
+    - git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
+    - bokeh>=0.13.0
+    - tqdm
+    
