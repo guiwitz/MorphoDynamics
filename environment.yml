@@ -2,10 +2,6 @@ name: morphodynamics
 channels:
   - conda-forge
 dependencies:
-  - scipy
-  - numpy
-  - pandas
-  - scikit-image
   - jupyter
   - jupyterlab=3.2
   - ipywidgets
@@ -14,7 +10,7 @@ dependencies:
   - python-graphviz
   - pip:
     - cellpose
-    - dill
+    - git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
     - bokeh>=0.13.0
     - tqdm
-    - tifffile
+    
