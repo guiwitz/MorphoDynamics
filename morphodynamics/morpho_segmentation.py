@@ -29,6 +29,8 @@ from dask_jobqueue import SLURMCluster
 from dask.distributed import Client, LocalCluster
 
 import matplotlib
+
+import morphodynamics
 cmap2 = matplotlib.colors.ListedColormap (np.array([[1,0,0,0.5],[1,0,0,0.5]]))
 
 # fix MacOSX OMP bug (see e.g. https://github.com/dmlc/xgboost/issues/1715)
@@ -51,9 +53,11 @@ class InteractSeg:
         path to folder containing data
     analysis_folder: str
         path to folder where to save data
-    morpho_name: str
+    seg_folder: str
+        path to folder where to save segmentation results
+    seg_channel_name: str
         name of folder or file used segmentation
-    signal_name: list of str
+    signal_channel_names: list of str
         names of folders or files used as signal
     memory : str
         RAM to use on cluster
@@ -65,7 +69,7 @@ class InteractSeg:
     seg_algo : str
         type of segmentation algorithm to use
         can be "fardi", "cellpose" or "ilastik"
-    createUI : bool
+    do_createUI : bool
         create or not a UI
 
     Attributes
@@ -262,7 +266,7 @@ class InteractSeg:
                 bad_frames=self.param.bad_frames,
                 max_time=self.param.max_time,
             )
-        elif self.param.morpho_name.split(".")[-1].lower() == "tif" or "tiff":
+        elif self.param.morpho_name.split(".")[-1].lower() in {"tif", "tiff"}:
             self.param.data_type = "multi"
             self.data = MultipageTIFF(
                 self.param.data_folder,
