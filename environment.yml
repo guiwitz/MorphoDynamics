@@ -7,7 +7,7 @@ dependencies:
   - pandas
   - scikit-image
   - jupyter
-  - jupyterlab
+  - jupyterlab=3.2
   - ipywidgets
   - pip
   - ipympl
