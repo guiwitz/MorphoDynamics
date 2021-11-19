@@ -305,7 +305,7 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">guiwitz</span><span class="o">/</span><span class="n">morphodynamics</span><span class="o">.</span><span class="n">git</span><span class="nd">@master</span><span class="c1">#egg=morphodynamics</span>
 </pre></div>
 </div>
-<p>To use the package with the notebooks, we recommend to create a conda environment. For this you can use the <span class="xref myst">environment.yml</span> file provided in the repository. Download the file, open a terminal, move to the download folder and run:</p>
+<p>To use the package with the notebooks, we recommend to create a conda environment. For this you can use the <a class="reference external" href="https://guiwitz.github.io/MorphoDynamics/environment.yml">environment.yml</a> file provided in the repository (use <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">as</span></code> in your browser). Download the file, open a terminal, move to the download place and run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">env</span> <span class="n">create</span> <span class="o">-</span><span class="n">f</span> <span class="n">environment</span><span class="o">.</span><span class="n">yml</span>
 </pre></div>
 </div>
@@ -318,7 +318,7 @@
 <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">guiwitz</span><span class="o">/</span><span class="n">MorphoDynamics</span><span class="o">.</span><span class="n">git</span><span class="nd">@master</span><span class="c1">#egg=morphodynamics</span>
 </pre></div>
 </div>
-<p>The above command should prompt you to enter your GitHub user name and password, as the repository is private. If some major update has been made, including new dependencies, you should probably clone the repository again, remove the environment and re-create it using the newly downloaded environment file:</p>
+<p>If some major update has been made, including new dependencies, it is recommended to remove the environment and re-create it using a newly downloaded environment file:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">env</span> <span class="n">remove</span> <span class="o">--</span><span class="n">name</span> <span class="n">morphodynamics</span> <span class="o">--</span><span class="nb">all</span>
 <span class="n">conda</span> <span class="n">env</span> <span class="n">create</span> <span class="o">-</span><span class="n">f</span> <span class="n">environment</span><span class="o">.</span><span class="n">yml</span>
 </pre></div>
