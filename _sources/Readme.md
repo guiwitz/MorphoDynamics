@@ -8,15 +8,21 @@ This software has been developed at Bern University by Cédric Vonesch (Science 
 
 ## Installation
 
-We strongly recommend to install the necessary software via conda. If you don't have conda installed, follow [these instructions](https://docs.conda.io/en/latest/miniconda.html) to install a minimal version called miniconda.
+## pip
 
-Then, download (or clone) this repository to your machine. If you are working on a local laptopn you can use the green "Code" button at the top right of this page for download and then unzip the folder. If you are working on a remote machine you can type:
+This software can be installed via pip using the following command:
 
 ```
-git clone https://github.com/guiwitz/MorphoDynamics.git
+pip install --upgrade git+https://github.com/guiwitz/morphodynamics.git@master#egg=morphodynamics
 ```
 
-Open a terminal and move to the downloaded folder (Morphodynamics-master). The latter contains an ```environment.yml``` file that can be used to setup a conda environment wih all necessary packages. For that, just execute the following line:
+## Interactivity
+
+As the software has a strong interactive component via Jupyter notebooks, we suggest to install ```morphodynamics``` within an environment where notebooks can be run. To create such an environment we recommend to use conda. If you don't have conda installed yet, follow [these instructions](https://docs.conda.io/en/latest/miniconda.html) to install a minimal version called miniconda.
+
+### Creating the environment
+
+The [```environment.yml```](environment.yml) file in this repository can be used to create the appropriate environment that will for example also contain the optional dependency ```cellpose``` for cell segmentation. To use it, just [download the file](https://guiwitz.github.io/MorphoDynamics/environment.yml) and then execute the following command wherever you downloaded it:
 
 ```
 conda env create -f environment.yml
@@ -39,8 +45,6 @@ To update your local installation with the latest version available on GitHub, a
 conda activate morphodynamics 
 pip install --upgrade git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
 ```
-
-The above command should prompt you to enter your GitHub username and password, as the repository is private.
 
 Note: close all notebooks (click on File | Close and Halt) prior to the update and reopen them afterwards.
 

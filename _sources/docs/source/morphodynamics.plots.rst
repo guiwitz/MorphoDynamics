@@ -68,6 +68,14 @@ morphodynamics.plots.ui\_signals module
    :undoc-members:
    :show-inheritance:
 
+morphodynamics.plots.ui\_wimage module
+--------------------------------------
+
+.. automodule:: morphodynamics.plots.ui_wimage
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
