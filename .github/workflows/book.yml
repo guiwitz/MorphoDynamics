@@ -27,12 +27,12 @@ jobs:
         # $CONDA/bin/conda env update --file environment.yml --name base
     
     # Install only morphodynamics package
-    - name: Install dependencies
+    - name: Install package
       run: |
         $CONDA/bin/pip install .
 
     # Install pip dependencies
-    - name: Install dependencies
+    - name: Install jbook dependencies
       run: |
         $CONDA/bin/pip install -r requirements.txt
 
