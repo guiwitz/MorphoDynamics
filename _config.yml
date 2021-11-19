@@ -15,7 +15,7 @@ sphinx:
   'sphinx.ext.napoleon'
   ]
   config:
-    html_extra_path: ['notebooks']
+    html_extra_path: ['.', 'notebooks']
 
 execute:
   exclude_patterns:
