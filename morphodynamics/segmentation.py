@@ -9,7 +9,6 @@ from scipy.ndimage.morphology import binary_fill_holes
 from scipy.ndimage.measurements import center_of_mass
 import numpy as np
 from tifffile import imread
-from cellpose import models
 
 from .displacementestimation import fit_spline
 
@@ -135,6 +134,7 @@ def segment_cellpose(model, x, diameter, location):
     """Segment image x using Cellpose. If model is None, a model is loaded"""
 
     if model is None:
+        from cellpose import models
         model = models.Cellpose(model_type="cyto")
     m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
     m = m[0]

@@ -23,7 +23,6 @@ from .results import Results
 from .utils import load_alldata
 from . import utils
 import matplotlib.pyplot as plt
-from cellpose import models
 from tqdm import tqdm
 
 
@@ -62,6 +61,7 @@ def analyze_morphodynamics(
     """
 
     if param.seg_algo == "cellpose":
+        from cellpose import models
         model = models.Cellpose(model_type="cyto")
     else:
         model = None
