@@ -21,4 +21,4 @@ execute:
   exclude_patterns:
     - synthetic/*
     - notebooks/*
-  execute_notebooks: 'auto'
+  execute_notebooks: 'off'
