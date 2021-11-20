@@ -17,8 +17,8 @@ pip install --upgrade git+https://github.com/guiwitz/morphodynamics.git@master#e
 ## Notebooks
 
 While the software can be used via its API, notebooks implementing a user interface are also provided. You can download two notebooks for interactive analysis here:
-- [Morpho_segmentation.ipynb](https://guiwitz.github.io/MorphoDynamics/Morpho_segmentation.ipynb)] where you can run cell segmentation and splitting interactively
-- [InterfaceFiguresTabs.ipynb](https://guiwitz.github.io/MorphoDynamics/InterfaceFiguresTabs.ipynb)] where you can explore the data analysis output interactively
+- [Morpho_segmentation.ipynb](https://guiwitz.github.io/MorphoDynamics/Morpho_segmentation.ipynb) where you can run cell segmentation and splitting interactively
+- [InterfaceFiguresTabs.ipynb](https://guiwitz.github.io/MorphoDynamics/InterfaceFiguresTabs.ipynb) where you can explore the data analysis output interactively
 
 ## Environment
 
