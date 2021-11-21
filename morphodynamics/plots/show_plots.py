@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import imageio
 from matplotlib.colors import Normalize
 import ipywidgets as ipw
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 # from matplotlib.backends.backend_pdf import PdfPages
 from scipy.interpolate import splev
@@ -418,7 +419,9 @@ def show_signals_aux(
         fig.colorbar(im, cax=fig.axes[1], label=mode)
 
     else:
-        plt.colorbar(im, ax=ax, label=mode)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size="5%", pad=0.05)
+        plt.colorbar(im, cax=cax, label=mode)
     plt.axis("auto")
     ax.set_xlabel("Frame index")
     ax.set_ylabel("Window index")
