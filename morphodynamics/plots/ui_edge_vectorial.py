@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ipywidgets as ipw
 from matplotlib.backends.backend_pdf import PdfPages
+from IPython.display import display
 
 from .show_plots import show_edge_vectorial_aux
 
@@ -38,6 +39,7 @@ class EdgeVectorialSlow:
                     curvature=self.curvature,
                     fig_ax=(self.fig, self.ax),
                 )
+                self.fig.canvas.draw_idle()
 
         mode_selector.observe(mode_change, names="value")
 
@@ -61,6 +63,7 @@ class EdgeVectorialSlow:
                     curvature=self.curvature,
                     fig_ax=(self.fig, self.ax),
                 )
+                self.fig.canvas.draw_idle()
 
         time_slider.observe(time_change, names="value")
 
@@ -75,6 +78,7 @@ class EdgeVectorialSlow:
                 curvature=False,
                 fig_ax=(self.fig, self.ax),
             )
+            display(self.fig.canvas)
         self.interface = ipw.VBox([time_slider, out])
 
     def set_mode(self, mode):

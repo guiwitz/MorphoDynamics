@@ -2,6 +2,7 @@ import os
 import matplotlib.pyplot as plt
 import ipywidgets as ipw
 from matplotlib.backends.backend_pdf import PdfPages
+from IPython.display import display
 
 from .show_plots import show_signals_aux
 
@@ -53,6 +54,7 @@ class Signals:
                     mode_selector.value,
                     fig_ax=(self.fig, self.ax),
                 )
+                self.fig.canvas.draw_idle()
 
         signal_selector.observe(channel_change, names="value")
 
@@ -72,6 +74,7 @@ class Signals:
                     mode_selector.value,
                     fig_ax=(self.fig, self.ax),
                 )
+            self.fig.canvas.draw_idle()
 
         layer_text.observe(layer_change, names="value")
 
@@ -91,6 +94,7 @@ class Signals:
                     mode_selector.value,
                     fig_ax=(self.fig, self.ax),
                 )
+                self.fig.canvas.draw_idle()
 
         mode_selector.observe(mode_change, names="value")
 
@@ -105,5 +109,6 @@ class Signals:
                 mode_selector.value,
                 fig_ax=(self.fig, self.ax),
             )
+            display(self.fig.canvas)
 
         self.interface = ipw.VBox([signal_selector, layer_text, mode_selector, out])

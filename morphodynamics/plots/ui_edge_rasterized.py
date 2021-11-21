@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import ipywidgets as ipw
 from tifffile import TiffWriter
 import imageio
+from IPython.display import display
 
 from ..displacementestimation import compute_curvature, compute_edge_image
 
@@ -40,7 +41,7 @@ class EdgeRasterized:
                 self.set_mode(change["new"])
                 self.set_normalization(normalization_selector.value)
                 self.fig, self.ax = self.plot(time_slider.value, (self.fig, self.ax))
-
+                self.fig.canvas.draw_idle()
         mode_selector.observe(mode_change, names="value")
 
         normalization_selector = ipw.RadioButtons(
@@ -55,7 +56,7 @@ class EdgeRasterized:
             with out:
                 self.set_normalization(change["new"])
                 self.fig, self.ax = self.plot(time_slider.value, (self.fig, self.ax))
-
+                self.fig.canvas.draw_idle()
         normalization_selector.observe(normalization_change, names="value")
 
         time_slider = ipw.IntSlider(
@@ -69,7 +70,7 @@ class EdgeRasterized:
         def time_change(change):
             with out:
                 self.fig, self.ax = self.plot(change["new"], (self.fig, self.ax))
-
+                self.fig.canvas.draw_idle()
         time_slider.observe(time_change, names="value")
 
         # display(mode_selector)
@@ -82,7 +83,7 @@ class EdgeRasterized:
         with out:
             self.fig, self.ax = plt.subplots(figsize=(8, 6))
             self.fig, self.ax = self.plot(0, (self.fig, self.ax))
-        # display(out)
+            display(self.fig.canvas)
         self.interface = ipw.VBox(
             [mode_selector, normalization_selector, time_slider, out]
         )

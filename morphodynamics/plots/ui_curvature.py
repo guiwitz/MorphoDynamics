@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ipywidgets as ipw
 from matplotlib.backends.backend_pdf import PdfPages
+from IPython.display import display
 
 from ..displacementestimation import compute_curvature
 
@@ -39,13 +40,13 @@ class Curvature:
             with out:
                 plt.figure(self.fig.number)
                 self.show_curvature(change["new"])
-
+                self.fig.canvas.draw_idle()
         range_slider.observe(range_change, names="value")
 
         with out:
             self.fig = plt.figure(figsize=(8, 6))
             self.show_curvature(range_slider.value)
-
+            display(self.fig.canvas)
         self.interface = ipw.VBox([range_slider, out])
 
     def show_curvature(self, cmax, export=True):

@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import ipywidgets as ipw
 from matplotlib.backends.backend_pdf import PdfPages
 from scipy.stats import norm
+from IPython.display import display
 
 from ..correlation import show_correlation_core, correlate_arrays, get_range
 
@@ -23,12 +24,15 @@ class Correlation:
         with self.out:
             # main correlation plot
             self.fig, self.ax = plt.subplots(figsize=(4, 4))
+            display(self.fig.canvas)
         with self.out_avg:
             # average plot
             self.fig_avg, self.ax_avg = plt.subplots(figsize=(4, 3))
+            display(self.fig_avg.canvas)
         with self.out_compl:
             #
             self.fig_compl, self.ax_compl = plt.subplots(figsize=(4, 3))
+            display(self.fig_compl.canvas)
 
         options = ["displacement", "cumulative displacement"]
         for m in range(len(self.data.signal_name)):
@@ -116,6 +120,7 @@ class Correlation:
     def update_plots(self):
         with self.out:
             self.fig = self.show_correlation(self.fig)
+            self.fig.canvas.draw_idle()
         with self.out_avg:
             self.fig_avg, _ = self.show_correlation_average(
                 self.f1,
@@ -125,6 +130,7 @@ class Correlation:
                 self.window_slider.value,
                 self.fig_avg,
             )
+            self.fig_avg.canvas.draw_idle()
         with self.out_compl:
             self.fig_compl, _ = self.show_correlation_compl(
                 self.f1,
@@ -134,6 +140,7 @@ class Correlation:
                 self.window_slider.value,
                 self.fig_compl,
             )
+            self.fig_compl.canvas.draw_idle()
 
     def get_signal(self, name, mode):
         if name == "displacement":
