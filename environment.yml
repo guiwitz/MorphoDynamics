@@ -2,6 +2,7 @@ name: morphodynamics
 channels:
   - conda-forge
 dependencies:
+  - python=3.9
   - jupyter
   - jupyterlab=3.2
   - ipywidgets

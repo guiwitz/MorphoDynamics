@@ -90,6 +90,7 @@ class OutputUI:
             self.fig1, _ = show_circularity(
                 self.param, self.data, self.res, size=(8, 3)
             )
+            display(self.fig1.canvas)  
 
         self.outputs.append(self.out1)
         self.names.append("Circularity")
@@ -99,6 +100,7 @@ class OutputUI:
             self.fig2, _ = show_edge_overview(
                 self.param, self.data, self.res, lw=0.3, size=(8, 6)
             )
+            display(self.fig2.canvas)  
         self.outputs.append(self.out2)
         self.names.append("Edge overview")
 
@@ -120,6 +122,7 @@ class OutputUI:
         self.out3 = ipw.Output()
         with self.out3:
             self.fig3, _ = show_displacement(self.param, self.res, size=(8, 4.5))
+            display(self.fig3.canvas)
         self.outputs.append(ipw.HBox([self.out3, self.wimage_out], layout=box_layout))
 
         self.names.append("Displacement")
@@ -127,6 +130,7 @@ class OutputUI:
         self.out4 = ipw.Output()
         with self.out4:
             self.fig4, _ = show_cumdisplacement(self.param, self.res, size=(8, 4.5))
+            display(self.fig4.canvas)
         self.outputs.append(ipw.HBox([self.out4, self.wimage_out], layout=box_layout))
         self.names.append("Cumul. Displacement")
 

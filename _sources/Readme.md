@@ -17,14 +17,14 @@ pip install --upgrade git+https://github.com/guiwitz/morphodynamics.git@master#e
 ## Notebooks
 
 While the software can be used via its API, notebooks implementing a user interface are also provided. You can download two notebooks for interactive analysis here:
-- [Morpho_segmentation.ipynb](https://guiwitz.github.io/MorphoDynamics/Morpho_segmentation.ipynb)] where you can run cell segmentation and splitting interactively
-- [InterfaceFiguresTabs.ipynb](https://guiwitz.github.io/MorphoDynamics/InterfaceFiguresTabs.ipynb)] where you can explore the data analysis output interactively
+- [Morpho_segmentation.ipynb](https://guiwitz.github.io/MorphoDynamics/Morpho_segmentation.ipynb) where you can run cell segmentation and splitting interactively
+- [InterfaceFiguresTabs.ipynb](https://guiwitz.github.io/MorphoDynamics/InterfaceFiguresTabs.ipynb) where you can explore the data analysis output interactively
 
 ## Environment
 
 To ensure that you have all recommended packages to perform interactive work, we recommend to create en environment with conda. If you don't have conda installed yet, follow [these instructions](https://docs.conda.io/en/latest/miniconda.html) to install a minimal version called miniconda.
 
-To create the appropriate environment that will for example also contain the optional dependency ```cellpose``` for cell segmentation, save the following [environment.yml](https://guiwitz.github.io/MorphoDynamics/environment.yml) file to your computer (use ```Save as``` in your browser) and execute the following command from where you downloaded it:
+To create the appropriate environment that will for example also contain the optional dependency ```cellpose``` for cell segmentation, save the following [environment.yml](https://raw.githubusercontent.com/guiwitz/MorphoDynamics/master/environment.yml) file to your computer (use ```Save as``` in your browser) and execute the following command from where you downloaded it:
 
 ```
 conda env create -f environment.yml

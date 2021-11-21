@@ -106,6 +106,7 @@ class Wimage:
 
         self.intensity_range_slider.max = self.implot.get_array().max()
         self.implot.set_clim(vmin=self.intensity_range_slider.value[0], vmax=self.intensity_range_slider.value[1])
+        self.fig.canvas.draw_idle()
 
     def update_windows_vis(self, change=None):
         """Callback to turn windows visibility on/off"""
@@ -113,6 +114,7 @@ class Wimage:
             turnonoff = [t[0].set_alpha(1) for t in self.cplot]
         else:
             turnonoff = [t[0].set_alpha(0) for t in self.cplot]
+        self.fig.canvas.draw_idle()
 
     def update_text_vis(self, change=None):
         """Callback to turn windows labels visibility on/off"""
@@ -121,6 +123,7 @@ class Wimage:
             turnonoff = [t.set_alpha(1) for t in self.tplt]
         else:
             turnonoff = [t.set_alpha(0) for t in self.tplt]
+        self.fig.canvas.draw_idle()
     
     def show_segmentation(self, change=None):
         """Update segmentation plot"""
@@ -215,3 +218,4 @@ class Wimage:
                             self.tplt[ind].set_x(p[0])
                             self.tplt[ind].set_y(image.shape[0]-p[1])
                             self.tplt[ind].set_text(str(int(p[2])))
+        self.fig.canvas.draw_idle()
