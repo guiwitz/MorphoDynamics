@@ -313,8 +313,10 @@ class InteractSeg:
         # display image
         if self.do_createUI:
             self.wimage.update_dataset(self.param, self.data, self.res)
+            
             with self.wimage_out:
-                display(self.wimage.interface)
+                clear_output(wait=True)
+                display(ipw.HBox([self.wimage.fig.canvas, self.wimage.interface]))
             self.wimage.show_segmentation()
 
     def run_segmentation(self, b=None):
@@ -652,6 +654,9 @@ class InteractSeg:
                     ]
                 )
             )
+        with self.wimage_out:
+            clear_output(wait=True)
+            display(ipw.HBox([self.wimage.fig.canvas, self.wimage.interface]))
 
     def ui_folder_panel(self, work_type):
 
