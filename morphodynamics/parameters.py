@@ -100,6 +100,12 @@ class Param:
         # bad frames
         self.bad_frames = []
 
+        # path to random forest model
+        self.random_forest = None
+
+        # scalings to use with random forest
+        self.scalings = [1,2]
+
         # Figure parameters
         self.showSegmentation = False
         self.showWindows = False

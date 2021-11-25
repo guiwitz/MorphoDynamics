@@ -1,0 +1,420 @@
+"""
+This module implements a napari widget to create microfilm images interactively
+by capturing views.
+"""
+
+import pickle
+from itertools import cycle
+from pathlib import Path
+from PyQt5.QtWidgets import QGridLayout
+from napari_plugin_engine import napari_hook_implementation
+from qtpy.QtWidgets import (QWidget, QPushButton, QSpinBox,
+QVBoxLayout, QLabel, QComboBox,
+QTabWidget, QListWidget, QFileDialog, QScrollArea, QAbstractItemView)
+
+import numpy as np
+import napari
+
+from dask import delayed
+import dask.array as da
+from dask_jobqueue import SLURMCluster
+from dask.distributed import Client, LocalCluster
+
+from .folder_list_widget import FolderListWidget
+from ..parameters import Param
+from ..utils import dataset_from_param, load_alldata, export_results_parameters
+from ..analysis_par import analyze_morphodynamics, segment_single_frame
+from ..deep_paint_plugin.deep_paint import DeepPaintWidget
+from .VHGroup import VHGroup
+
+
+class MorphoWidget(QWidget):
+    """
+    Implentation of a napari plugin offering an interface to the morphodynamics softwere.
+
+    Parameters
+    ----------
+    napari_viewer : napari.Viewer
+        The napari viewer object.
+    """
+    
+    def __init__(self, napari_viewer, parent=None):
+        super().__init__(parent=parent)
+        self.viewer = napari_viewer
+
+        # create a param object
+        self.param = Param(
+            seg_algo='cellpose'
+        )
+        self.analysis_path = None
+        self.client = None
+
+        self._layout = QVBoxLayout()
+        self.setLayout(self._layout)
+        self.setMinimumWidth(400)
+        self.tabs = QTabWidget()
+        self._layout.addWidget(self.tabs)
+
+        # main tab
+        self.main = QWidget()
+        self._main_layout = QVBoxLayout()
+        self.main.setLayout(self._main_layout)
+        self.tabs.addTab(self.main, 'main')
+        
+        # options tab
+        self.options = QWidget()
+        self._options_layout = QVBoxLayout()
+        self.options.setLayout(self._options_layout)
+        self.tabs.addTab(self.options, 'deep paint')
+
+        # display tab
+        self.display_options = QWidget()
+        self._display_options_layout = QGridLayout()
+        self.display_options.setLayout(self._display_options_layout)
+        self.tabs.addTab(self.display_options, 'display options')
+
+        self.deep_paint_widget = DeepPaintWidget(self.viewer, self.param)
+        self._options_layout.addWidget(self.deep_paint_widget)
+
+        self.data_vgroup = VHGroup('Data', orientation='G')
+        self._main_layout.addWidget(self.data_vgroup.gbox)
+
+        # files
+        self.file_list = FolderListWidget(napari_viewer)
+        self.data_vgroup.glayout.addWidget(self.file_list)
+
+        # Pick folder to analyse interactively
+        btn_select_file_folder = QPushButton("Select data folder")
+        btn_select_file_folder.clicked.connect(self._on_click_select_file_folder)
+        self.data_vgroup.glayout.addWidget(btn_select_file_folder)
+
+        # channel selection
+        self.segm_channel = QListWidget()
+        self.signal_channel = QListWidget()
+        self.signal_channel.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+        channel_group = VHGroup('Channels', orientation='G')
+        self._main_layout.addWidget(channel_group.gbox)
+
+        channel_group.glayout.addWidget(QLabel('Segmentation'),0,0)
+        channel_group.glayout.addWidget(QLabel('Signal'),0,1)
+        channel_group.glayout.addWidget(self.segm_channel,1,0)
+        channel_group.glayout.addWidget(self.signal_channel,1,1)
+
+        # load data
+        self.btn_load_data = QPushButton("Load dataset")
+        channel_group.glayout.addWidget(self.btn_load_data, 2, 0, 1, 2)
+
+        # select saving place
+        analysis_vgroup = VHGroup('Set saving folders', 'G')
+        analysis_vgroup.gbox.setMaximumHeight(200)
+        self._main_layout.addWidget(analysis_vgroup.gbox)
+
+        self.btn_select_analysis = QPushButton("Set analysis folder")
+        self.display_analysis_folder, self.scroll_analysis = scroll_label('No selection.')
+        analysis_vgroup.glayout.addWidget(self.scroll_analysis, 0, 0)
+        analysis_vgroup.glayout.addWidget(self.btn_select_analysis, 1, 0)
+        
+        self.btn_select_segmentation = QPushButton("Set segmentation folder")
+        self.display_segmentation_folder, self.scroll_segmentation = scroll_label('No selection.')
+        analysis_vgroup.glayout.addWidget(self.scroll_segmentation, 0, 1)
+        analysis_vgroup.glayout.addWidget(self.btn_select_segmentation, 1, 1)
+
+        # load analysis
+        self.btn_load_analysis = QPushButton("Load analysis")
+        self._main_layout.addWidget(self.btn_load_analysis)
+
+        self.settings_vgroup = VHGroup('Settings', orientation='G')
+        self._main_layout.addWidget(self.settings_vgroup.gbox)
+
+        # algo choice
+        self.seg_algo = QComboBox()
+        self.seg_algo.addItems(['cellpose', 'ilastik', 'farid', 'deep_paint'])
+        self.seg_algo.setCurrentIndex(0)
+        self.settings_vgroup.glayout.addWidget(QLabel('Algorithm'), 0, 0)
+        self.settings_vgroup.glayout.addWidget(self.seg_algo, 0, 1)
+
+        # algo options
+        self.cell_diameter = QSpinBox()
+        self.cell_diameter.setValue(20)
+        self.cell_diameter.setMaximum(10000)
+        self.settings_vgroup.glayout.addWidget(QLabel('Cell diameter'), 1, 0)
+        self.settings_vgroup.glayout.addWidget(self.cell_diameter, 1, 1)
+
+        ## window options
+        self.depth = QSpinBox()
+        self.depth.setValue(10)
+        self.depth.setMaximum(10000)
+        self.settings_vgroup.glayout.addWidget(QLabel('Window depth'), 2, 0)
+        self.settings_vgroup.glayout.addWidget(self.depth, 2, 1)
+        self.width = QSpinBox()
+        self.width.setValue(10)
+        self.width.setMaximum(10000)
+        self.settings_vgroup.glayout.addWidget(QLabel('Window width'), 3, 0)
+        self.settings_vgroup.glayout.addWidget(self.width, 3, 1)
+
+        # run analysis
+        btn_run = QPushButton("Run analysis")
+        btn_run.clicked.connect(self._on_run_analysis)
+        self._main_layout.addWidget(btn_run)
+
+        # display options
+        self.display_wlayers = QListWidget()
+        self.display_wlayers.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.display_wlayers.itemSelectionChanged.connect(self._on_display_wlayers_selection_changed)
+        self._display_options_layout.addWidget(QLabel('Window layers'), 0, 0)
+        self._display_options_layout.addWidget(self.display_wlayers, 0, 1)
+
+        self._add_callbacks()
+
+    def _add_callbacks(self):
+
+        self.seg_algo.currentIndexChanged.connect(self._on_update_param)
+        self.depth.valueChanged.connect(self._on_update_param)
+        self.width.valueChanged.connect(self._on_update_param)
+
+        self.segm_channel.currentItemChanged.connect(self._on_update_param)
+        self.signal_channel.itemSelectionChanged.connect(self._on_update_param)
+
+        self.btn_load_data.clicked.connect(self._on_load_dataset)
+
+        self.btn_select_analysis.clicked.connect(self._on_click_select_analysis)
+        self.btn_select_segmentation.clicked.connect(self._on_click_select_segmentation)
+
+        self.btn_load_analysis.clicked.connect(self._on_load_analysis)
+
+        self.file_list.model().rowsInserted.connect(self._on_change_filelist)
+        self.cell_diameter.valueChanged.connect(self._on_update_param)
+
+
+    def _on_update_param(self):
+        """Update multiple entries of the param object."""
+        
+        self.param.seg_algo = self.seg_algo.currentText()
+        self.param.depth = self.depth.value()
+        self.param.width = self.width.value()
+        if self.segm_channel.currentItem() is not None:
+            self.param.morpho_name = self.segm_channel.currentItem().text()
+        if self.signal_channel.currentItem() is not None:
+            self.param.signal_name = [x.text() for x in self.signal_channel.selectedItems()]
+        if self.file_list.folder_path is not None:
+            self.param.data_folder = Path(self.file_list.folder_path)
+        if self.display_analysis_folder.text() != 'No selection.':
+            self.param.analysis_folder = Path(self.display_analysis_folder.text())
+        if self.display_segmentation_folder.text() != 'No selection.':
+            self.param.seg_folder = Path(self.display_segmentation_folder.text())
+        self.param.diameter = self.cell_diameter.value()
+
+    def _on_click_select_file_folder(self):
+        """Interactively select folder to analyze"""
+
+        file_folder = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        self.file_list.update_from_path(Path(file_folder))
+
+    def _on_change_filelist(self):
+        """Update the channel list when main file list changes."""
+        
+        files = [self.file_list.item(i).text() for i in range(self.file_list.count())]
+        
+        self.segm_channel.clear()
+        self.signal_channel.clear()
+        self.segm_channel.addItems(files)
+        self.signal_channel.addItems(files)
+        self._on_update_param()
+
+    def _on_run_analysis(self):
+        """Run full morphodynamics analysis"""
+
+        if self.client is None:
+            self.initialize_dask()
+        
+        if self.param.seg_algo == 'deep_paint':
+            if self.param.random_forest is None:
+                if self.deep_paint_widget.random_forest is not None:
+                    self.deep_paint_widget.save_model()
+                else:
+                    self.deep_paint_widget.load_model()
+                    #raise Exception('No model found. Please train a model first.')
+
+        self.res = analyze_morphodynamics(
+            self.data,
+            self.param,
+            self.client,
+        )
+        self._on_load_windows()
+        export_results_parameters(self.param, self.res)
+
+    def _on_segment_single_frame(self):
+        """Segment single frame."""
+        
+        step = self.viewer.dims.current_step[0]
+        self.res = segment_single_frame(self.param, step, self.param.analysis_folder)
+        
+        self.viewer.open(self.param.analysis_folder.joinpath("segmented_k_" + str(step) + ".tif"))
+
+    def initialize_dask(self):
+        """Initialize dask client.
+        To do: add SLURMCluster and and interface for it"""
+
+        cluster = LocalCluster()
+        self.client = Client(cluster)
+
+    def _on_click_select_analysis(self):
+        """Select folder where to save the analysis."""
+
+        self.analysis_path = Path(str(QFileDialog.getExistingDirectory(self, "Select Directory")))
+        self.display_analysis_folder.setText(self.analysis_path.as_posix())
+        self._on_update_param()
+        if self.param.seg_folder is None:
+            self.param.seg_folder = self.analysis_path.joinpath('main_segmentation')
+            self.display_segmentation_folder.setText(self.param.seg_folder.as_posix())
+
+    def _on_click_select_segmentation(self):
+        """Select folder where to save the segmentation."""
+
+        self.segmentation_path = Path(str(QFileDialog.getExistingDirectory(self, "Select Directory")))
+        self.display_segmentation_folder.setText(self.segmentation_path.as_posix())
+        self._on_update_param()
+
+    def _on_load_dataset(self):
+        """Having selected segmentation and signal channels, load the data"""
+        
+        self.data, self.param = dataset_from_param(self.param)
+        self.create_stacks()
+
+    def _on_display_wlayers_selection_changed(self):
+        """Hide/reveal window layers."""
+        
+        on_list = [int(x.text()) for x in self.display_wlayers.selectedItems()]
+        for i in self.layer_indices:
+            if i not in on_list:
+                val_to_set = 0
+            else:
+                val_to_set = 1
+            for j in self.layer_global_indices[i]:
+                self.viewer.layers['windows'].color[j][-1]=val_to_set
+        self.viewer.layers['windows'].color_mode = 'direct'
+
+    def create_stacks(self):
+        """Create and add to the viewer datasets as dask stacks.
+        Note: this should be added to the dataset class."""
+
+        sample = self.data.load_frame_morpho(0)
+
+        if self.data.data_type == 'h5':
+            h5file = self.data.channel_imobj[self.data.channel_name.index(self.param.morpho_name)]
+            seg_stack = da.from_array(h5file)
+        else:
+            my_data = self.data
+            def return_image(i):
+                return my_data.load_frame_morpho(i)
+            seg_lazy_arrays = [delayed(return_image)(i) for i in range(self.data.max_time)]
+            dask_seg_arrays = [da.from_delayed(x, shape=sample.shape, dtype=sample.dtype) for x in seg_lazy_arrays]
+            seg_stack = da.stack(dask_seg_arrays, axis=0)
+        self.viewer.add_image(seg_stack, name=self.param.morpho_name)
+
+        for ind, c in enumerate(self.param.signal_name):
+            if self.data.data_type == 'h5':
+                h5file = self.data.channel_imobj[self.data.channel_name.index(c)]
+                sig_stack = da.from_array(h5file)
+            else:
+                my_data = self.data
+                def return_image(ch, t):
+                    return my_data.load_frame_signal(ch, t)
+
+                sig_lazy_arrays = [delayed(return_image)(ind, i) for i in range(self.data.max_time)]
+                dask_sig_arrays = [da.from_delayed(x, shape=sample.shape, dtype=sample.dtype) for x in sig_lazy_arrays]
+                sig_stack = da.stack(dask_sig_arrays, axis=0)
+            self.viewer.add_image(sig_stack, name=f'signal {c}')
+    
+    def create_stacks_classical(self):
+        """Create stacks from the data and add them to viewer."""
+        
+        seg_stack = np.stack(
+            [self.data.load_frame_morpho(i) for i in range(self.data.max_time)], axis=0)
+        self.viewer.add_image(seg_stack, name=self.param.morpho_name)
+
+        sig_stack = [np.stack(
+            [self.data.load_frame_signal(c, i) for i in range(self.data.max_time)], axis=0)
+            for c in range(len(self.param.signal_name))]
+        for ind, c in enumerate(self.param.signal_name):
+            self.viewer.add_image(sig_stack[ind], name=f'signal {c}')
+
+    def _on_load_windows(self):
+        """Add windows labels to the viewer"""
+
+        # create array to contain the windows
+        w_image = np.zeros((
+            self.data.max_time,
+            self.viewer.layers[self.param.morpho_name].data.shape[1],
+            self.viewer.layers[self.param.morpho_name].data.shape[2]), dtype=np.uint16)
+        self.layer_indices= {}
+        
+        # load window indices and use them to fill window array
+        # keep track of layer to which indices belong in self.layer_indices
+        for t in range(self.data.max_time):
+            name = Path(self.param.analysis_folder).joinpath(
+                'segmented', "window_k_" + str(t) + ".pkl")
+            windows = pickle.load(open(name, 'rb'))
+
+            count=1
+
+            for i in range(len(windows)):
+                gather_indices=[]
+                for j in range(len(windows[i])):
+                    w_image[t, windows[i][j][0], windows[i][j][1]]=count
+                    gather_indices.append(count)
+                    count+=1
+                self.layer_indices[i]=gather_indices
+
+        ## create a color dictionary, containing for each label index a color
+        ## currently each layer gets a color and labeles within it get a shade of that color
+        color_layers = ['red', 'blue', 'cyan', 'magenta']
+        color_pool = cycle(color_layers)
+        global_index=1
+        col_dict = {None: np.array([0., 0., 0., 1.], dtype=np.float32)}
+        self.layer_global_indices = {i: [] for i in range(len(self.layer_indices))}
+        for (lay, col) in zip(self.layer_indices, color_pool):
+            num_colors = len(self.layer_indices[lay])
+            #color_array = napari.utils.colormaps.SIMPLE_COLORMAPS[col].map(np.linspace(0.1,1,num_colors))
+            color_array = cycle(napari.utils.colormaps.SIMPLE_COLORMAPS[col].map(np.array([0.3,0.45,0.6,0.75, 0.9])))
+            for ind2, col_index in zip(range(num_colors), color_array):
+                col_dict[global_index]=col_index
+                self.layer_global_indices[lay].append(global_index)
+                global_index+=1
+        
+        # assign color dictionary to window layer colormap
+        self.viewer.add_labels(w_image, name='windows')
+        self.viewer.layers['windows'].color = col_dict
+        self.viewer.layers['windows'].color_mode = 'direct' #needed to refresh the color map
+
+        self.display_wlayers.addItems([str(x) for x in self.layer_indices.keys()])
+
+    def _on_load_analysis(self):
+        """Load existing output of analysis"""
+        
+        if self.analysis_path is None:
+            self._on_click_select_analysis()
+
+        self.param, self.res, self.data = load_alldata(
+            self.analysis_path, load_results=True
+        )
+        self._on_update_interface()
+        self.file_list.update_from_path(self.param.data_folder)
+        self.create_stacks()
+        self._on_load_windows()
+        
+
+    def _on_update_interface(self):
+        """Update UI when importing existing analyis"""
+
+        self.seg_algo.setCurrentText(self.param.seg_algo)
+        self.cell_diameter.setValue(self.param.diameter)
+
+def scroll_label(default_text = 'default text'):
+    mylabel = QLabel()
+    mylabel.setText('No selection.')
+    myscroll = QScrollArea()
+    myscroll.setWidgetResizable(True)
+    myscroll.setWidget(mylabel)
+    return mylabel, myscroll

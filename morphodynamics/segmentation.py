@@ -11,7 +11,7 @@ import numpy as np
 from tifffile import imread
 
 from .displacementestimation import fit_spline
-
+from .deep_paint_plugin.deep_paint_utils import predict_image
 
 def segment_threshold(x, sigma, T):
     """Segment the cell image, possibly with automatic threshold selection."""
@@ -93,7 +93,7 @@ def tracking(regions, location=None, seg_type="farid"):
     location: 1d array, optional
         position vector
     seg_type: str
-        type of segmentation used, currently 'farid', 'cellpose' or 'ilastik'
+        type of segmentation used, currently 'farid', 'cellpose', 'ilastik' or 'deep_paint'
 
     Returns
     -------
@@ -111,7 +111,7 @@ def tracking(regions, location=None, seg_type="farid"):
     if location is None:
         sr = np.zeros((nr,))
         for k in range(nr):
-            if seg_type in ["farid", "ilastik"]:
+            if seg_type in ["farid", "ilastik", "deep_paint"]:
                 sr[k] = np.sum(binary_fill_holes(regions == k + 1))
             elif seg_type == "cellpose":
                 sr[k] = np.sum(regions == k + 1)
@@ -122,7 +122,7 @@ def tracking(regions, location=None, seg_type="farid"):
         for k in range(nr):
             cm[k] = center_of_mass(regions == k + 1)
         k = np.argmin([np.linalg.norm(cm0 - location) for cm0 in cm])
-        if seg_type in ["farid", "ilastik"]:
+        if seg_type in ["farid", "ilastik", "deep_paint"]:
             sel_region = binary_fill_holes(regions == k + 1)
         elif seg_type == "cellpose":
             sel_region = regions == k + 1
@@ -139,6 +139,15 @@ def segment_cellpose(model, x, diameter, location):
     m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
     m = m[0]
     return m
+
+def segment_deep_paint(x, random_forest):
+    """ Segment image x using a trained classifier and
+    the deep paint module. """
+
+    m = predict_image(x, None, random_forest)
+    m = m == 2
+    regions = label(m)
+    return regions
 
 
 def extract_contour(mask):
@@ -185,16 +194,3 @@ def estimateBleaching(filename, K, shape):
         m = threshold_otsu(x[k, :, :]) < x[k, :, :]
         c[k, :, :, 0] = 255 * m
         I[k] = np.mean(x[k][m])
-        # p1.imshow('Segmentation', c[k, :, :, :])
-        # p1.show()
-    # imsave(fh.figure_dir + 'Segmentation.tif', c)
-    # fh.open_figure('Average intensity in segmented region')
-    # plt.plot(I)
-    # fh.close_figure()
-
-
-# x = imread('C:\\Work\\UniBE 2\\Guillaume\\Example_Data\\FRET_sensors + actin\\Histamine\\Expt2\\w16TIRF-CFP\\RhoA_OP_his_02_w16TIRF-CFP_t53.tif')
-# segment(x)
-
-# calibrateBleaching('C:/Work/UniBE2/Guillaume/Example_Data/FRET_sensors + actin/Histamine/Expt2/w16TIRF-CFP/RhoA_OP_his_02_w16TIRF-CFP_t', 159, (358, 358))
-# calibrateBleaching(r'C:\Work\UniBE2\Guillaume\Example_Data\FRET_sensors + actin\PDGF\RhoA_multipoint_0.5fn_s3_good\w34TIRF-mCherry\RhoA_multipoint_0.5fn_01_w34TIRF-mCherry_s3_t', 750, (358, 358))
