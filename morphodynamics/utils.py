@@ -102,6 +102,8 @@ def load_alldata(folder_path, load_results=False, param=None):
             bad_frames=param.bad_frames,
             max_time=param.max_time,
         )
+    else:
+        raise ValueError("Unknown data type")
 
     return param, res, data
 
