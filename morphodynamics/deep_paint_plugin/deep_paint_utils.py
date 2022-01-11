@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import torch
 import numpy as np
 import skimage.transform
@@ -34,9 +36,9 @@ def filter_image(image, model, scalings):
     
     all_scales=[]
     for s in scalings:
-        im_tot = image[::s,::s]
-        im_tot = np.ones((3,im_tot.shape[0],im_tot.shape[1]), dtype=np.float32) * im_tot
-        im_torch = torch.from_numpy(im_tot[np.newaxis, ::])
+        im_tot = image[::s,::s].astype(np.float32)
+        #im_tot = np.ones((3,im_tot.shape[0],im_tot.shape[1]), dtype=np.float32) * im_tot
+        im_torch = torch.from_numpy(im_tot[np.newaxis, np.newaxis, ::])
         out = model.forward(im_torch)
         out_np = out.detach().numpy()
         if s > 1:
@@ -67,8 +69,7 @@ def predict_image(image, model, classifier):
     """
     
     if model is None:
-        vgg16 = models.vgg16(pretrained=True)
-        model = nn.Sequential(vgg16.features[0])
+        model = load_nn_model()
     n_filters = 64
 
     scalings = [2**x for x in range(0, int(classifier.n_features_in_/n_filters))]
@@ -78,3 +79,31 @@ def predict_image(image, model, classifier):
 
     predicted_image = np.reshape(predictions, image.shape)
     return predicted_image
+
+def load_nn_model():
+    """Load VGG16 model from torchvision, keep first layer only
+    
+    Parameters
+    ----------
+
+    Returns
+    -------
+    model: torch model
+        model for pixel feature extraction
+    
+    """
+
+    vgg16 = models.vgg16(pretrained=True)
+    #model = nn.Sequential(vgg16.features[0])
+
+    model = nn.Sequential(OrderedDict([('conv1', nn.Conv2d(1,64,3,1,1))]))
+
+    pretrained_dict = vgg16.state_dict()
+    reduced_dict = model.state_dict()
+
+    reduced_dict['conv1.weight'][:,0,:,:] = pretrained_dict['features.0.weight'][:,:,:,:].sum(axis=1)
+    reduced_dict['conv1.bias'] = pretrained_dict['features.0.bias']
+
+    model.load_state_dict(reduced_dict)
+    
+    return model

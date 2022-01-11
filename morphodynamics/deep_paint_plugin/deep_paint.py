@@ -12,7 +12,7 @@ from torch import nn
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
-from .deep_paint_utils import filter_image, predict_image
+from .deep_paint_utils import filter_image, predict_image, load_nn_model
 from ..napari_plugin.VHGroup import VHGroup
 from ..parameters import Param
 
@@ -55,7 +55,7 @@ class DeepPaintWidget(QWidget):
         self._layout.addWidget(self.settings_vgroup.gbox)
 
         self.num_scales_combo = QComboBox()
-        self.num_scales_combo.addItems(['[1]', '[1,2]', '[1,2,4]'])
+        self.num_scales_combo.addItems(['[1]', '[1,2]', '[1,2,4]', '[1,2,4,6]'])
         self.num_scales_combo.setCurrentText('[1,2]')
         self.num_scales_combo.currentIndexChanged.connect(self.update_scalings)
         self.settings_vgroup.glayout.addWidget(QLabel('Number of scales'), 0, 0)
@@ -119,7 +119,7 @@ class DeepPaintWidget(QWidget):
         """Given a set of new annotations, update the random forest model."""
 
         if self.model is None:
-            self._load_nn_model()
+            self.model = load_nn_model()
        
         n_features = 64
 
@@ -161,7 +161,7 @@ class DeepPaintWidget(QWidget):
         on a RF model trained with annotations"""
 
         if self.model is None:
-            self._load_nn_model()
+            self.model = load_nn_model()
         if self.random_forest is None:
             self.update_model()
 
@@ -178,7 +178,7 @@ class DeepPaintWidget(QWidget):
         on a RF model trained with annotations"""
 
         if self.model is None:
-            self._load_nn_model()
+            self.model = load_nn_model()
 
         self.check_prediction_layer_exists()
 
@@ -212,10 +212,4 @@ class DeepPaintWidget(QWidget):
         save_file, _ = dialog.getOpenFileName(self, "choose model", None, "JOBLIB (*.joblib)")
         save_file = Path(save_file)
         self.random_forest = load(save_file)
-        self.param.random_forest = save_file#.as_posix()
-
-    def _load_nn_model(self):
-        """Load VGG16 model from torchvision"""
-
-        vgg16 = models.vgg16(pretrained=True)
-        self.model = nn.Sequential(vgg16.features[0])
+        self.param.random_forest = save_file
