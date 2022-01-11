@@ -47,7 +47,7 @@ class MorphoWidget(QWidget):
             seg_algo='cellpose'
         )
         self.analysis_path = None
-        self.client = None
+        self.cluster = None
 
         self._layout = QVBoxLayout()
         self.setLayout(self._layout)
@@ -59,25 +59,37 @@ class MorphoWidget(QWidget):
         self.main = QWidget()
         self._main_layout = QVBoxLayout()
         self.main.setLayout(self._main_layout)
-        self.tabs.addTab(self.main, 'main')
-        
+        self.tabs.addTab(self.main, 'Main')
+
         # options tab
         self.options = QWidget()
         self._options_layout = QVBoxLayout()
         self.options.setLayout(self._options_layout)
-        self.tabs.addTab(self.options, 'deep paint')
+        self.tabs.addTab(self.options, 'Options')
+        
+        # deep paint tab
+        self.paint = QWidget()
+        self._paint_layout = QVBoxLayout()
+        self.paint.setLayout(self._paint_layout)
+        self.tabs.addTab(self.paint, 'Deep paint')
 
         # display tab
         self.display_options = QWidget()
         self._display_options_layout = QGridLayout()
         self.display_options.setLayout(self._display_options_layout)
-        self.tabs.addTab(self.display_options, 'display options')
+        self.tabs.addTab(self.display_options, 'Display options')
 
         self.deep_paint_widget = DeepPaintWidget(self.viewer, self.param)
-        self._options_layout.addWidget(self.deep_paint_widget)
+        self._paint_layout.addWidget(self.deep_paint_widget)
 
-        self.data_vgroup = VHGroup('Data', orientation='G')
+        self.data_vgroup = VHGroup('1. Select location of data', orientation='G')
         self._main_layout.addWidget(self.data_vgroup.gbox)
+
+        # dask tab
+        self.dask = QWidget()
+        self._dask_layout = QVBoxLayout()
+        self.dask.setLayout(self._dask_layout)
+        self.tabs.addTab(self.dask, 'Dask')
 
         # files
         self.file_list = FolderListWidget(napari_viewer)
@@ -93,7 +105,7 @@ class MorphoWidget(QWidget):
         self.signal_channel = QListWidget()
         self.signal_channel.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
-        channel_group = VHGroup('Channels', orientation='G')
+        channel_group = VHGroup('2. Select channels to use', orientation='G')
         self._main_layout.addWidget(channel_group.gbox)
 
         channel_group.glayout.addWidget(QLabel('Segmentation'),0,0)
@@ -102,29 +114,35 @@ class MorphoWidget(QWidget):
         channel_group.glayout.addWidget(self.signal_channel,1,1)
 
         # load data
-        self.btn_load_data = QPushButton("Load dataset")
-        channel_group.glayout.addWidget(self.btn_load_data, 2, 0, 1, 2)
+        load_group = VHGroup('3. Load and display the dataset', orientation='G')
+        self._main_layout.addWidget(load_group.gbox)
+        self.btn_load_data = QPushButton("Load")
+        load_group.glayout.addWidget(self.btn_load_data)
 
         # select saving place
-        analysis_vgroup = VHGroup('Set saving folders', 'G')
+        analysis_vgroup = VHGroup('4. Set location to save analysis', 'G')
         analysis_vgroup.gbox.setMaximumHeight(200)
         self._main_layout.addWidget(analysis_vgroup.gbox)
 
         self.btn_select_analysis = QPushButton("Set analysis folder")
         self.display_analysis_folder, self.scroll_analysis = scroll_label('No selection.')
         analysis_vgroup.glayout.addWidget(self.scroll_analysis, 0, 0)
-        analysis_vgroup.glayout.addWidget(self.btn_select_analysis, 1, 0)
+        analysis_vgroup.glayout.addWidget(self.btn_select_analysis, 0, 1)
         
+        segmentation_group = VHGroup('Alternative segmentation', 'G')
+        segmentation_group.gbox.setMaximumHeight(150)
+        
+        self._options_layout.addWidget(segmentation_group.gbox)
         self.btn_select_segmentation = QPushButton("Set segmentation folder")
         self.display_segmentation_folder, self.scroll_segmentation = scroll_label('No selection.')
-        analysis_vgroup.glayout.addWidget(self.scroll_segmentation, 0, 1)
-        analysis_vgroup.glayout.addWidget(self.btn_select_segmentation, 1, 1)
+        segmentation_group.glayout.addWidget(self.scroll_segmentation, 0, 0)
+        segmentation_group.glayout.addWidget(self.btn_select_segmentation, 1, 0)
 
         # load analysis
         self.btn_load_analysis = QPushButton("Load analysis")
-        self._main_layout.addWidget(self.btn_load_analysis)
+        self._options_layout.addWidget(self.btn_load_analysis)
 
-        self.settings_vgroup = VHGroup('Settings', orientation='G')
+        self.settings_vgroup = VHGroup('5. Set analysis settings and run', orientation='G')
         self._main_layout.addWidget(self.settings_vgroup.gbox)
 
         # algo choice
@@ -156,7 +174,7 @@ class MorphoWidget(QWidget):
         # run analysis
         btn_run = QPushButton("Run analysis")
         btn_run.clicked.connect(self._on_run_analysis)
-        self._main_layout.addWidget(btn_run)
+        self.settings_vgroup.glayout.addWidget(btn_run, 4, 0)
 
         # display options
         self.display_wlayers = QListWidget()
@@ -164,6 +182,46 @@ class MorphoWidget(QWidget):
         self.display_wlayers.itemSelectionChanged.connect(self._on_display_wlayers_selection_changed)
         self._display_options_layout.addWidget(QLabel('Window layers'), 0, 0)
         self._display_options_layout.addWidget(self.display_wlayers, 0, 1)
+
+        # dask options
+        dask_group = VHGroup('Dask options', 'G')
+        dask_group.gbox.setMaximumHeight(150)
+        self._dask_layout.addWidget(dask_group.gbox)
+        self.dask_num_workers = QSpinBox()
+        self.dask_num_workers.setValue(1)
+        self.dask_num_workers.setMaximum(64)
+        dask_group.glayout.addWidget(QLabel('Number of workers'), 0, 0)
+        dask_group.glayout.addWidget(self.dask_num_workers, 0, 1)
+
+        self.dask_cores = QSpinBox()
+        self.dask_cores.setValue(1)
+        self.dask_cores.setMaximum(64)
+        dask_group.glayout.addWidget(QLabel('Number of cores (SLURM)'), 1, 0)
+        dask_group.glayout.addWidget(self.dask_cores, 1, 1)
+
+        self.dask_memory = QSpinBox()
+        self.dask_memory.setValue(1)
+        self.dask_memory.setMaximum(64)
+        dask_group.glayout.addWidget(QLabel('Memory per core (SLURM)'), 2, 0)
+        dask_group.glayout.addWidget(self.dask_memory, 2, 1)
+
+        self.dask_cluster_type = QComboBox()
+        self.dask_cluster_type.addItems(['Local', 'SLURM'])
+        self.dask_cluster_type.setCurrentIndex(0)
+        dask_group.glayout.addWidget(QLabel('Cluster type'), 3, 0)
+        dask_group.glayout.addWidget(self.dask_cluster_type, 3, 1)
+
+        self.dask_initialize_button = QPushButton("Initialize dask")
+        self._dask_layout.addWidget(self.dask_initialize_button)
+        
+        self.dask_stop_cluster_button = QPushButton("Stop dask cluster")
+        self._dask_layout.addWidget(self.dask_stop_cluster_button)
+
+        # make sure widgets don't occupy more space than they need
+        self._options_layout.addStretch()
+        self._paint_layout.addStretch()
+        self._dask_layout.addStretch()
+        #self._display_options_layout.addStretch()
 
         self._add_callbacks()
 
@@ -186,6 +244,9 @@ class MorphoWidget(QWidget):
         self.file_list.model().rowsInserted.connect(self._on_change_filelist)
         self.cell_diameter.valueChanged.connect(self._on_update_param)
 
+        self.dask_num_workers.valueChanged.connect(self._on_update_dask_wokers)
+        self.dask_initialize_button.clicked.connect(self.initialize_dask)
+        self.dask_stop_cluster_button.clicked.connect(self._on_dask_shutdown)
 
     def _on_update_param(self):
         """Update multiple entries of the param object."""
@@ -225,7 +286,7 @@ class MorphoWidget(QWidget):
     def _on_run_analysis(self):
         """Run full morphodynamics analysis"""
 
-        if self.client is None:
+        if self.cluster is None:
             self.initialize_dask()
         
         if self.param.seg_algo == 'deep_paint':
@@ -236,11 +297,12 @@ class MorphoWidget(QWidget):
                     self.deep_paint_widget.load_model()
                     #raise Exception('No model found. Please train a model first.')
 
-        self.res = analyze_morphodynamics(
-            self.data,
-            self.param,
-            self.client,
-        )
+        with Client(self.cluster) as client:
+            self.res = analyze_morphodynamics(
+                data=self.data,
+                param=self.param,
+                client=client,
+            )
         self._on_load_windows()
         export_results_parameters(self.param, self.res)
 
@@ -252,12 +314,31 @@ class MorphoWidget(QWidget):
         
         self.viewer.open(self.param.analysis_folder.joinpath("segmented_k_" + str(step) + ".tif"))
 
-    def initialize_dask(self):
+    def initialize_dask(self, event=None):
         """Initialize dask client.
         To do: add SLURMCluster and and interface for it"""
 
-        cluster = LocalCluster()
-        self.client = Client(cluster)
+        if self.dask_cluster_type.currentText() == 'Local':
+            self.cluster = LocalCluster()#n_workers=self.dask_num_workers.value())
+            self.dask_num_workers.setValue(len(self.cluster.scheduler_info['workers']))
+        elif self.dask_cluster_type.currentText() == 'SLURM':
+            self.cluster = SLURMCluster(cores=self.dask_cores.value(), memory=self.dask_memory.value())
+
+    def _on_update_dask_wokers(self):
+        """Update dask workers."""
+        
+        if self.dask_cluster_type.currentText() == 'Local':
+            if self.cluster is None:
+                self.initialize_dask()
+                self.cluster = LocalCluster(n_workers=self.dask_num_workers.value())
+
+            self.cluster.scale(self.dask_num_workers.value())
+
+    def _on_dask_shutdown(self):
+        """Shutdown dask workers."""
+        
+        self.cluster.close()
+        self.cluster = None
 
     def _on_click_select_analysis(self):
         """Select folder where to save the analysis."""
