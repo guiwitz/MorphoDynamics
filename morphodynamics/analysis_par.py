@@ -11,7 +11,7 @@ from .segmentation import (
     tracking,
     segment_farid,
     contour_spline,
-    segment_deep_paint
+    segment_conv_paint
 )
 from .displacementestimation import (
     map_contours2,
@@ -169,9 +169,9 @@ def calibration(data, param, model):
         # m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
         m = segment_farid(x)
         m = tracking(m, location, seg_type="farid")
-    elif param.seg_algo == "deep_paint":
+    elif param.seg_algo == "conv_paint":
         random_forest = load(param.random_forest)
-        m = segment_deep_paint(x, random_forest)
+        m = segment_conv_paint(x, random_forest)
 
     # update location
     if location is None:
@@ -667,9 +667,9 @@ def segment_single_frame(param, k, save_path):
             raise Exception(
                 f"No segmentation file at {filename}. Run segmentation in ilastik first."
             )
-    elif param.seg_algo == "deep_paint":
+    elif param.seg_algo == "conv_paint":
         random_forest = load(param.random_forest)
-        m = segment_deep_paint(x, random_forest)
+        m = segment_conv_paint(x, random_forest)
 
     m = m.astype(np.uint8)
 

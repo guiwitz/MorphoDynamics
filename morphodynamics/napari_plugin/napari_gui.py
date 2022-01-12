@@ -24,7 +24,8 @@ from .folder_list_widget import FolderListWidget
 from ..parameters import Param
 from ..utils import dataset_from_param, load_alldata, export_results_parameters
 from ..analysis_par import analyze_morphodynamics, segment_single_frame
-from ..deep_paint_plugin.deep_paint import DeepPaintWidget
+#from ..deep_paint_plugin.deep_paint import DeepPaintWidget
+from napari_convpaint import ConvPaintWidget
 from .VHGroup import VHGroup
 
 
@@ -67,11 +68,11 @@ class MorphoWidget(QWidget):
         self.options.setLayout(self._options_layout)
         self.tabs.addTab(self.options, 'Options')
         
-        # deep paint tab
+        # conv paint tab
         self.paint = QWidget()
         self._paint_layout = QVBoxLayout()
         self.paint.setLayout(self._paint_layout)
-        self.tabs.addTab(self.paint, 'Deep paint')
+        self.tabs.addTab(self.paint, 'Conv paint')
 
         # display tab
         self.display_options = QWidget()
@@ -79,17 +80,20 @@ class MorphoWidget(QWidget):
         self.display_options.setLayout(self._display_options_layout)
         self.tabs.addTab(self.display_options, 'Display options')
 
-        self.deep_paint_widget = DeepPaintWidget(self.viewer, self.param)
-        self._paint_layout.addWidget(self.deep_paint_widget)
-
-        self.data_vgroup = VHGroup('1. Select location of data', orientation='G')
-        self._main_layout.addWidget(self.data_vgroup.gbox)
-
         # dask tab
         self.dask = QWidget()
         self._dask_layout = QVBoxLayout()
         self.dask.setLayout(self._dask_layout)
         self.tabs.addTab(self.dask, 'Dask')
+
+        # add convpaint widget
+        #self.deep_paint_widget = DeepPaintWidget(self.viewer, self.param)
+        self.conv_paint_widget = ConvPaintWidget(self.viewer)
+        self._paint_layout.addWidget(self.conv_paint_widget)
+
+        # add widgets to main tab
+        self.data_vgroup = VHGroup('1. Select location of data', orientation='G')
+        self._main_layout.addWidget(self.data_vgroup.gbox)
 
         # files
         self.file_list = FolderListWidget(napari_viewer)
@@ -147,7 +151,7 @@ class MorphoWidget(QWidget):
 
         # algo choice
         self.seg_algo = QComboBox()
-        self.seg_algo.addItems(['cellpose', 'ilastik', 'farid', 'deep_paint'])
+        self.seg_algo.addItems(['cellpose', 'ilastik', 'farid', 'conv_paint'])
         self.seg_algo.setCurrentIndex(0)
         self.settings_vgroup.glayout.addWidget(QLabel('Algorithm'), 0, 0)
         self.settings_vgroup.glayout.addWidget(self.seg_algo, 0, 1)
@@ -248,6 +252,8 @@ class MorphoWidget(QWidget):
         self.dask_initialize_button.clicked.connect(self.initialize_dask)
         self.dask_stop_cluster_button.clicked.connect(self._on_dask_shutdown)
 
+        self.conv_paint_widget.load_model_btn.clicked.connect(self._on_load_model)
+
     def _on_update_param(self):
         """Update multiple entries of the param object."""
         
@@ -256,6 +262,7 @@ class MorphoWidget(QWidget):
         self.param.width = self.width.value()
         if self.segm_channel.currentItem() is not None:
             self.param.morpho_name = self.segm_channel.currentItem().text()
+            self.conv_paint_widget.param.channel = self.param.morpho_name
         if self.signal_channel.currentItem() is not None:
             self.param.signal_name = [x.text() for x in self.signal_channel.selectedItems()]
         if self.file_list.folder_path is not None:
@@ -283,18 +290,21 @@ class MorphoWidget(QWidget):
         self.signal_channel.addItems(files)
         self._on_update_param()
 
+    def _on_load_model(self):
+        self.param.random_forest = self.conv_paint_widget.param.random_forest
+
     def _on_run_analysis(self):
         """Run full morphodynamics analysis"""
 
         if self.cluster is None:
             self.initialize_dask()
         
-        if self.param.seg_algo == 'deep_paint':
+        if self.param.seg_algo == 'conv_paint':
             if self.param.random_forest is None:
-                if self.deep_paint_widget.random_forest is not None:
-                    self.deep_paint_widget.save_model()
+                if self.conv_paint_widget.random_forest is not None:
+                    self.conv_paint_widget.save_model()
                 else:
-                    self.deep_paint_widget.load_model()
+                    self.conv_paint_widget.load_model()
                     #raise Exception('No model found. Please train a model first.')
 
         with Client(self.cluster) as client:

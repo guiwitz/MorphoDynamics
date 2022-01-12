@@ -11,7 +11,7 @@ import numpy as np
 from tifffile import imread
 
 from .displacementestimation import fit_spline
-from .deep_paint_plugin.deep_paint_utils import predict_image
+from napari_convpaint.conv_paint_utils import predict_image
 
 def segment_threshold(x, sigma, T):
     """Segment the cell image, possibly with automatic threshold selection."""
@@ -93,7 +93,7 @@ def tracking(regions, location=None, seg_type="farid"):
     location: 1d array, optional
         position vector
     seg_type: str
-        type of segmentation used, currently 'farid', 'cellpose', 'ilastik' or 'deep_paint'
+        type of segmentation used, currently 'farid', 'cellpose', 'ilastik' or 'conv_paint'
 
     Returns
     -------
@@ -111,7 +111,7 @@ def tracking(regions, location=None, seg_type="farid"):
     if location is None:
         sr = np.zeros((nr,))
         for k in range(nr):
-            if seg_type in ["farid", "ilastik", "deep_paint"]:
+            if seg_type in ["farid", "ilastik", "conv_paint"]:
                 sr[k] = np.sum(binary_fill_holes(regions == k + 1))
             elif seg_type == "cellpose":
                 sr[k] = np.sum(regions == k + 1)
@@ -122,7 +122,7 @@ def tracking(regions, location=None, seg_type="farid"):
         for k in range(nr):
             cm[k] = center_of_mass(regions == k + 1)
         k = np.argmin([np.linalg.norm(cm0 - location) for cm0 in cm])
-        if seg_type in ["farid", "ilastik", "deep_paint"]:
+        if seg_type in ["farid", "ilastik", "conv_paint"]:
             sel_region = binary_fill_holes(regions == k + 1)
         elif seg_type == "cellpose":
             sel_region = regions == k + 1
@@ -140,9 +140,9 @@ def segment_cellpose(model, x, diameter, location):
     m = m[0]
     return m
 
-def segment_deep_paint(x, random_forest):
+def segment_conv_paint(x, random_forest):
     """ Segment image x using a trained classifier and
-    the deep paint module. """
+    the conv paint module. """
 
     m = predict_image(x, None, random_forest)
     m = m == 2
