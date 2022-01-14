@@ -362,7 +362,7 @@ def show_cumdisplacement(param, res, size=(16, 9), fig_ax=None):
 
 
 def show_signals_aux(
-    param, data, res, m, j, mode, fig_ax=None, size=(16, 9), layer_title=False
+    param, data, res, signal_index, layer_index, mode, fig_ax=None, size=(16, 9), layer_title=False
 ):
     """
     Display window-kymograph of a signal.
@@ -375,9 +375,9 @@ def show_signals_aux(
         created from dataset.Data
     res: res object
         created from results.Results
-    m: int
+    signal_index: int
         signal index
-    j: int
+    layer_index: int
         layer index
     mode; str
         "Mean" or "Variance"
@@ -403,14 +403,14 @@ def show_signals_aux(
         plt.figure(fig.number)
 
     if mode == "Mean":
-        f = res.mean[m, j, 0 : res.I[j], :]
+        f = res.mean[signal_index, layer_index, 0 : res.I[layer_index], :]
     elif mode == "Variance":
-        f = res.var[m, j, 0 : res.I[j], :]
+        f = res.var[signal_index, layer_index, 0 : res.I[layer_index], :]
 
     if layer_title:
-        ax.set_title("Layer: " + str(j))
+        ax.set_title("Layer: " + str(layer_index))
     else:
-        ax.set_title("Signal: " + data.get_channel_name(m) + " - Layer: " + str(j))
+        ax.set_title("Signal: " + data.get_channel_name(signal_index) + " - Layer: " + str(layer_index))
 
     im = ax.imshow(f, cmap="jet")
     if len(fig.axes) == 2:
@@ -485,7 +485,7 @@ def show_curvature(param, data, res, cmax=None, fig_ax=None):
     -------
     fig : matplotlib figure
     ax : matplotlib axis
-    
+
     """
 
     if fig_ax is None:
