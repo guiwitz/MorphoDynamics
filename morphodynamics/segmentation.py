@@ -176,8 +176,8 @@ def contour_spline(m, smoothing):
     """
 
     c = extract_contour(m)  # Discrete cell contour
-    s = fit_spline(c, smoothing)  # Smoothed spline curve following the contour
-    return s, c
+    s, u = fit_spline(c, smoothing)  # Smoothed spline curve following the contour
+    return s, u, c
 
 
 def estimateBleaching(filename, K, shape):

@@ -92,7 +92,10 @@ def analyze_morphodynamics(
         segmented = track_all(segmented, location, param)
 
     # get all splines. s_all[k] is spline at frame k
-    s_all = spline_all(data.K, param.lambda_, param, client)
+    s_u_all = spline_all(data.K, param.lambda_, param, client)
+    s_all = [s[0] for s in s_u_all]
+    u_all = [s[1] for s in s_u_all]
+    res.u = u_all
 
     # align curves across frames and rasterize the windows
     s0prm_all, ori_all = align_all(s_all, data.shape, param.n_curve, param, client)
@@ -180,7 +183,7 @@ def calibration(data, param, model):
     I = [10, 0]
     J = 10
     try:
-        s, _ = contour_spline(m, param.lambda_)
+        s, u, _ = contour_spline(m, param.lambda_)
         c = rasterize_curve(param.n_curve, m.shape, s, 0)
         _, J, I = create_windows(c, splev(0, s), depth=param.depth, width=param.width)
     except Exception:
@@ -206,8 +209,8 @@ def import_and_spline(image_path, smoothing):
     """
 
     m = skimage.io.imread(image_path)
-    s, _ = contour_spline(m, smoothing)
-    return s
+    s, u, _ = contour_spline(m, smoothing)
+    return s, u
 
 
 def spline_all(num_frames, smoothing, param, client):

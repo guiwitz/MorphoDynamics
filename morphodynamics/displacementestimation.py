@@ -53,10 +53,9 @@ def fit_spline(c, lambda_):
 
     """
 
-    s = splprep([c[:, 1], c[:, 0]], s=lambda_, per=c.shape[0])[
-        0
-    ]  # Fitting with periodic boundary conditions
-    return s
+    s_tuple, u = splprep([c[:, 1], c[:, 0]], s=lambda_, per=c.shape[0])  # Fitting with periodic boundary conditions
+    
+    return s_tuple, u
 
 
 def compute_length(N, s):
