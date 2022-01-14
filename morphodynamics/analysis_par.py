@@ -93,9 +93,12 @@ def analyze_morphodynamics(
 
     # get all splines. s_all[k] is spline at frame k
     s_u_all = spline_all(data.K, param.lambda_, param, client)
-    s_all = [s[0] for s in s_u_all]
-    u_all = [s[1] for s in s_u_all]
-    res.u = u_all
+    s_all = {-1: None}
+    u_all = {-1: None}
+    for s in s_u_all:
+        if s > -1:
+            s_all[s] = s_u_all[s][0]
+            u_all[s] = s_u_all[s][1]
 
     # align curves across frames and rasterize the windows
     s0prm_all, ori_all = align_all(s_all, data.shape, param.n_curve, param, client)
@@ -122,6 +125,7 @@ def analyze_morphodynamics(
 
     # Save variables for archival
     res.spline = [s_all[k] for k in range(data.K)]
+    res.u = [s_u_all[k] for k in range(data.K)]
     res.s0prm = [s0prm_all[k] for k in range(data.K)]
     res.param0 = [t0_all[k] for k in t0_all]
     res.param = [t_all[k] for k in t_all]
