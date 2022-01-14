@@ -469,6 +469,24 @@ def save_signals(param, data, res, modes=None, size=(16, 9)):
 
 
 def show_curvature(param, data, res, cmax=None, fig_ax=None):
+    """Display curvature as a function of time
+
+    Parameters
+    ----------
+    param : param object
+    data : data object
+    res : result object
+    cmax : float, optional
+        maximal curvature value to display, default None
+    fig_ax : tuple, optional
+        (fig, ax), by default None
+
+    Returns
+    -------
+    fig : matplotlib figure
+    ax : matplotlib axis
+    
+    """
 
     if fig_ax is None:
         fig, ax = plt.subplots()
