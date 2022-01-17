@@ -10,9 +10,11 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 # from matplotlib.backends.backend_pdf import PdfPages
 from scipy.interpolate import splev
 
-from splineutils import spline_contour_length, spline_area, spline_curvature, splevper
+#from splineutils import spline_contour_length, spline_area, spline_curvature, splevper
 
-from ..splineutils import edge_colored_by_displacement, edge_colored_by_curvature, enlarge_contour
+#from ..splineutils import edge_colored_by_displacement, edge_colored_by_curvature, enlarge_contour
+
+from .. import splineutils
 
 out = ipw.Output()
 
@@ -42,8 +44,8 @@ def show_circularity(param, data, res, size=(16, 9)):
     length = np.zeros((data.K,))
     area = np.zeros((data.K,))
     for k in range(data.K):
-        length[k] = spline_contour_length(res.spline[k])
-        area[k] = spline_area(res.spline[k])
+        length[k] = splineutils.spline_contour_length(res.spline[k])
+        area[k] = splineutils.spline_area(res.spline[k])
 
     fig, ax = plt.subplots(1, 3, figsize=size)
     ax[0].plot(length)
@@ -213,7 +215,7 @@ def show_edge_vectorial_aux(param, data, res, k, curvature=False, fig_ax=None):
     #N =  param.n_curve + 1
     if curvature:
         N = 3 * len(res.spline[k][0])
-        f = spline_curvature(res.spline[k], np.linspace(0, 1, N))
+        f = splineutils.spline_curvature(res.spline[k], np.linspace(0, 1, N))
     else:
         f = res.displacement[:, k]
 
@@ -263,8 +265,8 @@ def show_edge_scatter(N, s1, s2, t1, t2, d, dmax=None, fig_ax=None):
         plt.figure(fig.number)
 
     # Evaluate splines at window locations and on fine-resolution grid
-    c1 = splevper(t1, s1)
-    c2 = splevper(t2, s2)
+    c1 = splineutils.splevper(t1, s1)
+    c2 = splineutils.splevper(t2, s2)
     c1p = splev(np.linspace(0, 1, N + 1), s1)
     c2p = splev(np.linspace(0, 1, N + 1), s2)
 
@@ -308,22 +310,100 @@ def show_edge_scatter(N, s1, s2, t1, t2, d, dmax=None, fig_ax=None):
     )
     return fig, ax
 
-def show_edge_raster_coloured_by_displacement(param, data, res, k, N, width=1, fig_ax=None):
-    
+def show_edge_raster_coloured_by_feature(
+    param, data, res, k, feature, N=None, width=1, fig_ax=None, normalize=False, cmap_name='seismic'):
+    """Display the rasterized contour colored by a given feature on top of image.
+
+    Parameters
+    ----------
+    param : param object
+    data : data object
+    res : result object
+    k : int
+        time point
+    feature : str
+        feature for coloring 'displacement', 'displacement_cumul', 'curvature'
+    N : int
+        number of points for contour generation, default None
+    width : int, optional
+        width of contour for display, by default 1
+    fig_ax : tuple, optional
+        matplotlib figure-axis tuple, by default None
+    normalize : bool, optional
+        normalize intensity over time-lapse, by default False
+    cmap_name : str, optional
+        matplotlib colormap, by default 'seismic'
+
+    Returns
+    -------
+    fig, ax: Matplotlib figure and axis
+
+    """
     if fig_ax is None:
         fig, ax = plt.subplots()
     else:
         fig, ax = fig_ax
         plt.figure(fig.number)
 
-    im_disp = edge_colored_by_displacement(data, res, t=k, N=N, enlarge_width=width)
+    im_disp, mask = splineutils.edge_colored_by_features(
+        data, res, t=k, feature=feature, N=N, enlarge_width=width)
+    min_val = None
+    max_val = None
+    if normalize:
+        if feature == 'displacement':
+            min_val = res.displacement.min()
+            max_val = res.displacement.max()
+        elif feature == 'displacement_cumul':
+            min_val = np.cumsum(res.displacement, axis=1).min()
+            max_val = np.cumsum(res.displacement, axis=1).max()
+    
+    im_disp_coloured = colorize_raster(
+        im_disp, cmap_name=cmap_name, 
+        min_val=min_val, max_val=max_val,
+        mask=mask)
 
-    ax.imshow(im_disp, cmap="jet")
+    ax.imshow(data.load_frame_morpho(k), cmap='gray')
+    ax.imshow(im_disp_coloured)
     ax.set_title("Frame " + str(k))
 
     fig.tight_layout()
     return fig, ax
 
+def colorize_raster(im, cmap_name, min_val=None, max_val=None, mask=None, alpha=0.5):
+    """Colorize an image with a given colormap.
+
+    Parameters
+    ----------
+    im : ndarray
+        image to colorize
+    cmap_name : str
+        Matplotlib colormap
+    min_val : float, optional
+        min value to display, by default min of image
+    max_val : [type], optional
+        max value to display, by default max of image
+    mask : ndarray, optional
+        mask to make empty regions transparent, by default None
+    alpha : float, optional
+        transparency of image, by default 0.5
+
+    Returns
+    -------
+    c: ndarray
+        colorized image (nxmx4)
+    """
+    if mask is None:
+        mask = np.ones(im.shape, dtype=np.bool8)
+    if min_val is None:
+        min_val = im.min()
+    if max_val is None:
+        max_val = im.max()
+    cmap = plt.cm.get_cmap(cmap_name)  # 'bwr'
+    c = cmap(0.5 + 0.5 * (im-min_val) / (max_val-min_val))
+    c = (255 * c).astype(np.uint8)
+    c[:,:,3] = int(255*alpha)
+    c *= np.stack((mask, mask, mask, mask), -1)
+    return c
 
 def show_displacement(param, res, size=(16, 9), fig_ax=None):
 
@@ -507,11 +587,12 @@ def show_curvature(param, data, res, cmax=None, fig_ax=None):
         ax.clear()
         plt.figure(fig.number)
 
-    curvature = np.zeros((param.n_curve, data.K))
+    N = np.max([3*len(r[0]) for r in res.spline])
+    curvature = np.zeros((N, data.K))
     for k in range(data.K):
-        curvature[:, k] = spline_curvature(
+        curvature[:, k] = splineutils.spline_curvature(
             res.spline[k],
-            np.linspace(0, 1, 3*len(res.spline[k][0]), endpoint=False),
+            np.linspace(0, 1, N, endpoint=False),
         )
     if cmax is None:
         cmax = np.max(np.abs(curvature))
