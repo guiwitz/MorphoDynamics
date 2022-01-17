@@ -18,8 +18,8 @@ from .displacementestimation import (
     rasterize_curve,
     align_curves,
     subdivide_curve_discrete,
-    splevper,
 )
+from .splineutils import splevper
 from .windowing import create_windows, extract_signals, boundaries_image
 from .results import Results
 from .utils import load_alldata

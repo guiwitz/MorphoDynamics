@@ -9,14 +9,10 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 # from matplotlib.backends.backend_pdf import PdfPages
 from scipy.interpolate import splev
-from ..displacementestimation import (
-    compute_curvature,
-    compute_length,
-    compute_area,
-    splevper,
-)
 
-from ..spline_to_image import edge_colored_by_displacement, edge_colored_by_curvature, enlarge_contour
+from splineutils import spline_contour_length, spline_area, spline_curvature, splevper
+
+from ..splineutils import edge_colored_by_displacement, edge_colored_by_curvature, enlarge_contour
 
 out = ipw.Output()
 
@@ -46,12 +42,8 @@ def show_circularity(param, data, res, size=(16, 9)):
     length = np.zeros((data.K,))
     area = np.zeros((data.K,))
     for k in range(data.K):
-        length[k] = compute_length(
-            param.n_curve, res.spline[k]
-        )  # Length of the contour
-        area[k] = compute_area(
-            param.n_curve, res.spline[k]
-        )  # Area delimited by the contour
+        length[k] = spline_contour_length(res.spline[k])
+        area[k] = spline_area(res.spline[k])
 
     fig, ax = plt.subplots(1, 3, figsize=size)
     ax[0].plot(length)
@@ -218,8 +210,10 @@ def show_edge_vectorial_aux(param, data, res, k, curvature=False, fig_ax=None):
     ax.set_title("Frame " + str(k) + " to frame " + str(k + 1))
     ax.imshow(data.load_frame_morpho(k), cmap="gray")
 
+    #N =  param.n_curve + 1
     if curvature:
-        f = compute_curvature(res.spline[k], np.linspace(0, 1, param.n_curve + 1))
+        N = 3 * len(res.spline[k][0])
+        f = spline_curvature(res.spline[k], np.linspace(0, 1, N))
     else:
         f = res.displacement[:, k]
 
@@ -515,9 +509,9 @@ def show_curvature(param, data, res, cmax=None, fig_ax=None):
 
     curvature = np.zeros((param.n_curve, data.K))
     for k in range(data.K):
-        curvature[:, k] = compute_curvature(
+        curvature[:, k] = spline_curvature(
             res.spline[k],
-            np.linspace(0, 1, param.n_curve, endpoint=False),
+            np.linspace(0, 1, 3*len(res.spline[k][0]), endpoint=False),
         )
     if cmax is None:
         cmax = np.max(np.abs(curvature))

@@ -21,7 +21,8 @@ from .windowing import (
     create_windows,
     boundaries_image,
 )
-from .displacementestimation import rasterize_curve, splevper
+from .displacementestimation import rasterize_curve
+from .splineutils import splevper
 from . import utils
 from .plots.ui_wimage import Wimage
 

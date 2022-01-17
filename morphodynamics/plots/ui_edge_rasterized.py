@@ -6,8 +6,7 @@ from tifffile import TiffWriter
 import imageio
 from IPython.display import display
 
-from ..displacementestimation import compute_curvature, compute_edge_image
-
+from ..splineutils import spline_curvature, edge_colored_by_curvature, edge_colored_by_displacement
 # from .show_plots import show_edge_rasterized_aux
 
 
@@ -103,7 +102,7 @@ class EdgeRasterized:
             t = np.linspace(0, 1, self.param.n_curve, endpoint=False)
             self.d = np.zeros((self.param.n_curve, self.data.K))
             for k in range(self.data.K):
-                self.d[:, k] = compute_curvature(self.res.spline[k], t)
+                self.d[:, k] = spline_curvature(self.res.spline[k], t)
             self.name = "Edge animation (curvature)"
 
     def set_normalization(self, normalization):
@@ -136,24 +135,19 @@ class EdgeRasterized:
         """
 
         if mode == "curvature":
-            x = compute_edge_image(
-                self.param.n_curve,
-                self.data.shape,
-                self.res.spline[k],
-                np.linspace(0, 1, self.param.n_curve, endpoint=False),
-                d[:, k],
-                3,
-                dmax,
+            x = edge_colored_by_curvature(
+                data=self.data,
+                res=self.res,
+                t=k,
+                enlarge_width=3,
             )
         else:
-            x = compute_edge_image(
-                self.param.n_curve,
-                self.data.shape,
-                self.res.spline[k],
-                self.res.param0[k+1],
-                d[:, k],
-                3,
-                dmax,
+            x = edge_colored_by_displacement(
+                data=self.data,
+                res=self.res,
+                t=k,
+                cumulative=False,
+                enlarge_width=3,
             )
 
         return x

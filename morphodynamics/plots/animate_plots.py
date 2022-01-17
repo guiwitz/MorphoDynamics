@@ -4,9 +4,9 @@ from matplotlib.patches import FancyArrow
 import ipywidgets as ipw
 
 from .show_plots import show_edge_scatter
-from ..spline_to_image import edge_colored_by_displacement
-from ..displacementestimation import (
-    compute_curvature)
+from ..splineutils import edge_colored_by_displacement
+from ..splineutils import (
+    spline_curvature)
 
 def animate_edge_vect(data, param, res, fig, ax, k, curvature=False):
     
@@ -17,7 +17,7 @@ def animate_edge_vect(data, param, res, fig, ax, k, curvature=False):
             a.remove()
 
     if curvature:
-        f = compute_curvature(res.spline[k], np.linspace(0, 1, param.n_curve + 1))
+        f = spline_curvature(res.spline[k], np.linspace(0, 1, param.n_curve + 1))
     else:
         f = res.displacement[:, k]
 

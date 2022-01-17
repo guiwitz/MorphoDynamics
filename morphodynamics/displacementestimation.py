@@ -14,9 +14,9 @@ from .functionaldefinition import Functional, Functional2, Functional3
 
 # fh = FigureHelper(not True)
 from .windowing import compute_discrete_arc_length
+from .splineutils import splevper
 
-
-def splevper(t, s):
+'''def splevper(t, s):
     """
     Evaluate B-spline for periodic curve
 
@@ -32,7 +32,8 @@ def splevper(t, s):
         coordinates of evaluated spline
 
     """
-    return splev(np.mod(t, 1), s)
+    raise Exception('Deprecated')
+    return splev(np.mod(t, 1), s)'''
 
 
 def fit_spline(c, lambda_):
@@ -61,6 +62,7 @@ def fit_spline(c, lambda_):
 def compute_length(N, s):
     """Compute length of spline s discretized in N segments."""
 
+    raise Exception('Deprecated')
     cprm = splev(np.linspace(0, 1, N, endpoint=False), s, der=1)
     return np.sum(np.sqrt(cprm[0] ** 2 + cprm[1] ** 2)) / N
 
@@ -68,6 +70,7 @@ def compute_length(N, s):
 def compute_area(N, s):
     """Compute area of spline s discretized in N segments."""
 
+    raise Exception('Deprecated')
     c = splev(np.linspace(0, 1, N, endpoint=False), s)
     cprm = splev(np.linspace(0, 1, N, endpoint=False), s, der=1)
     return np.sum(c[0] * cprm[1] - c[1] * cprm[0]) / 2 / N
@@ -75,6 +78,8 @@ def compute_area(N, s):
 
 def compute_curvature(s, t):
     """Compute local curvature of spline s at paramters positions t."""
+
+    raise Exception('Deprecated')
     cprm = splev(t, s, der=1)
     csec = splev(t, s, der=2)
     return (cprm[0] * csec[1] - cprm[1] * csec[0]) / (

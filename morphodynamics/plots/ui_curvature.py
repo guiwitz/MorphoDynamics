@@ -5,7 +5,7 @@ import ipywidgets as ipw
 from matplotlib.backends.backend_pdf import PdfPages
 from IPython.display import display
 
-from ..displacementestimation import compute_curvature
+from ..splineutils import spline_curvature
 
 
 class Curvature:
@@ -16,9 +16,9 @@ class Curvature:
 
         self.curvature = np.zeros((self.param.n_curve, self.data.K))
         for k in range(self.data.K):
-            self.curvature[:, k] = compute_curvature(
+            self.curvature[:, k] = spline_curvature(
                 self.res.spline[k],
-                np.linspace(0, 1, self.param.n_curve, endpoint=False),
+                np.linspace(0, 1, 3*len(self.res.spline[k][0]), endpoint=False),
             )
 
     def create_interface(self):
