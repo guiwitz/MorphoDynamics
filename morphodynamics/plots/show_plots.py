@@ -16,6 +16,8 @@ from ..displacementestimation import (
     splevper,
 )
 
+from ..spline_to_image import edge_colored_by_displacement, edge_colored_by_curvature, enlarge_contour
+
 out = ipw.Output()
 
 
@@ -310,6 +312,22 @@ def show_edge_scatter(N, s1, s2, t1, t2, d, dmax=None, fig_ax=None):
         zorder=400,
         lw=lw,
     )
+    return fig, ax
+
+def show_edge_raster_coloured_by_displacement(param, data, res, k, N, width=1, fig_ax=None):
+    
+    if fig_ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig, ax = fig_ax
+        plt.figure(fig.number)
+
+    im_disp = edge_colored_by_displacement(data, res, t=k, N=N, enlarge_width=width)
+
+    ax.imshow(im_disp, cmap="jet")
+    ax.set_title("Frame " + str(k))
+
+    fig.tight_layout()
     return fig, ax
 
 
