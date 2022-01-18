@@ -6,7 +6,7 @@ from tifffile import TiffWriter
 import imageio
 from IPython.display import display
 
-from ..splineutils import spline_curvature, edge_colored_by_curvature, edge_colored_by_displacement
+from ..splineutils import spline_curvature, edge_colored_by_features
 # from .show_plots import show_edge_rasterized_aux
 
 
@@ -135,18 +135,19 @@ class EdgeRasterized:
         """
 
         if mode == "curvature":
-            x = edge_colored_by_curvature(
+            x = edge_colored_by_features(
                 data=self.data,
                 res=self.res,
                 t=k,
+                feature=mode,
                 enlarge_width=3,
             )
         else:
-            x = edge_colored_by_displacement(
+            x = edge_colored_by_features(
                 data=self.data,
                 res=self.res,
                 t=k,
-                cumulative=False,
+                feature='displacement',
                 enlarge_width=3,
             )
 
