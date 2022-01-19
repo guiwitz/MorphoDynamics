@@ -15,11 +15,9 @@ from .segmentation import (
 )
 from .displacementestimation import (
     map_contours2,
-    rasterize_curve,
     align_curves,
-    subdivide_curve_discrete,
 )
-from .splineutils import splevper
+from .splineutils import splevper, spline_to_param_image, subdivide_curve_discrete
 from .windowing import create_windows, extract_signals, boundaries_image
 from .results import Results
 from .utils import load_alldata
@@ -188,7 +186,7 @@ def calibration(data, param, model):
     J = 10
     try:
         s, u, _ = contour_spline(m, param.lambda_)
-        c = rasterize_curve(param.n_curve, m.shape, s, 0)
+        c = spline_to_param_image(param.n_curve, m.shape, s, 0)
         _, J, I = create_windows(c, splev(0, s), depth=param.depth, width=param.width)
     except Exception:
         print("I and J not calculated. Using 10 as default value.")
@@ -763,7 +761,7 @@ def spline_align_rasterize(N, s0, s, im_shape, align, filename):
     s0_shifted = None
     if align:
         s0_shifted, origin = align_curves(N, s0, s, 0)
-    c = rasterize_curve(N, im_shape, s, origin)
+    c = spline_to_param_image(N, im_shape, s, origin)
     skimage.io.imsave(filename, c, check_contrast=False)
 
     return s0_shifted, origin, c

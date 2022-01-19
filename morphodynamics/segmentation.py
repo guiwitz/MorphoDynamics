@@ -10,7 +10,7 @@ from scipy.ndimage.measurements import center_of_mass
 import numpy as np
 from tifffile import imread
 
-from .displacementestimation import fit_spline
+from .splineutils import fit_spline
 from napari_convpaint.conv_paint_utils import predict_image
 
 def segment_threshold(x, sigma, T):

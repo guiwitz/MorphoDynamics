@@ -1,7 +1,10 @@
 import numpy as np
 from scipy.interpolate import splprep, splev
 from scipy.signal import convolve2d
+from scipy.ndimage import binary_fill_holes, distance_transform_edt
+from skimage.measure import find_contours
 
+from .windowing import compute_discrete_arc_length
 
 def splevper(t, s_tuple):
     """
@@ -20,6 +23,28 @@ def splevper(t, s_tuple):
 
     """
     return splev(np.mod(t, 1), s_tuple)
+
+def fit_spline(c, lambda_):
+    """ "
+    Fit a spline to a contour specified as a list of pixels.
+
+    Parameters
+    ----------
+    c: 2d array
+        contour coordinates
+    lambda_: float
+        smoothing parameter (as used by splprep)
+
+    Returns
+    -------
+    s: tuple
+        spline tuple
+
+    """
+
+    s_tuple, u = splprep([c[:, 1], c[:, 0]], s=lambda_, per=c.shape[0])  # Fitting with periodic boundary conditions
+    
+    return s_tuple, u
 
 def spline_contour_length(s_tuple, t1=0, t2=1, N=None):
     """
@@ -72,6 +97,124 @@ def spline_curvature(s_tuple, t):
         cprm[0] ** 2 + cprm[1] ** 2
     ) ** 1.5
 
+def subdivide_curve(N, s, orig, I):
+    """
+    Define points on a contour that are equispaced with respect to the arc length.
+    
+    Parameters
+    ----------
+    N: int
+        number of points for spline discretization
+    s: tuple
+        spline tuple as returned by splprep
+    origin: float
+        shift of parameter origin
+    I: int
+        Number of windows in the first (outer) layer.
+
+    Returns
+    -------
+    t_shifted: 1d array
+        list of spline parameters on s defining the same points as cvec_sel
+    
+    """
+
+    t = np.linspace(0, 1, N + 1)
+    #L = np.cumsum(np.linalg.norm(splevper(t + orig, s), axis=0))
+    L = np.cumsum(np.linalg.norm(np.diff(np.stack(splevper(t, s)).T, axis=0), axis=1))
+    t0 = np.zeros((I,))
+    n = 0
+    for i in range(I):
+        p = L[-1] / I * (0.5 + i)
+        while L[n] < p:
+            n += 1
+        t0[i] = t[n]
+    t_shifted = t0 + orig
+    return t_shifted
+
+def subdivide_curve_discrete(N, c_main, I, s, origin):
+    """
+    Creates a discrete contour whose first pixel corresponds
+    to the specified origin, plus a list of coordinates along the
+    continuous curve corresponding to the mid-points of the
+    windows in the first (outer) layer.
+
+    Note: this function tries to reconcile discrete and continuous
+    representations of the contour, so it may not be conceptually
+    very satisfactory.
+
+    Parameters
+    ----------
+    N: int
+        number of points for spline discretization
+    c_main: 2d array
+        A rasterized version of the contour, as obtained by rasterize_curve.
+    I: int
+        Number of windows in the first (outer) layer.
+    s: tuple
+        spline tuple as returned by splprep
+    origin: ndarray
+        [y, x] coordinates of the origin of the curve.
+
+    Returns
+    -------
+    cvec_sel: 2d array
+        xy array of selected positions along the contour
+    t_sel: 1d array
+        list of spline parameters on s defining the same points as cvec_sel
+
+    """
+
+    origin = [origin[1], origin[0]]
+
+    # Compute the distance transform of the main contour
+    D_main = distance_transform_edt(-1 == c_main)
+
+    # Compute the mask corresponding to the main contour
+    mask_main = binary_fill_holes(-1 < c_main)
+
+    # To be verified: this might actually be the same as mask_main
+    mask = (0 <= D_main) * mask_main
+
+    # Extract the contour of the mask
+    cvec = np.asarray(find_contours(mask, 0, fully_connected="high")[0], dtype=np.int)
+
+    # Adjust the origin of the contour:
+    # on the discrete contour cvec, find the closest point to the origin,
+    # then apply a circular shift to cvec to make this point the first one.
+    n0 = np.argmin(np.linalg.norm(cvec - origin, axis=1))
+    cvec = np.roll(cvec, -n0, axis=0)
+
+    # Compute the discrete arc length along the contour
+    Lvec = compute_discrete_arc_length(cvec)
+
+    # Compute the index of the mid-point for each window
+    # Note that the arc length is being used as a coordinate along the curve
+    n = np.zeros((I,), dtype=np.int)
+    for i in range(I):
+        n[i] = np.argmin(np.abs(Lvec - Lvec[-1] / I * (0.5 + i)))
+    cvec_sel = cvec[n, :]
+
+    # Compute the parameter of the first mid-point
+    t = np.linspace(0, 1, N, endpoint=False)
+    c = splevper(t, s)
+    m = np.argmin(np.linalg.norm(np.transpose(c) - np.flip(cvec[n[0]]), axis=1))
+
+    # Convert the index along the discrete contour to a position along the continuous contour
+    # When searching for the closest spline position to a window, remove already "used" locations
+    # so that the path does not come back on itself
+    t = np.linspace(t[m], t[m] + 1, N, endpoint=False)
+    c = splevper(t, s)
+    m = np.zeros((I,), dtype=np.int)
+    for i in range(I):
+        m[i] = np.argmin(np.linalg.norm(np.transpose(c) - np.flip(cvec[n[i]]), axis=1))
+        c = [c[0][m[i]+1::], c[1][m[i]+1::]]
+    m = m+1
+    m[0] = 0
+    m = np.cumsum(m)
+    t_sel = t[m]
+
+    return cvec_sel, t_sel
 
 def spline_int_coordinates(N, s):
     """
