@@ -19,7 +19,7 @@ from .displacementestimation import (
 )
 from .splineutils import splevper, spline_to_param_image, subdivide_curve_discrete
 from .windowing import create_windows, extract_signals, boundaries_image
-from .results import Results
+from .store.results import Results
 from .utils import load_alldata
 from . import utils
 import matplotlib.pyplot as plt

@@ -11,8 +11,8 @@ import dill
 from nd2reader import ND2Reader
 import yaml
 
-from .parameters import Param
-from .dataset import MultipageTIFF, TIFFSeries, ND2, H5
+from .store.parameters import Param
+from .store.dataset import MultipageTIFF, TIFFSeries, ND2, H5
 from .folders import Folders
 
 from .analysis_par import analyze_morphodynamics

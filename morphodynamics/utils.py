@@ -6,8 +6,8 @@ import skimage.io
 import pandas as pd
 from pathlib import Path
 
-from .parameters import Param
-from .dataset import TIFFSeries, MultipageTIFF, ND2, H5
+from .store.parameters import Param
+from .store.dataset import TIFFSeries, MultipageTIFF, ND2, H5
 
 
 def load_alldata(folder_path, load_results=False, param=None):
