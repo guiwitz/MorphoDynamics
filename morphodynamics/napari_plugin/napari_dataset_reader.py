@@ -11,7 +11,7 @@ https://napari.org/docs/dev/plugins/for_plugin_developers.html
 """
 import numpy as np
 from napari_plugin_engine import napari_hook_implementation
-from morphodynamics.dataset import MultipageTIFF
+from ..store.dataset import MultipageTIFF
 
 @napari_hook_implementation
 def napari_get_reader(path):

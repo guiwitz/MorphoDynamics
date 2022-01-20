@@ -21,7 +21,7 @@ from dask_jobqueue import SLURMCluster
 from dask.distributed import Client, LocalCluster
 
 from .folder_list_widget import FolderListWidget
-from ..parameters import Param
+from ..store.parameters import Param
 from ..utils import dataset_from_param, load_alldata, export_results_parameters
 from ..analysis_par import analyze_morphodynamics, segment_single_frame
 #from ..deep_paint_plugin.deep_paint import DeepPaintWidget
