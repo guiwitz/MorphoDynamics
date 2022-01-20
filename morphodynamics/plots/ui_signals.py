@@ -15,7 +15,7 @@ def show_signals(param, data, res, mode, size=(16, 9), export=True):
     for m in range(len(data.signal_name)):
         for j in range(res.mean.shape[1]):
             plt.figure(f.number)
-            show_signals_aux(param, data, res, m, j, mode)
+            show_signals_aux(data, res, m, j, mode)
             if export:
                 pp.savefig()
     if export:
@@ -46,7 +46,6 @@ class Signals:
             # plt.figure(self.fig.number)
             with out:
                 self.fig, self.ax = show_signals_aux(
-                    self.param,
                     self.data,
                     self.res,
                     self.get_signal(change["new"]),
@@ -66,7 +65,6 @@ class Signals:
             with out:
                 # plt.figure(self.fig.number)
                 self.fig, self.ax = show_signals_aux(
-                    self.param,
                     self.data,
                     self.res,
                     self.get_signal(signal_selector.value),
@@ -86,7 +84,6 @@ class Signals:
             with out:
                 # plt.figure(self.fig.number)
                 self.fig, self.ax = show_signals_aux(
-                    self.param,
                     self.data,
                     self.res,
                     self.get_signal(signal_selector.value),
@@ -101,7 +98,6 @@ class Signals:
         with out:
             self.fig, self.ax = plt.subplots(figsize=(8, 6))
             self.fig, self.ax = show_signals_aux(
-                self.param,
                 self.data,
                 self.res,
                 self.get_signal(signal_selector.value),

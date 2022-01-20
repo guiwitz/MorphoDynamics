@@ -19,7 +19,7 @@ def show_analysis(data, param, res):
 
     if param.showCircularity:
         # with out:
-        fig, ax = show_circularity(param, data, res)
+        fig, ax = show_circularity(data, res)
         fig.savefig(os.path.join(param.analysis_folder, "Circularity.png"))
         plt.close()
 
@@ -37,7 +37,7 @@ def show_analysis(data, param, res):
         fig.savefig(os.path.join(param.analysis_folder, "Displacement.png"))
         plt.close()
 
-        fig, ax = show_cumdisplacement(param, res)
+        fig, ax = show_cumdisplacement(res)
         fig.savefig(os.path.join(param.analysis_folder, "Cumul_Displacement.png"))
         plt.close()
 
@@ -50,7 +50,7 @@ def show_analysis(data, param, res):
         er.save_movie("cumulative displacement")
 
     if param.showCurvature:
-        fig, ax = show_curvature(param, data, res)
+        fig, ax = show_curvature(data, res)
         fig.savefig(os.path.join(param.analysis_folder, "Curvature.png"))
         plt.close()
 

@@ -88,7 +88,7 @@ class OutputUI:
         self.outputs = []
         with self.out1:
             self.fig1, _ = show_circularity(
-                self.param, self.data, self.res, size=(8, 3)
+                self.data, self.res, size=(8, 3)
             )
             display(self.fig1.canvas)  
 
@@ -129,7 +129,7 @@ class OutputUI:
 
         self.out4 = ipw.Output()
         with self.out4:
-            self.fig4, _ = show_cumdisplacement(self.param, self.res, size=(8, 4.5))
+            self.fig4, _ = show_cumdisplacement(self.res, size=(8, 4.5))
             display(self.fig4.canvas)
         self.outputs.append(ipw.HBox([self.out4, self.wimage_out], layout=box_layout))
         self.names.append("Cumul. Displacement")

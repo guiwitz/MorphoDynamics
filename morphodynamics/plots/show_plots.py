@@ -6,27 +6,19 @@ import imageio
 from matplotlib.colors import Normalize
 import ipywidgets as ipw
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-
-# from matplotlib.backends.backend_pdf import PdfPages
 from scipy.interpolate import splev
-
-#from splineutils import spline_contour_length, spline_area, spline_curvature, splevper
-
-#from ..splineutils import edge_colored_by_displacement, edge_colored_by_curvature, enlarge_contour
 
 from .. import splineutils
 
 out = ipw.Output()
 
 
-def show_circularity(param, data, res, size=(16, 9)):
+def show_circularity(data, res, size=(16, 9)):
     """
     Display length, area and circularity information for time-lapse.
 
     Parameters
     ----------
-    param: param object
-        created from parameters.Param
     data: data object
         created from dataset.Data
     res: res object
@@ -311,12 +303,11 @@ def show_edge_scatter(N, s1, s2, t1, t2, d, dmax=None, fig_ax=None):
     return fig, ax
 
 def show_edge_raster_coloured_by_feature(
-    param, data, res, k, feature, N=None, width=1, fig_ax=None, normalize=False, cmap_name='seismic'):
+    data, res, k, feature, N=None, width=1, fig_ax=None, normalize=False, cmap_name='seismic'):
     """Display the rasterized contour colored by a given feature on top of image.
 
     Parameters
     ----------
-    param : param object
     data : data object
     res : result object
     k : int
@@ -408,7 +399,7 @@ def colorize_raster(im, cmap_name, min_val=None, max_val=None, mask=None, alpha=
 def show_displacement(param, res, size=(16, 9), fig_ax=None):
 
     if fig_ax is None:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=size)
     else:
         fig, ax = fig_ax
         plt.figure(fig.number)
@@ -424,17 +415,15 @@ def show_displacement(param, res, size=(16, 9), fig_ax=None):
         cmax = param.scaling_disp
     else:
         cmax = np.max(np.abs(res.displacement))
-    # plt.clim(-cmax, cmax)
     im.set_clim(-cmax, cmax)
-    # plt.xticks(range(0, velocity.shape[1], 5))
 
     return fig, ax
 
 
-def show_cumdisplacement(param, res, size=(16, 9), fig_ax=None):
+def show_cumdisplacement(res, size=(16, 9), fig_ax=None):
 
     if fig_ax is None:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=size)
     else:
         fig, ax = fig_ax
         plt.figure(fig.number)
@@ -454,15 +443,13 @@ def show_cumdisplacement(param, res, size=(16, 9), fig_ax=None):
 
 
 def show_signals_aux(
-    param, data, res, signal_index, layer_index, mode, fig_ax=None, size=(16, 9), layer_title=False
+    data, res, signal_index, layer_index, mode, fig_ax=None, size=(16, 9), layer_title=False
 ):
     """
     Display window-kymograph of a signal.
 
     Parameters
     ----------
-    param: param object
-        created from parameters.Param
     data: data object
         created from dataset.Data
     res: res object
@@ -488,7 +475,7 @@ def show_signals_aux(
     """
 
     if fig_ax is None:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=size)
     else:
         fig, ax = fig_ax
         ax.clear()
@@ -560,12 +547,11 @@ def save_signals(param, data, res, modes=None, size=(16, 9)):
             )
 
 
-def show_curvature(param, data, res, cmax=None, fig_ax=None):
+def show_curvature(data, res, cmax=None, fig_ax=None):
     """Display curvature as a function of time
 
     Parameters
     ----------
-    param : param object
     data : data object
     res : result object
     cmax : float, optional
