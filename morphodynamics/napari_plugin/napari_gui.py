@@ -9,7 +9,7 @@ from pathlib import Path
 from PyQt5.QtWidgets import QGridLayout
 from napari_plugin_engine import napari_hook_implementation
 from qtpy.QtWidgets import (QWidget, QPushButton, QSpinBox,
-QVBoxLayout, QLabel, QComboBox,
+QVBoxLayout, QLabel, QComboBox, QCheckBox,
 QTabWidget, QListWidget, QFileDialog, QScrollArea, QAbstractItemView)
 
 import numpy as np
@@ -178,6 +178,9 @@ class MorphoWidget(QWidget):
         btn_run = QPushButton("Run analysis")
         btn_run.clicked.connect(self._on_run_analysis)
         self.settings_vgroup.glayout.addWidget(btn_run, 4, 0)
+        self.check_use_dask = QCheckBox('Use dask')
+        self.check_use_dask.setChecked(False)
+        self.settings_vgroup.glayout.addWidget(self.check_use_dask, 4, 1)
 
         # display options
         self.display_wlayers = QListWidget()
@@ -295,23 +298,36 @@ class MorphoWidget(QWidget):
     def _on_run_analysis(self):
         """Run full morphodynamics analysis"""
 
-        if self.cluster is None:
+        if self.cluster is None and self.check_use_dask.isChecked():
             self.initialize_dask()
         
+        model = None
         if self.param.seg_algo == 'conv_paint':
             if self.param.random_forest is None:
                 if self.conv_paint_widget.random_forest is not None:
                     self.conv_paint_widget.save_model()
                 else:
                     self.conv_paint_widget.load_model()
+                model=self.conv_paint_widget.random_forest
                     #raise Exception('No model found. Please train a model first.')
 
-        with Client(self.cluster) as client:
+        # run with dask if selected
+        if self.check_use_dask.isChecked():
+            with Client(self.cluster) as client:
+                self.res = analyze_morphodynamics(
+                    data=self.data,
+                    param=self.param,
+                    client=client,
+                    model=model
+                )
+        else:
             self.res = analyze_morphodynamics(
-                data=self.data,
-                param=self.param,
-                client=client,
-            )
+                    data=self.data,
+                    param=self.param,
+                    client=None,
+                    model=model
+                )
+        
         self._on_load_windows()
         export_results_parameters(self.param, self.res)
 
