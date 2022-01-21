@@ -135,7 +135,7 @@ class EdgeRasterized:
         """
 
         if mode == "curvature":
-            x = edge_colored_by_features(
+            x, _ = edge_colored_by_features(
                 data=self.data,
                 res=self.res,
                 t=k,
@@ -143,7 +143,7 @@ class EdgeRasterized:
                 enlarge_width=3,
             )
         else:
-            x = edge_colored_by_features(
+            x, _ = edge_colored_by_features(
                 data=self.data,
                 res=self.res,
                 t=k,
