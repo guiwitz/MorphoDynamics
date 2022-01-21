@@ -30,19 +30,29 @@ class Param:
         """
 
         # Output directory
-        self.analysis_folder = Path(analysis_folder)
-
-        # type of data
-        self.data_type = data_type
+        if analysis_folder is not None:
+            self.analysis_folder = Path(analysis_folder)
+        else:
+            self.analysis_folder = None
 
         # path to data
-        self.data_folder = Path(data_folder)
+        if data_folder is not None:
+            self.data_folder = Path(data_folder)
+        else:
+            self.data_folder = None
 
         # path to segmentation
         self.seg_folder = Path(seg_folder)
+        if seg_folder is not None:
+            self.seg_folder = Path(seg_folder)
+        else:
+            self.seg_folder = None
 
         # set threshold
         self.T = T
+
+        # type of data
+        self.data_type = data_type
 
         # name of channel to use for segmentation
         self.morpho_name = morpho_name
