@@ -42,7 +42,6 @@ class Param:
             self.data_folder = None
 
         # path to segmentation
-        self.seg_folder = Path(seg_folder)
         if seg_folder is not None:
             self.seg_folder = Path(seg_folder)
         else:
