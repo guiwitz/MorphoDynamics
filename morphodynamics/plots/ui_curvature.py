@@ -14,11 +14,12 @@ class Curvature:
         self.data = data
         self.res = res
 
-        self.curvature = np.zeros((self.param.n_curve, self.data.K))
+        num_points = 3*np.max([len(s[0]) for s in self.res.spline])
+        self.curvature = np.zeros((num_points, self.data.K))
         for k in range(self.data.K):
             self.curvature[:, k] = spline_curvature(
                 self.res.spline[k],
-                np.linspace(0, 1, 3*len(self.res.spline[k][0]), endpoint=False),
+                np.linspace(0, 1, num_points, endpoint=False),
             )
 
     def create_interface(self):
