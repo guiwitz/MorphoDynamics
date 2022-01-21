@@ -9,6 +9,11 @@ from pathlib import Path
 from .store.parameters import Param
 from .store.dataset import TIFFSeries, MultipageTIFF, ND2, H5
 
+# https://stackoverflow.com/a/2121918
+import sys
+from morphodynamics.store import results
+sys.modules['morphodynamics.results'] = results
+
 
 def load_alldata(folder_path, load_results=False, param=None):
     """
