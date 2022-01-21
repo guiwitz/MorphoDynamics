@@ -24,7 +24,6 @@ from .folder_list_widget import FolderListWidget
 from ..store.parameters import Param
 from ..utils import dataset_from_param, load_alldata, export_results_parameters
 from ..analysis_par import analyze_morphodynamics, segment_single_frame
-#from ..deep_paint_plugin.deep_paint import DeepPaintWidget
 from napari_convpaint import ConvPaintWidget
 from .VHGroup import VHGroup
 
