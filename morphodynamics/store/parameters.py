@@ -1,3 +1,4 @@
+from pathlib import Path
 class Param:
     """Object storing relevant information regarding the processing,
     e.g. the window size, the analyzed signal, the type of segmentation used.
@@ -14,9 +15,10 @@ class Param:
         morpho_name=None,
         signal_name=None,
         max_time=None,
-        #switch_TZ=False,
-        ilastik=False,
         seg_algo="farid",
+        lambda_=10,
+        width=5,
+        depth=5,
     ):
 
         """Standard __init__ method.
@@ -28,16 +30,16 @@ class Param:
         """
 
         # Output directory
-        self.analysis_folder = analysis_folder
+        self.analysis_folder = Path(analysis_folder)
 
         # type of data
         self.data_type = data_type
 
         # path to data
-        self.data_folder = data_folder
+        self.data_folder = Path(data_folder)
 
         # path to segmentation
-        self.seg_folder = seg_folder
+        self.seg_folder = Path(seg_folder)
 
         # set threshold
         self.T = T
@@ -53,7 +55,7 @@ class Param:
 
         # Smoothing parameter for the spline curve representing the contour of the cell
         # self.lambda_ = 0
-        self.lambda_ = 1e2
+        self.lambda_ = lambda_
         # self.lambda_ = 1e3
 
         # Number of points in the spline
@@ -67,8 +69,8 @@ class Param:
         # self.J = 5
 
         # Dimensions of the sampling windows
-        self.width = 10
-        self.depth = 10
+        self.width = width
+        self.depth = depth
 
         # max time
         self.max_time = max_time
@@ -105,17 +107,3 @@ class Param:
 
         # scalings to use with random forest
         self.scalings = [1,2]
-
-        # Figure parameters
-        self.showSegmentation = False
-        self.showWindows = False
-        self.showCircularity = False
-        self.showEdgeOverview = False
-        self.showEdgeVectorial = False
-        self.showEdgeRasterized = False
-        self.showCurvature = False
-        self.showDisplacement = False
-        self.showSignals = False
-        self.showCorrelation = False
-        self.showFourierDescriptors = False
-        self.edgeNormalization = "frame-by-frame"
