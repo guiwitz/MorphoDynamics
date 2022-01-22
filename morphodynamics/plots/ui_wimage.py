@@ -9,6 +9,7 @@ import skimage.segmentation
 from skimage.measure import find_contours
 import matplotlib
 cmap2 = matplotlib.colors.ListedColormap (np.array([[1,0,0,0.5],[1,0,0,0.5]]))
+from IPython.display import display
 
 from ..windowing import (
     calculate_windows_index,
@@ -63,7 +64,8 @@ class Wimage:
         self.show_text_choice = ipw.Checkbox(description="Show labels", value=True)
         self.show_text_choice.observe(self.update_text_vis, names="value")
 
-        with self.out:
+        #with self.out:
+        with plt.ioff():    
             self.fig, self.ax = plt.subplots(figsize=(5, 5))
             self.ax.set_title(f"Time:")
 
@@ -71,11 +73,13 @@ class Wimage:
             self.wplot = None#self.ax.imshow(np.zeros((20,20)), cmap=cmap2)
             self.tplt = None
             self.cplot = None
+            #display(self.fig.canvas)
 
-            self.fig.show()
+            #self.fig.show()
 
         self.interface = ipw.HBox([
-            self.out,
+            #self.out,
+            self.fig.canvas,
             ipw.VBox([
                 self.time_slider, self.intensity_range_slider, self.display_channel_ipw,
                 self.show_windows_choice, self.show_text_choice])
