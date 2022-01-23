@@ -65,6 +65,7 @@ class Wimage:
         self.show_text_choice.observe(self.update_text_vis, names="value")
 
         #with self.out:
+        # https://github.com/matplotlib/ipympl/issues/366#issuecomment-937519285
         with plt.ioff():    
             self.fig, self.ax = plt.subplots(figsize=(5, 5))
             self.ax.set_title(f"Time:")
