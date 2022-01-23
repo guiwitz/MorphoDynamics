@@ -671,7 +671,7 @@ def compute_displacement(s_all, t_all, t0_all):
     return displacements
 
 
-def segment_single_frame(param, k, save_path, model=None):
+def segment_single_frame(param, k, save_path, model=None, return_image=False):
     """Segment frame k of segmentation image defined in param object
     and save to disk.
 
@@ -683,6 +683,8 @@ def segment_single_frame(param, k, save_path, model=None):
         frame index
     save_path : path
         path to folder where to save segmented image
+    model: sklearn model
+        random forest model to use for segmentation
     """
 
     _, _, data = load_alldata(folder_path=None, load_results=False, param=param)
@@ -714,6 +716,9 @@ def segment_single_frame(param, k, save_path, model=None):
         m,
         check_contrast=False,
     )
+
+    if return_image:
+        return m
 
 
 def segment_all(data, param, client=None, model=None):
