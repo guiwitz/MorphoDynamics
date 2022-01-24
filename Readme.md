@@ -17,7 +17,7 @@ pip install git+https://github.com/guiwitz/morphodynamics.git@v0.2.4
 To install the latest version of the software, please use:
 
 ```
-pip install --upgrade git+https://github.com/guiwitz/morphodynamics.git@master#egg=morphodynamics
+pip install --upgrade git+https://github.com/guiwitz/morphodynamics.git
 ```
 
 ## Notebooks
