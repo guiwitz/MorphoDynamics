@@ -1,4 +1,4 @@
-import math
+from ast import cmpop
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ from .. import splineutils
 out = ipw.Output()
 
 
-def show_circularity(data, res, size=(16, 9)):
+def show_geometry_props(data, res, size=(16, 9), titles=["Length", "Area", "Circularity"]):
     """
     Display length, area and circularity information for time-lapse.
 
@@ -25,6 +25,8 @@ def show_circularity(data, res, size=(16, 9)):
         created from results.Results
     size: tuple
         image size
+    titles: list
+        titles for each plot
 
     Returns
     -------
@@ -41,13 +43,61 @@ def show_circularity(data, res, size=(16, 9)):
 
     fig, ax = plt.subplots(1, 3, figsize=size)
     ax[0].plot(length)
-    ax[0].set_title("Length")
+    ax[0].set_title(titles[0])
 
     ax[1].plot(area)
-    ax[1].set_title("Area")
+    ax[1].set_title(titles[1])
 
-    ax[2].plot(length ** 2 / area / 4 / math.pi)
-    ax[2].set_title("Circularity = Length^2 / Area / 4 / pi")
+    ax[2].plot(length ** 2 / area / 4 / np.pi)
+    ax[2].set_title(titles[2])
+
+    fig.tight_layout()
+
+    return fig, ax
+
+def show_geometry(data, res, size=(16, 9), prop='length', title=None):
+    """
+    Display length, area and circularity information for time-lapse.
+
+    Parameters
+    ----------
+    data: data object
+        created from dataset.Data
+    res: res object
+        created from results.Results
+    size: tuple
+        image size
+    prop: str
+        property to display
+    title: str
+        title for plot
+
+    Returns
+    -------
+    fig: matplotlib figure
+    ax: matplotlib axis
+
+    """
+
+    length = np.zeros((data.K,))
+    area = np.zeros((data.K,))
+    for k in range(data.K):
+        length[k] = splineutils.spline_contour_length(res.spline[k])
+        area[k] = splineutils.spline_area(res.spline[k])
+
+    title_dict = {'length': 'Length', 'area': 'Area', 'circularity': 'Circularity'}
+    fig, ax = plt.subplots(figsize=size)
+    if prop == 'length':
+        ax.plot(length)
+    elif prop == 'area':
+        ax.plot(area)
+    elif prop == 'circularity':
+        ax.plot(length ** 2 / area / 4 / np.pi)
+    
+    if title is None:
+        ax.set_title(title_dict[prop])
+    else:
+        ax.set_title(title)
 
     fig.tight_layout()
 
@@ -89,7 +139,8 @@ def show_edge_line_aux(N, s, color, lw, fig_ax=None):
     return fig, ax
 
 
-def show_edge_line(N, s, lw=0.1, fig_ax=None):
+def show_edge_line(
+    N, s, lw=0.1, fig_ax=None, cmap_name='jet', show_colorbar=True, colorbar_label="Frame index"):
     """
     Draw the cell-edge contour of all time points
     using a colored line.
@@ -103,6 +154,12 @@ def show_edge_line(N, s, lw=0.1, fig_ax=None):
     lw: curve thickness
     fig_ax: tuple
         matplotlib figure and axes
+    cmap_name: str
+        color map name
+    show_colorbar: bool
+        show colorbar
+    colorbar_label: str
+        colorbar label
 
     Returns
     -------
@@ -118,20 +175,25 @@ def show_edge_line(N, s, lw=0.1, fig_ax=None):
 
     # Evaluate splines at window locations and on fine-resolution grid
     K = len(s)
-    cmap = plt.cm.get_cmap("jet")
+    cmap = plt.cm.get_cmap(cmap_name)
 
     for k in range(K):
         fig, ax = show_edge_line_aux(N, s[k], cmap(k / (K - 1)), lw, fig_ax=(fig, ax))
-    fig.colorbar(
-        plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K - 1), cmap=cmap),
-        label="Frame index",
-    )
+    
+    if show_colorbar:
+        fig.colorbar(
+            plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K - 1), cmap=cmap),
+            label=colorbar_label,
+        )
 
     fig.tight_layout()
     return fig, ax
 
 
-def show_edge_overview(param, data, res, lw=0.1, size=(12, 9), fig_ax=None):
+def show_edge_overview(
+    param, data, res, lw=0.1, size=(12, 9), fig_ax=None,
+    title="Edge overview", cmap_image='gray', cmap_contour='jet', 
+    show_colorbar=True, colorbar_label="Frame index"):
     """
     Display image of first time point and all contour splines
     overlayed on top.
@@ -150,6 +212,16 @@ def show_edge_overview(param, data, res, lw=0.1, size=(12, 9), fig_ax=None):
         image size
     fig_ax: tuple
         matplotlib figure and axes
+    title: str
+        title for plot
+    cmap_image: matplotlib color map
+        image color map
+    cm_contour: matplotlib color map
+        contour color map
+    show_colorbar: bool
+        show colorbar
+    colorbar_label: str
+        colorbar label
 
     Returns
     -------
@@ -163,9 +235,11 @@ def show_edge_overview(param, data, res, lw=0.1, size=(12, 9), fig_ax=None):
     else:
         fig, ax = fig_ax
 
-    ax.set_title("Edge overview")
-    ax.imshow(data.load_frame_morpho(0), cmap="gray")
-    fig, ax = show_edge_line(param.n_curve, res.spline, lw, (fig, ax))
+    ax.set_title(title)
+    ax.imshow(data.load_frame_morpho(0), cmap=cmap_image)
+    fig, ax = show_edge_line(
+        param.n_curve, res.spline, lw, (fig, ax),
+        cmap_name=cmap_contour, show_colorbar=show_colorbar, colorbar_label=colorbar_label)
     
     fig.tight_layout()
 
@@ -407,7 +481,36 @@ def colorize_raster(im, cmap_name, min_val=None, max_val=None, mask=None, alpha=
     c *= np.stack((mask, mask, mask, mask), -1)
     return c
 
-def show_displacement(param, res, size=(16, 9), fig_ax=None):
+def show_displacement(
+    res, size=(4, 3), fig_ax=None, title="Displacement", cmap_name='seismic',
+    show_colorbar=True, colorbar_label='Displacement [pixels]', xlabel="Frame index",
+    ylabel="Window index"
+    ):
+    """
+    Show displacement field.
+
+    Parameters
+    ----------
+    res : result object
+    size : tuple, optional
+        figure size, default (4, 3)
+    fig_ax : tuple, optional
+        (fig, ax), by default None
+    title : str, optional
+        title, by default "Displacement"
+    cmap_name : str, optional
+        colormap, by default 'seismic'
+    show_colorbar : bool, optional
+        If true, add colorbar, default True
+    colorbar_label : str, optional
+        color bar title, by default 'Displacement [pixels]'
+
+    Returns
+    -------
+    fig : matplotlib figure
+    ax : matplotlib axis
+
+    """
 
     if fig_ax is None:
         fig, ax = plt.subplots(figsize=size)
@@ -415,17 +518,15 @@ def show_displacement(param, res, size=(16, 9), fig_ax=None):
         fig, ax = fig_ax
         plt.figure(fig.number)
 
-    ax.set_title("Displacement")
-    im = ax.imshow(res.displacement, cmap="seismic")
+    ax.set_title(title)
+    im = ax.imshow(res.displacement, cmap=cmap_name)
     plt.axis("auto")
-    ax.set_xlabel("Frame index")
-    ax.set_ylabel("Window index")
-    plt.colorbar(im, label="Displacement [pixels]")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    if show_colorbar:
+        plt.colorbar(im, label=colorbar_label)
 
-    if hasattr(param, "scaling_disp"):
-        cmax = param.scaling_disp
-    else:
-        cmax = np.max(np.abs(res.displacement))
+    cmax = np.max(np.abs(res.displacement))
     im.set_clim(-cmax, cmax)
 
     fig.tight_layout()
@@ -433,7 +534,36 @@ def show_displacement(param, res, size=(16, 9), fig_ax=None):
     return fig, ax
 
 
-def show_cumdisplacement(res, size=(16, 9), fig_ax=None):
+def show_cumdisplacement(
+    res, size=(4, 3), fig_ax=None, title="Cumul. Displacement", cmap_name='seismic',
+    show_colorbar=True, colorbar_label='Cumul. Displacement [pixels]', xlabel="Frame index",
+    ylabel="Window index"
+    ):
+    """
+    Show displacement field.
+
+    Parameters
+    ----------
+    res : result object
+    size : tuple, optional
+        figure size, default (4, 3)
+    fig_ax : tuple, optional
+        (fig, ax), by default None
+    title : str, optional
+        title, by default "Cumul. Displacement"
+    cmap_name : str, optional
+        colormap, by default 'seismic'
+    show_colorbar : bool, optional
+        If true, add colorbar, default True
+    colorbar_label : str, optional
+        color bar title, by default 'Cumul. Displacement [pixels]'
+
+    Returns
+    -------
+    fig : matplotlib figure
+    ax : matplotlib axis
+
+    """
 
     if fig_ax is None:
         fig, ax = plt.subplots(figsize=size)
@@ -443,12 +573,13 @@ def show_cumdisplacement(res, size=(16, 9), fig_ax=None):
 
     dcum = np.cumsum(res.displacement, axis=1)
 
-    ax.set_title("Cumulative displacement")
-    im = ax.imshow(dcum, cmap="seismic")
+    ax.set_title(title)
+    im = ax.imshow(dcum, cmap=cmap_name)
     plt.axis("auto")
-    ax.set_xlabel("Frame index")
-    ax.set_ylabel("Window index")
-    plt.colorbar(im, label="Displacement [pixels]")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    if show_colorbar:
+        plt.colorbar(im, label=colorbar_label)
     cmax = np.max(np.abs(dcum))
     im.set_clim(-cmax, cmax)
 
@@ -458,8 +589,10 @@ def show_cumdisplacement(res, size=(16, 9), fig_ax=None):
 
 
 def show_signals_aux(
-    data, res, signal_index, layer_index, mode, fig_ax=None, size=(16, 9), layer_title=False
-):
+    data, res, signal_index, layer_index, mode='Mean', fig_ax=None,
+    size=(16, 9), title=None, xlabel="Frame index", ylabel="Window index",
+    layer_title=False, cmap_name='seismic', show_colorbar=True, colorbar_label='Mean',
+    ):
     """
     Display window-kymograph of a signal.
 
@@ -473,14 +606,24 @@ def show_signals_aux(
         signal index
     layer_index: int
         layer index
-    mode; str
+    mode: str
         "Mean" or "Variance"
     fig_ax: tuple
         matplotlib figure and axes
     size: tuple
         figure size
+    title: str
+        figure title
+    xlabel: str
+        x-axis label
+    ylabel: str
+        y-axis label
     layer_title: bool
         If true, add only layer as title
+    show_colorbar: bool
+        If true, add colorbar, default True
+    colorbar_label: str
+        color bar title, by default 'Mean'
 
     Returns
     -------
@@ -501,24 +644,28 @@ def show_signals_aux(
     elif mode == "Variance":
         f = res.var[signal_index, layer_index, 0 : res.I[layer_index], :]
 
-    if layer_title:
+    if title is not None:
+        ax.set_title(title)
+    elif layer_title:
         ax.set_title("Layer: " + str(layer_index))
     else:
         ax.set_title("Signal: " + data.get_channel_name(signal_index) + " - Layer: " + str(layer_index))
 
-    im = ax.imshow(f, cmap="jet")
-    if len(fig.axes) == 2:
+    im = ax.imshow(f, cmap=cmap_name)
+    if show_colorbar:
+        if len(fig.axes) == 2:
 
-        fig.axes[1].clear()
-        fig.colorbar(im, cax=fig.axes[1], label=mode)
+            fig.axes[1].clear()
+            fig.colorbar(im, cax=fig.axes[1], label=mode)
 
-    else:
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes("right", size="5%", pad=0.05)
-        plt.colorbar(im, cax=cax, label=mode)
+        else:
+            divider = make_axes_locatable(ax)
+            cax = divider.append_axes("right", size="5%", pad=0.05)
+            plt.colorbar(im, cax=cax, label=mode)
+    
     plt.axis("auto")
-    ax.set_xlabel("Frame index")
-    ax.set_ylabel("Window index")
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
     ax.set_aspect("equal")
 
     fig.tight_layout()
@@ -564,7 +711,9 @@ def save_signals(param, data, res, modes=None, size=(16, 9)):
             )
 
 
-def show_curvature(data, res, cmax=None, fig_ax=None):
+def show_curvature(
+    data, res, cmax=None, fig_ax=None, title="Curvature", cmap_name="seismic", size=(5, 3),
+    show_colorbar=True):
     """Display curvature as a function of time
 
     Parameters
@@ -575,6 +724,14 @@ def show_curvature(data, res, cmax=None, fig_ax=None):
         maximal curvature value to display, default None
     fig_ax : tuple, optional
         (fig, ax), by default None
+    title : str, optional
+        title, by default "Curvature"
+    cmap_name : str, optional
+        colormap, default seismic
+    size : tuple, optional
+        figure size, default (16, 9)
+    show_colorbar : bool, optional
+        If true, add colorbar, default True
 
     Returns
     -------
@@ -584,7 +741,7 @@ def show_curvature(data, res, cmax=None, fig_ax=None):
     """
 
     if fig_ax is None:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=size)
     else:
         fig, ax = fig_ax
         ax.clear()
@@ -603,8 +760,9 @@ def show_curvature(data, res, cmax=None, fig_ax=None):
 
     ax.set_title("Curvature")
 
-    im = ax.imshow(curvature, cmap="seismic", vmin=-cmax, vmax=cmax)
-    plt.colorbar(im, label="Curvature", ax=ax)
+    im = ax.imshow(curvature, cmap=cmap_name, vmin=-cmax, vmax=cmax)
+    if show_colorbar:
+        plt.colorbar(im, label=title, ax=ax)
     plt.axis("auto")
     ax.set_xlabel("Frame index")
     ax.set_ylabel("Position on contour")
