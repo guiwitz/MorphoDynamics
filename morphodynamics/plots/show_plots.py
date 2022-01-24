@@ -573,7 +573,8 @@ def show_curvature(data, res, cmax=None, fig_ax=None):
         ax.clear()
         plt.figure(fig.number)
 
-    N = np.max([3*len(r[0]) for r in res.spline])
+    N = 3 * int(np.max([splineutils.spline_contour_length(r) for r in res.spline]))
+    #N = np.max([3*len(r[0]) for r in res.spline])
     curvature = np.zeros((N, data.K))
     for k in range(data.K):
         curvature[:, k] = splineutils.spline_curvature(

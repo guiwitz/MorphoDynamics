@@ -397,7 +397,8 @@ def edge_colored_by_features(data, res, t, feature, N=None, enlarge_width=1):
     """
 
     if N is None:
-        N = 3*len(res.spline[t][0])
+        N = 3 * int(spline_contour_length(res.spline[t]))
+        #N = 3*len(res.spline[t][0])
 
     if feature == 'curvature':
         t_param = np.linspace(0, 1, N, endpoint=False)
