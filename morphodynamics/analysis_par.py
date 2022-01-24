@@ -711,7 +711,7 @@ def segment_single_frame(param, k, save_path, model=None, return_image=False):
 
     m = m.astype(np.uint8)
 
-    m = skimage.io.imsave(
+    skimage.io.imsave(
         os.path.join(save_path, "segmented_k_" + str(k) + ".tif"),
         m,
         check_contrast=False,
@@ -719,6 +719,8 @@ def segment_single_frame(param, k, save_path, model=None, return_image=False):
 
     if return_image:
         return m
+    else:
+        return None
 
 
 def segment_all(data, param, client=None, model=None):
