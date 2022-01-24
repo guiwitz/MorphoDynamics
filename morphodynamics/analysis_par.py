@@ -17,8 +17,8 @@ from .displacementestimation import (
     map_contours2,
     align_curves,
 )
-from .splineutils import splevper, spline_to_param_image, subdivide_curve_discrete
-from .windowing import create_windows, extract_signals, boundaries_image
+from .splineutils import splevper, spline_to_param_image, subdivide_curve_discrete, spline_contour_length
+from .windowing import create_windows, extract_signals, boundaries_image, label_windows
 from .store.results import Results
 from .utils import load_alldata
 from . import utils
@@ -806,3 +806,35 @@ def spline_align_rasterize(N, s0, s, im_shape, align, filename):
     skimage.io.imsave(filename, c, check_contrast=False)
 
     return s0_shifted, origin, c
+
+def compute_spline_windows(param, k):
+    """Compute spline coordinates and window image for time point t
+
+    Parameters
+    ----------
+    param : param object
+    k : int
+        frame
+
+    Returns
+    -------
+    image: 2d array
+        current frame
+    spline_coord : list of 1d arrays
+        spline coordines
+    im_window: 2d array
+        window image (pixel of each window have given value)
+    """    """"""
+
+    image = segment_single_frame(
+        param, k, param.analysis_folder, return_image=True)
+    # spline
+    s, _, _ = contour_spline(image, param.lambda_)
+    N = 3 * int(spline_contour_length(s))
+    spline_coord = splev(np.linspace(0, 1, N + 1), s)
+    # windowing
+    spline_image = spline_to_param_image(N, image.shape, s, 0)
+    windows, J, I = create_windows(spline_image, splev(0, s), depth=param.depth, width=param.width)
+    im_windows = label_windows(image.shape, windows)
+
+    return image, spline_coord, im_windows
