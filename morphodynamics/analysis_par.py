@@ -824,6 +824,8 @@ def compute_spline_windows(param, k):
         spline coordines
     im_window: 2d array
         window image (pixel of each window have given value)
+    windows: 3d list
+        list of window indices as output by create_windows()
     """    """"""
 
     image = segment_single_frame(
@@ -837,4 +839,4 @@ def compute_spline_windows(param, k):
     windows, J, I = create_windows(spline_image, splev(0, s), depth=param.depth, width=param.width)
     im_windows = label_windows(image.shape, windows)
 
-    return image, spline_coord, im_windows
+    return image, spline_coord, im_windows, windows
