@@ -13,7 +13,6 @@ QVBoxLayout, QLabel, QComboBox, QCheckBox,
 QTabWidget, QListWidget, QFileDialog, QScrollArea, QAbstractItemView)
 
 import numpy as np
-from scipy.interpolate import splev
 import napari
 
 from dask import delayed
@@ -21,13 +20,11 @@ import dask.array as da
 from dask_jobqueue import SLURMCluster
 from dask.distributed import Client, LocalCluster
 
-from morphodynamics.segmentation import contour_spline
-
 from .folder_list_widget import FolderListWidget
 from ..store.parameters import Param
 from ..utils import dataset_from_param, load_alldata, export_results_parameters
-from ..analysis_par import analyze_morphodynamics, segment_single_frame
-from ..segmentation import contour_spline
+from ..analysis_par import analyze_morphodynamics, segment_single_frame, compute_spline_windows
+from ..windowing import label_windows
 from napari_convpaint import ConvPaintWidget
 from .VHGroup import VHGroup
 
@@ -352,14 +349,23 @@ class MorphoWidget(QWidget):
         export_results_parameters(self.param, self.res)
 
     def _on_run_seg_spline(self):
+
+        if self.param.seg_algo == 'conv_paint':
+            self.load_convpaint_model(return_model=False)
         step = self.viewer.dims.current_step[0]
-        temp_image = segment_single_frame(
-            self.param, step, self.param.analysis_folder, return_image=True)
-        s, u, _ = contour_spline(temp_image, self.param.lambda_)
-        N = 3 * len(s[0])
-        c = splev(np.linspace(0, 1, N + 1), s)
-        self.viewer.add_labels(temp_image)
-        self.viewer.add_shapes([np.c_[c[1], c[0]]], shape_type='polygon', edge_color='red', face_color=[0,0,0,0], edge_width=1)
+        image, c, im_windows, windows = compute_spline_windows(self.param, step)
+
+        layer_indices= self._get_layer_indices(windows)
+        col_dict, _ = self._create_color_shadings(layer_indices)
+
+        self.viewer.add_labels(image, name='segmentation')
+        self.viewer.add_labels(im_windows, name='windows')
+        self.viewer.layers['windows'].color = col_dict
+        self.viewer.layers['windows'].color_mode = 'direct' 
+        self.viewer.add_shapes(
+            data=[np.c_[c[1], c[0]]], shape_type='polygon', 
+            edge_color='red', face_color=[0,0,0,0], edge_width=1,
+            name='spline')
 
 
     def _on_segment_single_frame(self):
@@ -415,7 +421,7 @@ class MorphoWidget(QWidget):
         self.display_segmentation_folder.setText(self.segmentation_path.as_posix())
         self._on_update_param()
 
-    def load_convpaint_model(self):
+    def load_convpaint_model(self, return_model=True):
         """Load RF model for segmentation"""
         
         #if self.conv_paint_widget.random_forest is not None:
@@ -423,9 +429,12 @@ class MorphoWidget(QWidget):
         #else:
         if self.conv_paint_widget.random_forest is None:
             self.conv_paint_widget.load_model()
+        self.param.random_forest = self.conv_paint_widget.param.random_forest
         model=self.conv_paint_widget.random_forest
-            #raise Exception('No model found. Please train a model first.')
-        return model
+        if return_model:
+            return model
+        else:
+            return None
 
     def _on_load_dataset(self):
         """Having selected segmentation and signal channels, load the data"""
@@ -491,6 +500,42 @@ class MorphoWidget(QWidget):
         for ind, c in enumerate(self.param.signal_name):
             self.viewer.add_image(sig_stack[ind], name=f'signal {c}')
 
+    def _get_layer_indices(self, windows):
+        """Given a windows list of lists, create a dictionary where each entry i
+        contains the labels of all windows in layer i"""
+
+        layer_indices= {}
+        count=1
+        for i in range(len(windows)):
+            gather_indices=[]
+            for j in range(len(windows[i])):
+                gather_indices.append(count)
+                count+=1
+            layer_indices[i]=gather_indices
+        return layer_indices
+
+    def _create_color_shadings(self, layer_index):
+        """Given a layer index (from _get_layer_indices), create a dictionary where
+        each entry i contains the colors for label i. Colors are in shades of a given
+        color per layer."""
+
+        ## create a color dictionary, containing for each label index a color
+        ## currently each layer gets a color and labeles within it get a shade of that color
+        color_layers = ['red', 'blue', 'cyan', 'magenta']
+        color_pool = cycle(color_layers)
+        global_index=1
+        col_dict = {None: np.array([0., 0., 0., 1.], dtype=np.float32)}
+        layer_global_indices = {i: [] for i in range(len(layer_index))}
+        for (lay, col) in zip(layer_index, color_pool):
+            num_colors = len(layer_index[lay])
+            #color_array = napari.utils.colormaps.SIMPLE_COLORMAPS[col].map(np.linspace(0.1,1,num_colors))
+            color_array = cycle(napari.utils.colormaps.SIMPLE_COLORMAPS[col].map(np.array([0.3,0.45,0.6,0.75, 0.9])))
+            for ind2, col_index in zip(range(num_colors), color_array):
+                col_dict[global_index]=col_index
+                layer_global_indices[lay].append(global_index)
+                global_index+=1
+        return col_dict, layer_global_indices
+
     def _on_load_windows(self):
         """Add windows labels to the viewer"""
 
@@ -499,7 +544,6 @@ class MorphoWidget(QWidget):
             self.data.max_time,
             self.viewer.layers[self.param.morpho_name].data.shape[1],
             self.viewer.layers[self.param.morpho_name].data.shape[2]), dtype=np.uint16)
-        self.layer_indices= {}
         
         # load window indices and use them to fill window array
         # keep track of layer to which indices belong in self.layer_indices
@@ -507,32 +551,13 @@ class MorphoWidget(QWidget):
             name = Path(self.param.analysis_folder).joinpath(
                 'segmented', "window_k_" + str(t) + ".pkl")
             windows = pickle.load(open(name, 'rb'))
+            if t==0:
+                self.layer_indices= self._get_layer_indices(windows)
 
-            count=1
+            w_image[t, :, :] = label_windows(
+                shape=(self.data.shape[1], self.data.shape[2]), windows=windows)
 
-            for i in range(len(windows)):
-                gather_indices=[]
-                for j in range(len(windows[i])):
-                    w_image[t, windows[i][j][0], windows[i][j][1]]=count
-                    gather_indices.append(count)
-                    count+=1
-                self.layer_indices[i]=gather_indices
-
-        ## create a color dictionary, containing for each label index a color
-        ## currently each layer gets a color and labeles within it get a shade of that color
-        color_layers = ['red', 'blue', 'cyan', 'magenta']
-        color_pool = cycle(color_layers)
-        global_index=1
-        col_dict = {None: np.array([0., 0., 0., 1.], dtype=np.float32)}
-        self.layer_global_indices = {i: [] for i in range(len(self.layer_indices))}
-        for (lay, col) in zip(self.layer_indices, color_pool):
-            num_colors = len(self.layer_indices[lay])
-            #color_array = napari.utils.colormaps.SIMPLE_COLORMAPS[col].map(np.linspace(0.1,1,num_colors))
-            color_array = cycle(napari.utils.colormaps.SIMPLE_COLORMAPS[col].map(np.array([0.3,0.45,0.6,0.75, 0.9])))
-            for ind2, col_index in zip(range(num_colors), color_array):
-                col_dict[global_index]=col_index
-                self.layer_global_indices[lay].append(global_index)
-                global_index+=1
+        col_dict, self.layer_global_indices = self._create_color_shadings(self.layer_indices)
         
         # assign color dictionary to window layer colormap
         self.viewer.add_labels(w_image, name='windows')
