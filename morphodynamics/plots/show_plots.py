@@ -84,6 +84,8 @@ def show_edge_line_aux(N, s, color, lw, fig_ax=None):
     c = splev(np.linspace(0, 1, N + 1), s)
     ax.plot(c[0], c[1], color=color, zorder=50, lw=lw)
 
+    fig.tight_layout()
+
     return fig, ax
 
 
@@ -124,6 +126,8 @@ def show_edge_line(N, s, lw=0.1, fig_ax=None):
         plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K - 1), cmap=cmap),
         label="Frame index",
     )
+
+    fig.tight_layout()
     return fig, ax
 
 
@@ -162,6 +166,7 @@ def show_edge_overview(param, data, res, lw=0.1, size=(12, 9), fig_ax=None):
     ax.set_title("Edge overview")
     ax.imshow(data.load_frame_morpho(0), cmap="gray")
     fig, ax = show_edge_line(param.n_curve, res.spline, lw, (fig, ax))
+    
     fig.tight_layout()
 
     return fig, ax
@@ -220,7 +225,9 @@ def show_edge_vectorial_aux(param, data, res, k, curvature=False, fig_ax=None):
         f,
         fig_ax=(fig, ax),
     )  # Show edge structures (spline curves, displacement vectors/curvature)
-    plt.tight_layout()
+    
+    fig.tight_layout()
+    
     return fig, ax
 
 
@@ -300,6 +307,9 @@ def show_edge_scatter(N, s1, s2, t1, t2, d, dmax=None, fig_ax=None):
         zorder=400,
         lw=lw,
     )
+
+    fig.tight_layout()
+
     return fig, ax
 
 def show_edge_raster_coloured_by_feature(
@@ -358,6 +368,7 @@ def show_edge_raster_coloured_by_feature(
     ax.set_title("Frame " + str(k))
 
     fig.tight_layout()
+
     return fig, ax
 
 def colorize_raster(im, cmap_name, min_val=None, max_val=None, mask=None, alpha=0.5):
@@ -417,6 +428,8 @@ def show_displacement(param, res, size=(16, 9), fig_ax=None):
         cmax = np.max(np.abs(res.displacement))
     im.set_clim(-cmax, cmax)
 
+    fig.tight_layout()
+
     return fig, ax
 
 
@@ -438,6 +451,8 @@ def show_cumdisplacement(res, size=(16, 9), fig_ax=None):
     plt.colorbar(im, label="Displacement [pixels]")
     cmax = np.max(np.abs(dcum))
     im.set_clim(-cmax, cmax)
+
+    fig.tight_layout()
 
     return fig, ax
 
@@ -505,6 +520,8 @@ def show_signals_aux(
     ax.set_xlabel("Frame index")
     ax.set_ylabel("Window index")
     ax.set_aspect("equal")
+
+    fig.tight_layout()
 
     return fig, ax
 
@@ -591,5 +608,7 @@ def show_curvature(data, res, cmax=None, fig_ax=None):
     plt.axis("auto")
     ax.set_xlabel("Frame index")
     ax.set_ylabel("Position on contour")
+
+    fig.tight_layout()
 
     return fig, ax
