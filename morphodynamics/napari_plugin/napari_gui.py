@@ -13,6 +13,7 @@ QVBoxLayout, QLabel, QComboBox, QCheckBox,
 QTabWidget, QListWidget, QFileDialog, QScrollArea, QAbstractItemView)
 
 import numpy as np
+from scipy.interpolate import splev
 import napari
 
 from dask import delayed
@@ -20,10 +21,13 @@ import dask.array as da
 from dask_jobqueue import SLURMCluster
 from dask.distributed import Client, LocalCluster
 
+from morphodynamics.segmentation import contour_spline
+
 from .folder_list_widget import FolderListWidget
 from ..store.parameters import Param
 from ..utils import dataset_from_param, load_alldata, export_results_parameters
 from ..analysis_par import analyze_morphodynamics, segment_single_frame
+from ..segmentation import contour_spline
 from napari_convpaint import ConvPaintWidget
 from .VHGroup import VHGroup
 
@@ -105,7 +109,9 @@ class MorphoWidget(QWidget):
 
         # channel selection
         self.segm_channel = QListWidget()
+        self.segm_channel.setMaximumHeight(100)
         self.signal_channel = QListWidget()
+        self.signal_channel.setMaximumHeight(100)
         self.signal_channel.setSelectionMode(QAbstractItemView.ExtendedSelection)
 
         channel_group = VHGroup('2. Select channels to use', orientation='G')
@@ -124,12 +130,14 @@ class MorphoWidget(QWidget):
 
         # select saving place
         analysis_vgroup = VHGroup('4. Set location to save analysis', 'G')
-        analysis_vgroup.gbox.setMaximumHeight(200)
+        analysis_vgroup.gbox.setMaximumHeight(100)
         self._main_layout.addWidget(analysis_vgroup.gbox)
 
         self.btn_select_analysis = QPushButton("Set analysis folder")
-        self.display_analysis_folder, self.scroll_analysis = scroll_label('No selection.')
-        analysis_vgroup.glayout.addWidget(self.scroll_analysis, 0, 0)
+        self.display_analysis_folder = QLabel("No selection")
+        self.display_analysis_folder.setWordWrap(True)
+        #, self.scroll_analysis = scroll_label('No selection.')
+        analysis_vgroup.glayout.addWidget(self.display_analysis_folder, 0, 0)
         analysis_vgroup.glayout.addWidget(self.btn_select_analysis, 0, 1)
         
         segmentation_group = VHGroup('Alternative segmentation', 'G')
@@ -159,28 +167,39 @@ class MorphoWidget(QWidget):
         self.cell_diameter = QSpinBox()
         self.cell_diameter.setValue(20)
         self.cell_diameter.setMaximum(10000)
-        self.settings_vgroup.glayout.addWidget(QLabel('Cell diameter'), 1, 0)
+        self.cell_diameter_label = QLabel('Cell diameter')
+        self.settings_vgroup.glayout.addWidget(self.cell_diameter_label, 1, 0)
         self.settings_vgroup.glayout.addWidget(self.cell_diameter, 1, 1)
+
+        # smoothing
+        self.smoothing = QSpinBox()
+        self.smoothing.setMaximum(1000)
+        self.smoothing.setValue(1)
+        self.settings_vgroup.glayout.addWidget(QLabel('Smoothing'), 2, 0)
+        self.settings_vgroup.glayout.addWidget(self.smoothing, 2, 1)
 
         ## window options
         self.depth = QSpinBox()
         self.depth.setValue(10)
         self.depth.setMaximum(10000)
-        self.settings_vgroup.glayout.addWidget(QLabel('Window depth'), 2, 0)
-        self.settings_vgroup.glayout.addWidget(self.depth, 2, 1)
+        self.settings_vgroup.glayout.addWidget(QLabel('Window depth'), 3, 0)
+        self.settings_vgroup.glayout.addWidget(self.depth, 3, 1)
         self.width = QSpinBox()
         self.width.setValue(10)
         self.width.setMaximum(10000)
-        self.settings_vgroup.glayout.addWidget(QLabel('Window width'), 3, 0)
-        self.settings_vgroup.glayout.addWidget(self.width, 3, 1)
+        self.settings_vgroup.glayout.addWidget(QLabel('Window width'), 4, 0)
+        self.settings_vgroup.glayout.addWidget(self.width, 4, 1)
 
         # run analysis
         btn_run = QPushButton("Run analysis")
         btn_run.clicked.connect(self._on_run_analysis)
-        self.settings_vgroup.glayout.addWidget(btn_run, 4, 0)
+        self.settings_vgroup.glayout.addWidget(btn_run, 5, 0)
+        btn_run_single_segmentation = QPushButton("Run single")
+        btn_run_single_segmentation.clicked.connect(self._on_run_seg_spline)
+        self.settings_vgroup.glayout.addWidget(btn_run_single_segmentation, 5, 1)
         self.check_use_dask = QCheckBox('Use dask')
         self.check_use_dask.setChecked(False)
-        self.settings_vgroup.glayout.addWidget(self.check_use_dask, 4, 1)
+        self.settings_vgroup.glayout.addWidget(self.check_use_dask, 5, 2)
 
         # display options
         self.display_wlayers = QListWidget()
@@ -236,6 +255,7 @@ class MorphoWidget(QWidget):
         self.seg_algo.currentIndexChanged.connect(self._on_update_param)
         self.depth.valueChanged.connect(self._on_update_param)
         self.width.valueChanged.connect(self._on_update_param)
+        self.smoothing.valueChanged.connect(self._on_update_param)
 
         self.segm_channel.currentItemChanged.connect(self._on_update_param)
         self.signal_channel.itemSelectionChanged.connect(self._on_update_param)
@@ -260,7 +280,13 @@ class MorphoWidget(QWidget):
         """Update multiple entries of the param object."""
         
         self.param.seg_algo = self.seg_algo.currentText()
-        self.param.depth = self.depth.value()
+        if self.param.seg_algo != 'cellpose':
+            self.cell_diameter.setVisible(False)
+            self.cell_diameter_label.setVisible(False)
+        else:
+            self.cell_diameter.setVisible(True)
+            self.cell_diameter_label.setVisible(True)
+        self.param.lambda_ = self.smoothing.value()
         self.param.width = self.width.value()
         if self.segm_channel.currentItem() is not None:
             self.param.morpho_name = self.segm_channel.currentItem().text()
@@ -303,13 +329,7 @@ class MorphoWidget(QWidget):
         
         model = None
         if self.param.seg_algo == 'conv_paint':
-            if self.param.random_forest is None:
-                if self.conv_paint_widget.random_forest is not None:
-                    self.conv_paint_widget.save_model()
-                else:
-                    self.conv_paint_widget.load_model()
-                model=self.conv_paint_widget.random_forest
-                    #raise Exception('No model found. Please train a model first.')
+            model = self.load_convpaint_model()
 
         # run with dask if selected
         if self.check_use_dask.isChecked():
@@ -331,13 +351,26 @@ class MorphoWidget(QWidget):
         self._on_load_windows()
         export_results_parameters(self.param, self.res)
 
+    def _on_run_seg_spline(self):
+        step = self.viewer.dims.current_step[0]
+        temp_image = segment_single_frame(
+            self.param, step, self.param.analysis_folder, return_image=True)
+        s, u, _ = contour_spline(temp_image, self.param.lambda_)
+        N = 3 * len(s[0])
+        c = splev(np.linspace(0, 1, N + 1), s)
+        self.viewer.add_labels(temp_image)
+        self.viewer.add_shapes([np.c_[c[1], c[0]]], shape_type='polygon', edge_color='red', face_color=[0,0,0,0], edge_width=1)
+
+
     def _on_segment_single_frame(self):
         """Segment single frame."""
         
         step = self.viewer.dims.current_step[0]
-        self.res = segment_single_frame(self.param, step, self.param.analysis_folder)
+        temp_image = segment_single_frame(
+            self.param, step, self.param.analysis_folder, return_image=True)
         
-        self.viewer.open(self.param.analysis_folder.joinpath("segmented_k_" + str(step) + ".tif"))
+        self.viewer.add_labels(temp_image)
+        #self.viewer.open(self.param.analysis_folder.joinpath("segmented_k_" + str(step) + ".tif"))
 
     def initialize_dask(self, event=None):
         """Initialize dask client.
@@ -381,6 +414,18 @@ class MorphoWidget(QWidget):
         self.segmentation_path = Path(str(QFileDialog.getExistingDirectory(self, "Select Directory")))
         self.display_segmentation_folder.setText(self.segmentation_path.as_posix())
         self._on_update_param()
+
+    def load_convpaint_model(self):
+        """Load RF model for segmentation"""
+        
+        #if self.conv_paint_widget.random_forest is not None:
+        #    self.conv_paint_widget.save_model()
+        #else:
+        if self.conv_paint_widget.random_forest is None:
+            self.conv_paint_widget.load_model()
+        model=self.conv_paint_widget.random_forest
+            #raise Exception('No model found. Please train a model first.')
+        return model
 
     def _on_load_dataset(self):
         """Having selected segmentation and signal channels, load the data"""
