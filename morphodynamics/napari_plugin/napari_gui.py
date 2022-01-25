@@ -98,6 +98,7 @@ class MorphoWidget(QWidget):
         # files
         self.file_list = FolderListWidget(napari_viewer)
         self.data_vgroup.glayout.addWidget(self.file_list)
+        self.file_list.setMaximumHeight(100)
 
         # Pick folder to analyse interactively
         btn_select_file_folder = QPushButton("Select data folder")
