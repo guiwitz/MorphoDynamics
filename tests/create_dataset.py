@@ -16,11 +16,11 @@ def make_dataset():
     signal_name = ["synth_ch2.h5", "synth_ch3.h5"]
     morpho_name = "synth_ch1.h5"
     self = InteractSeg(
-        expdir=expdir,
+        data_folder=expdir,
         analysis_folder=analysis_folder,
-        morpho_name=morpho_name,
-        signal_name=signal_name,
-        createUI=False,
+        seg_channel_name=morpho_name,
+        signal_channel_names=signal_name,
+        do_createUI=False,
         cores=1,
     )
     self.client = client

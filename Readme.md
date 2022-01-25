@@ -8,17 +8,23 @@ This software has been developed at Bern University by Cédric Vonesch (Science 
 
 ## Install the package
 
-This software can be installed via pip using the following command:
+The Morphodynamics package had undergone a massive change between version 0.2.4 and 0.3.0, in particular with a new interace in napari and a more customized way of generating post-processing plots. If you want to install the old 0.2.x series version, please use:
 
 ```
-pip install --upgrade git+https://github.com/guiwitz/morphodynamics.git@master#egg=morphodynamics
+pip install git+https://github.com/guiwitz/morphodynamics.git@v0.2.4
+```
+
+To install the latest version of the software, please use:
+
+```
+pip install --upgrade git+https://github.com/guiwitz/morphodynamics.git
 ```
 
 ## Notebooks
 
 While the software can be used via its API, notebooks implementing a user interface are also provided. You can download two notebooks for interactive analysis here:
 - [Morpho_segmentation.ipynb](https://guiwitz.github.io/MorphoDynamics/Morpho_segmentation.ipynb) where you can run cell segmentation and splitting interactively
-- [InterfaceFiguresTabs.ipynb](https://guiwitz.github.io/MorphoDynamics/InterfaceFiguresTabs.ipynb) where you can explore the data analysis output interactively
+- [Postprocessing.ipynb](https://guiwitz.github.io/MorphoDynamics/Postprocessing.ipynb) where you can generate post-processing figures for shape, displacement, intensities etc.
 
 ## Environment
 

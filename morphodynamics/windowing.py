@@ -97,7 +97,8 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
     Parameters
     ----------
     c_main: 2d array
-        A rasterized version of the contour, as obtained by rasterize_curve.
+        A rasterized version of the contour, as obtained 
+        by spline_to_param_image.
     origin: tuple
         (y, x) coordinates of the origin of the curve.
     J: int

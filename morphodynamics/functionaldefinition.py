@@ -1,10 +1,7 @@
 from scipy.interpolate import splev
 import numpy as np
 import math
-
-
-def splevper(t, s):
-    return splev(np.mod(t, 1), s)
+from .splineutils import splevper
 
 
 class Functional:

@@ -6,8 +6,13 @@ import skimage.io
 import pandas as pd
 from pathlib import Path
 
-from .parameters import Param
-from .dataset import TIFFSeries, MultipageTIFF, ND2, H5
+from .store.parameters import Param
+from .store.dataset import TIFFSeries, MultipageTIFF, ND2, H5
+
+# https://stackoverflow.com/a/2121918
+import sys
+from morphodynamics.store import results
+sys.modules['morphodynamics.results'] = results
 
 
 def load_alldata(folder_path, load_results=False, param=None):
@@ -102,6 +107,8 @@ def load_alldata(folder_path, load_results=False, param=None):
             bad_frames=param.bad_frames,
             max_time=param.max_time,
         )
+    else:
+        raise ValueError("Unknown data type")
 
     return param, res, data
 

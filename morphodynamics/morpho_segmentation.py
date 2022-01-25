@@ -11,8 +11,8 @@ import dill
 from nd2reader import ND2Reader
 import yaml
 
-from .parameters import Param
-from .dataset import MultipageTIFF, TIFFSeries, ND2, H5
+from .store.parameters import Param
+from .store.dataset import MultipageTIFF, TIFFSeries, ND2, H5
 from .folders import Folders
 
 from .analysis_par import analyze_morphodynamics
@@ -21,7 +21,7 @@ from .windowing import (
     create_windows,
     boundaries_image,
 )
-from .displacementestimation import rasterize_curve, splevper
+from .splineutils import splevper, spline_to_param_image
 from . import utils
 from .plots.ui_wimage import Wimage
 
@@ -368,7 +368,7 @@ class InteractSeg:
     def windows_for_plot(self, N, im_shape, time):
         """Create a window image"""
 
-        """c = rasterize_curve(
+        """c = spline_to_param_image(
             N, im_shape, self.res.spline[time], self.res.orig[time]
         )"""
         save_path = os.path.join(self.param.analysis_folder, "segmented")
