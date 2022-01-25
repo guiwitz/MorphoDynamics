@@ -1,5 +1,7 @@
 # Morphodynamics <img src="/images/logo.png" alt="alt text" width="50">
 
+[![tests](https://github.com/guiwitz/morphodynamics/workflows/tests/badge.svg)](https://github.com/guiwitz/morphodynamics/actions)
+
 This software can be used to analyze the dynamics of single-cells imaged by time-lapse fluorescence microscopy. The dynamics of morphology and fluorescence intensity distribution can be jointly analyzed through the segmentation and splitting of cells into a set of smaller regions (windows) that can be represented as two-dimensional grids to facilitate interpretation of events.
 
 This software has been developed at Bern University by Cédric Vonesch (Science IT Support and Pertz lab) and Guillaume Witz (Microscopy Imaging Center and Science IT Support) with the collaboration of Jakobus van Unen (Pertz lab).
