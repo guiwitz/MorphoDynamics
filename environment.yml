@@ -11,8 +11,5 @@ dependencies:
   - python-graphviz
   - pip:
     - cellpose
-    - git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
-    - bokeh>=0.13.0
-    - tqdm
-    - torchvision
-    
+    - morphodynamics
+    - bokeh>=0.13.0    
