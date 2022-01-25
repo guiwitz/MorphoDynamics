@@ -11,7 +11,6 @@ import numpy as np
 from tifffile import imread
 
 from .splineutils import fit_spline
-from napari_convpaint.conv_paint_utils import predict_image
 
 def segment_threshold(x, sigma, T):
     """Segment the cell image, possibly with automatic threshold selection."""
@@ -143,6 +142,8 @@ def segment_cellpose(model, x, diameter, location):
 def segment_conv_paint(x, random_forest):
     """ Segment image x using a trained classifier and
     the conv paint module. """
+    
+    from napari_convpaint.conv_paint_utils import predict_image
 
     m = predict_image(x, None, random_forest)
     m = m == 2
