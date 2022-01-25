@@ -1,6 +1,10 @@
 # Morphodynamics <img src="/images/logo.png" alt="alt text" width="50">
 
+[![License](https://img.shields.io/pypi/l/morphodynamics.svg?color=green)](https://github.com/guiwitz/morphodynamics/raw/master/LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/morphodynamics.svg?color=green)](https://pypi.org/project/morphodynamics)
+[![Python Version](https://img.shields.io/pypi/pyversions/napari-morphodynamics.svg?color=green)](https://python.org)
 [![tests](https://github.com/guiwitz/morphodynamics/workflows/tests/badge.svg)](https://github.com/guiwitz/morphodynamics/actions)
+
 
 This software can be used to analyze the dynamics of single-cells imaged by time-lapse fluorescence microscopy. The dynamics of morphology and fluorescence intensity distribution can be jointly analyzed through the segmentation and splitting of cells into a set of smaller regions (windows) that can be represented as two-dimensional grids to facilitate interpretation of events.
 
@@ -10,23 +14,51 @@ This software has been developed at Bern University by Cédric Vonesch (Science 
 
 ## Install the package
 
-The Morphodynamics package had undergone a massive change between version 0.2.4 and 0.3.0, in particular with a new interace in napari and a more customized way of generating post-processing plots. If you want to install the old 0.2.x series version, please use:
+You can simply install the package using
+
+```
+pip install morphodynamics
+```
+To use the napari interface, you will have in addition to install the ```napari-morphodynamics``` plugin:
+
+```
+pip install git+https://github.com/guiwitz/napari-morphodynamics.git
+```
+
+**Notes**
+### Versions
+
+The Morphodynamics package had undergone a massive change between version ```0.2.4``` and ```0.3.0```, in particular with a new interface in napari and a more customized way of generating post-processing plots. If you want to install the old 0.2.x series version, please use:
 
 ```
 pip install git+https://github.com/guiwitz/morphodynamics.git@v0.2.4
 ```
 
-To install the latest version of the software, please use:
+### nd2
+The default ```nd2reader``` sometimes fails to read files containing non-rectanuglar rois. In such cases, you can try to install instead a customized version of the reader:
 
 ```
-pip install --upgrade git+https://github.com/guiwitz/morphodynamics.git
+pip install git+https://github.com/guiwitz/nd2reader.git@master#egg=nd2reader
+```
+
+## Package usage
+
+This package can be used entirely programmatically to process data via its API. Examples for this can be found in the docs [here](https://guiwitz.github.io/MorphoDynamics/mydocs/Analysis_without_UI.html) and [here](https://guiwitz.github.io/MorphoDynamics/mydocs/usage_step_by_step.html).
+## napari-morphodynamics plugin
+
+The napari-morphodynamics plugin offers an interface to import, visualize and process data. A detailed description for its usage can be found in the [docs](https://guiwitz.github.io/MorphoDynamics/mydocs/Introduction.html). To install the plugin you can use:
+
+```
+pip pip install git+https://github.com/guiwitz/napari-morphodynamics.git
 ```
 
 ## Notebooks
 
-While the software can be used via its API, notebooks implementing a user interface are also provided. You can download two notebooks for interactive analysis here:
-- [Morpho_segmentation.ipynb](https://guiwitz.github.io/MorphoDynamics/Morpho_segmentation.ipynb) where you can run cell segmentation and splitting interactively
-- [Postprocessing.ipynb](https://guiwitz.github.io/MorphoDynamics/Postprocessing.ipynb) where you can generate post-processing figures for shape, displacement, intensities etc.
+In addition, the analysis can be run in the interactive notebook [Morpho_segmentation.ipynb](https://guiwitz.github.io/MorphoDynamics/Morpho_segmentation.ipynb). This can be useful when e.g. working remotely on a cluster.
+
+## Post-processing
+
+Once the images have been processed the output results can be used to plot various features of the experiment such as cell shape evolution, edge displacement, per windiw signal evolution etc. Examples on how to create such plots are given in the [Postprocessing.ipynb](https://guiwitz.github.io/MorphoDynamics/Postprocessing.ipynb) notebook.
 
 ## Environment
 
@@ -53,7 +85,7 @@ To update your local installation with the latest version available on GitHub, a
 
 ```
 conda activate morphodynamics 
-pip install --upgrade git+https://github.com/guiwitz/MorphoDynamics.git@master#egg=morphodynamics
+pip install --upgrade git+https://github.com/guiwitz/MorphoDynamics.git
 ```
 
 Note: close all notebooks (click on File | Close and Halt) prior to the update and reopen them afterwards.
