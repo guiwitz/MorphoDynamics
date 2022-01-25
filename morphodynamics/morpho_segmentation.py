@@ -11,8 +11,8 @@ import dill
 from nd2reader import ND2Reader
 import yaml
 
-from .parameters import Param
-from .dataset import MultipageTIFF, TIFFSeries, ND2, H5
+from .store.parameters import Param
+from .store.dataset import MultipageTIFF, TIFFSeries, ND2, H5
 from .folders import Folders
 
 from .analysis_par import analyze_morphodynamics
@@ -21,7 +21,7 @@ from .windowing import (
     create_windows,
     boundaries_image,
 )
-from .displacementestimation import rasterize_curve, splevper
+from .splineutils import splevper, spline_to_param_image
 from . import utils
 from .plots.ui_wimage import Wimage
 
@@ -259,6 +259,7 @@ class InteractSeg:
             self.param.data_type = "series"
             self.data = TIFFSeries(
                 self.param.data_folder,
+                channel_name=[self.param.morpho_name]+self.param.signal_name,
                 morpho_name=self.param.morpho_name,
                 signal_name=self.param.signal_name,
                 data_type=self.param.data_type,
@@ -270,6 +271,7 @@ class InteractSeg:
             self.param.data_type = "multi"
             self.data = MultipageTIFF(
                 self.param.data_folder,
+                channel_name=[self.param.morpho_name]+self.param.signal_name,
                 morpho_name=self.param.morpho_name,
                 signal_name=self.param.signal_name,
                 data_type=self.param.data_type,
@@ -282,6 +284,7 @@ class InteractSeg:
             self.param.data_type = "nd2"
             self.data = ND2(
                 self.param.data_folder,
+                channel_name=[self.param.morpho_name]+self.param.signal_name,
                 morpho_name=self.param.morpho_name,
                 signal_name=self.param.signal_name,
                 data_type=self.param.data_type,
@@ -293,6 +296,7 @@ class InteractSeg:
             self.param.data_type = "h5"
             self.data = H5(
                 self.param.data_folder,
+                channel_name=[self.param.morpho_name]+self.param.signal_name,
                 morpho_name=self.param.morpho_name,
                 signal_name=self.param.signal_name,
                 data_type=self.param.data_type,
@@ -309,8 +313,10 @@ class InteractSeg:
         # display image
         if self.do_createUI:
             self.wimage.update_dataset(self.param, self.data, self.res)
+            
             with self.wimage_out:
-                display(self.wimage.interface)
+                clear_output(wait=True)
+                display(ipw.HBox([self.wimage.fig.canvas, self.wimage.interface]))
             self.wimage.show_segmentation()
 
     def run_segmentation(self, b=None):
@@ -362,7 +368,7 @@ class InteractSeg:
     def windows_for_plot(self, N, im_shape, time):
         """Create a window image"""
 
-        """c = rasterize_curve(
+        """c = spline_to_param_image(
             N, im_shape, self.res.spline[time], self.res.orig[time]
         )"""
         save_path = os.path.join(self.param.analysis_folder, "segmented")
@@ -648,6 +654,9 @@ class InteractSeg:
                     ]
                 )
             )
+        with self.wimage_out:
+            clear_output(wait=True)
+            display(ipw.HBox([self.wimage.fig.canvas, self.wimage.interface]))
 
     def ui_folder_panel(self, work_type):
 

@@ -41,7 +41,7 @@
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
@@ -108,6 +108,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../mydocs/Napari_Plugin.html">
+   Napari plugin for Morphodynamics
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../mydocs/Analysis_with_morpho_segmentation.html">
    Segmentation and windowing
   </a>
@@ -171,6 +176,11 @@
      morphodynamics.plots package
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="../docs/source/morphodynamics.store.html">
+     morphodynamics.store package
+    </a>
+   </li>
   </ul>
  </li>
 </ul>
@@ -219,7 +229,7 @@
                 data-placement="left">.ipynb</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -267,14 +277,24 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
         </div>
     </div>
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>Synthetic data simulation</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="synthetic-data-simulation">
@@ -285,7 +305,7 @@
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">scipy.ndimage</span> <span class="kn">import</span> <span class="n">binary_fill_holes</span>
-<span class="kn">from</span> <span class="nn">morphodynamics.displacementestimation</span> <span class="kn">import</span> <span class="n">rasterize_curve</span><span class="p">,</span> <span class="n">fit_spline</span><span class="p">,</span> <span class="n">splevper</span>
+<span class="kn">from</span> <span class="nn">morphodynamics.splineutils</span> <span class="kn">import</span> <span class="n">splevper</span><span class="p">,</span> <span class="n">spline_to_param_image</span><span class="p">,</span> <span class="n">fit_spline</span>
 <span class="kn">import</span> <span class="nn">skimage.filters</span>
 <span class="kn">import</span> <span class="nn">skimage.util</span>
 <span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="k">as</span> <span class="nn">ipw</span>
@@ -341,7 +361,7 @@
     <span class="n">circle</span> <span class="o">=</span> <span class="n">circle</span> <span class="o">+</span> <span class="mf">0.1</span><span class="o">*</span><span class="n">move_noise</span>
     <span class="n">circle_s</span> <span class="o">=</span> <span class="n">fit_spline</span><span class="p">(</span><span class="n">circle</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
     
-    <span class="n">rasterized</span> <span class="o">=</span> <span class="n">rasterize_curve</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> <span class="n">circle_s</span><span class="p">,</span> <span class="n">deltat</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">rasterized</span> <span class="o">=</span> <span class="n">spline_to_param_image</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span> <span class="n">circle_s</span><span class="p">,</span> <span class="n">deltat</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">image</span> <span class="o">=</span> <span class="n">binary_fill_holes</span><span class="p">(</span><span class="n">rasterized</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
     <span class="n">image_stack</span><span class="p">[</span><span class="n">i</span><span class="p">,:,:]</span> <span class="o">=</span> <span class="n">image</span>
     
@@ -469,23 +489,21 @@
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Cédric Vonesch and Guillaume Witz<br/>
-        
-            &copy; Copyright 2021.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Cédric Vonesch and Guillaume Witz<br/>
+    
+        &copy; Copyright 2021.<br/>
+  </p>
+</footer>
 </main>
 
 

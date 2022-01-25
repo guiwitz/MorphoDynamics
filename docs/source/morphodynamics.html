@@ -41,7 +41,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
@@ -110,6 +110,11 @@
   </a>
  </li>
  <li class="toctree-l1">
+  <a class="reference internal" href="../../mydocs/Napari_Plugin.html">
+   Napari plugin for Morphodynamics
+  </a>
+ </li>
+ <li class="toctree-l1">
   <a class="reference internal" href="../../mydocs/Analysis_with_morpho_segmentation.html">
    Segmentation and windowing
   </a>
@@ -173,6 +178,11 @@
      morphodynamics.plots package
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="morphodynamics.store.html">
+     morphodynamics.store package
+    </a>
+   </li>
   </ul>
  </li>
 </ul>
@@ -221,7 +231,7 @@
                 data-placement="left">.rst</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -252,7 +262,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -280,11 +290,6 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-morphodynamics.dataset">
-   morphodynamics.dataset module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#module-morphodynamics.displacementestimation">
    morphodynamics.displacementestimation module
   </a>
@@ -300,28 +305,18 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-morphodynamics.morpho_plots">
-   morphodynamics.morpho_plots module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#module-morphodynamics.morpho_segmentation">
    morphodynamics.morpho_segmentation module
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-morphodynamics.parameters">
-   morphodynamics.parameters module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-morphodynamics.results">
-   morphodynamics.results module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#module-morphodynamics.segmentation">
    morphodynamics.segmentation module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.splineutils">
+   morphodynamics.splineutils module
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -352,7 +347,95 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>morphodynamics package</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#subpackages">
+   Subpackages
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#submodules">
+   Submodules
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.analysis_par">
+   morphodynamics.analysis_par module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.correlation">
+   morphodynamics.correlation module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.displacementestimation">
+   morphodynamics.displacementestimation module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.folders">
+   morphodynamics.folders module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.functionaldefinition">
+   morphodynamics.functionaldefinition module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.morpho_segmentation">
+   morphodynamics.morpho_segmentation module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.segmentation">
+   morphodynamics.segmentation module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.splineutils">
+   morphodynamics.splineutils module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.syntheticdata">
+   morphodynamics.syntheticdata module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.utils">
+   morphodynamics.utils module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.windowing">
+   morphodynamics.windowing module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics">
+   Module contents
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="section" id="morphodynamics-package">
@@ -363,16 +446,18 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="morphodynamics.plots.html">morphodynamics.plots package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots.animate_plots">morphodynamics.plots.animate_plots module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots.show_plots">morphodynamics.plots.show_plots module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots.ui_batch">morphodynamics.plots.ui_batch module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots.ui_correlation">morphodynamics.plots.ui_correlation module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots.ui_curvature">morphodynamics.plots.ui_curvature module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots.ui_edge_rasterized">morphodynamics.plots.ui_edge_rasterized module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots.ui_edge_vectorial">morphodynamics.plots.ui_edge_vectorial module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots.ui_outputs">morphodynamics.plots.ui_outputs module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots.ui_signals">morphodynamics.plots.ui_signals module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots.ui_wimage">morphodynamics.plots.ui_wimage module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="morphodynamics.store.html">morphodynamics.store package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="morphodynamics.store.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="morphodynamics.store.html#module-morphodynamics.store.dataset">morphodynamics.store.dataset module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="morphodynamics.store.html#module-morphodynamics.store.parameters">morphodynamics.store.parameters module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="morphodynamics.store.html#module-morphodynamics.store.results">morphodynamics.store.results module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="morphodynamics.store.html#module-morphodynamics.store">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -385,7 +470,7 @@
 <span id="morphodynamics-analysis-par-module"></span><h2>morphodynamics.analysis_par module<a class="headerlink" href="#module-morphodynamics.analysis_par" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.analysis_par.align_all">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">align_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.align_all" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">align_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.align_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Align all successive pairs of splines and generate for each spline
 a rasterized version.</p>
 <dl class="field-list simple">
@@ -395,7 +480,7 @@ a rasterized version.</p>
 <li><p><strong>im_shape</strong> (<em>tuple</em>) – intended shape of rasterized image</p></li>
 <li><p><strong>num_points</strong> (<em>int</em>) – number of estimated spline points</p></li>
 <li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
-<li><p><strong>client</strong> (<em>dask client</em>) – client connected to LocalCluster or SLURMCluster</p></li>
+<li><p><strong>client</strong> (<em>dask client</em><em>, </em><em>optional</em>) – client connected to LocalCluster or SLURMCluster</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -413,7 +498,7 @@ spline of frame k on spline of frame k-1</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.analysis_par.analyze_morphodynamics">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">analyze_morphodynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_seg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_seg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_segtrack</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.analyze_morphodynamics" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">analyze_morphodynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_seg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keep_seg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_segtrack</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.analyze_morphodynamics" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main function performing segmentation, windowing, signal
 extraction and displacement matching.</p>
 <dl class="field-list simple">
@@ -421,10 +506,12 @@ extraction and displacement matching.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>data object</em>) – as returned by morphodynamics.dataset</p></li>
 <li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
-<li><p><strong>client</strong> (<em>dask client</em>) – client can be connected to either LocalCluster or SLURMCLuster</p></li>
+<li><p><strong>client</strong> (<em>dask client</em><em>, </em><em>optional</em>) – client can be connected to either LocalCluster or SLURMCLuster</p></li>
 <li><p><strong>only_seg</strong> (<em>bool</em>) – Perfrom only segmentation without windowing</p></li>
 <li><p><strong>keep_seg</strong> (<em>bool</em>) – Store segmentation masks in memory</p></li>
 <li><p><strong>skip_segtrack</strong> (<em>bool</em>) – Skip segmentation and tracking (only possible if done previously)</p></li>
+<li><p><strong>model</strong> (<em>convpaint random forest model</em><em>, </em><em>optional</em>) – Segmentation model generated by napari convpaint plugin
+only used if param.seg_algo == “conv_paint”</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -446,7 +533,7 @@ extraction and displacement matching.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>data object</em>) – as returned by morphodynamics.dataset</p></li>
 <li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
-<li><p><strong>model</strong> (<em>cellpose model</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>model</strong> (<em>convpaint model</em><em>, </em><em>optional</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -474,6 +561,29 @@ on s_all[t] to points defined by t0_all on s_all[t-1]</p></li>
 <li><p><strong>t0_all</strong> (<em>1d array</em>) – each element is a list of spline paramters defining points centered on
 windows of frame corresponding to s_all[t-1]</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.analysis_par.compute_spline_windows">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">compute_spline_windows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.compute_spline_windows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute spline coordinates and window image for time point t</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param</strong> (<em>param object</em>) – </p></li>
+<li><p><strong>k</strong> (<em>int</em>) – frame</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>image</strong> (<em>2d array</em>) – current frame</p></li>
+<li><p><strong>spline_coord</strong> (<em>list of 1d arrays</em>) – spline coordines</p></li>
+<li><p><strong>im_window</strong> (<em>2d array</em>) – window image (pixel of each window have given value)</p></li>
+<li><p><strong>windows</strong> (<em>3d list</em>) – list of window indices as output by create_windows()</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -523,7 +633,7 @@ windows of frame corresponding to s_all[t-1]</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.analysis_par.segment_all">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">segment_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.segment_all" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">segment_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.segment_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Segment all frames and return a list of labelled masks. The correct
 label is not selected here</p>
 <dl class="field-list simple">
@@ -531,8 +641,8 @@ label is not selected here</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>data object</em>) – as returned by morphodynamics.dataset</p></li>
 <li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
-<li><p><strong>client</strong> (<em>dask client</em>) – client connected to LocalCluster or SLURMCluster</p></li>
-<li><p><strong>model</strong> (<em>cellpose model</em><em>, </em><em>optional</em>) – </p></li>
+<li><p><strong>client</strong> (<em>dask client</em>) – client connected to LocalCluster or SLURMCluster, optional</p></li>
+<li><p><strong>model</strong> (<em>random forest model</em><em>, </em><em>optional</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -546,7 +656,7 @@ label is not selected here</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.analysis_par.segment_single_frame">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">segment_single_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.segment_single_frame" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">segment_single_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.segment_single_frame" title="Permalink to this definition">¶</a></dt>
 <dd><p>Segment frame k of segmentation image defined in param object
 and save to disk.</p>
 <dl class="field-list simple">
@@ -555,6 +665,7 @@ and save to disk.</p>
 <li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
 <li><p><strong>k</strong> (<em>int</em>) – frame index</p></li>
 <li><p><strong>save_path</strong> (<em>path</em>) – path to folder where to save segmented image</p></li>
+<li><p><strong>model</strong> (<em>sklearn model</em>) – random forest model to use for segmentation</p></li>
 </ul>
 </dd>
 </dl>
@@ -590,7 +701,7 @@ s0 origin</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.analysis_par.spline_all">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">spline_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.spline_all" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">spline_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smoothing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.spline_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a series of segmented binary masks into splines.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -598,7 +709,7 @@ s0 origin</p></li>
 <li><p><strong>num_frames</strong> (<em>int</em>) – number of frames to analyze</p></li>
 <li><p><strong>smoothing</strong> (<em>float</em>) – smoothing parameter used by splprep</p></li>
 <li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
-<li><p><strong>client</strong> (<em>dask client</em>) – client connected to LocalCluster or SLURMCLuster</p></li>
+<li><p><strong>client</strong> (<em>dask client</em><em>, </em><em>optional</em>) – client connected to LocalCluster or SLURMCLuster</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -667,7 +778,7 @@ windows of frame corresponding to s0</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.analysis_par.window_map_all">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">window_map_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_shift_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.window_map_all" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">window_map_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_shift_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.window_map_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Map all pairs of consecutive splines in s_all to minimize their
 “distance” as defined by a chosen functional. Return the set of
 optimized spline parameters.</p>
@@ -684,7 +795,7 @@ on spline of frame k+1</p></li>
 spline of frame k+1 on spine of frame k</p></li>
 <li><p><strong>num_points</strong> (<em>int</em>) – number of interpolation points</p></li>
 <li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
-<li><p><strong>client</strong> (<em>dask client</em>) – client connected to LocalCluster or SLURMCluster</p></li>
+<li><p><strong>client</strong> (<em>dask client</em><em>, </em><em>optional</em>) – client connected to LocalCluster or SLURMCluster</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -719,7 +830,7 @@ windows of frame corresponding to s_all[t-1]</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.analysis_par.windowing_all">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">windowing_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.windowing_all" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.analysis_par.</span></span><span class="sig-name descname"><span class="pre">windowing_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_all</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.analysis_par.windowing_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create windowing for all splines in s_all.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -731,7 +842,7 @@ spline of frame k+1 on spine of frame k</p></li>
 <li><p><strong>param</strong> (<em>Param object</em>) – As created by morphodyanmics.parameters.Param</p></li>
 <li><p><strong>J</strong> (<em>int</em>) – number of window layers</p></li>
 <li><p><strong>I</strong> (<em>list of int</em>) – number of windows per layer</p></li>
-<li><p><strong>client</strong> (<em>dask client</em>) – client connected to LocalCluster or SLURMCluster</p></li>
+<li><p><strong>client</strong> (<em>dask client</em><em>, </em><em>optional</em>) – client connected to LocalCluster or SLURMCluster</p></li>
 </ul>
 </dd>
 </dl>
@@ -777,45 +888,6 @@ spline of frame k+1 on spine of frame k</p></li>
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-morphodynamics.dataset">
-<span id="morphodynamics-dataset-module"></span><h2>morphodynamics.dataset module<a class="headerlink" href="#module-morphodynamics.dataset" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.dataset.H5">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.dataset.</span></span><span class="sig-name descname"><span class="pre">H5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bad_frames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">morpho_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.dataset.H5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">microfilm.dataset.dataset.H5</span></code></p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.dataset.MultipageTIFF">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.dataset.</span></span><span class="sig-name descname"><span class="pre">MultipageTIFF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bad_frames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">morpho_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.dataset.MultipageTIFF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">microfilm.dataset.dataset.MultipageTIFF</span></code></p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.dataset.ND2">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.dataset.</span></span><span class="sig-name descname"><span class="pre">ND2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bad_frames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">morpho_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.dataset.ND2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">microfilm.dataset.dataset.ND2</span></code></p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.dataset.TIFFSeries">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.dataset.</span></span><span class="sig-name descname"><span class="pre">TIFFSeries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bad_frames</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">morpho_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.dataset.TIFFSeries" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">microfilm.dataset.dataset.TIFFSeries</span></code></p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.dataset.load_frame_morpho">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.dataset.</span></span><span class="sig-name descname"><span class="pre">load_frame_morpho</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.dataset.load_frame_morpho" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load index k of valid frames of the segmentation channel</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.dataset.load_frame_signal">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.dataset.</span></span><span class="sig-name descname"><span class="pre">load_frame_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.dataset.load_frame_signal" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load index k of valid frames of channel index m in self.signal_name</p>
-</dd></dl>
-
-</div>
 <div class="section" id="module-morphodynamics.displacementestimation">
 <span id="morphodynamics-displacementestimation-module"></span><h2>morphodynamics.displacementestimation module<a class="headerlink" href="#module-morphodynamics.displacementestimation" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -848,49 +920,6 @@ The total displacement is the sum of both components.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.compute_area">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">compute_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.compute_area" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute area of spline s discretized in N segments.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.compute_curvature">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">compute_curvature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.compute_curvature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute local curvature of spline s at paramters positions t.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.compute_edge_image">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">compute_edge_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.compute_edge_image" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute edge image</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>N</strong> (<em>int</em>) – number of interpolation points</p></li>
-<li><p><strong>shape</strong> (<em>tuple</em>) – size of image</p></li>
-<li><p><strong>s</strong> (<em>spline object</em>) – spline object as returned by splprep</p></li>
-<li><p><strong>t</strong> (<em>array</em>) – vector of interpolation parameters</p></li>
-<li><p><strong>d</strong> (<em>array</em>) – variable to use for contour coloring</p></li>
-<li><p><strong>thickness</strong> (<em>float</em>) – thickness of contour</p></li>
-<li><p><strong>dmax</strong> (<em>float</em>) – maximum of coloring variable</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>c</strong> – rasterized image</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>2d array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.compute_length">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">compute_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.compute_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute length of spline s discretized in N segments.</p>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.displacementestimation.correlate">
 <span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">correlate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.correlate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the correlation between two signals with periodic boundary conditions.</p>
@@ -915,27 +944,6 @@ given a shift t0.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.fit_spline">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">fit_spline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.fit_spline" title="Permalink to this definition">¶</a></dt>
-<dd><p>”
-Fit a spline to a contour specified as a list of pixels.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>c</strong> (<em>2d array</em>) – contour coordinates</p></li>
-<li><p><strong>lambda</strong> (<em>float</em>) – smoothing parameter (as used by splprep)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>s</strong> – spline tuple</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -975,134 +983,6 @@ as initial guesses</p></li>
 <dt class="sig sig-object py" id="morphodynamics.displacementestimation.map_contours3">
 <span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">map_contours3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.map_contours3" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.rasterize_curve">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">rasterize_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.rasterize_curve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Represent a contour as a grayscale image.
-If a pixel is part of the contour, then its intensity
-is equal to the parameter t of the closest point on the contour s(t).
-Otherwise it is equal to -1.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>shape</strong> (<em>tuple</em>) – size of the desired image.</p></li>
-<li><p><strong>s1</strong> (<em>tuple</em>) – spline tuple as returned by splprep</p></li>
-<li><p><strong>deltat</strong> (<em>float</em>) – origin shift of the spline.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>tau</strong> – rasterized image of the contour</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>2d array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.show_edge_line">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">show_edge_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.show_edge_line" title="Permalink to this definition">¶</a></dt>
-<dd><p>Draw the cell-edge contour using a colored line.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.show_edge_line_aux">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">show_edge_line_aux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.show_edge_line_aux" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.show_edge_scatter">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">show_edge_scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.show_edge_scatter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Draw the cell-edge contour and the displacement vectors.
-The contour is drawn using a scatter plot to color-code the displacements.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.show_edge_scatter_init">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">show_edge_scatter_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.show_edge_scatter_init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Draw the cell-edge contour and the displacement vectors.
-The contour is drawn using a scatter plot to color-code the displacements.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.show_edge_scatter_update">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">show_edge_scatter_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.show_edge_scatter_update" title="Permalink to this definition">¶</a></dt>
-<dd><p>Draw the cell-edge contour and the displacement vectors.
-The contour is drawn using a scatter plot to color-code the displacements.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.splevper">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">splevper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.splevper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Evaluate B-spline for periodic curve</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>t</strong> (<em>1d array</em>) – points on which to return the evaluation</p></li>
-<li><p><strong>s</strong> (<em>spline tuple as returned by splprep</em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>coordinates of evaluated spline</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list of arrays</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.subdivide_curve">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">subdivide_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.subdivide_curve" title="Permalink to this definition">¶</a></dt>
-<dd><p>Define points on a contour that are equispaced with respect to the arc length.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>N</strong> (<em>int</em>) – number of points for spline discretization</p></li>
-<li><p><strong>s</strong> (<em>tuple</em>) – spline tuple as returned by splprep</p></li>
-<li><p><strong>origin</strong> (<em>float</em>) – shift of parameter origin</p></li>
-<li><p><strong>I</strong> (<em>int</em>) – Number of windows in the first (outer) layer.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>t_shifted</strong> – list of spline parameters on s defining the same points as cvec_sel</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>1d array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.displacementestimation.subdivide_curve_discrete">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.displacementestimation.</span></span><span class="sig-name descname"><span class="pre">subdivide_curve_discrete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_main</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.displacementestimation.subdivide_curve_discrete" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a discrete contour whose first pixel corresponds
-to the specified origin, plus a list of coordinates along the
-continuous curve corresponding to the mid-points of the
-windows in the first (outer) layer.</p>
-<p>Note: this function tries to reconcile discrete and continuous
-representations of the contour, so it may not be conceptually
-very satisfactory.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>N</strong> (<em>int</em>) – number of points for spline discretization</p></li>
-<li><p><strong>c_main</strong> (<em>2d array</em>) – A rasterized version of the contour, as obtained by rasterize_curve.</p></li>
-<li><p><strong>I</strong> (<em>int</em>) – Number of windows in the first (outer) layer.</p></li>
-<li><p><strong>s</strong> (<em>tuple</em>) – spline tuple as returned by splprep</p></li>
-<li><p><strong>origin</strong> (<em>ndarray</em>) – [y, x] coordinates of the origin of the curve.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>cvec_sel</strong> (<em>2d array</em>) – xy array of selected positions along the contour</p></li>
-<li><p><strong>t_sel</strong> (<em>1d array</em>) – list of spline parameters on s defining the same points as cvec_sel</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
 
 </div>
 <div class="section" id="module-morphodynamics.folders">
@@ -1190,24 +1070,6 @@ Note that here periodic boundary conditions are enforced.</p>
 </dd></dl>
 
 </dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.functionaldefinition.splevper">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.functionaldefinition.</span></span><span class="sig-name descname"><span class="pre">splevper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.functionaldefinition.splevper" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="module-morphodynamics.morpho_plots">
-<span id="morphodynamics-morpho-plots-module"></span><h2>morphodynamics.morpho_plots module<a class="headerlink" href="#module-morphodynamics.morpho_plots" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.morpho_plots.show_windows">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.morpho_plots.</span></span><span class="sig-name descname"><span class="pre">show_windows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">windows_pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.morpho_plots.show_windows" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.morpho_plots.show_windows_set">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.morpho_plots.</span></span><span class="sig-name descname"><span class="pre">show_windows_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">windows_pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">implot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tplt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.morpho_plots.show_windows_set" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </div>
 <div class="section" id="module-morphodynamics.morpho_segmentation">
@@ -1400,171 +1262,6 @@ can be “fardi”, “cellpose” or “ilastik”</p></li>
 </dd></dl>
 
 </div>
-<div class="section" id="module-morphodynamics.parameters">
-<span id="morphodynamics-parameters-module"></span><h2>morphodynamics.parameters module<a class="headerlink" href="#module-morphodynamics.parameters" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.parameters.Param">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.parameters.</span></span><span class="sig-name descname"><span class="pre">Param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analysis_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seg_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'series'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_curve</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">morpho_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ilastik</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seg_algo</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'farid'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.parameters.Param" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Object storing relevant information regarding the processing,
-e.g. the window size, the analyzed signal, the type of segmentation used.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-morphodynamics.results">
-<span id="morphodynamics-results-module"></span><h2>morphodynamics.results module<a class="headerlink" href="#module-morphodynamics.results" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.results.Results">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.results.</span></span><span class="sig-name descname"><span class="pre">Results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">J</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_time_points</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_channels</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.results.Results" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Object storing relevant information regarding the processing,
-e.g. the window size, the analyzed signal, the type of segmentation used.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>J</strong> (<em>int</em>) – number of window layers</p></li>
-<li><p><strong>I</strong> (<em>list of int</em>) – number of windows in each layer</p></li>
-<li><p><strong>num_time_points</strong> (<em>int</em>) – number of analyzed time points</p></li>
-<li><p><strong>num_channels</strong> (<em>int</em>) – number of analyzed channels</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="morphodynamics.results.Results.J">
-<span class="sig-name descname"><span class="pre">J</span></span><a class="headerlink" href="#morphodynamics.results.Results.J" title="Permalink to this definition">¶</a></dt>
-<dd><p>number of window layers</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="morphodynamics.results.Results.I">
-<span class="sig-name descname"><span class="pre">I</span></span><a class="headerlink" href="#morphodynamics.results.Results.I" title="Permalink to this definition">¶</a></dt>
-<dd><p>number of windows in each layer</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of int</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="morphodynamics.results.Results.seg">
-<span class="sig-name descname"><span class="pre">seg</span></span><a class="headerlink" href="#morphodynamics.results.Results.seg" title="Permalink to this definition">¶</a></dt>
-<dd><p>segmentation masks</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of 2d arrays</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="morphodynamics.results.Results.spline">
-<span class="sig-name descname"><span class="pre">spline</span></span><a class="headerlink" href="#morphodynamics.results.Results.spline" title="Permalink to this definition">¶</a></dt>
-<dd><p>splines for each time point</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of spline objects</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="morphodynamics.results.Results.spline_param0">
-<span class="sig-name descname"><span class="pre">spline_param0</span></span><a class="headerlink" href="#morphodynamics.results.Results.spline_param0" title="Permalink to this definition">¶</a></dt>
-<dd><p>arrays of spline-parameters defining points for
-frame=t matching points at frame=t+1 defined by spline_param</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of arrays</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="morphodynamics.results.Results.spline_param">
-<span class="sig-name descname"><span class="pre">spline_param</span></span><a class="headerlink" href="#morphodynamics.results.Results.spline_param" title="Permalink to this definition">¶</a></dt>
-<dd><p>arrays of spline-parameters defining points for
-frame=t-1 matching points at frame=t defined by spline_param0</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of arrays</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="morphodynamics.results.Results.displacement">
-<span class="sig-name descname"><span class="pre">displacement</span></span><a class="headerlink" href="#morphodynamics.results.Results.displacement" title="Permalink to this definition">¶</a></dt>
-<dd><p>contour displacement between consecutive frames. Dimensions
-number of windows x number of time points</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>2d array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="morphodynamics.results.Results.mean">
-<span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#morphodynamics.results.Results.mean" title="Permalink to this definition">¶</a></dt>
-<dd><p>extracted mean signal for each layer(L) window (W), time point(T),
-and signal (S). Dimensions are C x L x W x T</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>4d array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="morphodynamics.results.Results.var">
-<span class="sig-name descname"><span class="pre">var</span></span><a class="headerlink" href="#morphodynamics.results.Results.var" title="Permalink to this definition">¶</a></dt>
-<dd><p>extracted variance signal for each layer(L) window (W), time point(T),
-and signal (S). Dimensions are C x L x W x T</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>4d array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="morphodynamics.results.Results.length">
-<span class="sig-name descname"><span class="pre">length</span></span><a class="headerlink" href="#morphodynamics.results.Results.length" title="Permalink to this definition">¶</a></dt>
-<dd><p>cell contour length for each frame</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>1d array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="morphodynamics.results.Results.area">
-<span class="sig-name descname"><span class="pre">area</span></span><a class="headerlink" href="#morphodynamics.results.Results.area" title="Permalink to this definition">¶</a></dt>
-<dd><p>cell area for each frame</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>1d array</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">orig;</span> <span class="pre">1d</span> <span class="pre">array</span></span></dt>
-<dd><p>shift of spline parameter to align spline origin on
-origin of previous spline</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
 <div class="section" id="module-morphodynamics.segmentation">
 <span id="morphodynamics-segmentation-module"></span><h2>morphodynamics.segmentation module<a class="headerlink" href="#module-morphodynamics.segmentation" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -1607,6 +1304,13 @@ origin of previous spline</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.segmentation.segment_conv_paint">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.segmentation.</span></span><span class="sig-name descname"><span class="pre">segment_conv_paint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_forest</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.segmentation.segment_conv_paint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Segment image x using a trained classifier and
+the conv paint module.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.segmentation.segment_farid">
 <span class="sig-prename descclassname"><span class="pre">morphodynamics.segmentation.</span></span><span class="sig-name descname"><span class="pre">segment_farid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.segmentation.segment_farid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Segment an image using its gradient calculated using
@@ -1645,7 +1349,7 @@ pick largest.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>regions</strong> (<em>2d array</em>) – labeled mask of cells</p></li>
 <li><p><strong>location</strong> (<em>1d array</em><em>, </em><em>optional</em>) – position vector</p></li>
-<li><p><strong>seg_type</strong> (<em>str</em>) – type of segmentation used, currently ‘farid’, ‘cellpose’ or ‘ilastik’</p></li>
+<li><p><strong>seg_type</strong> (<em>str</em>) – type of segmentation used, currently ‘farid’, ‘cellpose’, ‘ilastik’ or ‘conv_paint’</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -1653,6 +1357,272 @@ pick largest.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>2d array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-morphodynamics.splineutils">
+<span id="morphodynamics-splineutils-module"></span><h2>morphodynamics.splineutils module<a class="headerlink" href="#module-morphodynamics.splineutils" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.colour_image_border_by_feature">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">colour_image_border_by_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im_contour_bw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.colour_image_border_by_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an image of a contour colored by distance along contour,
+color the border of the image by the feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im_contour_bw</strong> (<em>ndarray</em>) – image of contour</p></li>
+<li><p><strong>t_param</strong> (<em>array</em>) – parametric points along contour [0,1] of length N</p></li>
+<li><p><strong>feature</strong> (<em>array</em>) – variable to be used for colouring the border of length N
+feature[i] is the value of the feature at t_param[i]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>image of contour colored by feature</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>im_contour_bw</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.edge_colored_by_features">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">edge_colored_by_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enlarge_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.edge_colored_by_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create gray-scale image of contour where pixel values are interpolated
+according to the feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>data object</em>) – </p></li>
+<li><p><strong>res</strong> (<em>result object</em>) – </p></li>
+<li><p><strong>t</strong> (<em>int</em>) – frame</p></li>
+<li><p><strong>feature</strong> (<em>str</em>) – feature for coloring ‘displacement’, ‘displacement_cumul’, ‘curvature’</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – number of points for contour generation, default None</p></li>
+<li><p><strong>enlarge_width</strong> (<em>int</em><em>, </em><em>optional</em>) – width of contour for display, by default 1</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>colored image (gray-scale) and mask of (wide) contour pixels</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>im_coloured, mask</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.enlarge_contour">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">enlarge_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im_contour</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.enlarge_contour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a single pixel gray-scale contour, expand it to give it
+a thickness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im_contour</strong> (<em>ndarray</em>) – image of contour</p></li>
+<li><p><strong>mask</strong> (<em>ndarray</em>) – maks of contour</p></li>
+<li><p><strong>thickness</strong> (<em>int</em>) – desired contour thickness</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>image of enlarged contour and its mask</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>im_contour, mask</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.fit_spline">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">fit_spline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.fit_spline" title="Permalink to this definition">¶</a></dt>
+<dd><p>”
+Fit a spline to a contour specified as a list of pixels.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c</strong> (<em>2d array</em>) – contour coordinates</p></li>
+<li><p><strong>lambda</strong> (<em>float</em>) – smoothing parameter (as used by splprep)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>s</strong> – spline tuple</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.splevper">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">splevper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s_tuple</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.splevper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate B-spline for periodic curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>1d array</em>) – points on which to return the evaluation</p></li>
+<li><p><strong>s_tuple</strong> (<em>spline tuple as returned by splprep</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>coordinates of evaluated spline</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of arrays</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.spline_area">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">spline_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.spline_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute area of spline s discretized in N segments.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.spline_contour_length">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">spline_contour_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.spline_contour_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get spline contour length between params t1 and t2</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t1</strong> (<em>float</em>) – parameter limits</p></li>
+<li><p><strong>t2</strong> (<em>float</em>) – parameter limits</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – number of points on the contour</p></li>
+<li><p><strong>s</strong> (<em>tuple</em>) – spline tuple as returned by splprep</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>spline_length</strong> – contour length of spline</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.spline_curvature">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">spline_curvature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">s_tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.spline_curvature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute local curvature of spline s at paramters positions t.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.spline_int_coordinates">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">spline_int_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.spline_int_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get integer xy coordinates of a spline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> (<em>int</em>) – number of points on the contour</p></li>
+<li><p><strong>s</strong> (<em>tuple</em>) – spline tuple as returned by splprep</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>spline_int_xy</strong> – coordinates of spline</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2d array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.spline_to_binary_image">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">spline_to_binary_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.spline_to_binary_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn a spline into a binary image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> (<em>int</em>) – number of points on the contour</p></li>
+<li><p><strong>im_shape</strong> (<em>tuple</em>) – size of the desired image.</p></li>
+<li><p><strong>s</strong> (<em>tuple</em>) – spline tuple as returned by splprep</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>im_spline</strong> – rasterized image of the contour</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2d array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.spline_to_param_image">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">spline_to_param_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">im_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deltat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.spline_to_param_image" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represent a contour as a grayscale image.
+If a pixel is part of the contour, then its intensity
+is equal to the parameter t of the closest point on the contour s(t).
+Otherwise it is equal to -1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> (<em>int</em>) – number of points on the contour</p></li>
+<li><p><strong>im_shape</strong> (<em>tuple</em>) – size of the desired image.</p></li>
+<li><p><strong>s</strong> (<em>tuple</em>) – spline tuple as returned by splprep</p></li>
+<li><p><strong>deltat</strong> (<em>float</em>) – origin shift of the spline.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>tau</strong> – rasterized image of the contour</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>2d array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.subdivide_curve">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">subdivide_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.subdivide_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define points on a contour that are equispaced with respect to the arc length.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> (<em>int</em>) – number of points for spline discretization</p></li>
+<li><p><strong>s</strong> (<em>tuple</em>) – spline tuple as returned by splprep</p></li>
+<li><p><strong>origin</strong> (<em>float</em>) – shift of parameter origin</p></li>
+<li><p><strong>I</strong> (<em>int</em>) – Number of windows in the first (outer) layer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>t_shifted</strong> – list of spline parameters on s defining the same points as cvec_sel</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>1d array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.splineutils.subdivide_curve_discrete">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.splineutils.</span></span><span class="sig-name descname"><span class="pre">subdivide_curve_discrete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_main</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.splineutils.subdivide_curve_discrete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a discrete contour whose first pixel corresponds
+to the specified origin, plus a list of coordinates along the
+continuous curve corresponding to the mid-points of the
+windows in the first (outer) layer.</p>
+<p>Note: this function tries to reconcile discrete and continuous
+representations of the contour, so it may not be conceptually
+very satisfactory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>N</strong> (<em>int</em>) – number of points for spline discretization</p></li>
+<li><p><strong>c_main</strong> (<em>2d array</em>) – A rasterized version of the contour, as obtained by rasterize_curve.</p></li>
+<li><p><strong>I</strong> (<em>int</em>) – Number of windows in the first (outer) layer.</p></li>
+<li><p><strong>s</strong> (<em>tuple</em>) – spline tuple as returned by splprep</p></li>
+<li><p><strong>origin</strong> (<em>ndarray</em>) – [y, x] coordinates of the origin of the curve.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>cvec_sel</strong> (<em>2d array</em>) – xy array of selected positions along the contour</p></li>
+<li><p><strong>t_sel</strong> (<em>1d array</em>) – list of spline parameters on s defining the same points as cvec_sel</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1718,6 +1688,18 @@ pick largest.</p>
 </div>
 <div class="section" id="module-morphodynamics.utils">
 <span id="morphodynamics-utils-module"></span><h2>morphodynamics.utils module<a class="headerlink" href="#module-morphodynamics.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.utils.dataset_from_param">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.utils.</span></span><span class="sig-name descname"><span class="pre">dataset_from_param</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.utils.dataset_from_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a param object, create the appropriate dataset.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.utils.export_results_parameters">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.utils.</span></span><span class="sig-name descname"><span class="pre">export_results_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.utils.export_results_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export parameters and results</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.utils.format_bad_frames">
 <span class="sig-prename descclassname"><span class="pre">morphodynamics.utils.</span></span><span class="sig-name descname"><span class="pre">format_bad_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bad_frames</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.utils.format_bad_frames" title="Permalink to this definition">¶</a></dt>
@@ -1852,7 +1834,8 @@ discrete contours.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>c_main</strong> (<em>2d array</em>) – A rasterized version of the contour, as obtained by rasterize_curve.</p></li>
+<li><p><strong>c_main</strong> (<em>2d array</em>) – A rasterized version of the contour, as obtained
+by spline_to_param_image.</p></li>
 <li><p><strong>origin</strong> (<em>tuple</em>) – (y, x) coordinates of the origin of the curve.</p></li>
 <li><p><strong>J</strong> (<em>int</em>) – Number of window layers.</p></li>
 <li><p><strong>I</strong> (<em>list of int</em>) – Vector of dimension J specifying the number of windows per layer.</p></li>
@@ -1951,8 +1934,8 @@ with unique gray levels.</p>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="../../mydocs/Data.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -1969,19 +1952,17 @@ with unique gray levels.</p>
     <i class="fas fa-angle-right"></i>
     </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Cédric Vonesch and Guillaume Witz<br/>
-        
-            &copy; Copyright 2021.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Cédric Vonesch and Guillaume Witz<br/>
+    
+        &copy; Copyright 2021.<br/>
+  </p>
+</footer>
 </main>
 
 

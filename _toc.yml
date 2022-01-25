@@ -5,6 +5,7 @@ parts:
   - caption: Getting started
     chapters:
     - file: mydocs/Installation
+    - file: mydocs/Napari_Plugin
     - file: mydocs/Analysis_with_morpho_segmentation
     - file: mydocs/Analysis_without_UI
     - file: mydocs/Data_analysis

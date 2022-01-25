@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    morphodynamics.plots
+   morphodynamics.store
 
 Submodules
 ----------
@@ -24,14 +25,6 @@ morphodynamics.correlation module
 ---------------------------------
 
 .. automodule:: morphodynamics.correlation
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-morphodynamics.dataset module
------------------------------
-
-.. automodule:: morphodynamics.dataset
    :members:
    :undoc-members:
    :show-inheritance:
@@ -60,14 +53,6 @@ morphodynamics.functionaldefinition module
    :undoc-members:
    :show-inheritance:
 
-morphodynamics.morpho\_plots module
------------------------------------
-
-.. automodule:: morphodynamics.morpho_plots
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 morphodynamics.morpho\_segmentation module
 ------------------------------------------
 
@@ -76,26 +61,18 @@ morphodynamics.morpho\_segmentation module
    :undoc-members:
    :show-inheritance:
 
-morphodynamics.parameters module
---------------------------------
-
-.. automodule:: morphodynamics.parameters
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-morphodynamics.results module
------------------------------
-
-.. automodule:: morphodynamics.results
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 morphodynamics.segmentation module
 ----------------------------------
 
 .. automodule:: morphodynamics.segmentation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+morphodynamics.splineutils module
+---------------------------------
+
+.. automodule:: morphodynamics.splineutils
    :members:
    :undoc-members:
    :show-inheritance:

@@ -41,7 +41,7 @@
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="../../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
@@ -53,6 +53,7 @@
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="morphodynamics.store package" href="morphodynamics.store.html" />
     <link rel="prev" title="morphodynamics package" href="morphodynamics.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
@@ -106,6 +107,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="../../mydocs/Installation.html">
    Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../../mydocs/Napari_Plugin.html">
+   Napari plugin for Morphodynamics
   </a>
  </li>
  <li class="toctree-l1">
@@ -172,6 +178,11 @@
      morphodynamics.plots package
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="morphodynamics.store.html">
+     morphodynamics.store package
+    </a>
+   </li>
   </ul>
  </li>
 </ul>
@@ -220,7 +231,7 @@
                 data-placement="left">.rst</button></a>
         <!-- Download PDF via print -->
         <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
@@ -251,7 +262,7 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
             <div class="tocsection onthispage pt-5 pb-3">
                 <i class="fas fa-list"></i> Contents
@@ -264,43 +275,13 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.plots.animate_plots">
+   morphodynamics.plots.animate_plots module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#module-morphodynamics.plots.show_plots">
    morphodynamics.plots.show_plots module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-morphodynamics.plots.ui_batch">
-   morphodynamics.plots.ui_batch module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-morphodynamics.plots.ui_correlation">
-   morphodynamics.plots.ui_correlation module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-morphodynamics.plots.ui_curvature">
-   morphodynamics.plots.ui_curvature module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-morphodynamics.plots.ui_edge_rasterized">
-   morphodynamics.plots.ui_edge_rasterized module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-morphodynamics.plots.ui_edge_vectorial">
-   morphodynamics.plots.ui_edge_vectorial module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-morphodynamics.plots.ui_outputs">
-   morphodynamics.plots.ui_outputs module
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#module-morphodynamics.plots.ui_signals">
-   morphodynamics.plots.ui_signals module
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
@@ -321,7 +302,50 @@
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1>morphodynamics.plots package</h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                        <div>
+                            <h2> Contents </h2>
+                        </div>
+                        <nav aria-label="Page">
+                            <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#submodules">
+   Submodules
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.plots.animate_plots">
+   morphodynamics.plots.animate_plots module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.plots.show_plots">
+   morphodynamics.plots.show_plots module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.plots.ui_wimage">
+   morphodynamics.plots.ui_wimage module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.plots">
+   Module contents
+  </a>
+ </li>
+</ul>
+
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
   <div class="section" id="morphodynamics-plots-package">
@@ -329,8 +353,131 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-morphodynamics.plots.animate_plots">
+<span id="morphodynamics-plots-animate-plots-module"></span><h2>morphodynamics.plots.animate_plots module<a class="headerlink" href="#module-morphodynamics.plots.animate_plots" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.plots.animate_plots.animate_edge_raster_coloured_by_feature">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.animate_plots.</span></span><span class="sig-name descname"><span class="pre">animate_edge_raster_coloured_by_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seismic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.animate_plots.animate_edge_raster_coloured_by_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Animate image of rasterized contour.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>data object</em>) – </p></li>
+<li><p><strong>param</strong> (<em>param object</em>) – </p></li>
+<li><p><strong>res</strong> (<em>result object</em>) – </p></li>
+<li><p><strong>k</strong> (<em>int</em>) – frame</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – number of points on contour</p></li>
+<li><p><strong>feature</strong> (<em>str</em>) – feature for coloring ‘displacement’, ‘displacement_cumul’, ‘curvature’</p></li>
+<li><p><strong>fig</strong> (<em>matplotlib figure</em>) – </p></li>
+<li><p><strong>ax</strong> (<em>matplotlib axis</em>) – </p></li>
+<li><p><strong>width</strong> (<em>int</em><em>, </em><em>optional</em>) – width of contour for display, by default 1</p></li>
+<li><p><strong>min_val</strong> (<em>float</em><em>, </em><em>optional</em>) – min value to display, by default min of image</p></li>
+<li><p><strong>max_val</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – max value to display, by default max of image</p></li>
+<li><p><strong>cmap_name</strong> (<em>str</em>) – Matplotlib colormap</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – transparency of image, by default 0.5</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.plots.animate_plots.animate_edge_vect">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.animate_plots.</span></span><span class="sig-name descname"><span class="pre">animate_edge_vect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curvature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.animate_plots.animate_edge_vect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Animate an image of the contour as generated by show_plots.show_edge_scatter().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>data object</em>) – </p></li>
+<li><p><strong>param</strong> (<em>param object</em>) – </p></li>
+<li><p><strong>res</strong> (<em>result object</em>) – </p></li>
+<li><p><strong>fig</strong> (<em>matplotlib figure</em>) – </p></li>
+<li><p><strong>ax</strong> (<em>matplotlib axis</em>) – </p></li>
+<li><p><strong>k</strong> (<em>int</em>) – frame</p></li>
+<li><p><strong>curvature</strong> (<em>bool</em><em>, </em><em>optional</em>) – use curvature for coloring, by default False</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.plots.animate_plots.interact_edge_raster_coloured_by_feature">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.animate_plots.</span></span><span class="sig-name descname"><span class="pre">interact_edge_raster_coloured_by_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seismic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.animate_plots.interact_edge_raster_coloured_by_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create interactive slider for colored rasterized contour image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>data object</em>) – </p></li>
+<li><p><strong>param</strong> (<em>param object</em>) – </p></li>
+<li><p><strong>res</strong> (<em>result object</em>) – </p></li>
+<li><p><strong>N</strong> (<em>int</em>) – number of points on contour</p></li>
+<li><p><strong>feature</strong> (<em>str</em>) – feature for coloring ‘displacement’, ‘displacement_cumul’, ‘curvature’</p></li>
+<li><p><strong>fig</strong> (<em>matplotlib figure</em>) – </p></li>
+<li><p><strong>ax</strong> (<em>matplotlib axis</em>) – </p></li>
+<li><p><strong>width</strong> (<em>int</em><em>, </em><em>optional</em>) – width of contour for display, by default 1</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – normalized across time-lapse, by default False</p></li>
+<li><p><strong>cmap_name</strong> (<em>str</em>) – Matplotlib colormap</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – transparency of image, by default 0.5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ipywidget time slider</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int_box</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.plots.animate_plots.interact_edge_vect">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.animate_plots.</span></span><span class="sig-name descname"><span class="pre">interact_edge_vect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curvature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.animate_plots.interact_edge_vect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create slider for edege animation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>data object</em>) – </p></li>
+<li><p><strong>param</strong> (<em>param object</em>) – </p></li>
+<li><p><strong>res</strong> (<em>result object</em>) – </p></li>
+<li><p><strong>fig</strong> (<em>matplotlib figure</em>) – </p></li>
+<li><p><strong>ax</strong> (<em>matplotlib axis</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ipywidget slider</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int_box</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 <div class="section" id="module-morphodynamics.plots.show_plots">
 <span id="morphodynamics-plots-show-plots-module"></span><h2>morphodynamics.plots.show_plots module<a class="headerlink" href="#module-morphodynamics.plots.show_plots" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.plots.show_plots.colorize_raster">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">colorize_raster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">im</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.colorize_raster" title="Permalink to this definition">¶</a></dt>
+<dd><p>Colorize an image with a given colormap.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>im</strong> (<em>ndarray</em>) – image to colorize</p></li>
+<li><p><strong>cmap_name</strong> (<em>str</em>) – Matplotlib colormap</p></li>
+<li><p><strong>min_val</strong> (<em>float</em><em>, </em><em>optional</em>) – min value to display, by default min of image</p></li>
+<li><p><strong>max_val</strong> (<em>[</em><em>type</em><em>]</em><em>, </em><em>optional</em>) – max value to display, by default max of image</p></li>
+<li><p><strong>mask</strong> (<em>ndarray</em><em>, </em><em>optional</em>) – mask to make empty regions transparent, by default None</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – transparency of image, by default 0.5</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>c</strong> – colorized image (nxmx4)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.plots.show_plots.save_edge_vectorial_movie">
 <span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">save_edge_vectorial_movie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curvature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">9)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.save_edge_vectorial_movie" title="Permalink to this definition">¶</a></dt>
@@ -342,16 +489,19 @@
 <dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.plots.show_plots.show_circularity">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_circularity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(16,</span> <span class="pre">9)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_circularity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display length, area and circularity information for time-lapse.</p>
+<dt class="sig sig-object py" id="morphodynamics.plots.show_plots.show_cumdisplacement">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_cumdisplacement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(4,</span> <span class="pre">3)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Cumul.</span> <span class="pre">Displacement'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seismic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorbar_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Cumul.</span> <span class="pre">Displacement</span> <span class="pre">[pixels]'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Frame</span> <span class="pre">index'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Window</span> <span class="pre">index'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_cumdisplacement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show displacement field.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>param</strong> (<em>param object</em>) – created from parameters.Param</p></li>
-<li><p><strong>data</strong> (<em>data object</em>) – created from dataset.Data</p></li>
-<li><p><strong>res</strong> (<em>res object</em>) – created from results.Results</p></li>
-<li><p><strong>size</strong> (<em>tuple</em>) – image size</p></li>
+<li><p><strong>res</strong> (<em>result object</em>) – </p></li>
+<li><p><strong>size</strong> (<em>tuple</em><em>, </em><em>optional</em>) – figure size, default (4, 3)</p></li>
+<li><p><strong>fig_ax</strong> (<em>tuple</em><em>, </em><em>optional</em>) – (fig, ax), by default None</p></li>
+<li><p><strong>title</strong> (<em>str</em><em>, </em><em>optional</em>) – title, by default “Cumul. Displacement”</p></li>
+<li><p><strong>cmap_name</strong> (<em>str</em><em>, </em><em>optional</em>) – colormap, by default ‘seismic’</p></li>
+<li><p><strong>show_colorbar</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, add colorbar, default True</p></li>
+<li><p><strong>colorbar_label</strong> (<em>str</em><em>, </em><em>optional</em>) – color bar title, by default ‘Cumul. Displacement [pixels]’</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -365,23 +515,61 @@
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.plots.show_plots.show_cumdisplacement">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_cumdisplacement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(16,</span> <span class="pre">9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_cumdisplacement" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.plots.show_plots.show_curvature">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_curvature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_curvature" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_curvature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Curvature'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seismic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(5,</span> <span class="pre">3)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_curvature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display curvature as a function of time</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>data object</em>) – </p></li>
+<li><p><strong>res</strong> (<em>result object</em>) – </p></li>
+<li><p><strong>cmax</strong> (<em>float</em><em>, </em><em>optional</em>) – maximal curvature value to display, default None</p></li>
+<li><p><strong>fig_ax</strong> (<em>tuple</em><em>, </em><em>optional</em>) – (fig, ax), by default None</p></li>
+<li><p><strong>title</strong> (<em>str</em><em>, </em><em>optional</em>) – title, by default “Curvature”</p></li>
+<li><p><strong>cmap_name</strong> (<em>str</em><em>, </em><em>optional</em>) – colormap, default seismic</p></li>
+<li><p><strong>size</strong> (<em>tuple</em><em>, </em><em>optional</em>) – figure size, default (16, 9)</p></li>
+<li><p><strong>show_colorbar</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, add colorbar, default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib figure</em>)</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib axis</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.plots.show_plots.show_displacement">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_displacement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(16,</span> <span class="pre">9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_displacement" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_displacement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(4,</span> <span class="pre">3)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Displacement'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seismic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorbar_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Displacement</span> <span class="pre">[pixels]'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Frame</span> <span class="pre">index'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Window</span> <span class="pre">index'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_displacement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show displacement field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>res</strong> (<em>result object</em>) – </p></li>
+<li><p><strong>size</strong> (<em>tuple</em><em>, </em><em>optional</em>) – figure size, default (4, 3)</p></li>
+<li><p><strong>fig_ax</strong> (<em>tuple</em><em>, </em><em>optional</em>) – (fig, ax), by default None</p></li>
+<li><p><strong>title</strong> (<em>str</em><em>, </em><em>optional</em>) – title, by default “Displacement”</p></li>
+<li><p><strong>cmap_name</strong> (<em>str</em><em>, </em><em>optional</em>) – colormap, by default ‘seismic’</p></li>
+<li><p><strong>show_colorbar</strong> (<em>bool</em><em>, </em><em>optional</em>) – If true, add colorbar, default True</p></li>
+<li><p><strong>colorbar_label</strong> (<em>str</em><em>, </em><em>optional</em>) – color bar title, by default ‘Displacement [pixels]’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib figure</em>)</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib axis</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.plots.show_plots.show_edge_line">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_edge_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_edge_line" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_edge_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorbar_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Frame</span> <span class="pre">index'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_edge_line" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draw the cell-edge contour of all time points
 using a colored line.</p>
 <dl class="field-list simple">
@@ -391,6 +579,9 @@ using a colored line.</p>
 <li><p><strong>s</strong> (<em>spline object</em>) – as returned by splprep</p></li>
 <li><p><strong>lw</strong> (<em>curve thickness</em>) – </p></li>
 <li><p><strong>fig_ax</strong> (<em>tuple</em>) – matplotlib figure and axes</p></li>
+<li><p><strong>cmap_name</strong> (<em>str</em>) – color map name</p></li>
+<li><p><strong>show_colorbar</strong> (<em>bool</em>) – show colorbar</p></li>
+<li><p><strong>colorbar_label</strong> (<em>str</em>) – colorbar label</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -429,7 +620,7 @@ using a colored line.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.plots.show_plots.show_edge_overview">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_edge_overview</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_edge_overview" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_edge_overview</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lw</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(12,</span> <span class="pre">9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Edge</span> <span class="pre">overview'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap_image</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'gray'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap_contour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'jet'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorbar_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Frame</span> <span class="pre">index'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_edge_overview" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display image of first time point and all contour splines
 overlayed on top.</p>
 <dl class="field-list simple">
@@ -441,6 +632,11 @@ overlayed on top.</p>
 <li><p><strong>lw</strong> (<em>float</em>) – spline curves thickness</p></li>
 <li><p><strong>size</strong> (<em>tuple</em>) – image size</p></li>
 <li><p><strong>fig_ax</strong> (<em>tuple</em>) – matplotlib figure and axes</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – title for plot</p></li>
+<li><p><strong>cmap_image</strong> (<em>matplotlib color map</em>) – image color map</p></li>
+<li><p><strong>cm_contour</strong> (<em>matplotlib color map</em>) – contour color map</p></li>
+<li><p><strong>show_colorbar</strong> (<em>bool</em>) – show colorbar</p></li>
+<li><p><strong>colorbar_label</strong> (<em>str</em>) – colorbar label</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -449,6 +645,33 @@ overlayed on top.</p>
 <li><p><strong>ax</strong> (<em>matplotlib axis</em>)</p></li>
 </ul>
 </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.plots.show_plots.show_edge_raster_coloured_by_feature">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_edge_raster_coloured_by_feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seismic'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_edge_raster_coloured_by_feature" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the rasterized contour colored by a given feature on top of image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>data object</em>) – </p></li>
+<li><p><strong>res</strong> (<em>result object</em>) – </p></li>
+<li><p><strong>k</strong> (<em>int</em>) – time point</p></li>
+<li><p><strong>feature</strong> (<em>str</em>) – feature for coloring ‘displacement’, ‘displacement_cumul’, ‘curvature’</p></li>
+<li><p><strong>N</strong> (<em>int</em>) – number of points for contour generation, default None</p></li>
+<li><p><strong>width</strong> (<em>int</em><em>, </em><em>optional</em>) – width of contour for display, by default 1</p></li>
+<li><p><strong>fig_ax</strong> (<em>tuple</em><em>, </em><em>optional</em>) – matplotlib figure-axis tuple, by default None</p></li>
+<li><p><strong>normalize</strong> (<em>bool</em><em>, </em><em>optional</em>) – normalize intensity over time-lapse, by default False</p></li>
+<li><p><strong>cmap_name</strong> (<em>str</em><em>, </em><em>optional</em>) – matplotlib colormap, by default ‘seismic’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>fig, ax</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Matplotlib figure and axis</p>
 </dd>
 </dl>
 </dd></dl>
@@ -487,21 +710,72 @@ displacement or curvature.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.plots.show_plots.show_geometry">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(16,</span> <span class="pre">9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_geometry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display length, area and circularity information for time-lapse.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>data object</em>) – created from dataset.Data</p></li>
+<li><p><strong>res</strong> (<em>res object</em>) – created from results.Results</p></li>
+<li><p><strong>size</strong> (<em>tuple</em>) – image size</p></li>
+<li><p><strong>prop</strong> (<em>str</em>) – property to display</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – title for plot</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib figure</em>)</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib axis</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="morphodynamics.plots.show_plots.show_geometry_props">
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_geometry_props</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(16,</span> <span class="pre">9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">titles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['Length',</span> <span class="pre">'Area',</span> <span class="pre">'Circularity']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_geometry_props" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display length, area and circularity information for time-lapse.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>data object</em>) – created from dataset.Data</p></li>
+<li><p><strong>res</strong> (<em>res object</em>) – created from results.Results</p></li>
+<li><p><strong>size</strong> (<em>tuple</em>) – image size</p></li>
+<li><p><strong>titles</strong> (<em>list</em>) – titles for each plot</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib figure</em>)</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib axis</em>)</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="morphodynamics.plots.show_plots.show_signals_aux">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_signals_aux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(16,</span> <span class="pre">9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_signals_aux" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.show_plots.</span></span><span class="sig-name descname"><span class="pre">show_signals_aux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">signal_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(16,</span> <span class="pre">9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Frame</span> <span class="pre">index'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Window</span> <span class="pre">index'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'seismic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorbar_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Mean'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.show_plots.show_signals_aux" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display window-kymograph of a signal.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>param</strong> (<em>param object</em>) – created from parameters.Param</p></li>
 <li><p><strong>data</strong> (<em>data object</em>) – created from dataset.Data</p></li>
 <li><p><strong>res</strong> (<em>res object</em>) – created from results.Results</p></li>
-<li><p><strong>m</strong> (<em>int</em>) – signal index</p></li>
-<li><p><strong>j</strong> (<em>int</em>) – layer index</p></li>
-<li><p><strong>str</strong> (<em>mode;</em>) – “Mean” or “Variance”</p></li>
+<li><p><strong>signal_index</strong> (<em>int</em>) – signal index</p></li>
+<li><p><strong>layer_index</strong> (<em>int</em>) – layer index</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – “Mean” or “Variance”</p></li>
 <li><p><strong>fig_ax</strong> (<em>tuple</em>) – matplotlib figure and axes</p></li>
 <li><p><strong>size</strong> (<em>tuple</em>) – figure size</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – figure title</p></li>
+<li><p><strong>xlabel</strong> (<em>str</em>) – x-axis label</p></li>
+<li><p><strong>ylabel</strong> (<em>str</em>) – y-axis label</p></li>
 <li><p><strong>layer_title</strong> (<em>bool</em>) – If true, add only layer as title</p></li>
+<li><p><strong>show_colorbar</strong> (<em>bool</em>) – If true, add colorbar, default True</p></li>
+<li><p><strong>colorbar_label</strong> (<em>str</em>) – color bar title, by default ‘Mean’</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -513,225 +787,6 @@ displacement or curvature.</p>
 </dd>
 </dl>
 </dd></dl>
-
-</div>
-<div class="section" id="module-morphodynamics.plots.ui_batch">
-<span id="morphodynamics-plots-ui-batch-module"></span><h2>morphodynamics.plots.ui_batch module<a class="headerlink" href="#module-morphodynamics.plots.ui_batch" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_batch.BatchExport">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.ui_batch.</span></span><span class="sig-name descname"><span class="pre">BatchExport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_batch.BatchExport" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_batch.BatchExport.create_interface">
-<span class="sig-name descname"><span class="pre">create_interface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_batch.BatchExport.create_interface" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_batch.show_analysis">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.ui_batch.</span></span><span class="sig-name descname"><span class="pre">show_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_batch.show_analysis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Display the results of the morphodynamics analysis.</p>
-</dd></dl>
-
-</div>
-<div class="section" id="module-morphodynamics.plots.ui_correlation">
-<span id="morphodynamics-plots-ui-correlation-module"></span><h2>morphodynamics.plots.ui_correlation module<a class="headerlink" href="#module-morphodynamics.plots.ui_correlation" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_correlation.Correlation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.ui_correlation.</span></span><span class="sig-name descname"><span class="pre">Correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_correlation.Correlation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_correlation.Correlation.compute_confidence_interval">
-<span class="sig-name descname"><span class="pre">compute_confidence_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rho</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_correlation.Correlation.compute_confidence_interval" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_correlation.Correlation.compute_significance_level">
-<span class="sig-name descname"><span class="pre">compute_significance_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">K2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autocorrelation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_correlation.Correlation.compute_significance_level" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_correlation.Correlation.create_interface">
-<span class="sig-name descname"><span class="pre">create_interface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_correlation.Correlation.create_interface" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_correlation.Correlation.get_signal">
-<span class="sig-name descname"><span class="pre">get_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_correlation.Correlation.get_signal" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_correlation.Correlation.show_correlation">
-<span class="sig-name descname"><span class="pre">show_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_correlation.Correlation.show_correlation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_correlation.Correlation.show_correlation_average">
-<span class="sig-name descname"><span class="pre">show_correlation_average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f2_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_correlation.Correlation.show_correlation_average" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_correlation.Correlation.show_correlation_compl">
-<span class="sig-name descname"><span class="pre">show_correlation_compl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f1_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f2_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_correlation.Correlation.show_correlation_compl" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_correlation.Correlation.update_plots">
-<span class="sig-name descname"><span class="pre">update_plots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_correlation.Correlation.update_plots" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-morphodynamics.plots.ui_curvature">
-<span id="morphodynamics-plots-ui-curvature-module"></span><h2>morphodynamics.plots.ui_curvature module<a class="headerlink" href="#module-morphodynamics.plots.ui_curvature" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_curvature.Curvature">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.ui_curvature.</span></span><span class="sig-name descname"><span class="pre">Curvature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_curvature.Curvature" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_curvature.Curvature.create_interface">
-<span class="sig-name descname"><span class="pre">create_interface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_curvature.Curvature.create_interface" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_curvature.Curvature.show_curvature">
-<span class="sig-name descname"><span class="pre">show_curvature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_curvature.Curvature.show_curvature" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-morphodynamics.plots.ui_edge_rasterized">
-<span id="morphodynamics-plots-ui-edge-rasterized-module"></span><h2>morphodynamics.plots.ui_edge_rasterized module<a class="headerlink" href="#module-morphodynamics.plots.ui_edge_rasterized" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_rasterized.EdgeRasterized">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.ui_edge_rasterized.</span></span><span class="sig-name descname"><span class="pre">EdgeRasterized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.create_interface">
-<span class="sig-name descname"><span class="pre">create_interface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.create_interface" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.get_image">
-<span class="sig-name descname"><span class="pre">get_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.get_image" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.plot">
-<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.plot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.save" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.save_movie">
-<span class="sig-name descname"><span class="pre">save_movie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.save_movie" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.set_mode">
-<span class="sig-name descname"><span class="pre">set_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.set_mode" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.set_normalization">
-<span class="sig-name descname"><span class="pre">set_normalization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalization</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.set_normalization" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.show_edge_rasterized_aux">
-<span class="sig-name descname"><span class="pre">show_edge_rasterized_aux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.show_edge_rasterized_aux" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute edge image.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>param</strong> (<em>param object</em>) – created from parameters.Param</p></li>
-<li><p><strong>data</strong> (<em>data object</em>) – created from dataset.Data</p></li>
-<li><p><strong>res</strong> (<em>res object</em>) – created from results.Results</p></li>
-<li><p><strong>d</strong> (<em>array</em>) – variable to represent along contour</p></li>
-<li><p><strong>dmax</strong> (<em>float</em>) – max value of the variable</p></li>
-<li><p><strong>k</strong> (<em>int</em>) – time point</p></li>
-<li><p><strong>mode</strong> (<em>str</em>) – “curvature”</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-morphodynamics.plots.ui_edge_vectorial">
-<span id="morphodynamics-plots-ui-edge-vectorial-module"></span><h2>morphodynamics.plots.ui_edge_vectorial module<a class="headerlink" href="#module-morphodynamics.plots.ui_edge_vectorial" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_vectorial.EdgeVectorialSlow">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.ui_edge_vectorial.</span></span><span class="sig-name descname"><span class="pre">EdgeVectorialSlow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_vectorial.EdgeVectorialSlow" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Interactive UI to visualize the edge displacement over time</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_vectorial.EdgeVectorialSlow.create_interface">
-<span class="sig-name descname"><span class="pre">create_interface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_vectorial.EdgeVectorialSlow.create_interface" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_edge_vectorial.EdgeVectorialSlow.set_mode">
-<span class="sig-name descname"><span class="pre">set_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_edge_vectorial.EdgeVectorialSlow.set_mode" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-morphodynamics.plots.ui_outputs">
-<span id="morphodynamics-plots-ui-outputs-module"></span><h2>morphodynamics.plots.ui_outputs module<a class="headerlink" href="#module-morphodynamics.plots.ui_outputs" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_outputs.OutputUI">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.ui_outputs.</span></span><span class="sig-name descname"><span class="pre">OutputUI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_outputs.OutputUI" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_outputs.OutputUI.create_ui">
-<span class="sig-name descname"><span class="pre">create_ui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_outputs.OutputUI.create_ui" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_outputs.OutputUI.load_data">
-<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_outputs.OutputUI.load_data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_outputs.OutputUI.update_dir">
-<span class="sig-name descname"><span class="pre">update_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">change</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_outputs.OutputUI.update_dir" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-morphodynamics.plots.ui_signals">
-<span id="morphodynamics-plots-ui-signals-module"></span><h2>morphodynamics.plots.ui_signals module<a class="headerlink" href="#module-morphodynamics.plots.ui_signals" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_signals.Signals">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.ui_signals.</span></span><span class="sig-name descname"><span class="pre">Signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_signals.Signals" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_signals.Signals.create_interface">
-<span class="sig-name descname"><span class="pre">create_interface</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_signals.Signals.create_interface" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_signals.Signals.get_signal">
-<span class="sig-name descname"><span class="pre">get_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_signals.Signals.get_signal" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="morphodynamics.plots.ui_signals.show_signals">
-<span class="sig-prename descclassname"><span class="pre">morphodynamics.plots.ui_signals.</span></span><span class="sig-name descname"><span class="pre">show_signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(16,</span> <span class="pre">9)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#morphodynamics.plots.ui_signals.show_signals" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </div>
 <div class="section" id="module-morphodynamics.plots.ui_wimage">
@@ -806,8 +861,8 @@ displacement or curvature.</p>
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'> 
     <a class='left-prev' id="prev-link" href="morphodynamics.html" title="previous page">
         <i class="fas fa-angle-left"></i>
@@ -816,20 +871,25 @@ displacement or curvature.</p>
             <p class="prev-next-title">morphodynamics package</p>
         </div>
     </a>
+    <a class='right-next' id="next-link" href="morphodynamics.store.html" title="next page">
+    <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">morphodynamics.store package</p>
+    </div>
+    <i class="fas fa-angle-right"></i>
+    </a>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Cédric Vonesch and Guillaume Witz<br/>
-        
-            &copy; Copyright 2021.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Cédric Vonesch and Guillaume Witz<br/>
+    
+        &copy; Copyright 2021.<br/>
+  </p>
+</footer>
 </main>
 
 

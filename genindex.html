@@ -41,7 +41,7 @@
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script src="_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
     <link rel="index" title="Index" href="#" />
@@ -98,6 +98,11 @@
  <li class="toctree-l1">
   <a class="reference internal" href="mydocs/Installation.html">
    Installation
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="mydocs/Napari_Plugin.html">
+   Napari plugin for Morphodynamics
   </a>
  </li>
  <li class="toctree-l1">
@@ -164,6 +169,11 @@
      morphodynamics.plots package
     </a>
    </li>
+   <li class="toctree-l2">
+    <a class="reference internal" href="docs/source/morphodynamics.store.html">
+     morphodynamics.store package
+    </a>
+   </li>
   </ul>
  </li>
 </ul>
@@ -226,14 +236,24 @@
         </div>
 
         <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
+        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
             
         </div>
     </div>
 </div>
     <div id="main-content" class="row">
         <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
+            <!-- Table of contents that is only displayed when printing the page -->
+            <div id="jb-print-docs-body" class="onlyprint">
+                <h1></h1>
+                <!-- Table of contents -->
+                <div id="print-main-content">
+                    <div id="jb-print-toc">
+                        
+                    </div>
+                </div>
+            </div>
+            
               <div>
                 
 
@@ -270,21 +290,21 @@
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.align_curves">align_curves() (in module morphodynamics.displacementestimation)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.analysis_par.analyze_morphodynamics">analyze_morphodynamics() (in module morphodynamics.analysis_par)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results.area">area (morphodynamics.results.Results attribute)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.animate_plots.animate_edge_raster_coloured_by_feature">animate_edge_raster_coloured_by_feature() (in module morphodynamics.plots.animate_plots)</a>
+</li>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.animate_plots.animate_edge_vect">animate_edge_vect() (in module morphodynamics.plots.animate_plots)</a>
+</li>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results.area">area (morphodynamics.store.results.Results attribute)</a>
 </li>
   </ul></td>
 </tr></table>
 
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_batch.BatchExport">BatchExport (class in morphodynamics.plots.ui_batch)</a>
-</li>
-  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.windowing.boundaries_image">boundaries_image() (in module morphodynamics.windowing)</a>
 </li>
@@ -298,22 +318,18 @@
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.analysis_par.calibration">calibration() (in module morphodynamics.analysis_par)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.compute_area">compute_area() (in module morphodynamics.displacementestimation)</a>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.colorize_raster">colorize_raster() (in module morphodynamics.plots.show_plots)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_correlation.Correlation.compute_confidence_interval">compute_confidence_interval() (morphodynamics.plots.ui_correlation.Correlation method)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.compute_curvature">compute_curvature() (in module morphodynamics.displacementestimation)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.colour_image_border_by_feature">colour_image_border_by_feature() (in module morphodynamics.splineutils)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.windowing.compute_discrete_arc_length">compute_discrete_arc_length() (in module morphodynamics.windowing)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.analysis_par.compute_displacement">compute_displacement() (in module morphodynamics.analysis_par)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.compute_edge_image">compute_edge_image() (in module morphodynamics.displacementestimation)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.analysis_par.compute_spline_windows">compute_spline_windows() (in module morphodynamics.analysis_par)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.compute_length">compute_length() (in module morphodynamics.displacementestimation)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_correlation.Correlation.compute_significance_level">compute_significance_level() (morphodynamics.plots.ui_correlation.Correlation method)</a>
-</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.segmentation.contour_spline">contour_spline() (in module morphodynamics.segmentation)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.correlation.correlate">correlate() (in module morphodynamics.correlation)</a>
@@ -322,35 +338,13 @@
         <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.correlate">(in module morphodynamics.displacementestimation)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.correlation.correlate_arrays">correlate_arrays() (in module morphodynamics.correlation)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_correlation.Correlation">Correlation (class in morphodynamics.plots.ui_correlation)</a>
-</li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.windowing.create_arc_length_image">create_arc_length_image() (in module morphodynamics.windowing)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_batch.BatchExport.create_interface">create_interface() (morphodynamics.plots.ui_batch.BatchExport method)</a>
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_correlation.Correlation.create_interface">(morphodynamics.plots.ui_correlation.Correlation method)</a>
-</li>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_curvature.Curvature.create_interface">(morphodynamics.plots.ui_curvature.Curvature method)</a>
-</li>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.create_interface">(morphodynamics.plots.ui_edge_rasterized.EdgeRasterized method)</a>
-</li>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_vectorial.EdgeVectorialSlow.create_interface">(morphodynamics.plots.ui_edge_vectorial.EdgeVectorialSlow method)</a>
-</li>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_signals.Signals.create_interface">(morphodynamics.plots.ui_signals.Signals method)</a>
-</li>
-      </ul></li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_outputs.OutputUI.create_ui">create_ui() (morphodynamics.plots.ui_outputs.OutputUI method)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.create_ui_options">create_ui_options() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.windowing.create_windows">create_windows() (in module morphodynamics.windowing)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_curvature.Curvature">Curvature (class in morphodynamics.plots.ui_curvature)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -358,7 +352,11 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results.displacement">displacement (morphodynamics.results.Results attribute)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.utils.dataset_from_param">dataset_from_param() (in module morphodynamics.utils)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results.displacement">displacement (morphodynamics.store.results.Results attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -366,15 +364,17 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized">EdgeRasterized (class in morphodynamics.plots.ui_edge_rasterized)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.edge_colored_by_features">edge_colored_by_features() (in module morphodynamics.splineutils)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_vectorial.EdgeVectorialSlow">EdgeVectorialSlow (class in morphodynamics.plots.ui_edge_vectorial)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.enlarge_contour">enlarge_contour() (in module morphodynamics.splineutils)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.segmentation.estimateBleaching">estimateBleaching() (in module morphodynamics.segmentation)</a>
 </li>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.export_data">export_data() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.export_data">export_data() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.utils.export_results_parameters">export_results_parameters() (in module morphodynamics.utils)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.segmentation.extract_contour">extract_contour() (in module morphodynamics.segmentation)</a>
 </li>
@@ -398,7 +398,7 @@
       </ul></li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.find_origin">find_origin() (in module morphodynamics.displacementestimation)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.fit_spline">fit_spline() (in module morphodynamics.displacementestimation)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.fit_spline">fit_spline() (in module morphodynamics.splineutils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -422,20 +422,12 @@
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.folders.Folders.get_files">get_files() (morphodynamics.folders.Folders method)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.get_folders">get_folders() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.get_image">get_image() (morphodynamics.plots.ui_edge_rasterized.EdgeRasterized method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.get_folders">get_folders() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
+</li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.correlation.get_range">get_range() (in module morphodynamics.correlation)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_correlation.Correlation.get_signal">get_signal() (morphodynamics.plots.ui_correlation.Correlation method)</a>
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_signals.Signals.get_signal">(morphodynamics.plots.ui_signals.Signals method)</a>
-</li>
-      </ul></li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.folders.Folders.go_to_folder">go_to_folder() (morphodynamics.folders.Folders method)</a>
 </li>
   </ul></td>
@@ -444,7 +436,7 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.dataset.H5">H5 (class in morphodynamics.dataset)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.dataset.H5">H5 (class in morphodynamics.store.dataset)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -452,15 +444,19 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results.I">I (morphodynamics.results.Results attribute)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results.I">I (morphodynamics.store.results.Results attribute)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.analysis_par.import_and_spline">import_and_spline() (in module morphodynamics.analysis_par)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.initialize">initialize() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
 </li>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.initialize_dask">initialize_dask() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.initialize_dask">initialize_dask() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.animate_plots.interact_edge_raster_coloured_by_feature">interact_edge_raster_coloured_by_feature() (in module morphodynamics.plots.animate_plots)</a>
+</li>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.animate_plots.interact_edge_vect">interact_edge_vect() (in module morphodynamics.plots.animate_plots)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg">InteractSeg (class in morphodynamics.morpho_segmentation)</a>
 </li>
@@ -472,7 +468,7 @@
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results.J">J (morphodynamics.results.Results attribute)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results.J">J (morphodynamics.store.results.Results attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -484,21 +480,17 @@
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.syntheticdata.largeTurningEllipse">largeTurningEllipse() (in module morphodynamics.syntheticdata)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results.length">length (morphodynamics.results.Results attribute)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results.length">length (morphodynamics.store.results.Results attribute)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.utils.load_alldata">load_alldata() (in module morphodynamics.utils)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.load_data">load_data() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_outputs.OutputUI.load_data">(morphodynamics.plots.ui_outputs.OutputUI method)</a>
 </li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.dataset.load_frame_morpho">load_frame_morpho() (in module morphodynamics.dataset)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.dataset.load_frame_morpho">load_frame_morpho() (in module morphodynamics.store.dataset)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.dataset.load_frame_signal">load_frame_signal() (in module morphodynamics.dataset)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.dataset.load_frame_signal">load_frame_signal() (in module morphodynamics.store.dataset)</a>
 </li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_wimage.Wimage.load_image">load_image() (morphodynamics.plots.ui_wimage.Wimage method)</a>
 </li>
@@ -522,7 +514,7 @@
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.map_contours3">map_contours3() (in module morphodynamics.displacementestimation)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results.mean">mean (morphodynamics.results.Results attribute)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results.mean">mean (morphodynamics.store.results.Results attribute)</a>
 </li>
       <li>
     module
@@ -534,43 +526,33 @@
 </li>
         <li><a href="docs/source/morphodynamics.html#module-morphodynamics.correlation">morphodynamics.correlation</a>
 </li>
-        <li><a href="docs/source/morphodynamics.html#module-morphodynamics.dataset">morphodynamics.dataset</a>
-</li>
         <li><a href="docs/source/morphodynamics.html#module-morphodynamics.displacementestimation">morphodynamics.displacementestimation</a>
 </li>
         <li><a href="docs/source/morphodynamics.html#module-morphodynamics.folders">morphodynamics.folders</a>
 </li>
         <li><a href="docs/source/morphodynamics.html#module-morphodynamics.functionaldefinition">morphodynamics.functionaldefinition</a>
 </li>
-        <li><a href="docs/source/morphodynamics.html#module-morphodynamics.morpho_plots">morphodynamics.morpho_plots</a>
-</li>
         <li><a href="docs/source/morphodynamics.html#module-morphodynamics.morpho_segmentation">morphodynamics.morpho_segmentation</a>
-</li>
-        <li><a href="docs/source/morphodynamics.html#module-morphodynamics.parameters">morphodynamics.parameters</a>
 </li>
         <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots">morphodynamics.plots</a>
 </li>
+        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.animate_plots">morphodynamics.plots.animate_plots</a>
+</li>
         <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.show_plots">morphodynamics.plots.show_plots</a>
-</li>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_batch">morphodynamics.plots.ui_batch</a>
-</li>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_correlation">morphodynamics.plots.ui_correlation</a>
-</li>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_curvature">morphodynamics.plots.ui_curvature</a>
-</li>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_edge_rasterized">morphodynamics.plots.ui_edge_rasterized</a>
-</li>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_edge_vectorial">morphodynamics.plots.ui_edge_vectorial</a>
-</li>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_outputs">morphodynamics.plots.ui_outputs</a>
-</li>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_signals">morphodynamics.plots.ui_signals</a>
 </li>
         <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_wimage">morphodynamics.plots.ui_wimage</a>
 </li>
-        <li><a href="docs/source/morphodynamics.html#module-morphodynamics.results">morphodynamics.results</a>
-</li>
         <li><a href="docs/source/morphodynamics.html#module-morphodynamics.segmentation">morphodynamics.segmentation</a>
+</li>
+        <li><a href="docs/source/morphodynamics.html#module-morphodynamics.splineutils">morphodynamics.splineutils</a>
+</li>
+        <li><a href="docs/source/morphodynamics.store.html#module-morphodynamics.store">morphodynamics.store</a>
+</li>
+        <li><a href="docs/source/morphodynamics.store.html#module-morphodynamics.store.dataset">morphodynamics.store.dataset</a>
+</li>
+        <li><a href="docs/source/morphodynamics.store.html#module-morphodynamics.store.parameters">morphodynamics.store.parameters</a>
+</li>
+        <li><a href="docs/source/morphodynamics.store.html#module-morphodynamics.store.results">morphodynamics.store.results</a>
 </li>
         <li><a href="docs/source/morphodynamics.html#module-morphodynamics.syntheticdata">morphodynamics.syntheticdata</a>
 </li>
@@ -601,19 +583,14 @@
 </li>
       </ul></li>
       <li>
-    morphodynamics.dataset
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.html#module-morphodynamics.dataset">module</a>
-</li>
-      </ul></li>
-      <li>
     morphodynamics.displacementestimation
 
       <ul>
         <li><a href="docs/source/morphodynamics.html#module-morphodynamics.displacementestimation">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     morphodynamics.folders
 
@@ -621,20 +598,11 @@
         <li><a href="docs/source/morphodynamics.html#module-morphodynamics.folders">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     morphodynamics.functionaldefinition
 
       <ul>
         <li><a href="docs/source/morphodynamics.html#module-morphodynamics.functionaldefinition">module</a>
-</li>
-      </ul></li>
-      <li>
-    morphodynamics.morpho_plots
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.html#module-morphodynamics.morpho_plots">module</a>
 </li>
       </ul></li>
       <li>
@@ -645,17 +613,17 @@
 </li>
       </ul></li>
       <li>
-    morphodynamics.parameters
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.html#module-morphodynamics.parameters">module</a>
-</li>
-      </ul></li>
-      <li>
     morphodynamics.plots
 
       <ul>
         <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots">module</a>
+</li>
+      </ul></li>
+      <li>
+    morphodynamics.plots.animate_plots
+
+      <ul>
+        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.animate_plots">module</a>
 </li>
       </ul></li>
       <li>
@@ -666,55 +634,6 @@
 </li>
       </ul></li>
       <li>
-    morphodynamics.plots.ui_batch
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_batch">module</a>
-</li>
-      </ul></li>
-      <li>
-    morphodynamics.plots.ui_correlation
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_correlation">module</a>
-</li>
-      </ul></li>
-      <li>
-    morphodynamics.plots.ui_curvature
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_curvature">module</a>
-</li>
-      </ul></li>
-      <li>
-    morphodynamics.plots.ui_edge_rasterized
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_edge_rasterized">module</a>
-</li>
-      </ul></li>
-      <li>
-    morphodynamics.plots.ui_edge_vectorial
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_edge_vectorial">module</a>
-</li>
-      </ul></li>
-      <li>
-    morphodynamics.plots.ui_outputs
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_outputs">module</a>
-</li>
-      </ul></li>
-      <li>
-    morphodynamics.plots.ui_signals
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#module-morphodynamics.plots.ui_signals">module</a>
-</li>
-      </ul></li>
-      <li>
     morphodynamics.plots.ui_wimage
 
       <ul>
@@ -722,17 +641,45 @@
 </li>
       </ul></li>
       <li>
-    morphodynamics.results
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.html#module-morphodynamics.results">module</a>
-</li>
-      </ul></li>
-      <li>
     morphodynamics.segmentation
 
       <ul>
         <li><a href="docs/source/morphodynamics.html#module-morphodynamics.segmentation">module</a>
+</li>
+      </ul></li>
+      <li>
+    morphodynamics.splineutils
+
+      <ul>
+        <li><a href="docs/source/morphodynamics.html#module-morphodynamics.splineutils">module</a>
+</li>
+      </ul></li>
+      <li>
+    morphodynamics.store
+
+      <ul>
+        <li><a href="docs/source/morphodynamics.store.html#module-morphodynamics.store">module</a>
+</li>
+      </ul></li>
+      <li>
+    morphodynamics.store.dataset
+
+      <ul>
+        <li><a href="docs/source/morphodynamics.store.html#module-morphodynamics.store.dataset">module</a>
+</li>
+      </ul></li>
+      <li>
+    morphodynamics.store.parameters
+
+      <ul>
+        <li><a href="docs/source/morphodynamics.store.html#module-morphodynamics.store.parameters">module</a>
+</li>
+      </ul></li>
+      <li>
+    morphodynamics.store.results
+
+      <ul>
+        <li><a href="docs/source/morphodynamics.store.html#module-morphodynamics.store.results">module</a>
 </li>
       </ul></li>
       <li>
@@ -760,7 +707,7 @@
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.syntheticdata.movingEllipse">movingEllipse() (in module morphodynamics.syntheticdata)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.dataset.MultipageTIFF">MultipageTIFF (class in morphodynamics.dataset)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.dataset.MultipageTIFF">MultipageTIFF (class in morphodynamics.store.dataset)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -768,7 +715,7 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.dataset.ND2">ND2 (class in morphodynamics.dataset)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.dataset.ND2">ND2 (class in morphodynamics.store.dataset)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -782,22 +729,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.on_key_release">on_key_release() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_outputs.OutputUI">OutputUI (class in morphodynamics.plots.ui_outputs)</a>
-</li>
   </ul></td>
 </tr></table>
 
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.parameters.Param">Param (class in morphodynamics.parameters)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.parameters.Param">Param (class in morphodynamics.store.parameters)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.plot">plot() (morphodynamics.plots.ui_edge_rasterized.EdgeRasterized method)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.syntheticdata.protrudingEllipse">protrudingEllipse() (in module morphodynamics.syntheticdata)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.syntheticdata.protrudingEllipse">protrudingEllipse() (in module morphodynamics.syntheticdata)</a>
-</li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.syntheticdata.pumpingDisk">pumpingDisk() (in module morphodynamics.syntheticdata)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.syntheticdata.pumpingEllipse">pumpingEllipse() (in module morphodynamics.syntheticdata)</a>
@@ -808,13 +751,11 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.rasterize_curve">rasterize_curve() (in module morphodynamics.displacementestimation)</a>
-</li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.folders.Folders.refresh">refresh() (morphodynamics.folders.Folders method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results">Results (class in morphodynamics.results)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results">Results (class in morphodynamics.store.results)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.run_segmentation">run_segmentation() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
 </li>
@@ -824,19 +765,17 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.save">save() (morphodynamics.plots.ui_edge_rasterized.EdgeRasterized method)</a>
-</li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.save_edge_vectorial_movie">save_edge_vectorial_movie() (in module morphodynamics.plots.show_plots)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.save_movie">save_movie() (morphodynamics.plots.ui_edge_rasterized.EdgeRasterized method)</a>
 </li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.save_signals">save_signals() (in module morphodynamics.plots.show_plots)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results.seg">seg (morphodynamics.results.Results attribute)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results.seg">seg (morphodynamics.store.results.Results attribute)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.analysis_par.segment_all">segment_all() (in module morphodynamics.analysis_par)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.segmentation.segment_cellpose">segment_cellpose() (in module morphodynamics.segmentation)</a>
+</li>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.segmentation.segment_conv_paint">segment_conv_paint() (in module morphodynamics.segmentation)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.segmentation.segment_farid">segment_farid() (in module morphodynamics.segmentation)</a>
 </li>
@@ -844,107 +783,71 @@
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.segmentation.segment_threshold">segment_threshold() (in module morphodynamics.segmentation)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.set_mode">set_mode() (morphodynamics.plots.ui_edge_rasterized.EdgeRasterized method)</a>
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_vectorial.EdgeVectorialSlow.set_mode">(morphodynamics.plots.ui_edge_vectorial.EdgeVectorialSlow method)</a>
-</li>
-      </ul></li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.set_normalization">set_normalization() (morphodynamics.plots.ui_edge_rasterized.EdgeRasterized method)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_batch.show_analysis">show_analysis() (in module morphodynamics.plots.ui_batch)</a>
-</li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.correlation.show_average_correlation">show_average_correlation() (in module morphodynamics.correlation)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_circularity">show_circularity() (in module morphodynamics.plots.show_plots)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_correlation.Correlation.show_correlation">show_correlation() (morphodynamics.plots.ui_correlation.Correlation method)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_correlation.Correlation.show_correlation_average">show_correlation_average() (morphodynamics.plots.ui_correlation.Correlation method)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_correlation.Correlation.show_correlation_compl">show_correlation_compl() (morphodynamics.plots.ui_correlation.Correlation method)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.correlation.show_correlation_core">show_correlation_core() (in module morphodynamics.correlation)</a>
 </li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_cumdisplacement">show_cumdisplacement() (in module morphodynamics.plots.show_plots)</a>
 </li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_curvature">show_curvature() (in module morphodynamics.plots.show_plots)</a>
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_curvature.Curvature.show_curvature">(morphodynamics.plots.ui_curvature.Curvature method)</a>
 </li>
-      </ul></li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_displacement">show_displacement() (in module morphodynamics.plots.show_plots)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.show_edge_line">show_edge_line() (in module morphodynamics.displacementestimation)</a>
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_edge_line">(in module morphodynamics.plots.show_plots)</a>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_edge_line">show_edge_line() (in module morphodynamics.plots.show_plots)</a>
 </li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.show_edge_line_aux">show_edge_line_aux() (in module morphodynamics.displacementestimation)</a>
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_edge_line_aux">(in module morphodynamics.plots.show_plots)</a>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_edge_line_aux">show_edge_line_aux() (in module morphodynamics.plots.show_plots)</a>
 </li>
-      </ul></li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_edge_overview">show_edge_overview() (in module morphodynamics.plots.show_plots)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_edge_rasterized.EdgeRasterized.show_edge_rasterized_aux">show_edge_rasterized_aux() (morphodynamics.plots.ui_edge_rasterized.EdgeRasterized method)</a>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_edge_raster_coloured_by_feature">show_edge_raster_coloured_by_feature() (in module morphodynamics.plots.show_plots)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.show_edge_scatter">show_edge_scatter() (in module morphodynamics.displacementestimation)</a>
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_edge_scatter">(in module morphodynamics.plots.show_plots)</a>
-</li>
-      </ul></li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.show_edge_scatter_init">show_edge_scatter_init() (in module morphodynamics.displacementestimation)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.show_edge_scatter_update">show_edge_scatter_update() (in module morphodynamics.displacementestimation)</a>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_edge_scatter">show_edge_scatter() (in module morphodynamics.plots.show_plots)</a>
 </li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_edge_vectorial_aux">show_edge_vectorial_aux() (in module morphodynamics.plots.show_plots)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_wimage.Wimage.show_segmentation">show_segmentation() (morphodynamics.plots.ui_wimage.Wimage method)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_geometry">show_geometry() (in module morphodynamics.plots.show_plots)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_signals.show_signals">show_signals() (in module morphodynamics.plots.ui_signals)</a>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_geometry_props">show_geometry_props() (in module morphodynamics.plots.show_plots)</a>
+</li>
+      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_wimage.Wimage.show_segmentation">show_segmentation() (morphodynamics.plots.ui_wimage.Wimage method)</a>
 </li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.show_plots.show_signals_aux">show_signals_aux() (in module morphodynamics.plots.show_plots)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_plots.show_windows">show_windows() (in module morphodynamics.morpho_plots)</a>
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.html#morphodynamics.windowing.show_windows">(in module morphodynamics.windowing)</a>
-</li>
-      </ul></li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_plots.show_windows_set">show_windows_set() (in module morphodynamics.morpho_plots)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.windowing.show_windows">show_windows() (in module morphodynamics.windowing)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.utils.signalarray_to_dataframe">signalarray_to_dataframe() (in module morphodynamics.utils)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.syntheticdata.signalEllipse">signalEllipse() (in module morphodynamics.syntheticdata)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_signals.Signals">Signals (class in morphodynamics.plots.ui_signals)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.splevper">splevper() (in module morphodynamics.splineutils)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.splevper">splevper() (in module morphodynamics.displacementestimation)</a>
-
-      <ul>
-        <li><a href="docs/source/morphodynamics.html#morphodynamics.functionaldefinition.splevper">(in module morphodynamics.functionaldefinition)</a>
-</li>
-      </ul></li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results.spline">spline (morphodynamics.results.Results attribute)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results.spline">spline (morphodynamics.store.results.Results attribute)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.analysis_par.spline_align_rasterize">spline_align_rasterize() (in module morphodynamics.analysis_par)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.analysis_par.spline_all">spline_all() (in module morphodynamics.analysis_par)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results.spline_param">spline_param (morphodynamics.results.Results attribute)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.spline_area">spline_area() (in module morphodynamics.splineutils)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results.spline_param0">spline_param0 (morphodynamics.results.Results attribute)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.spline_contour_length">spline_contour_length() (in module morphodynamics.splineutils)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.subdivide_curve">subdivide_curve() (in module morphodynamics.displacementestimation)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.spline_curvature">spline_curvature() (in module morphodynamics.splineutils)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.displacementestimation.subdivide_curve_discrete">subdivide_curve_discrete() (in module morphodynamics.displacementestimation)</a>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.spline_int_coordinates">spline_int_coordinates() (in module morphodynamics.splineutils)</a>
+</li>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results.spline_param">spline_param (morphodynamics.store.results.Results attribute)</a>
+</li>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results.spline_param0">spline_param0 (morphodynamics.store.results.Results attribute)</a>
+</li>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.spline_to_binary_image">spline_to_binary_image() (in module morphodynamics.splineutils)</a>
+</li>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.spline_to_param_image">spline_to_param_image() (in module morphodynamics.splineutils)</a>
+</li>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.subdivide_curve">subdivide_curve() (in module morphodynamics.splineutils)</a>
+</li>
+      <li><a href="docs/source/morphodynamics.html#morphodynamics.splineutils.subdivide_curve_discrete">subdivide_curve_discrete() (in module morphodynamics.splineutils)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -954,7 +857,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.correlation.test_correlate">test_correlate() (in module morphodynamics.correlation)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.dataset.TIFFSeries">TIFFSeries (class in morphodynamics.dataset)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.dataset.TIFFSeries">TIFFSeries (class in morphodynamics.store.dataset)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.analysis_par.track_all">track_all() (in module morphodynamics.analysis_par)</a>
 </li>
@@ -981,8 +884,6 @@
       <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.ui_folder_panel">ui_folder_panel() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
 </li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_wimage.Wimage.update_dataset">update_dataset() (morphodynamics.plots.ui_wimage.Wimage method)</a>
-</li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_outputs.OutputUI.update_dir">update_dir() (morphodynamics.plots.ui_outputs.OutputUI method)</a>
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.update_display_channel">update_display_channel() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
 </li>
@@ -1014,8 +915,6 @@
 </li>
       <li><a href="docs/source/morphodynamics.html#morphodynamics.morpho_segmentation.InteractSeg.update_param_simple">update_param_simple() (morphodynamics.morpho_segmentation.InteractSeg method)</a>
 </li>
-      <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_correlation.Correlation.update_plots">update_plots() (morphodynamics.plots.ui_correlation.Correlation method)</a>
-</li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_wimage.Wimage.update_text_vis">update_text_vis() (morphodynamics.plots.ui_wimage.Wimage method)</a>
 </li>
       <li><a href="docs/source/morphodynamics.plots.html#morphodynamics.plots.ui_wimage.Wimage.update_windows_vis">update_windows_vis() (morphodynamics.plots.ui_wimage.Wimage method)</a>
@@ -1026,7 +925,7 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="docs/source/morphodynamics.html#morphodynamics.results.Results.var">var (morphodynamics.results.Results attribute)</a>
+      <li><a href="docs/source/morphodynamics.store.html#morphodynamics.store.results.Results.var">var (morphodynamics.store.results.Results attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1057,23 +956,21 @@
 
               </div>
               
-        
-            <!-- Previous / next buttons -->
+            
+                <!-- Previous / next buttons -->
 <div class='prev-next-area'>
 </div>
-        
+            
         </div>
     </div>
     <footer class="footer">
-    <div class="container">
-      <p>
-        
-          By Cédric Vonesch and Guillaume Witz<br/>
-        
-            &copy; Copyright 2021.<br/>
-      </p>
-    </div>
-  </footer>
+  <p>
+    
+      By Cédric Vonesch and Guillaume Witz<br/>
+    
+        &copy; Copyright 2021.<br/>
+  </p>
+</footer>
 </main>
 
 

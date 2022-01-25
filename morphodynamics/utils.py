@@ -6,8 +6,13 @@ import skimage.io
 import pandas as pd
 from pathlib import Path
 
-from .parameters import Param
-from .dataset import TIFFSeries, MultipageTIFF, ND2, H5
+from .store.parameters import Param
+from .store.dataset import TIFFSeries, MultipageTIFF, ND2, H5
+
+# https://stackoverflow.com/a/2121918
+import sys
+from morphodynamics.store import results
+sys.modules['morphodynamics.results'] = results
 
 
 def load_alldata(folder_path, load_results=False, param=None):
@@ -58,6 +63,7 @@ def load_alldata(folder_path, load_results=False, param=None):
     if param.data_type == "series":
         data = TIFFSeries(
             Path(param.data_folder),
+            channel_name=[param.morpho_name]+param.signal_name,
             morpho_name=param.morpho_name,
             signal_name=param.signal_name,
             data_type=param.data_type,
@@ -69,6 +75,7 @@ def load_alldata(folder_path, load_results=False, param=None):
     elif param.data_type == "multi":
         data = MultipageTIFF(
             Path(param.data_folder),
+            channel_name=[param.morpho_name]+param.signal_name,
             morpho_name=param.morpho_name,
             signal_name=param.signal_name,
             data_type=param.data_type,
@@ -80,6 +87,7 @@ def load_alldata(folder_path, load_results=False, param=None):
     elif param.data_type == "nd2":
         data = ND2(
             Path(param.data_folder),
+            channel_name=[param.morpho_name]+param.signal_name,
             morpho_name=param.morpho_name,
             signal_name=param.signal_name,
             data_type=param.data_type,
@@ -91,6 +99,7 @@ def load_alldata(folder_path, load_results=False, param=None):
     elif param.data_type == "h5":
         data = H5(
             Path(param.data_folder),
+            channel_name=[param.morpho_name]+param.signal_name,
             morpho_name=param.morpho_name,
             signal_name=param.signal_name,
             data_type=param.data_type,
@@ -98,8 +107,88 @@ def load_alldata(folder_path, load_results=False, param=None):
             bad_frames=param.bad_frames,
             max_time=param.max_time,
         )
+    else:
+        raise ValueError("Unknown data type")
 
     return param, res, data
+
+def export_results_parameters(param, res):
+    """Export parameters and results"""
+
+    # export results
+    dill.dump(
+            res,
+            open(os.path.join(param.analysis_folder, "Results.pkl"), "wb"),
+        )
+
+    # export parameters
+    dict_file = {}
+    for x in dir(param):
+        if x[0] == "_":
+            None
+        elif (x == "analysis_folder") or (x == "data_folder") or (x == "seg_folder") or (x == "random_forest"):
+            dict_file[x] = getattr(param, x).as_posix()
+        else:
+            dict_file[x] = getattr(param, x)
+
+    with open(param.analysis_folder.joinpath("Parameters.yml"), "w") as file:
+        yaml.dump(dict_file, file)
+
+    # export signals
+    # export CSV data table
+    signal_df = signalarray_to_dataframe({'mean': res.mean, 'var': res.var})
+    signal_df.to_csv(os.path.join(param.analysis_folder, "Signals.csv"), index=False)
+
+
+def dataset_from_param(param):
+    """Given a param object, create the appropriate dataset."""
+    
+    if os.path.isdir(os.path.join(param.data_folder, param.morpho_name)):
+            param.data_type = "series"
+            data = TIFFSeries(
+                param.data_folder,
+                morpho_name=param.morpho_name,
+                signal_name=param.signal_name,
+                data_type=param.data_type,
+                step=param.step,
+                bad_frames=param.bad_frames,
+                max_time=param.max_time,
+            )
+    elif param.morpho_name.split(".")[-1].lower() in {"tif", "tiff"}:
+        param.data_type = "multi"
+        data = MultipageTIFF(
+            param.data_folder,
+            morpho_name=param.morpho_name,
+            signal_name=param.signal_name,
+            data_type=param.data_type,
+            step=param.step,
+            bad_frames=param.bad_frames,
+            #switch_TZ=param.switch_TZ,
+            max_time=param.max_time,
+        )
+    elif param.morpho_name.split(".")[-1] == "nd2":
+        param.data_type = "nd2"
+        data = ND2(
+            param.data_folder,
+            morpho_name=param.morpho_name,
+            signal_name=param.signal_name,
+            data_type=param.data_type,
+            step=param.step,
+            bad_frames=param.bad_frames,
+            max_time=param.max_time,
+        )
+    elif param.morpho_name.split(".")[-1] == "h5":
+        param.data_type = "h5"
+        data = H5(
+            param.data_folder,
+            morpho_name=param.morpho_name,
+            signal_name=param.signal_name,
+            data_type=param.data_type,
+            step=param.step,
+            bad_frames=param.bad_frames,
+            max_time=param.max_time,
+        )
+    return data, param
 
 
 def format_bad_frames(bad_frames):

@@ -1,10 +1,6 @@
-"""
-PEP 517 doesn’t support editable installs
-so this file is currently here to support "pip install -e ."
-"""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from setuptools import setup
 
-setup(
-    use_scm_version={"write_to": "morphodynamics/version.py"},
-    setup_requires=["setuptools_scm"],
-)
+use_scm={"write_to": "morphodynamics/version.py"}
+setup(use_scm_version=use_scm)
