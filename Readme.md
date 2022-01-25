@@ -25,8 +25,8 @@ To use the napari interface, you will have in addition to install the ```napari-
 pip install git+https://github.com/guiwitz/napari-morphodynamics.git
 ```
 
-**Notes**
-### Versions
+### Notes
+#### Versions
 
 The Morphodynamics package had undergone a massive change between version ```0.2.4``` and ```0.3.0```, in particular with a new interface in napari and a more customized way of generating post-processing plots. If you want to install the old 0.2.x series version, please use:
 
@@ -34,7 +34,7 @@ The Morphodynamics package had undergone a massive change between version ```0.2
 pip install git+https://github.com/guiwitz/morphodynamics.git@v0.2.4
 ```
 
-### nd2
+#### nd2
 The default ```nd2reader``` sometimes fails to read files containing non-rectanuglar rois. In such cases, you can try to install instead a customized version of the reader:
 
 ```
