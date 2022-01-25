@@ -46,7 +46,7 @@ pip install git+https://github.com/guiwitz/nd2reader.git@master#egg=nd2reader
 This package can be used entirely programmatically to process data via its API. Examples for this can be found in the docs [here](https://guiwitz.github.io/MorphoDynamics/mydocs/Analysis_without_UI.html) and [here](https://guiwitz.github.io/MorphoDynamics/mydocs/usage_step_by_step.html).
 ## napari-morphodynamics plugin
 
-The napari-morphodynamics plugin offers an interface to import, visualize and process data. A detailed description for its usage can be found in the [docs](https://guiwitz.github.io/MorphoDynamics/mydocs/Introduction.html). To install the plugin you can use:
+The napari-morphodynamics plugin offers an interface to import, visualize and process data. A detailed description for its usage can be found in the [docs](https://guiwitz.github.io/MorphoDynamics/mydocs/Napari_Plugin.html). To install the plugin you can use:
 
 ```
 pip pip install git+https://github.com/guiwitz/napari-morphodynamics.git
