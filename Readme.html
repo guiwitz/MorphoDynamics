@@ -162,8 +162,8 @@
 </p>
 <ul class="nav bd-sidenav">
  <li class="toctree-l1 has-children">
-  <a class="reference internal" href="docs/source/morphodynamics.html">
-   morphodynamics package
+  <a class="reference internal" href="docs/source/modules.html">
+   morphodynamics
   </a>
   <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
   <label for="toctree-checkbox-1">
@@ -171,15 +171,27 @@
    </i>
   </label>
   <ul>
-   <li class="toctree-l2">
-    <a class="reference internal" href="docs/source/morphodynamics.plots.html">
-     morphodynamics.plots package
+   <li class="toctree-l2 has-children">
+    <a class="reference internal" href="docs/source/morphodynamics.html">
+     morphodynamics package
     </a>
-   </li>
-   <li class="toctree-l2">
-    <a class="reference internal" href="docs/source/morphodynamics.store.html">
-     morphodynamics.store package
-    </a>
+    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
+    <label for="toctree-checkbox-2">
+     <i class="fas fa-chevron-down">
+     </i>
+    </label>
+    <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="docs/source/morphodynamics.plots.html">
+       morphodynamics.plots package
+      </a>
+     </li>
+     <li class="toctree-l3">
+      <a class="reference internal" href="docs/source/morphodynamics.store.html">
+       morphodynamics.store package
+      </a>
+     </li>
+    </ul>
    </li>
   </ul>
  </li>
@@ -273,14 +285,21 @@
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#versions">
-     Versions
+    <a class="reference internal nav-link" href="#notes">
+     Notes
     </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#nd2">
-     nd2
-    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#versions">
+       Versions
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#nd2">
+       nd2
+      </a>
+     </li>
+    </ul>
    </li>
   </ul>
  </li>
@@ -350,14 +369,21 @@
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#versions">
-     Versions
+    <a class="reference internal nav-link" href="#notes">
+     Notes
     </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#nd2">
-     nd2
-    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#versions">
+       Versions
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#nd2">
+       nd2
+      </a>
+     </li>
+    </ul>
    </li>
   </ul>
  </li>
@@ -412,9 +438,9 @@
                 
   <div class="tex2jax_ignore mathjax_ignore section" id="morphodynamics-img-src-images-logo-png-alt-alt-text-width-50">
 <h1>Morphodynamics <img src="/images/logo.png" alt="alt text" width="50"><a class="headerlink" href="#morphodynamics-img-src-images-logo-png-alt-alt-text-width-50" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="https://github.com/guiwitz/morphodynamics/raw/master/LICENSE"><img alt="License" src="https://img.shields.io/pypi/l/morphodynamics.svg?color=green" /></a>
+<p><a class="reference external" href="https://github.com/guiwitz/morphodynamics/raw/master/LICENSE"><img alt="License" src="https://img.shields.io/pypi/l/morphodynamics?color=green" /></a>
 <a class="reference external" href="https://pypi.org/project/morphodynamics"><img alt="PyPI" src="https://img.shields.io/pypi/v/morphodynamics.svg?color=green" /></a>
-<a class="reference external" href="https://python.org"><img alt="Python Version" src="https://img.shields.io/pypi/pyversions/napari-morphodynamics.svg?color=green" /></a>
+<a class="reference external" href="https://python.org"><img alt="Python Version" src="https://img.shields.io/pypi/pyversions/morphodynamics.svg?color=green" /></a>
 <a class="reference external" href="https://github.com/guiwitz/morphodynamics/actions"><img alt="tests" src="https://github.com/guiwitz/morphodynamics/workflows/tests/badge.svg" /></a></p>
 <p>This software can be used to analyze the dynamics of single-cells imaged by time-lapse fluorescence microscopy. The dynamics of morphology and fluorescence intensity distribution can be jointly analyzed through the segmentation and splitting of cells into a set of smaller regions (windows) that can be represented as two-dimensional grids to facilitate interpretation of events.</p>
 <p>This software has been developed at Bern University by Cédric Vonesch (Science IT Support and Pertz lab) and Guillaume Witz (Microscopy Imaging Center and Science IT Support) with the collaboration of Jakobus van Unen (Pertz lab).</p>
@@ -429,19 +455,21 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">guiwitz</span><span class="o">/</span><span class="n">napari</span><span class="o">-</span><span class="n">morphodynamics</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
-<p><strong>Notes</strong></p>
+<div class="section" id="notes">
+<h3>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="versions">
-<h3>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h3>
+<h4>Versions<a class="headerlink" href="#versions" title="Permalink to this headline">¶</a></h4>
 <p>The Morphodynamics package had undergone a massive change between version <code class="docutils literal notranslate"><span class="pre">0.2.4</span></code> and <code class="docutils literal notranslate"><span class="pre">0.3.0</span></code>, in particular with a new interface in napari and a more customized way of generating post-processing plots. If you want to install the old 0.2.x series version, please use:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">guiwitz</span><span class="o">/</span><span class="n">morphodynamics</span><span class="o">.</span><span class="n">git</span><span class="nd">@v0</span><span class="mf">.2.4</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="nd2">
-<h3>nd2<a class="headerlink" href="#nd2" title="Permalink to this headline">¶</a></h3>
+<h4>nd2<a class="headerlink" href="#nd2" title="Permalink to this headline">¶</a></h4>
 <p>The default <code class="docutils literal notranslate"><span class="pre">nd2reader</span></code> sometimes fails to read files containing non-rectanuglar rois. In such cases, you can try to install instead a customized version of the reader:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">guiwitz</span><span class="o">/</span><span class="n">nd2reader</span><span class="o">.</span><span class="n">git</span><span class="nd">@master</span><span class="c1">#egg=nd2reader</span>
 </pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -451,7 +479,7 @@
 </div>
 <div class="section" id="napari-morphodynamics-plugin">
 <h2>napari-morphodynamics plugin<a class="headerlink" href="#napari-morphodynamics-plugin" title="Permalink to this headline">¶</a></h2>
-<p>The napari-morphodynamics plugin offers an interface to import, visualize and process data. A detailed description for its usage can be found in the <a class="reference external" href="https://guiwitz.github.io/MorphoDynamics/mydocs/Introduction.html">docs</a>. To install the plugin you can use:</p>
+<p>The napari-morphodynamics plugin offers an interface to import, visualize and process data. A detailed description for its usage can be found in the <a class="reference external" href="https://guiwitz.github.io/MorphoDynamics/mydocs/Napari_Plugin.html">docs</a>. To install the plugin you can use:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">guiwitz</span><span class="o">/</span><span class="n">napari</span><span class="o">-</span><span class="n">morphodynamics</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>

@@ -1,8 +1,8 @@
 # Morphodynamics <img src="/images/logo.png" alt="alt text" width="50">
 
-[![License](https://img.shields.io/pypi/l/morphodynamics.svg?color=green)](https://github.com/guiwitz/morphodynamics/raw/master/LICENSE)
+[![License](https://img.shields.io/pypi/l/morphodynamics?color=green)](https://github.com/guiwitz/morphodynamics/raw/master/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/morphodynamics.svg?color=green)](https://pypi.org/project/morphodynamics)
-[![Python Version](https://img.shields.io/pypi/pyversions/napari-morphodynamics.svg?color=green)](https://python.org)
+[![Python Version](https://img.shields.io/pypi/pyversions/morphodynamics.svg?color=green)](https://python.org)
 [![tests](https://github.com/guiwitz/morphodynamics/workflows/tests/badge.svg)](https://github.com/guiwitz/morphodynamics/actions)
 
 
@@ -25,8 +25,8 @@ To use the napari interface, you will have in addition to install the ```napari-
 pip install git+https://github.com/guiwitz/napari-morphodynamics.git
 ```
 
-**Notes**
-### Versions
+### Notes
+#### Versions
 
 The Morphodynamics package had undergone a massive change between version ```0.2.4``` and ```0.3.0```, in particular with a new interface in napari and a more customized way of generating post-processing plots. If you want to install the old 0.2.x series version, please use:
 
@@ -34,7 +34,7 @@ The Morphodynamics package had undergone a massive change between version ```0.2
 pip install git+https://github.com/guiwitz/morphodynamics.git@v0.2.4
 ```
 
-### nd2
+#### nd2
 The default ```nd2reader``` sometimes fails to read files containing non-rectanuglar rois. In such cases, you can try to install instead a customized version of the reader:
 
 ```
@@ -46,7 +46,7 @@ pip install git+https://github.com/guiwitz/nd2reader.git@master#egg=nd2reader
 This package can be used entirely programmatically to process data via its API. Examples for this can be found in the docs [here](https://guiwitz.github.io/MorphoDynamics/mydocs/Analysis_without_UI.html) and [here](https://guiwitz.github.io/MorphoDynamics/mydocs/usage_step_by_step.html).
 ## napari-morphodynamics plugin
 
-The napari-morphodynamics plugin offers an interface to import, visualize and process data. A detailed description for its usage can be found in the [docs](https://guiwitz.github.io/MorphoDynamics/mydocs/Introduction.html). To install the plugin you can use:
+The napari-morphodynamics plugin offers an interface to import, visualize and process data. A detailed description for its usage can be found in the [docs](https://guiwitz.github.io/MorphoDynamics/mydocs/Napari_Plugin.html). To install the plugin you can use:
 
 ```
 pip pip install git+https://github.com/guiwitz/napari-morphodynamics.git
