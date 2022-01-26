@@ -9,6 +9,7 @@ parts:
     - file: mydocs/Analysis_with_morpho_segmentation
     - file: mydocs/Analysis_without_UI
     - file: mydocs/Data_analysis
+    - file: notebooks/Postprocessing
   - caption: Code and algorithms
     chapters:
     - file: mydocs/usage_step_by_step
@@ -17,4 +18,4 @@ parts:
     - file: mydocs/Data
   - caption: Reference
     chapters:
-    - file: docs/source/morphodynamics
+    - file: docs/source/modules
