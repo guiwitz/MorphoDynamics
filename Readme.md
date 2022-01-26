@@ -1,6 +1,6 @@
 # Morphodynamics <img src="/images/logo.png" alt="alt text" width="50">
 
-[![License](https://img.shields.io/pypi/l/morphodynamics.svg?color=green)](https://github.com/guiwitz/morphodynamics/raw/master/LICENSE)
+[![License](https://img.shields.io/pypi/l/morphodynamics?color=green)](https://github.com/guiwitz/morphodynamics/raw/master/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/morphodynamics.svg?color=green)](https://pypi.org/project/morphodynamics)
 [![Python Version](https://img.shields.io/pypi/pyversions/morphodynamics.svg?color=green)](https://python.org)
 [![tests](https://github.com/guiwitz/morphodynamics/workflows/tests/badge.svg)](https://github.com/guiwitz/morphodynamics/actions)
