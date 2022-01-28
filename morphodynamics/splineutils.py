@@ -39,6 +39,8 @@ def fit_spline(c, lambda_):
     -------
     s: tuple
         spline tuple
+    u: 1d array
+        an array of the values of the parameter
 
     """
 
