@@ -2,6 +2,9 @@
 title: Morphodynamics documentation
 author: Cédric Vonesch and Guillaume Witz
 logo: 'images/logo.png'
+exclude_patterns: [".pytest_cache" , _build, 
+.DS_Store, "**.ipynb_checkpoints", unused, ".pytest_cache", notebooks_inprogress, debug]
+#only_build_toc_files: true
 
 # Information about where the book exists on the web
 repository:
@@ -20,5 +23,5 @@ sphinx:
 execute:
   exclude_patterns:
     - synthetic/*
-    - notebooks/*
+    - unused/*
   execute_notebooks: 'off'
