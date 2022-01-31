@@ -8,8 +8,7 @@ parts:
     - file: mydocs/Napari_Plugin
     - file: mydocs/Analysis_with_morpho_segmentation
     - file: mydocs/Analysis_without_UI
-    - file: mydocs/Data_analysis
-    - file: notebooks/Postprocessing
+    - file: mydocs/Postprocessing
   - caption: Code and algorithms
     chapters:
     - file: mydocs/usage_step_by_step

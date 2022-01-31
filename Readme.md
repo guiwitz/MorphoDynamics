@@ -58,7 +58,7 @@ In addition, the analysis can be run in the interactive notebook [Morpho_segment
 
 ## Post-processing
 
-Once the images have been processed the output results can be used to plot various features of the experiment such as cell shape evolution, edge displacement, per windiw signal evolution etc. Examples on how to create such plots are given in the [Postprocessing.ipynb](https://guiwitz.github.io/MorphoDynamics/Postprocessing.ipynb) notebook.
+Once the images have been processed the output results can be used to plot various features of the experiment such as cell shape evolution, edge displacement, per window signal evolution etc. Examples on how to create such plots are given in the [Postprocessing.ipynb](https://guiwitz.github.io/MorphoDynamics/Postprocessing.ipynb) notebook.
 
 ## Environment
 

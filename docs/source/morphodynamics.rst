@@ -7,6 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   morphodynamics.data
    morphodynamics.plots
    morphodynamics.store
 
@@ -89,6 +90,14 @@ morphodynamics.utils module
 ---------------------------
 
 .. automodule:: morphodynamics.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+morphodynamics.version module
+-----------------------------
+
+.. automodule:: morphodynamics.version
    :members:
    :undoc-members:
    :show-inheritance:

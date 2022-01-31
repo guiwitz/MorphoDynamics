@@ -53,7 +53,7 @@
     <script async="async" src="../../_static/sphinx-thebe.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="morphodynamics.plots package" href="morphodynamics.plots.html" />
+    <link rel="next" title="morphodynamics.data package" href="morphodynamics.data.html" />
     <link rel="prev" title="morphodynamics" href="modules.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="docsearch:language" content="None">
@@ -125,8 +125,8 @@
   </a>
  </li>
  <li class="toctree-l1">
-  <a class="reference internal" href="../../mydocs/Data_analysis.html">
-   Data analysis
+  <a class="reference internal" href="../../mydocs/Postprocessing.html">
+   Post-processing
   </a>
  </li>
 </ul>
@@ -183,6 +183,11 @@
      </i>
     </label>
     <ul>
+     <li class="toctree-l3">
+      <a class="reference internal" href="morphodynamics.data.html">
+       morphodynamics.data package
+      </a>
+     </li>
      <li class="toctree-l3">
       <a class="reference internal" href="morphodynamics.plots.html">
        morphodynamics.plots package
@@ -342,6 +347,11 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.version">
+   morphodynamics.version module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#module-morphodynamics.windowing">
    morphodynamics.windowing module
   </a>
@@ -432,6 +442,11 @@
   </a>
  </li>
  <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#module-morphodynamics.version">
+   morphodynamics.version module
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#module-morphodynamics.windowing">
    morphodynamics.windowing module
   </a>
@@ -456,6 +471,12 @@
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="morphodynamics.data.html">morphodynamics.data package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="morphodynamics.data.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="morphodynamics.data.html#module-morphodynamics.data.synth">morphodynamics.data.synth module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="morphodynamics.data.html#module-morphodynamics.data">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="morphodynamics.plots.html">morphodynamics.plots package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="morphodynamics.plots.html#module-morphodynamics.plots.animate_plots">morphodynamics.plots.animate_plots module</a></li>
@@ -1459,10 +1480,11 @@ Fit a spline to a contour specified as a list of pixels.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>s</strong> – spline tuple</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>tuple</p>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>s</strong> (<em>tuple</em>) – spline tuple</p></li>
+<li><p><strong>u</strong> (<em>1d array</em>) – an array of the values of the parameter</p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1763,6 +1785,9 @@ into Dataframe</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-morphodynamics.version">
+<span id="morphodynamics-version-module"></span><h2>morphodynamics.version module<a class="headerlink" href="#module-morphodynamics.version" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="module-morphodynamics.windowing">
 <span id="morphodynamics-windowing-module"></span><h2>morphodynamics.windowing module<a class="headerlink" href="#module-morphodynamics.windowing" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -1956,10 +1981,10 @@ with unique gray levels.</p>
             <p class="prev-next-title">morphodynamics</p>
         </div>
     </a>
-    <a class='right-next' id="next-link" href="morphodynamics.plots.html" title="next page">
+    <a class='right-next' id="next-link" href="morphodynamics.data.html" title="next page">
     <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">morphodynamics.plots package</p>
+        <p class="prev-next-title">morphodynamics.data package</p>
     </div>
     <i class="fas fa-angle-right"></i>
     </a>
