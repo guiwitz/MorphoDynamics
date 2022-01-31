@@ -51,6 +51,7 @@ jobs:
       run: |
         mkdir -p synthetic/data/Results_cellpose
         mkdir -p synthetic/data/Results_step
+        cp notebooks/Postprocessing.ipynb mydocs/
 
     # Build the book
     - name: Build the book
