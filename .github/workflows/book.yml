@@ -31,11 +31,6 @@ jobs:
       run: |
         $CONDA/bin/pip install .
 
-    # Install pip dependencies
-    - name: Install jbook dependencies
-      run: |
-        $CONDA/bin/pip install -r requirements.txt
-
     # Show packages
     - name: Show packages
       run: |
