@@ -127,7 +127,10 @@ def export_results_parameters(param, res):
         if x[0] == "_":
             None
         elif (x == "analysis_folder") or (x == "data_folder") or (x == "seg_folder") or (x == "random_forest"):
-            dict_file[x] = getattr(param, x).as_posix()
+            if getattr(param, x) is not None:
+                dict_file[x] = getattr(param, x).as_posix()
+            else:
+                dict_file[x] = getattr(param, x)
         else:
             dict_file[x] = getattr(param, x)
 
