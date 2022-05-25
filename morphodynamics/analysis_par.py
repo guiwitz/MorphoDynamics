@@ -173,8 +173,8 @@ def calibration(data, param, model):
         m = segment_farid(x)
         m = tracking(m, location, seg_type="farid")
     elif param.seg_algo == "conv_paint":
-        if model is None:
-            random_forest = load(param.random_forest)
+        #if model is None:
+        random_forest = load(param.random_forest)
         m = segment_conv_paint(x, random_forest)
 
     # update location
