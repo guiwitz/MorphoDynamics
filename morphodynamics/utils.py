@@ -5,9 +5,10 @@ import numpy as np
 import skimage.io
 import pandas as pd
 from pathlib import Path
+import zarr
 
 from .store.parameters import Param
-from .store.dataset import TIFFSeries, MultipageTIFF, ND2, H5
+from .store.dataset import TIFFSeries, MultipageTIFF, ND2, H5, Nparray
 
 # https://stackoverflow.com/a/2121918
 import sys
@@ -107,6 +108,18 @@ def load_alldata(folder_path, load_results=False, param=None):
             bad_frames=param.bad_frames,
             max_time=param.max_time,
         )
+
+    elif param.data_type == "zarr":
+        data = Nparray(
+            nparray=zarr.open(param.data_folder),
+            expdir=param.data_folder,
+            morpho_name=param.morpho_name,
+            signal_name=param.signal_name,
+            data_type=param.data_type,
+            step=param.step,
+            bad_frames=param.bad_frames,
+            max_time=param.max_time,
+        )
     else:
         raise ValueError("Unknown data type")
 
@@ -146,7 +159,21 @@ def export_results_parameters(param, res):
 def dataset_from_param(param):
     """Given a param object, create the appropriate dataset."""
     
-    if os.path.isdir(os.path.join(param.data_folder, param.morpho_name)):
+    if Path(param.data_folder).suffix == '.zarr':
+        param.data_type = "zarr"
+        data = zarr.open(param.data_folder)
+        data = Nparray(
+            nparray=data,
+            expdir=param.data_folder,
+            morpho_name=param.morpho_name,
+            signal_name=param.signal_name,
+            data_type=param.data_type,
+            step=param.step,
+            bad_frames=param.bad_frames,
+            max_time=param.max_time,
+        )
+
+    elif os.path.isdir(os.path.join(param.data_folder, param.morpho_name)):
             param.data_type = "series"
             data = TIFFSeries(
                 param.data_folder,
@@ -191,6 +218,7 @@ def dataset_from_param(param):
             bad_frames=param.bad_frames,
             max_time=param.max_time,
         )
+    
     return data, param
 
 
