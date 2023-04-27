@@ -134,7 +134,7 @@ def segment_cellpose(model, x, diameter, location):
 
     if model is None:
         from cellpose import models
-        model = models.Cellpose(model_type="cyto")
+        model = models.Cellpose(model_type="cyto2")
     m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
     m = m[0]
     return m
