@@ -142,10 +142,8 @@ def segment_cellpose(model, x, diameter, location):
 def segment_conv_paint(x, random_forest):
     """ Segment image x using a trained classifier and
     the conv paint module. """
-    
-    from napari_convpaint.conv_paint_utils import predict_image
 
-    m = predict_image(x, None, random_forest)
+    m = random_forest.segment_image_stack(x, single_image=True)
     m = m == 2
     regions = label(m)
     return regions

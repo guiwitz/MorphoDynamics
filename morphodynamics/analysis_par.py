@@ -6,6 +6,8 @@ import numpy as np
 from scipy.ndimage import center_of_mass
 from scipy.interpolate import splev
 import skimage.io
+from napari_convpaint.conv_paint_utils import Classifier
+
 from .segmentation import (
     segment_cellpose,
     tracking,
@@ -173,9 +175,10 @@ def calibration(data, param, model):
         m = segment_farid(x)
         m = tracking(m, location, seg_type="farid")
     elif param.seg_algo == "conv_paint":
-        #if model is None:
-        random_forest = load(param.random_forest)
-        m = segment_conv_paint(x, random_forest)
+        if model is None:
+            model = Classifier(param.random_forest)
+        m = segment_conv_paint(x, model)
+        m = tracking(m, location, seg_type="conv_paint")
 
     # update location
     if location is None:
@@ -706,7 +709,7 @@ def segment_single_frame(param, k, save_path, model=None, return_image=False):
         if model is None:
             if param.random_forest is None:
                 raise Exception("Convpaint model not provided in param object")
-            model = load(param.random_forest)
+            model = Classifier(param.random_forest)
         m = segment_conv_paint(x, random_forest=model)
 
     m = m.astype(np.uint8)
@@ -829,7 +832,7 @@ def compute_spline_windows(param, k):
     """    """"""
 
     image = segment_single_frame(
-        param, k, param.analysis_folder, return_image=True)
+        param, k, param.analysis_folder, model=None, return_image=True)
     # spline
     s, _, _ = contour_spline(image, param.lambda_)
     N = 3 * int(spline_contour_length(s))
