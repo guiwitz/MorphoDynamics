@@ -516,7 +516,7 @@ def show_displacement(
         fig, ax = plt.subplots(figsize=size)
     else:
         fig, ax = fig_ax
-        plt.figure(fig.number)
+        #plt.figure(fig.number)
 
     ax.set_title(title)
     im = ax.imshow(res.displacement, cmap=cmap_name)
@@ -531,7 +531,8 @@ def show_displacement(
 
     fig.tight_layout()
 
-    return fig, ax
+    #return fig, ax
+    return ax
 
 
 def show_cumdisplacement(
@@ -569,7 +570,7 @@ def show_cumdisplacement(
         fig, ax = plt.subplots(figsize=size)
     else:
         fig, ax = fig_ax
-        plt.figure(fig.number)
+        #plt.figure(fig.number)
 
     dcum = np.cumsum(res.displacement, axis=1)
 
@@ -585,7 +586,8 @@ def show_cumdisplacement(
 
     fig.tight_layout()
 
-    return fig, ax
+    #return fig, ax
+    return ax
 
 
 def show_signals_aux(
