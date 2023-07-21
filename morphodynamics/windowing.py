@@ -160,12 +160,12 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
         # i.e., the windows may not cover the entire cell.
         clist = find_contours(mask, 0, fully_connected="high")
         cvec = np.asarray(
-            clist[np.argmax([cel.shape[0] for cel in clist])], dtype=np.int
+            clist[np.argmax([cel.shape[0] for cel in clist])], dtype=int
         )
 
         # An alternative fix using OpenCV's findContours routine---doesn't solve the problem
         # contours, hierarchy = cv.findContours(np.asarray(mask, dtype=np.uint8), cv.RETR_LIST, cv.CHAIN_APPROX_NONE)
-        # cvec = np.asarray(contours[np.argmax([cel.shape[0] for cel in contours])], dtype=np.int)
+        # cvec = np.asarray(contours[np.argmax([cel.shape[0] for cel in contours])], dtype=int)
         # cvec = cvec.reshape((cvec.shape[0], cvec.shape[2]))
         # cvec = cvec[::-1, [1,0]]  # Sort boundary pixels in clockwise direction and switch (x, y) coordinates
 

@@ -179,7 +179,7 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
     mask = (0 <= D_main) * mask_main
 
     # Extract the contour of the mask
-    cvec = np.asarray(find_contours(mask, 0, fully_connected="high")[0], dtype=np.int)
+    cvec = np.asarray(find_contours(mask, 0, fully_connected="high")[0], dtype=int)
 
     # Adjust the origin of the contour:
     # on the discrete contour cvec, find the closest point to the origin,
@@ -192,7 +192,7 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
 
     # Compute the index of the mid-point for each window
     # Note that the arc length is being used as a coordinate along the curve
-    n = np.zeros((I,), dtype=np.int)
+    n = np.zeros((I,), dtype=int)
     for i in range(I):
         n[i] = np.argmin(np.abs(Lvec - Lvec[-1] / I * (0.5 + i)))
     cvec_sel = cvec[n, :]
@@ -207,7 +207,7 @@ def subdivide_curve_discrete(N, c_main, I, s, origin):
     # so that the path does not come back on itself
     t = np.linspace(t[m], t[m] + 1, N, endpoint=False)
     c = splevper(t, s)
-    m = np.zeros((I,), dtype=np.int)
+    m = np.zeros((I,), dtype=int)
     for i in range(I):
         m[i] = np.argmin(np.linalg.norm(np.transpose(c) - np.flip(cvec[n[i]]), axis=1))
         c = [c[0][m[i]+1::], c[1][m[i]+1::]]
@@ -239,7 +239,7 @@ def spline_int_coordinates(N, s):
     # create contour parameter and estimate position along contour and round it
     t = np.linspace(0, 1, N + 1)
     p = np.asarray(splev(t, s))  # The points on the curve
-    pi = np.round(p).astype(dtype=np.int)
+    pi = np.round(p).astype(dtype=int)
     return pi
 
 def spline_to_binary_image(N, im_shape, s):
@@ -303,7 +303,7 @@ def spline_to_param_image(N, im_shape, s, deltat):
     # create contour parameter and estimate position along contour and round it
     t = np.linspace(0, 1, N + 1)
     p = np.asarray(splev(t, s))  # The points on the curve
-    pi = np.round(p).astype(dtype=np.int)
+    pi = np.round(p).astype(dtype=int)
     # shift to origin if necessary
     t = np.mod(t - deltat, 1)
     # computer distance between contour point and closest pixel

@@ -152,7 +152,7 @@ def segment_conv_paint(x, random_forest):
 def extract_contour(mask):
     """ Extract pixels along contour of mask. """
 
-    return np.asarray(find_contours(mask, 0, fully_connected="high")[0], dtype=np.int)
+    return np.asarray(find_contours(mask, 0, fully_connected="high")[0], dtype=int)
 
 
 def contour_spline(m, smoothing):
