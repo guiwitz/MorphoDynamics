@@ -66,7 +66,7 @@ def interact_edge_vect(data, param, res, fig, ax, curvature=False):
     """
     int_box = ipw.interactive(
         lambda k: animate_edge_vect(data, param, res, fig, ax, k, curvature=curvature),
-        k=ipw.IntSlider(1, min=1, max=data.K-2))
+        k=ipw.IntSlider(1, min=1, max=data.num_timepoints-2))
     return int_box
 
 def animate_edge_raster_coloured_by_feature(
@@ -151,7 +151,7 @@ def interact_edge_raster_coloured_by_feature(
             max_val = np.cumsum(res.displacement, axis=1).max()
             
     int_box = ipw.interactive(lambda k: animate_edge_raster_coloured_by_feature(
-        data, param, res, k, N, feature, fig, ax, width, min_val, max_val, cmap_name=cmap_name, alpha=alpha), k=ipw.IntSlider(1, min=1, max=data.K-2))
+        data, param, res, k, N, feature, fig, ax, width, min_val, max_val, cmap_name=cmap_name, alpha=alpha), k=ipw.IntSlider(1, min=1, max=data.num_timepoints-2))
     return int_box
 
 

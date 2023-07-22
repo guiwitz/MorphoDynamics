@@ -31,7 +31,7 @@ class Wimage:
         if self.data is not None:
             image = self.data.load_frame_morpho(0)
             channel_list = [self.param.morpho_name]+self.param.signal_name
-            max_time = self.data.K-1
+            max_time = self.data.num_timepoints-1
         else:
             image = np.zeros((3,3))
             channel_list = []
@@ -93,7 +93,7 @@ class Wimage:
         self.data = data
 
         self.display_channel_ipw.options = [self.param.morpho_name]+self.param.signal_name
-        self.time_slider.max = self.data.K-1
+        self.time_slider.max = self.data.num_timepoints-1
 
     def load_image(self, time):
         """Load image selected in self.display_channel_ipw widget"""

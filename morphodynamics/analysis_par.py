@@ -69,7 +69,7 @@ def analyze_morphodynamics(
     location, J, I = calibration(data, param, model)
 
     # Result structures that will be saved to disk
-    res = Results(J=J, I=I, num_time_points=data.K, num_channels=len(data.signal_name))
+    res = Results(J=J, I=I, num_time_points=data.num_timepoints, num_channels=len(data.signal_name))
 
     # create analysis folder if note existant
     analysis_path = param.analysis_folder.joinpath('segmented')
@@ -79,7 +79,7 @@ def analyze_morphodynamics(
     if not skip_segtrack:
         # Segment all images but don't select cell
         if param.seg_algo == "ilastik":
-            segmented = np.arange(0, data.K)
+            segmented = np.arange(0, data.num_timepoints)
         else:
             segmented = segment_all(data, param, client, model)
 
@@ -90,7 +90,7 @@ def analyze_morphodynamics(
         segmented = track_all(segmented, location, param)
 
     # get all splines. s_all[k] is spline at frame k
-    s_u_all = spline_all(data.K, param.lambda_, param, client)
+    s_u_all = spline_all(data.num_timepoints, param.lambda_, param, client)
     s_all = {-1: None}
     u_all = {-1: None}
     for s in s_u_all:
@@ -103,7 +103,7 @@ def analyze_morphodynamics(
 
     # origin shifts have been computed pair-wise. Calculate the cumulative
     # sum to get a "true" alignment on the first frame
-    res.orig = np.array([ori_all[k] for k in range(data.K)])
+    res.orig = np.array([ori_all[k] for k in range(data.num_timepoints)])
     res.orig = np.cumsum(res.orig)
 
     # create windows
@@ -122,9 +122,9 @@ def analyze_morphodynamics(
     res.displacement = compute_displacement(s_all, t_all, t0_all)
 
     # Save variables for archival
-    res.spline = [s_all[k] for k in range(data.K)]
-    res.u = [s_u_all[k] for k in range(data.K)]
-    res.s0prm = [s0prm_all[k] for k in range(data.K)]
+    res.spline = [s_all[k] for k in range(data.num_timepoints)]
+    res.u = [s_u_all[k] for k in range(data.num_timepoints)]
+    res.s0prm = [s0prm_all[k] for k in range(data.num_timepoints)]
     res.param0 = [t0_all[k] for k in t0_all]
     res.param = [t_all[k] for k in t_all]
     res.mean = mean_signal
@@ -171,7 +171,7 @@ def calibration(data, param, model):
         m = skimage.io.imread(os.path.join(segpath, "segmented_k_" + num + ".tif"))
         m = tracking(m, location, seg_type="ilastik")
     elif param.seg_algo == "farid":
-        # m = segment_threshold(x, param.sigma, param.T(0) if callable(param.T) else param.T, location)
+        # m = segment_threshold(x, param.sigma, param.threshold(0) if callable(param.threshold) else param.threshold, location)
         m = segment_farid(x)
         m = tracking(m, location, seg_type="farid")
     elif param.seg_algo == "conv_paint":
@@ -561,10 +561,10 @@ def extract_signal_all(data, param, J, I):
 
     save_path = os.path.join(param.analysis_folder, "segmented")
 
-    mean_signal = np.zeros((len(data.signal_name), J, np.max(I), data.K))
-    var_signal = np.zeros((len(data.signal_name), J, np.max(I), data.K))
+    mean_signal = np.zeros((len(data.signal_name), J, np.max(I), data.num_timepoints))
+    var_signal = np.zeros((len(data.signal_name), J, np.max(I), data.num_timepoints))
 
-    for k in range(data.K):
+    for k in range(data.num_timepoints):
         name = os.path.join(save_path, "window_k_" + str(k) + ".pkl")
         w = pickle.load(open(name, "rb"))
         for ell in range(len(data.signal_name)):
@@ -756,15 +756,15 @@ def segment_all(data, param, client=None, model=None):
     if client is not None:
         segmented = [
             client.submit(segment_single_frame, param, k, save_path, model)
-            for k in range(0, data.K)
+            for k in range(0, data.num_timepoints)
         ]
-        for k in tqdm(range(0, data.K), "frame segmentation"):
+        for k in tqdm(range(0, data.num_timepoints), "frame segmentation"):
             future = segmented[k]
             segmented[k] = future.result()
             future.cancel()
             del future
     else:
-        segmented = [segment_single_frame(param, k, save_path, model) for k in tqdm(range(0, data.K), "frame segmentation")]
+        segmented = [segment_single_frame(param, k, save_path, model) for k in tqdm(range(0, data.num_timepoints), "frame segmentation")]
 
     return segmented
 

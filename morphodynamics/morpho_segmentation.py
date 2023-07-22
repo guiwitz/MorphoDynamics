@@ -441,7 +441,7 @@ class InteractSeg:
 
         self.param.max_time = self.max_time_ipw.value
         self.data.update_params(self.param)
-        self.wimage.time_slider.max = self.data.K-1
+        self.wimage.time_slider.max = self.data.num_timepoints-1
 
     def update_param_bad_frames(self, change=None):
         # parse bad frames
@@ -454,7 +454,7 @@ class InteractSeg:
 
         # update params
         self.data.update_params(self.param)
-        self.time_slider.max = self.data.K - 1
+        self.time_slider.max = self.data.num_timepoints - 1
 
     def update_param_morpho_name(self, change=None):
         """Calback to update segmentation file lists depending on selections"""
@@ -603,7 +603,7 @@ class InteractSeg:
         self.bad_frames_ipw.value = param_copy.bad_frames_txt
 
         if self.data is not None:
-            self.wimage.time_slider.max = self.data.K - 1
+            self.wimage.time_slider.max = self.data.num_timepoints - 1
         self.step_ipw.value = param_copy.step
 
         self.update_display_channel_list()

@@ -35,9 +35,9 @@ def show_geometry_props(data, res, size=(16, 9), titles=["Length", "Area", "Circ
 
     """
 
-    length = np.zeros((data.K,))
-    area = np.zeros((data.K,))
-    for k in range(data.K):
+    length = np.zeros((data.num_timepoints,))
+    area = np.zeros((data.num_timepoints,))
+    for k in range(data.num_timepoints):
         length[k] = splineutils.spline_contour_length(res.spline[k])
         area[k] = splineutils.spline_area(res.spline[k])
 
@@ -79,9 +79,9 @@ def show_geometry(data, res, size=(16, 9), prop='length', title=None):
 
     """
 
-    length = np.zeros((data.K,))
-    area = np.zeros((data.K,))
-    for k in range(data.K):
+    length = np.zeros((data.num_timepoints,))
+    area = np.zeros((data.num_timepoints,))
+    for k in range(data.num_timepoints):
         length[k] = splineutils.spline_contour_length(res.spline[k])
         area[k] = splineutils.spline_area(res.spline[k])
 
@@ -315,7 +315,7 @@ def save_edge_vectorial_movie(param, data, res, curvature=False, size=(12, 9)):
         fig, ax = plt.subplots(figsize=size)
         writer = imageio.get_writer(os.path.join(param.analysis_folder, name + ".gif"))
 
-        for k in range(data.K - 1):
+        for k in range(data.num_timepoints - 1):
             fig, ax = show_edge_vectorial_aux(
                 param, data, res, k, curvature, fig_ax=(fig, ax)
             )
@@ -751,8 +751,8 @@ def show_curvature(
 
     N = 3 * int(np.max([splineutils.spline_contour_length(r) for r in res.spline]))
     #N = np.max([3*len(r[0]) for r in res.spline])
-    curvature = np.zeros((N, data.K))
-    for k in range(data.K):
+    curvature = np.zeros((N, data.num_timepoints))
+    for k in range(data.num_timepoints):
         curvature[:, k] = splineutils.spline_curvature(
             res.spline[k],
             np.linspace(0, 1, N, endpoint=False),

@@ -53,6 +53,7 @@ class TIFFSeries(TIFFSeries_or):
         self.signal_name = signal_name
         self.load_frame_morpho = MethodType(load_frame_morpho, self)
         self.load_frame_signal = MethodType(load_frame_signal, self)
+        self.num_timepoints = self.K
 
         
 class MultipageTIFF(MultipageTIFF_or):
@@ -79,6 +80,7 @@ class MultipageTIFF(MultipageTIFF_or):
         self.signal_name = signal_name
         self.load_frame_morpho = MethodType(load_frame_morpho, self)
         self.load_frame_signal = MethodType(load_frame_signal, self)
+        self.num_timepoints = self.K
 
 class ND2(ND2_or):
     def __init__(
@@ -104,6 +106,7 @@ class ND2(ND2_or):
         self.signal_name = signal_name
         self.load_frame_morpho = MethodType(load_frame_morpho, self)
         self.load_frame_signal = MethodType(load_frame_signal, self)
+        self.num_timepoints = self.K
         
 class H5(H5_or):
     def __init__(
@@ -129,6 +132,7 @@ class H5(H5_or):
         self.signal_name = signal_name
         self.load_frame_morpho = MethodType(load_frame_morpho, self)
         self.load_frame_signal = MethodType(load_frame_signal, self)
+        self.num_timepoints = self.K
 
 class Nparray(Nparray_or):
     def __init__(
@@ -156,6 +160,7 @@ class Nparray(Nparray_or):
         self.signal_name = signal_name
         #self.load_frame_morpho = MethodType(load_frame_morpho, self)
         self.load_frame_signal = MethodType(load_frame_signal, self)
+        self.num_timepoints = self.K
 
     def load_frame_morpho(self, k):
         """Load index k of valid frames of the segmentation channel"""
