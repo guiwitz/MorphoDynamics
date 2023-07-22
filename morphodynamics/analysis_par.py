@@ -32,9 +32,6 @@ def analyze_morphodynamics(
     data,
     param,
     client=None,
-    only_seg=False,
-    keep_seg=False,
-    skip_segtrack=False,
     model=None,
 ):
     """
@@ -64,30 +61,103 @@ def analyze_morphodynamics(
     res: Result object
         as created by morphodyanmics.results.Result
 
-    """        
+    """  
+
+    res, segmented = segment_and_track(data, param, client, model)
+
+    res = spline_and_window(data, param, res, client=None)
+
+    return res
+
+
+def initialize_analysis(data, param, model=None):
+    """
+    Initialize analysis by segmenting the first frame and
+    determining the number of windows and cell location.
+
+    Parameters
+    ----------
+    data: data object
+        as returned by morphodynamics.dataset
+    param: Param object
+        As created by morphodyanmics.parameters.Param
+    model: convpaint or cellpose model, optional
+
+    Returns
+    -------
+    res: Result object
+        as created by morphodyanmics.results.Result
+
+    """
 
     location, J, I = calibration(data, param, model)
 
     # Result structures that will be saved to disk
-    res = Results(J=J, I=I, num_time_points=data.num_timepoints, num_channels=len(data.signal_name))
+    res = Results(J=J, I=I, num_time_points=data.num_timepoints,
+                  num_channels=len(data.signal_name), location=location)
 
     # create analysis folder if note existant
     analysis_path = param.analysis_folder.joinpath('segmented')
     if not os.path.isdir(analysis_path):
         os.makedirs(analysis_path)
+    
+    return res
 
-    if not skip_segtrack:
-        # Segment all images but don't select cell
-        if param.seg_algo == "ilastik":
-            segmented = np.arange(0, data.num_timepoints)
-        else:
-            segmented = segment_all(data, param, client, model)
+def segment_and_track(data, param, client, model=None):
+    """
+    Segment all time points and match cells across frames.
 
-        if only_seg:
-            return res
+    Parameters
+    ----------
+    data: data object
+        as returned by morphodynamics.dataset
+    param: Param object
+        As created by morphodyanmics.parameters.Param
+    client: dask client, optional
+        client can be connected to either LocalCluster or SLURMCLuster
+    model: convpaint or cellpose model, optional
 
-        # do the tracking
-        segmented = track_all(segmented, location, param)
+    Returns
+    -------
+    res: Result object
+        as created by morphodyanmics.results.Result
+
+    """
+
+    res = initialize_analysis(data, param, model=None)     
+
+    # Segment all images but don't select cell
+    if param.seg_algo == "ilastik":
+        segmented = np.arange(0, data.num_timepoints)
+    else:
+        segmented = segment_all(data, param, client, model)
+
+    # do the tracking
+    segmented = track_all(segmented, res.location, param)
+
+    return res, segmented
+
+def spline_and_window(data, param, res, client=None):
+    """
+    Perform spline fitting and alignment and windowing for all frames.
+
+    Parameters
+    ----------
+    data: data object
+        as returned by morphodynamics.dataset
+    param: Param object
+        As created by morphodyanmics.parameters.Param
+    res: Result object
+        as created by morphodyanmics.results.Result
+    client: dask client, optional
+        client can be connected to either LocalCluster or SLURMCLuster
+
+    Returns
+    -------
+    res: Result object
+        as created by morphodyanmics.results.Result
+
+    """
 
     # get all splines. s_all[k] is spline at frame k
     s_u_all = spline_all(data.num_timepoints, param.lambda_, param, client)
@@ -107,16 +177,16 @@ def analyze_morphodynamics(
     res.orig = np.cumsum(res.orig)
 
     # create windows
-    windowing_all(s_all, res.orig, param, J, I, client)
+    windowing_all(s_all, res.orig, param, res.J, res.I, client)
 
     # define windows for each frame and compute pairs of corresponding
     # points on successive splines for displacement measurement
     t_all, t0_all = window_map_all(
-        s_all, s0prm_all, J, I, res.orig, param.n_curve, data.shape, param, client
+        s_all, s0prm_all, res.J, res.I, res.orig, param.n_curve, data.shape, param, client
     )
 
     # Signals extracted from various imaging channels
-    mean_signal, var_signal = extract_signal_all(data, param, J, I)
+    mean_signal, var_signal = extract_signal_all(data, param, res.J, res.I)
 
     # compute displacements
     res.displacement = compute_displacement(s_all, t_all, t0_all)
@@ -144,7 +214,7 @@ def calibration(data, param, model):
         as returned by morphodynamics.dataset
     param: Param object
         As created by morphodyanmics.parameters.Param
-    model: convpaint model, optional
+    model: cellpose or convpaint model, optional
 
     Returns
     -------
