@@ -19,9 +19,9 @@ sys.modules['morphodynamics.results'] = results
 def load_alldata(folder_path, load_results=False, param=None):
     """
     Given a folder, load the parameter information contained in
-    Parameters.yml and optionally load results from the
-    Results.yml file. If a Param object is given, it is not loaded
-    again.
+    Parameters.yml and return the parameters, data and and optionally 
+    the results loaded from the Results.yml file. If a Param object
+    is given, it is not loaded again.
 
     Parameters
     ----------
