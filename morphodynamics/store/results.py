@@ -16,14 +16,12 @@ class Results:
         number of analyzed time points
     num_channels: int
         number of analyzed channels
+    location: list of int
+        x,y location of initial cell
 
 
     Attributes
     ----------
-    J: int
-        number of window layers
-    I: list of int
-        number of windows in each layer
     seg: list of 2d arrays
         segmentation masks
     spline: list of spline objects
@@ -53,7 +51,7 @@ class Results:
 
     """
 
-    def __init__(self, J, I, num_time_points, num_channels):
+    def __init__(self, J, I, num_time_points, num_channels, location=None):
 
         # Number of window layers
         self.J = J
@@ -61,6 +59,9 @@ class Results:
         # Number of windows per layer
         self.I = I
         Imax = np.max(I)
+
+        #
+        self.location = location
 
         # segmentation masks
         self.seg = []
