@@ -340,23 +340,19 @@ class InteractSeg:
     def initialize_dask(self, change=None):
         """If dask is used, start it and display UI."""
 
-        # with no manual selection use local. if param.distributed
-        # has been set before, use that setting
+        # with no manual selection use local.
         if self.distributed.value is None:
             self.distributed.unobserve_all() #avoid triggering display twice
             self.distributed.value = "local"
             self.distributed.observe(self.initialize_dask, names="value")
 
-        if self.param.distributed is None:
-            self.param.distributed = self.distributed.value
-
-        if self.param.distributed == "cluster":
+        if self.distributed.value == "cluster":
             cluster = SLURMCluster(cores=self.cores, memory=self.memory)
             self.client = Client(cluster)
             if self.do_createUI:
                 with self.out_distributed:
                     display(self.client.cluster._widget())
-        elif self.param.distributed == "local":
+        elif self.distributed.value == "local":
             cluster = LocalCluster()
             # if self.cores is not None:
             #    cluster.scale(self.cores)
@@ -439,7 +435,7 @@ class InteractSeg:
         self.param.diameter = self.diameter_ipw.value
         self.param.width = self.width_text.value
         self.param.depth = self.depth_text.value
-        self.param.T = self.threshold_ipw.value
+        self.param.threshold = self.threshold_ipw.value
 
     def update_param_max_time(self, change=None):
 
