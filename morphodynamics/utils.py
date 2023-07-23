@@ -141,7 +141,7 @@ def export_results_parameters(param, res):
             None
         elif (x == "analysis_folder") or (x == "data_folder") or (x == "seg_folder") or (x == "random_forest"):
             if getattr(param, x) is not None:
-                dict_file[x] = getattr(param, x).as_posix()
+                dict_file[x] = Path(getattr(param, x)).as_posix()
             else:
                 dict_file[x] = getattr(param, x)
         else:
@@ -159,8 +159,7 @@ def export_results_parameters(param, res):
 def dataset_from_param(param):
     """Given a param object, create the appropriate dataset."""
     
-    if Path(param.data_folder).suffix == '.zarr':
-        param.data_type = "zarr"
+    if param.data_type == "zarr":
         data = zarr.open(param.data_folder)
         data = Nparray(
             nparray=data,
@@ -173,8 +172,7 @@ def dataset_from_param(param):
             max_time=param.max_time,
         )
 
-    elif os.path.isdir(os.path.join(param.data_folder, param.morpho_name)):
-            param.data_type = "series"
+    elif param.data_type == "series":
             data = TIFFSeries(
                 param.data_folder,
                 morpho_name=param.morpho_name,
@@ -184,8 +182,7 @@ def dataset_from_param(param):
                 bad_frames=param.bad_frames,
                 max_time=param.max_time,
             )
-    elif param.morpho_name.split(".")[-1].lower() in {"tif", "tiff"}:
-        param.data_type = "multi"
+    elif param.data_type == "multi":
         data = MultipageTIFF(
             param.data_folder,
             morpho_name=param.morpho_name,
@@ -196,8 +193,7 @@ def dataset_from_param(param):
             #switch_TZ=param.switch_TZ,
             max_time=param.max_time,
         )
-    elif param.morpho_name.split(".")[-1] == "nd2":
-        param.data_type = "nd2"
+    elif param.data_type == "nd2":
         data = ND2(
             param.data_folder,
             morpho_name=param.morpho_name,
@@ -207,8 +203,7 @@ def dataset_from_param(param):
             bad_frames=param.bad_frames,
             max_time=param.max_time,
         )
-    elif param.morpho_name.split(".")[-1] == "h5":
-        param.data_type = "h5"
+    elif param.data_type == "h5":
         data = H5(
             param.data_folder,
             morpho_name=param.morpho_name,
