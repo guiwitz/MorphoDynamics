@@ -524,8 +524,7 @@ def show_displacement(
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if show_colorbar:
-        plt.colorbar(im, label=colorbar_label)
-
+        plt.colorbar(im, label=colorbar_label)     
     cmax = np.max(np.abs(res.displacement))
     im.set_clim(-cmax, cmax)
 
