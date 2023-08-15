@@ -524,11 +524,13 @@ def show_displacement(
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if show_colorbar:
-        plt.colorbar(im, label=colorbar_label)     
+        divider= make_axes_locatable(ax)
+        cax = divider.append_axes("right", "5%", pad="3%")
+        plt.colorbar(im, cax=cax, label=colorbar_label)     
     cmax = np.max(np.abs(res.displacement))
     im.set_clim(-cmax, cmax)
 
-    fig.tight_layout()
+    plt.tight_layout()
 
     #return fig, ax
     return ax
