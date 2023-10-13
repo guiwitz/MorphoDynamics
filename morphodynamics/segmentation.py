@@ -143,7 +143,7 @@ def segment_conv_paint(x, random_forest):
     """ Segment image x using a trained classifier and
     the conv paint module. """
 
-    m = random_forest.segment_image_stack(x, single_image=True)
+    m = random_forest.segment_image_stack(x)
     m = m == 2
     regions = label(m)
     return regions
