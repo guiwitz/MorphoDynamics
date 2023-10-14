@@ -129,13 +129,15 @@ def tracking(regions, location=None, seg_type="farid"):
     return sel_region
 
 
-def segment_cellpose(model, x, diameter, location):
+def segment_cellpose(model, x, diameter, location, flow_threshold=0.4, cellprob_threshold=0.0):
     """Segment image x using Cellpose. If model is None, a model is loaded"""
 
     if model is None:
         from cellpose import models
         model = models.Cellpose(model_type="cyto2")
-    m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
+    m, flows, styles, diams = model.eval(
+        [x], diameter=diameter, channels=[[0, 0]],
+        flow_threshold=flow_threshold, cellprob_threshold=cellprob_threshold)
     m = m[0]
     return m
 
