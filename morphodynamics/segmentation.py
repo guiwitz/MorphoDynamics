@@ -110,7 +110,7 @@ def tracking(regions, location=None, seg_type="farid"):
     if location is None:
         sr = np.zeros((nr,))
         for k in range(nr):
-            if seg_type in ["farid", "ilastik", "conv_paint"]:
+            if seg_type in ["farid", "ilastik", "conv_paint", "precomputed"]:
                 sr[k] = np.sum(binary_fill_holes(regions == k + 1))
             elif seg_type == "cellpose":
                 sr[k] = np.sum(regions == k + 1)
@@ -121,7 +121,7 @@ def tracking(regions, location=None, seg_type="farid"):
         for k in range(nr):
             cm[k] = center_of_mass(regions == k + 1)
         k = np.argmin([np.linalg.norm(cm0 - location) for cm0 in cm])
-        if seg_type in ["farid", "ilastik", "conv_paint"]:
+        if seg_type in ["farid", "ilastik", "conv_paint", "precomputed"]:
             sel_region = binary_fill_holes(regions == k + 1)
         elif seg_type == "cellpose":
             sel_region = regions == k + 1

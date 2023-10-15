@@ -130,7 +130,7 @@ def segment_and_track(data, param, client, model=None, cellpose_kwargs={}):
     res = initialize_analysis(data, param, model=None)     
 
     # Segment all images but don't select cell
-    if param.seg_algo == "ilastik":
+    if (param.seg_algo == "ilastik") | (param.seg_algo == "precomputed"):
         segmented = np.arange(0, data.num_timepoints)
     else:
         segmented = segment_all(data, param, client, model, cellpose_kwargs)
@@ -261,6 +261,10 @@ def calibration(data, param, model, cellpose_kwargs={}):
             model = Classifier(param.random_forest)
         m = segment_conv_paint(x, model)
         m = tracking(m, location, seg_type="conv_paint")
+    elif param.seg_algo == "precomputed":
+        segpath = param.seg_folder
+        m = skimage.io.imread(os.path.join(segpath, "segmented_k_0.tif"))
+        m = tracking(m, location, seg_type="precomputed")
 
     # update location
     if location is None:
@@ -846,8 +850,8 @@ def segment_all(data, param, client=None, model=None, cellpose_kwargs={}):
 
     Returns
     -------
-    segmented: list of 2d arrays
-        list of labelled arrays
+    segmented: list of 2d arrays or list of None
+        list of labelled arrays or None depending on return_image
 
     """
     # create folder to store segmentation data
