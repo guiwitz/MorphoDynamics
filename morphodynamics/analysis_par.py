@@ -162,6 +162,10 @@ def spline_and_window(data, param, res, client=None):
 
     """
 
+    # compute I, J based on current mask, depth and width
+    mask = skimage.io.imread(os.path.join(param.analysis_folder, "segmented", "tracked_k_0.tif"))
+    res.J, res.I = compute_num_windows_from_width_depth(mask, param)
+
     # get all splines. s_all[k] is spline at frame k
     s_u_all = spline_all(data.num_timepoints, param.lambda_, param, client)
     s_all = {-1: None}
@@ -272,6 +276,19 @@ def calibration(data, param, model, cellpose_kwargs={}):
         print("I and J not calculated. Using 10 as default value.")
 
     return location, J, I
+
+def compute_num_windows_from_width_depth(mask, param):
+    
+    I = [10, 0]
+    J = 10
+    try:
+        s, u, _ = contour_spline(mask, param.lambda_)
+        c = spline_to_param_image(param.n_curve, mask.shape, s, 0)
+        _, J, I = create_windows(c, splev(0, s), depth=param.depth, width=param.width)
+        return J, I
+    except Exception:
+        print("I and J not calculated. Using 10 as default value.")
+        return J, I
 
 
 def import_and_spline(image_path, smoothing):
