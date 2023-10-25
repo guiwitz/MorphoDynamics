@@ -181,10 +181,16 @@ def show_edge_line(
         fig, ax = show_edge_line_aux(N, s[k], cmap(k / (K - 1)), lw, fig_ax=(fig, ax))
     
     if show_colorbar:
-        fig.colorbar(
+
+        divider= make_axes_locatable(ax)
+        cax = divider.append_axes("right", "5%", pad="3%")
+        plt.colorbar(plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K - 1), cmap=cmap),
+            cax=cax, label=colorbar_label)   
+
+        '''fig.colorbar(
             plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K - 1), cmap=cmap),
             label=colorbar_label,
-        )
+        )'''
 
     fig.tight_layout()
     return fig, ax
@@ -719,7 +725,7 @@ def save_signals(param, data, res, modes=None, size=(16, 9)):
 
 def show_curvature(
     data, res, cmax=None, fig_ax=None, title="Curvature", cmap_name="seismic", size=(5, 3),
-    show_colorbar=True):
+    show_colorbar=True, colorbar_label='Curvature'):
     """Display curvature as a function of time
 
     Parameters
@@ -738,6 +744,8 @@ def show_curvature(
         figure size, default (16, 9)
     show_colorbar : bool, optional
         If true, add colorbar, default True
+    colorbar_label : str, optional
+        color bar title, by default 'Curvature'
 
     Returns
     -------
@@ -750,8 +758,8 @@ def show_curvature(
         fig, ax = plt.subplots(figsize=size)
     else:
         fig, ax = fig_ax
-        ax.clear()
-        plt.figure(fig.number)
+        #ax.clear()
+        #plt.figure(fig.number)
 
     N = 3 * int(np.max([splineutils.spline_contour_length(r) for r in res.spline]))
     #N = np.max([3*len(r[0]) for r in res.spline])
@@ -768,11 +776,50 @@ def show_curvature(
 
     im = ax.imshow(curvature, cmap=cmap_name, vmin=-cmax, vmax=cmax)
     if show_colorbar:
-        plt.colorbar(im, label=title, ax=ax)
-    plt.axis("auto")
+        divider= make_axes_locatable(ax)
+        cax = divider.append_axes("right", "5%", pad="3%")
+        plt.colorbar(im, cax=cax, label=colorbar_label) 
+    
     ax.set_xlabel("Frame index")
     ax.set_ylabel("Position on contour")
 
-    fig.tight_layout()
+    plt.axis("auto")
+    #plt.tight_layout()
 
-    return fig, ax
+    #return fig, ax
+    return ax
+
+from ..correlation import get_extent
+def show_correlation_core(corr_signal, signal1, signal2, signal1_name, signal2_name,
+                          normalization, fig_ax=None, size=(16, 9)):
+    """Plot correlations between variables"""
+
+    if fig_ax is None:
+        fig, ax = plt.subplots(figsize=size)
+    else:
+        fig, ax = fig_ax
+
+    ax.set_title(
+        "Correlation between " + signal1_name + " and \n " + signal2_name + " at layer " + str(0),
+        fontsize=20,
+    )
+
+    cmax = np.max(np.abs(corr_signal))
+    im = ax.imshow(
+        corr_signal,
+        extent=get_extent(signal1.shape[1], signal2.shape[1], corr_signal.shape[0]),
+        cmap="bwr",
+        vmin=-cmax,
+        vmax=cmax,
+        interpolation="none",
+    )
+    plt.axis("auto")
+    ax.set_xlabel("Time lag [frames]")
+    ax.set_ylabel("Window index")
+    """if len(fig.axes) == 2:
+        fig.axes[1].clear()
+        fig.colorbar(im, cax=fig.axes[1], label='Correlation here2')
+    else:
+        plt.colorbar(im, label="Correlation here3")"""
+
+    return ax

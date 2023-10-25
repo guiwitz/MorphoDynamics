@@ -61,41 +61,6 @@ def get_extent(A, B, I):
     return -B + 1 - 0.5, -B + 1 + A + B - 2 + 0.5, I - 1 + 0.5, -0.5
 
 
-def show_correlation_core(c, x, y, nx, ny, normalization, fig=None, ax=None):
-    """Plot correlations between variables"""
-
-    if fig is None:
-        fig, ax = plt.subplots()
-    else:
-        ax = fig.axes[0]
-        ax.clear()
-
-    ax.set_title(
-        "Correlation between " + nx + " and \n " + ny + " at layer " + str(0),
-        fontsize=20,
-    )
-
-    cmax = np.max(np.abs(c))
-    im = ax.imshow(
-        c,
-        extent=get_extent(x.shape[1], y.shape[1], c.shape[0]),
-        cmap="bwr",
-        vmin=-cmax,
-        vmax=cmax,
-        interpolation="none",
-    )
-    plt.axis("auto")
-    ax.set_xlabel("Time lag [frames]")
-    ax.set_ylabel("Window index")
-    """if len(fig.axes) == 2:
-        fig.axes[1].clear()
-        fig.colorbar(im, cax=fig.axes[1], label='Correlation here2')
-    else:
-        plt.colorbar(im, label="Correlation here3")"""
-
-    return fig, ax
-
-
 def get_range(A, B):
     A, B = max(A, B), min(A, B)
     return range(-B + 1, -B + 1 + A + B - 1)
