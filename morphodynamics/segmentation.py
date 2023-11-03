@@ -92,7 +92,8 @@ def tracking(regions, location=None, seg_type="farid"):
     location: 1d array, optional
         position vector
     seg_type: str
-        type of segmentation used, currently 'farid', 'cellpose', 'ilastik' or 'conv_paint'
+        type of segmentation used, currently
+        'farid', 'cellpose', 'ilastik', 'conv_paint' or 'precomputed'
 
     Returns
     -------
@@ -101,7 +102,7 @@ def tracking(regions, location=None, seg_type="farid"):
 
     """
 
-    if seg_type == "ilastik":
+    if seg_type in ["ilastik", "precomputed"]:
         regions = label(regions == 1)
     # number of regions
     nr = np.max(regions)
