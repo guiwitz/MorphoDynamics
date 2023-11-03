@@ -5,8 +5,8 @@ from skimage.morphology import binary_closing, binary_erosion, disk
 from skimage.measure import find_contours, label, regionprops
 from scipy.interpolate import UnivariateSpline
 from scipy.signal import argrelmin
-from scipy.ndimage.morphology import binary_fill_holes
-from scipy.ndimage.measurements import center_of_mass
+from scipy.ndimage import binary_fill_holes
+from scipy.ndimage import center_of_mass
 import numpy as np
 from tifffile import imread
 

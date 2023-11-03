@@ -1,7 +1,7 @@
 import math
 
 import numpy as np
-from scipy.ndimage.morphology import distance_transform_edt, binary_fill_holes
+from scipy.ndimage import distance_transform_edt, binary_fill_holes
 import matplotlib.pyplot as plt
 from skimage.measure import find_contours
 from skimage.segmentation import find_boundaries
