@@ -55,7 +55,7 @@ def show_geometry_props(data, res, size=(16, 9), titles=["Length", "Area", "Circ
 
     return fig, ax
 
-def show_geometry(data, res, size=(16, 9), prop='length', title=None):
+def show_geometry(data, res, size=(16, 9), prop='length', title=None, fig_ax=None):
     """
     Display length, area and circularity information for time-lapse.
 
@@ -71,13 +71,19 @@ def show_geometry(data, res, size=(16, 9), prop='length', title=None):
         property to display
     title: str
         title for plot
+    fig_ax: tuple
+        matplotlib figure and axes
 
     Returns
     -------
-    fig: matplotlib figure
     ax: matplotlib axis
 
     """
+    
+    if fig_ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig, ax = fig_ax
 
     length = np.zeros((data.num_timepoints,))
     area = np.zeros((data.num_timepoints,))
@@ -86,7 +92,7 @@ def show_geometry(data, res, size=(16, 9), prop='length', title=None):
         area[k] = splineutils.spline_area(res.spline[k])
 
     title_dict = {'length': 'Length', 'area': 'Area', 'circularity': 'Circularity'}
-    fig, ax = plt.subplots(figsize=size)
+    #fig, ax = plt.subplots(figsize=size)
     if prop == 'length':
         ax.plot(length)
     elif prop == 'area':
@@ -101,7 +107,7 @@ def show_geometry(data, res, size=(16, 9), prop='length', title=None):
 
     fig.tight_layout()
 
-    return fig, ax
+    return ax
 
 
 def show_edge_line_aux(N, s, color, lw, fig_ax=None):
