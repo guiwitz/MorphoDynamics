@@ -253,9 +253,9 @@ def show_edge_overview(
         param.n_curve, res.spline, lw, (fig, ax),
         cmap_name=cmap_contour, show_colorbar=show_colorbar, colorbar_label=colorbar_label)
     
-    fig.tight_layout()
+    plt.tight_layout()
 
-    return fig, ax
+    return ax
 
 
 def show_edge_vectorial_aux(param, data, res, k, curvature=False, fig_ax=None):
@@ -609,7 +609,8 @@ def show_cumdisplacement(
 def show_signals_aux(
     data, res, signal_index, layer_index, mode='Mean', fig_ax=None,
     size=(16, 9), title=None, xlabel="Frame index", ylabel="Window index",
-    layer_title=False, cmap_name='seismic', show_colorbar=True, colorbar_label='Mean',
+    layer_title=False, cmap_name='seismic', show_colorbar=True,
+    colorbar_label='Mean', percentile=None
     ):
     """
     Display window-kymograph of a signal.
@@ -642,6 +643,8 @@ def show_signals_aux(
         If true, add colorbar, default True
     colorbar_label: str
         color bar title, by default 'Mean'
+    percentile: float
+        percentile to remove outliers, default None
 
     Returns
     -------
@@ -668,8 +671,13 @@ def show_signals_aux(
         ax.set_title("Layer: " + str(layer_index))
     else:
         ax.set_title("Signal: " + data.get_channel_name(signal_index) + " - Layer: " + str(layer_index))
-
-    im = ax.imshow(f, cmap=cmap_name)
+    
+    if percentile is None:
+        percentile = 0
+    percentile1 = np.percentile(f[~np.isnan(f)],percentile)
+    percentile99 = np.percentile(f[~np.isnan(f)],100-percentile)
+        
+    im = ax.imshow(f, cmap=cmap_name, vmin=percentile1, vmax=percentile99)
     if show_colorbar:
         if len(fig.axes) == 2:
 
@@ -686,9 +694,9 @@ def show_signals_aux(
     ax.set_ylabel(ylabel)
     ax.set_aspect("equal")
 
-    fig.tight_layout()
+    plt.tight_layout()
 
-    return fig, ax
+    return ax
 
 
 def save_signals(param, data, res, modes=None, size=(16, 9)):
