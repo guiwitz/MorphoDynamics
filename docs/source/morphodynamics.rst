@@ -94,14 +94,6 @@ morphodynamics.utils module
    :undoc-members:
    :show-inheritance:
 
-morphodynamics.version module
------------------------------
-
-.. automodule:: morphodynamics.version
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 morphodynamics.windowing module
 -------------------------------
 

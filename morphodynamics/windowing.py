@@ -1,7 +1,7 @@
 import math
 
 import numpy as np
-from scipy.ndimage.morphology import distance_transform_edt, binary_fill_holes
+from scipy.ndimage import distance_transform_edt, binary_fill_holes
 import matplotlib.pyplot as plt
 from skimage.measure import find_contours
 from skimage.segmentation import find_boundaries
@@ -160,12 +160,12 @@ def create_windows(c_main, origin, J=None, I=None, depth=None, width=None):
         # i.e., the windows may not cover the entire cell.
         clist = find_contours(mask, 0, fully_connected="high")
         cvec = np.asarray(
-            clist[np.argmax([cel.shape[0] for cel in clist])], dtype=np.int
+            clist[np.argmax([cel.shape[0] for cel in clist])], dtype=int
         )
 
         # An alternative fix using OpenCV's findContours routine---doesn't solve the problem
         # contours, hierarchy = cv.findContours(np.asarray(mask, dtype=np.uint8), cv.RETR_LIST, cv.CHAIN_APPROX_NONE)
-        # cvec = np.asarray(contours[np.argmax([cel.shape[0] for cel in contours])], dtype=np.int)
+        # cvec = np.asarray(contours[np.argmax([cel.shape[0] for cel in contours])], dtype=int)
         # cvec = cvec.reshape((cvec.shape[0], cvec.shape[2]))
         # cvec = cvec[::-1, [1,0]]  # Sort boundary pixels in clockwise direction and switch (x, y) coordinates
 
@@ -335,3 +335,42 @@ def calculate_windows_index(w):
                 windows_pos.append([p[1], p[0], i])
 
     return windows_pos
+
+def _get_layer_indices(windows):
+        """Given a windows list of lists, create a dictionary where each entry i
+        contains the labels of all windows in layer i"""
+
+        layer_indices= {}
+        count=1
+        for i in range(len(windows)):
+            gather_indices=[]
+            for j in range(len(windows[i])):
+                gather_indices.append(count)
+                count+=1
+            layer_indices[i]=gather_indices
+        return layer_indices
+
+
+def create_window_cmap(window_indices):
+    """Create discrete colormap for windows alternating between layers"""
+
+    from cmap import Colormap
+    from matplotlib.colors import ListedColormap
+    from cmap import Color
+
+    cm = Colormap('colorbrewer:Paired')
+    cm2 = Colormap('colorbrewer:spectral_10')
+
+
+    col_dict = {0: Color([0,0,0,0])}
+    for key, val in window_indices.items():
+        if key % 2 == 0:
+            cmap = cm
+        else:
+            cmap = cm2
+        tomap = np.array_split(np.array(val), np.max([len(val) // 9, 1]))
+        for t in tomap:
+            cols = list(cmap.iter_colors(len(t)))
+            col_dict.update({x: col for x, col in zip(t, cols)})
+    cmap = ListedColormap(col_dict.values())
+    return cmap

@@ -5,8 +5,8 @@ from skimage.morphology import binary_closing, binary_erosion, disk
 from skimage.measure import find_contours, label, regionprops
 from scipy.interpolate import UnivariateSpline
 from scipy.signal import argrelmin
-from scipy.ndimage.morphology import binary_fill_holes
-from scipy.ndimage.measurements import center_of_mass
+from scipy.ndimage import binary_fill_holes
+from scipy.ndimage import center_of_mass
 import numpy as np
 from tifffile import imread
 
@@ -92,7 +92,8 @@ def tracking(regions, location=None, seg_type="farid"):
     location: 1d array, optional
         position vector
     seg_type: str
-        type of segmentation used, currently 'farid', 'cellpose', 'ilastik' or 'conv_paint'
+        type of segmentation used, currently
+        'farid', 'cellpose', 'ilastik', 'conv_paint' or 'precomputed'
 
     Returns
     -------
@@ -101,7 +102,7 @@ def tracking(regions, location=None, seg_type="farid"):
 
     """
 
-    if seg_type == "ilastik":
+    if seg_type in ["ilastik", "precomputed"]:
         regions = label(regions == 1)
     # number of regions
     nr = np.max(regions)
@@ -110,7 +111,7 @@ def tracking(regions, location=None, seg_type="farid"):
     if location is None:
         sr = np.zeros((nr,))
         for k in range(nr):
-            if seg_type in ["farid", "ilastik", "conv_paint"]:
+            if seg_type in ["farid", "ilastik", "conv_paint", "precomputed"]:
                 sr[k] = np.sum(binary_fill_holes(regions == k + 1))
             elif seg_type == "cellpose":
                 sr[k] = np.sum(regions == k + 1)
@@ -121,7 +122,7 @@ def tracking(regions, location=None, seg_type="farid"):
         for k in range(nr):
             cm[k] = center_of_mass(regions == k + 1)
         k = np.argmin([np.linalg.norm(cm0 - location) for cm0 in cm])
-        if seg_type in ["farid", "ilastik", "conv_paint"]:
+        if seg_type in ["farid", "ilastik", "conv_paint", "precomputed"]:
             sel_region = binary_fill_holes(regions == k + 1)
         elif seg_type == "cellpose":
             sel_region = regions == k + 1
@@ -129,23 +130,23 @@ def tracking(regions, location=None, seg_type="farid"):
     return sel_region
 
 
-def segment_cellpose(model, x, diameter, location):
+def segment_cellpose(model, x, diameter, location, flow_threshold=0.4, cellprob_threshold=0.0):
     """Segment image x using Cellpose. If model is None, a model is loaded"""
 
     if model is None:
         from cellpose import models
-        model = models.Cellpose(model_type="cyto")
-    m, flows, styles, diams = model.eval([x], diameter=diameter, channels=[[0, 0]])
+        model = models.Cellpose(model_type="cyto2")
+    m, flows, styles, diams = model.eval(
+        [x], diameter=diameter, channels=[[0, 0]],
+        flow_threshold=flow_threshold, cellprob_threshold=cellprob_threshold)
     m = m[0]
     return m
 
 def segment_conv_paint(x, random_forest):
     """ Segment image x using a trained classifier and
     the conv paint module. """
-    
-    from napari_convpaint.conv_paint_utils import predict_image
 
-    m = predict_image(x, None, random_forest)
+    m = random_forest.segment_image_stack(x)
     m = m == 2
     regions = label(m)
     return regions
@@ -154,7 +155,7 @@ def segment_conv_paint(x, random_forest):
 def extract_contour(mask):
     """ Extract pixels along contour of mask. """
 
-    return np.asarray(find_contours(mask, 0, fully_connected="high")[0], dtype=np.int)
+    return np.asarray(find_contours(mask, 0, fully_connected="high")[0], dtype=int)
 
 
 def contour_spline(m, smoothing):

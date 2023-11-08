@@ -1,5 +1,6 @@
-from ast import cmpop
 import os
+from pathlib import Path
+import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import imageio
@@ -9,6 +10,9 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from scipy.interpolate import splev
 
 from .. import splineutils
+from ..correlation import get_extent, correlate_arrays
+from ..windowing import label_windows, _get_layer_indices, create_window_cmap
+
 
 out = ipw.Output()
 
@@ -35,9 +39,9 @@ def show_geometry_props(data, res, size=(16, 9), titles=["Length", "Area", "Circ
 
     """
 
-    length = np.zeros((data.K,))
-    area = np.zeros((data.K,))
-    for k in range(data.K):
+    length = np.zeros((data.num_timepoints,))
+    area = np.zeros((data.num_timepoints,))
+    for k in range(data.num_timepoints):
         length[k] = splineutils.spline_contour_length(res.spline[k])
         area[k] = splineutils.spline_area(res.spline[k])
 
@@ -55,7 +59,7 @@ def show_geometry_props(data, res, size=(16, 9), titles=["Length", "Area", "Circ
 
     return fig, ax
 
-def show_geometry(data, res, size=(16, 9), prop='length', title=None):
+def show_geometry(data, res, size=(16, 9), prop='length', title=None, fig_ax=None):
     """
     Display length, area and circularity information for time-lapse.
 
@@ -71,22 +75,28 @@ def show_geometry(data, res, size=(16, 9), prop='length', title=None):
         property to display
     title: str
         title for plot
+    fig_ax: tuple
+        matplotlib figure and axes
 
     Returns
     -------
-    fig: matplotlib figure
     ax: matplotlib axis
 
     """
+    
+    if fig_ax is None:
+        fig, ax = plt.subplots()
+    else:
+        fig, ax = fig_ax
 
-    length = np.zeros((data.K,))
-    area = np.zeros((data.K,))
-    for k in range(data.K):
+    length = np.zeros((data.num_timepoints,))
+    area = np.zeros((data.num_timepoints,))
+    for k in range(data.num_timepoints):
         length[k] = splineutils.spline_contour_length(res.spline[k])
         area[k] = splineutils.spline_area(res.spline[k])
 
     title_dict = {'length': 'Length', 'area': 'Area', 'circularity': 'Circularity'}
-    fig, ax = plt.subplots(figsize=size)
+    #fig, ax = plt.subplots(figsize=size)
     if prop == 'length':
         ax.plot(length)
     elif prop == 'area':
@@ -101,7 +111,7 @@ def show_geometry(data, res, size=(16, 9), prop='length', title=None):
 
     fig.tight_layout()
 
-    return fig, ax
+    return ax
 
 
 def show_edge_line_aux(N, s, color, lw, fig_ax=None):
@@ -181,10 +191,16 @@ def show_edge_line(
         fig, ax = show_edge_line_aux(N, s[k], cmap(k / (K - 1)), lw, fig_ax=(fig, ax))
     
     if show_colorbar:
-        fig.colorbar(
+
+        divider= make_axes_locatable(ax)
+        cax = divider.append_axes("right", "5%", pad="3%")
+        plt.colorbar(plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K - 1), cmap=cmap),
+            cax=cax, label=colorbar_label)   
+
+        '''fig.colorbar(
             plt.cm.ScalarMappable(norm=Normalize(vmin=0, vmax=K - 1), cmap=cmap),
             label=colorbar_label,
-        )
+        )'''
 
     fig.tight_layout()
     return fig, ax
@@ -241,9 +257,9 @@ def show_edge_overview(
         param.n_curve, res.spline, lw, (fig, ax),
         cmap_name=cmap_contour, show_colorbar=show_colorbar, colorbar_label=colorbar_label)
     
-    fig.tight_layout()
+    plt.tight_layout()
 
-    return fig, ax
+    return ax
 
 
 def show_edge_vectorial_aux(param, data, res, k, curvature=False, fig_ax=None):
@@ -315,7 +331,7 @@ def save_edge_vectorial_movie(param, data, res, curvature=False, size=(12, 9)):
         fig, ax = plt.subplots(figsize=size)
         writer = imageio.get_writer(os.path.join(param.analysis_folder, name + ".gif"))
 
-        for k in range(data.K - 1):
+        for k in range(data.num_timepoints - 1):
             fig, ax = show_edge_vectorial_aux(
                 param, data, res, k, curvature, fig_ax=(fig, ax)
             )
@@ -516,7 +532,7 @@ def show_displacement(
         fig, ax = plt.subplots(figsize=size)
     else:
         fig, ax = fig_ax
-        plt.figure(fig.number)
+        #plt.figure(fig.number)
 
     ax.set_title(title)
     im = ax.imshow(res.displacement, cmap=cmap_name)
@@ -524,14 +540,16 @@ def show_displacement(
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if show_colorbar:
-        plt.colorbar(im, label=colorbar_label)
-
+        divider= make_axes_locatable(ax)
+        cax = divider.append_axes("right", "5%", pad="3%")
+        plt.colorbar(im, cax=cax, label=colorbar_label)     
     cmax = np.max(np.abs(res.displacement))
     im.set_clim(-cmax, cmax)
 
-    fig.tight_layout()
+    plt.tight_layout()
 
-    return fig, ax
+    #return fig, ax
+    return ax
 
 
 def show_cumdisplacement(
@@ -569,7 +587,7 @@ def show_cumdisplacement(
         fig, ax = plt.subplots(figsize=size)
     else:
         fig, ax = fig_ax
-        plt.figure(fig.number)
+        #plt.figure(fig.number)
 
     dcum = np.cumsum(res.displacement, axis=1)
 
@@ -579,19 +597,24 @@ def show_cumdisplacement(
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if show_colorbar:
-        plt.colorbar(im, label=colorbar_label)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", "5%", pad="3%")
+        plt.colorbar(im, cax=cax, label=colorbar_label)
+        #plt.colorbar(im, label=colorbar_label)
     cmax = np.max(np.abs(dcum))
     im.set_clim(-cmax, cmax)
 
-    fig.tight_layout()
+    plt.tight_layout()
 
-    return fig, ax
+    #return fig, ax
+    return ax
 
 
 def show_signals_aux(
     data, res, signal_index, layer_index, mode='Mean', fig_ax=None,
     size=(16, 9), title=None, xlabel="Frame index", ylabel="Window index",
-    layer_title=False, cmap_name='seismic', show_colorbar=True, colorbar_label='Mean',
+    layer_title=False, cmap_name='seismic', show_colorbar=True,
+    colorbar_label='Mean', percentile=None
     ):
     """
     Display window-kymograph of a signal.
@@ -624,6 +647,8 @@ def show_signals_aux(
         If true, add colorbar, default True
     colorbar_label: str
         color bar title, by default 'Mean'
+    percentile: float
+        percentile to remove outliers, default None
 
     Returns
     -------
@@ -650,8 +675,13 @@ def show_signals_aux(
         ax.set_title("Layer: " + str(layer_index))
     else:
         ax.set_title("Signal: " + data.get_channel_name(signal_index) + " - Layer: " + str(layer_index))
-
-    im = ax.imshow(f, cmap=cmap_name)
+    
+    if percentile is None:
+        percentile = 0
+    percentile1 = np.percentile(f[~np.isnan(f)],percentile)
+    percentile99 = np.percentile(f[~np.isnan(f)],100-percentile)
+        
+    im = ax.imshow(f, cmap=cmap_name, vmin=percentile1, vmax=percentile99)
     if show_colorbar:
         if len(fig.axes) == 2:
 
@@ -668,9 +698,9 @@ def show_signals_aux(
     ax.set_ylabel(ylabel)
     ax.set_aspect("equal")
 
-    fig.tight_layout()
+    plt.tight_layout()
 
-    return fig, ax
+    return ax
 
 
 def save_signals(param, data, res, modes=None, size=(16, 9)):
@@ -713,7 +743,7 @@ def save_signals(param, data, res, modes=None, size=(16, 9)):
 
 def show_curvature(
     data, res, cmax=None, fig_ax=None, title="Curvature", cmap_name="seismic", size=(5, 3),
-    show_colorbar=True):
+    show_colorbar=True, colorbar_label='Curvature'):
     """Display curvature as a function of time
 
     Parameters
@@ -732,6 +762,8 @@ def show_curvature(
         figure size, default (16, 9)
     show_colorbar : bool, optional
         If true, add colorbar, default True
+    colorbar_label : str, optional
+        color bar title, by default 'Curvature'
 
     Returns
     -------
@@ -744,13 +776,13 @@ def show_curvature(
         fig, ax = plt.subplots(figsize=size)
     else:
         fig, ax = fig_ax
-        ax.clear()
-        plt.figure(fig.number)
+        #ax.clear()
+        #plt.figure(fig.number)
 
     N = 3 * int(np.max([splineutils.spline_contour_length(r) for r in res.spline]))
     #N = np.max([3*len(r[0]) for r in res.spline])
-    curvature = np.zeros((N, data.K))
-    for k in range(data.K):
+    curvature = np.zeros((N, data.num_timepoints))
+    for k in range(data.num_timepoints):
         curvature[:, k] = splineutils.spline_curvature(
             res.spline[k],
             np.linspace(0, 1, N, endpoint=False),
@@ -762,11 +794,98 @@ def show_curvature(
 
     im = ax.imshow(curvature, cmap=cmap_name, vmin=-cmax, vmax=cmax)
     if show_colorbar:
-        plt.colorbar(im, label=title, ax=ax)
-    plt.axis("auto")
+        divider= make_axes_locatable(ax)
+        cax = divider.append_axes("right", "5%", pad="3%")
+        plt.colorbar(im, cax=cax, label=colorbar_label) 
+    
     ax.set_xlabel("Frame index")
     ax.set_ylabel("Position on contour")
 
-    fig.tight_layout()
+    plt.axis("auto")
+    #plt.tight_layout()
 
-    return fig, ax
+    #return fig, ax
+    return ax
+
+def show_correlation_core(res, param, signal1_name, signal2_name, window_layer,
+                          normalization, percentile=1, fig_ax=None, size=(16, 9)):
+    """Plot correlations between variables"""
+
+    if fig_ax is None:
+        fig, ax = plt.subplots(figsize=size)
+    else:
+        fig, ax = fig_ax
+
+    if percentile is None:
+        percentile = 0
+
+    ax.set_title(
+        "Correlation between " + signal1_name + " and \n " + signal2_name + " at layer " + str(0),
+        fontsize=20,
+    )
+
+    corr_signal = get_corr_signal(res, param, signal1_name, signal2_name, window_layer, normalization)
+    cmax = np.max(np.abs(corr_signal))
+    im = ax.imshow(
+        corr_signal,
+        #extent=get_extent(param.max_time, param.max_time, corr_signal.shape[0]),
+        cmap="bwr",
+        vmin=-cmax,
+        vmax=cmax,
+        interpolation="none",
+    )
+    ax.images[0].set_clim(np.percentile(corr_signal, [percentile, 100-percentile]))
+    plt.axis("auto")
+    ax.set_xlabel("Time lag [frames]")
+    ax.set_ylabel("Window index")
+    """if len(fig.axes) == 2:
+        fig.axes[1].clear()
+        fig.colorbar(im, cax=fig.axes[1], label='Correlation here2')
+    else:
+        plt.colorbar(im, label="Correlation here3")"""
+
+    return ax
+
+def show_windows(data, param, frame, signal_index, size=(16, 9), fig_ax=None):
+    """Show windows on top of image"""
+
+    if fig_ax is None:
+        fig, ax = plt.subplots(figsize=size)
+    else:
+        fig, ax = fig_ax
+
+    name = Path(param.analysis_folder).joinpath(
+            'segmented', "window_k_" + str(frame) + ".pkl")
+    windows = pickle.load(open(name, 'rb'))
+
+    window_indices = _get_layer_indices(windows)
+    cmap = create_window_cmap(window_indices)
+
+    w_image = label_windows(
+                shape=(data.dims[0], data.dims[1]), windows=windows)
+    
+    vmin = np.percentile(data.load_frame_signal(signal_index, frame), 1)
+    vmax = np.percentile(data.load_frame_signal(signal_index, frame), 99)
+    ax.imshow(data.load_frame_signal(signal_index, frame), cmap="gray",
+              vmin=vmin, vmax=vmax, interpolation="none")
+    ax.imshow(w_image, alpha=.5, cmap=cmap, interpolation="none")
+    ax.set_title("Frame " + str(frame))
+    plt.axis("auto")
+    plt.tight_layout()
+
+    return ax
+
+def get_corr_signal(res, param, signal_name1, signal_name2, window_layer, normalization):
+
+    if signal_name1 == 'displacement':
+        signal1 = res.displacement
+        signal2 = res.mean[param.signal_name.index(signal_name2), window_layer][0:res.I[window_layer],:-1]
+    elif signal_name2 == 'displacement':
+        signal1 = res.mean[param.signal_name.index(signal_name1), window_layer][0:res.I[window_layer],:-1]
+        signal2 = res.displacement
+    else:
+        signal2 = res.mean[param.signal_name.index(signal_name2), window_layer][0:res.I[window_layer]]
+        signal1 = res.mean[param.signal_name.index(signal_name1), window_layer][0:res.I[window_layer]]
+
+    corr_signal = correlate_arrays(signal1, signal2, normalization=normalization)
+    return corr_signal

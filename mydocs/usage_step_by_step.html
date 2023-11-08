@@ -1,496 +1,394 @@
 
+
 <!DOCTYPE html>
 
-<html>
+
+<html lang="en" >
+
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
     <title>Analysis step by step &#8212; Morphodynamics documentation</title>
-    
-  <link href="../_static/css/theme.css" rel="stylesheet">
-  <link href="../_static/css/index.ff1ffe594081f20da1ef19478df9384b.css" rel="stylesheet">
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
 
-    
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
-    
-      
-
-    
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-book-theme.css?digest=c3fdc42140077d1ad13ad2f1588a4309" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" />
-    
-  <link rel="preload" as="script" href="../_static/js/index.be7d3bbb2ef33a8344ce.js">
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
     <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../_static/doctools.js"></script>
-    <script src="../_static/togglebutton.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
-    <script src="../_static/sphinx-book-theme.d59cb220de22ca1c485ebbdc042f0030.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="https://unpkg.com/@jupyter-widgets/html-manager@^0.20.0/dist/embed-amd.js"></script>
-    <script async="async" src="https://unpkg.com/thebe@0.5.1/lib/index.js"></script>
-    <script>
-        const thebe_selector = ".thebe"
-        const thebe_selector_input = "pre"
-        const thebe_selector_output = ".output"
-    </script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'mydocs/usage_step_by_step';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="General code structure" href="code_structure.html" />
-    <link rel="prev" title="Post-processing" href="Postprocessing.html" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="None">
-    
-
-    <!-- Google Analytics -->
-    
+    <link rel="prev" title="Data analysis" href="Data_analysis.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <div class="container-fluid" id="banner"></div>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-    
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
 
-    <div class="container-xl">
-      <div class="row">
-          
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
-    
-        <div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../index.html">
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
       
-        <!-- `logo` is deprecated in Sphinx 4.0, so remove this when we stop supporting 3 -->
+      <div class="bd-sidebar-primary bd-sidebar">
         
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+  
+
+<a class="navbar-brand logo" href="Introduction.html">
+  
+  
+  
+  
+  
+    
+    
       
-      
-      <img src="../_static/logo.png" class="logo" alt="logo">
-      
-      
-      <h1 class="site-logo" id="site-title">Morphodynamics documentation</h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="../search.html" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search this book..." aria-label="Search this book..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
-    <div class="bd-toc-item active">
-        <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="Introduction.html">
-   Overview
-  </a>
- </li>
-</ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Getting started
- </span>
-</p>
+    
+    
+    <img src="../_static/logo.png" class="logo__image only-light" alt="Morphodynamics documentation - Home"/>
+    <script>document.write(`<img src="../_static/logo.png" class="logo__image only-dark" alt="Morphodynamics documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="Introduction.html">
+                    Overview
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1">
-  <a class="reference internal" href="Installation.html">
-   Installation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Napari_Plugin.html">
-   Napari plugin for Morphodynamics
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Analysis_with_morpho_segmentation.html">
-   Segmentation and windowing
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Analysis_without_UI.html">
-   Segmentation and windowing without UI
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Postprocessing.html">
-   Post-processing
-  </a>
- </li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Napari_Plugin.html">napari-morphodynamics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Run_analysis.html">Run Morphodynamics programmatically</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Output_structure.html">Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Data_analysis.html">Data analysis</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Code and algorithms
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Code and algorithms</span></p>
 <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   Analysis step by step
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="code_structure.html">
-   General code structure
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="segmentation.html">
-   Segmentation
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="Data.html">
-   Data formats
-  </a>
- </li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Analysis step by step</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_structure.html">General code structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Data.html">Data formats</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading">
- <span class="caption-text">
-  Reference
- </span>
-</p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Reference</span></p>
 <ul class="nav bd-sidenav">
- <li class="toctree-l1 has-children">
-  <a class="reference internal" href="../docs/source/modules.html">
-   morphodynamics
-  </a>
-  <input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/>
-  <label for="toctree-checkbox-1">
-   <i class="fas fa-chevron-down">
-   </i>
-  </label>
-  <ul>
-   <li class="toctree-l2 has-children">
-    <a class="reference internal" href="../docs/source/morphodynamics.html">
-     morphodynamics package
-    </a>
-    <input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/>
-    <label for="toctree-checkbox-2">
-     <i class="fas fa-chevron-down">
-     </i>
-    </label>
-    <ul>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../docs/source/morphodynamics.data.html">
-       morphodynamics.data package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../docs/source/morphodynamics.plots.html">
-       morphodynamics.plots package
-      </a>
-     </li>
-     <li class="toctree-l3">
-      <a class="reference internal" href="../docs/source/morphodynamics.store.html">
-       morphodynamics.store package
-      </a>
-     </li>
-    </ul>
-   </li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../docs/source/modules.html">morphodynamics</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../docs/source/morphodynamics.html">morphodynamics package</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../docs/source/morphodynamics.data.html">morphodynamics.data package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs/source/morphodynamics.plots.html">morphodynamics.plots package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../docs/source/morphodynamics.store.html">morphodynamics.store package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+<a href="https://github.com/guiwitz/MorphoDynamics" target="_blank"
+   class="btn btn-sm btn-source-repository-button"
+   title="Source repository"
+   data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+
+</a>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/mydocs/usage_step_by_step.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
   </ul>
- </li>
-</ul>
+</div>
 
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
     </div>
-</nav> <!-- To handle the deprecated key -->
-
-<div class="navbar_extra_footer">
-  Powered by <a href="https://jupyterbook.org">Jupyter Book</a>
+  
 </div>
-
 </div>
+              
+              
 
-
-          
-
-
-          
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="topbar container-xl fixed-top">
-    <div class="topbar-contents row">
-        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
-        <div class="col pl-md-4 topbar-main">
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Analysis step by step</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
             
-            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-arrow-left"></i>
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            
-            
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
-            class="fas fa-download"></i></button>
-
-    <div class="dropdown-buttons">
-        <!-- ipynb file if we had a myst markdown file -->
-        
-        <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/mydocs/usage_step_by_step.ipynb"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.ipynb</button></a>
-        <!-- Download PDF via print -->
-        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-                onclick="printPdf(this)" data-toggle="tooltip" data-placement="left">.pdf</button>
-    </div>
-</div>
-
-            <!-- Source interaction buttons -->
-
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/guiwitz/MorphoDynamics"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        
-        
-    </div>
-</div>
-
-            <!-- Full screen (wrap in <a> to have style consistency -->
-
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
-
-            <!-- Launch buttons -->
-
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Launch interactive content"><i class="fas fa-rocket"></i></button>
-    <div class="dropdown-buttons">
-        
-        <a class="binder-button" href="https://mybinder.org/v2/gh/guiwitz/MorphoDynamics/master?urlpath=tree/mydocs/usage_step_by_step.ipynb"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Launch Binder" data-toggle="tooltip"
-                data-placement="left"><img class="binder-button-logo"
-                    src="../_static/images/logo_binder.svg"
-                    alt="Interact on binder">Binder</button></a>
-        
-        
-        
-        
-    </div>
-</div>
-
-        </div>
-
-        <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show noprint">
-            
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
+            <div>
+                <h2> Contents </h2>
             </div>
-            <nav id="bd-toc-nav" aria-label="Page">
+            <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#dataset">
-   Dataset
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#morphosegmentation-dataset">
-   morphosegmentation.dataset
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#set-folders">
-   Set folders
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#set-up-parameters-for-analysis">
-   Set-up parameters for analysis
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#calibrate-number-of-windows-and-cell-location">
-   Calibrate number of windows and cell location
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#set-up-results-structure">
-   Set-up results structure
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#start-dask">
-   Start dask
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#segmentation">
-   Segmentation
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#tracking">
-   Tracking
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#splining">
-   Splining
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#aligning-splines-and-creating-rasterized-images">
-   Aligning splines and creating rasterized images
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#creating-windows">
-   Creating windows
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#window-mapping">
-   Window mapping
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#extracting-signals">
-   Extracting signals
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#check-results">
-   Check results
-  </a>
- </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dataset">Dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#morphosegmentation-dataset">morphosegmentation.dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-folders">Set folders</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-parameters-for-analysis">Set-up parameters for analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calibrate-number-of-windows-and-cell-location">Calibrate number of windows and cell location</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-results-structure">Set-up results structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-dask">Start dask</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation">Segmentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracking">Tracking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#splining">Splining</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aligning-splines-and-creating-rasterized-images">Aligning splines and creating rasterized images</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-windows">Creating windows</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#window-mapping">Window mapping</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-signals">Extracting signals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-results">Check results</a></li>
 </ul>
-
             </nav>
         </div>
     </div>
 </div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-            <!-- Table of contents that is only displayed when printing the page -->
-            <div id="jb-print-docs-body" class="onlyprint">
-                <h1>Analysis step by step</h1>
-                <!-- Table of contents -->
-                <div id="print-main-content">
-                    <div id="jb-print-toc">
-                        
-                        <div>
-                            <h2> Contents </h2>
-                        </div>
-                        <nav aria-label="Page">
-                            <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#dataset">
-   Dataset
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#morphosegmentation-dataset">
-   morphosegmentation.dataset
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#set-folders">
-   Set folders
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#set-up-parameters-for-analysis">
-   Set-up parameters for analysis
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#calibrate-number-of-windows-and-cell-location">
-   Calibrate number of windows and cell location
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#set-up-results-structure">
-   Set-up results structure
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#start-dask">
-   Start dask
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#segmentation">
-   Segmentation
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#tracking">
-   Tracking
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#splining">
-   Splining
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#aligning-splines-and-creating-rasterized-images">
-   Aligning splines and creating rasterized images
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#creating-windows">
-   Creating windows
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#window-mapping">
-   Window mapping
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#extracting-signals">
-   Extracting signals
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#check-results">
-   Check results
-  </a>
- </li>
-</ul>
 
-                        </nav>
-                    </div>
-                </div>
-            </div>
-            
-              <div>
+              
                 
-  <div class="tex2jax_ignore mathjax_ignore section" id="analysis-step-by-step">
-<h1>Analysis step by step<a class="headerlink" href="#analysis-step-by-step" title="Permalink to this headline">¶</a></h1>
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="analysis-step-by-step">
+<h1>Analysis step by step<a class="headerlink" href="#analysis-step-by-step" title="Permalink to this heading">#</a></h1>
 <p>We provide here a step by step guide explaining how the different <a class="reference internal" href="code_structure.html"><span class="doc std std-doc">code components</span></a> to perform a complete analysis are used “under the hood” in case you want to re-use them or need a deeper understanding of the code.</p>
-<div class="section" id="dataset">
-<h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h2>
+<section id="dataset">
+<h2>Dataset<a class="headerlink" href="#dataset" title="Permalink to this heading">#</a></h2>
 <p>We use here a synthetic dataset that simulates microscopy observation of a cell. You can find the dataset in <span class="xref myst">this folder</span> and has been generated using the <a class="reference internal" href="../synthetic/simulate_data.html"><span class="doc std std-doc">simulate_data</span></a> notebook. The dataset is composed of 40 time points and three channels. A single cell starts as a circular object in the image center, and, over the 40 frames, the top cell edge moves upwards and downwards. The intensity in the first channel is homogeneous and is used for segmentation. In the two other channels, fluorescence is inhomogeneous and located at the cell bottom and also varies over time, including a time-shift between the second and third channels. The dataset is available <span class="xref myst">here</span> and has already been annotated and processed in ilastik with the result stored <span class="xref myst">here</span>.</p>
-</div>
-<div class="section" id="morphosegmentation-dataset">
-<h2>morphosegmentation.dataset<a class="headerlink" href="#morphosegmentation-dataset" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="morphosegmentation-dataset">
+<h2>morphosegmentation.dataset<a class="headerlink" href="#morphosegmentation-dataset" title="Permalink to this heading">#</a></h2>
 <p>The first step is to create a dataset object. For that we import the appropriate format from the module, in this case H5.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -555,12 +453,12 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/usage_step_by_step_12_0.png" src="../_images/usage_step_by_step_12_0.png" />
+<img alt="../_images/6dd9762853a77287ce5417cfda38a9e922282e09fe8504422ad56cfa5658e768.png" src="../_images/6dd9762853a77287ce5417cfda38a9e922282e09fe8504422ad56cfa5658e768.png" />
 </div>
 </div>
-</div>
-<div class="section" id="set-folders">
-<h2>Set folders<a class="headerlink" href="#set-folders" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="set-folders">
+<h2>Set folders<a class="headerlink" href="#set-folders" title="Permalink to this heading">#</a></h2>
 <p>We need to define three folders:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">data_folder</span></code> a folder that contains the image data</p></li>
@@ -582,9 +480,9 @@
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="set-up-parameters-for-analysis">
-<h2>Set-up parameters for analysis<a class="headerlink" href="#set-up-parameters-for-analysis" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="set-up-parameters-for-analysis">
+<h2>Set-up parameters for analysis<a class="headerlink" href="#set-up-parameters-for-analysis" title="Permalink to this heading">#</a></h2>
 <p>Now we create a Param object where we store parameters for our segmentation:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -600,9 +498,9 @@
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="calibrate-number-of-windows-and-cell-location">
-<h2>Calibrate number of windows and cell location<a class="headerlink" href="#calibrate-number-of-windows-and-cell-location" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="calibrate-number-of-windows-and-cell-location">
+<h2>Calibrate number of windows and cell location<a class="headerlink" href="#calibrate-number-of-windows-and-cell-location" title="Permalink to this heading">#</a></h2>
 <p>Now we can finally run the analysis. In a first step, we need to estimate into how many layers (<code class="docutils literal notranslate"><span class="pre">J</span></code>) and how many windows per layer (<code class="docutils literal notranslate"><span class="pre">I</span></code>) our cell should be split based on the desired width and depth of a window. Here we also determine the center of mass position of the cell (<code class="docutils literal notranslate"><span class="pre">location</span></code>):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -629,24 +527,24 @@ number of layer J: 2
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="set-up-results-structure">
-<h2>Set-up results structure<a class="headerlink" href="#set-up-results-structure" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="set-up-results-structure">
+<h2>Set-up results structure<a class="headerlink" href="#set-up-results-structure" title="Permalink to this heading">#</a></h2>
 <p>We also need to setup a data structure to save some output information such as windowing information (which pixels belong to which window) or signal per window values. For that we use the <code class="docutils literal notranslate"><span class="pre">Results</span></code> structure from the <code class="docutils literal notranslate"><span class="pre">morphodynamics.results</span></code> module. To create “empty” fields we need to know the numebr of windows, time points and signal channels:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.results</span> <span class="kn">import</span> <span class="n">Results</span>
 <span class="c1"># Result structures that will be saved to disk</span>
 <span class="n">res</span> <span class="o">=</span> <span class="n">Results</span><span class="p">(</span>
-    <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">I</span><span class="o">=</span><span class="n">I</span><span class="p">,</span> <span class="n">num_time_points</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">num_channels</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">signal_name</span><span class="p">)</span>
+    <span class="n">J</span><span class="o">=</span><span class="n">J</span><span class="p">,</span> <span class="n">I</span><span class="o">=</span><span class="n">I</span><span class="p">,</span> <span class="n">num_time_points</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">num_timepoints</span><span class="p">,</span> <span class="n">num_channels</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">signal_name</span><span class="p">)</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="start-dask">
-<h2>Start dask<a class="headerlink" href="#start-dask" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="start-dask">
+<h2>Start dask<a class="headerlink" href="#start-dask" title="Permalink to this heading">#</a></h2>
 <p>To make computation faster, the slow parts of the code are executed in parallel using the library Dask. One of the great advantages of that library is that it allows to seamlessly run the same code on a laptop and a cluster:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -664,24 +562,24 @@ Hosting the HTTP server on port 57654 instead
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="segmentation">
-<h2>Segmentation<a class="headerlink" href="#segmentation" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="segmentation">
+<h2>Segmentation<a class="headerlink" href="#segmentation" title="Permalink to this heading">#</a></h2>
 <p>The first step of the pipeline is the cell segmentation. As we are using the ilastik pre-segmentation this step is automatically skipped here:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Segment all images but don&#39;t select cell</span>
 <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">seg_algo</span> <span class="o">==</span> <span class="s1">&#39;ilastik&#39;</span><span class="p">:</span>
-    <span class="n">segmented</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">K</span><span class="p">)</span>
+    <span class="n">segmented</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">num_timepoints</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">segmented</span> <span class="o">=</span> <span class="n">segment_all</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="tracking">
-<h2>Tracking<a class="headerlink" href="#tracking" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="tracking">
+<h2>Tracking<a class="headerlink" href="#tracking" title="Permalink to this heading">#</a></h2>
 <p>We might have multiple cell in a field of view so that our segmentation output is not a simple binary mask but a labeled mask with multiple cells. We therefore have to decide which cell to consider. This can be done in the UI by picking a point in the image or by manually indicating the x-y location of a cell. Here we only have a single cell, so that selection is automatic. Once a cell has been selected in the first frame, we can track it across frames. This part of the analysis cannot be parallelized as the cell has to be tracked in successive frames:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -693,15 +591,15 @@ Hosting the HTTP server on port 57654 instead
 </div>
 </div>
 <p>The output of the tracking is stored as a series of binary masks names <code class="docutils literal notranslate"><span class="pre">tracked_k_0.tif</span></code>, <code class="docutils literal notranslate"><span class="pre">tracked_k_1.tif</span></code> etc.</p>
-</div>
-<div class="section" id="splining">
-<h2>Splining<a class="headerlink" href="#splining" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="splining">
+<h2>Splining<a class="headerlink" href="#splining" title="Permalink to this heading">#</a></h2>
 <p>Now that we have binary masks, we can analyze their contour and fit a spline function to them. The spline information is also stored in the <code class="docutils literal notranslate"><span class="pre">res</span></code> structure to avoid the need for recalculation. Here <code class="docutils literal notranslate"><span class="pre">s_all</span></code> is a dictionary with frames as keys and containing the spline information.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">morphodynamics.analysis_par</span> <span class="kn">import</span> <span class="n">spline_all</span>
 <span class="c1"># get all splines</span>
-<span class="n">s_all</span> <span class="o">=</span> <span class="n">spline_all</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">K</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">lambda_</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
+<span class="n">s_all</span> <span class="o">=</span> <span class="n">spline_all</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">num_timepoints</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">lambda_</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -727,12 +625,12 @@ Hosting the HTTP server on port 57654 instead
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/usage_step_by_step_34_0.png" src="../_images/usage_step_by_step_34_0.png" />
+<img alt="../_images/a3170ad5dcb5d93899980a13b81a3a6db6c87537b138685aa7528cb6fa467b9d.png" src="../_images/a3170ad5dcb5d93899980a13b81a3a6db6c87537b138685aa7528cb6fa467b9d.png" />
 </div>
 </div>
-</div>
-<div class="section" id="aligning-splines-and-creating-rasterized-images">
-<h2>Aligning splines and creating rasterized images<a class="headerlink" href="#aligning-splines-and-creating-rasterized-images" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="aligning-splines-and-creating-rasterized-images">
+<h2>Aligning splines and creating rasterized images<a class="headerlink" href="#aligning-splines-and-creating-rasterized-images" title="Permalink to this heading">#</a></h2>
 <p>Given all the splines, we need now to align them to account for x-y shifts (e.g. if the cell is moving) and shifts of the spline along the contour. Once the alignment is done, we can create a rasterized version of the contour, i.e. an image of the contour where the pixel value corresponds to the curvilinear distance from the spline origin. This is late used to create windows.</p>
 <p>The aligned splines are saved in <code class="docutils literal notranslate"><span class="pre">s0prm_all</span></code> and the shift in origin in <code class="docutils literal notranslate"><span class="pre">ori_all</span></code>.</p>
 <div class="cell docutils container">
@@ -761,7 +659,7 @@ Hosting the HTTP server on port 57654 instead
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/usage_step_by_step_37_0.png" src="../_images/usage_step_by_step_37_0.png" />
+<img alt="../_images/c13ea2bc315b760744719efeb27f01071d37a2956ddb44d45c2bdc2c3bd087bb.png" src="../_images/c13ea2bc315b760744719efeb27f01071d37a2956ddb44d45c2bdc2c3bd087bb.png" />
 </div>
 </div>
 <p>As we calculate the spline origin shift between pairs of successive frames (so that the operation can be parallelized), we need to calculate a cumulative sum to recover the shift between frame 0 and frame <code class="docutils literal notranslate"><span class="pre">f</span></code>:</p>
@@ -769,15 +667,15 @@ Hosting the HTTP server on port 57654 instead
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># origin shifts have been computed pair-wise. Calculate the cumulative</span>
 <span class="c1"># sum to get a &quot;true&quot; alignment on the first frame</span>
-<span class="n">res</span><span class="o">.</span><span class="n">orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ori_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">K</span><span class="p">)])</span>
+<span class="n">res</span><span class="o">.</span><span class="n">orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ori_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">num_timepoints</span><span class="p">)])</span>
 <span class="n">res</span><span class="o">.</span><span class="n">orig</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">orig</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="creating-windows">
-<h2>Creating windows<a class="headerlink" href="#creating-windows" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="creating-windows">
+<h2>Creating windows<a class="headerlink" href="#creating-windows" title="Permalink to this heading">#</a></h2>
 <p>Now that we have the rasterized image and the spline information, we can split each cell into layers with windows (using distance transform and curvilinear distance as “coordinates”):</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -793,9 +691,9 @@ Hosting the HTTP server on port 57654 instead
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="window-mapping">
-<h2>Window mapping<a class="headerlink" href="#window-mapping" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="window-mapping">
+<h2>Window mapping<a class="headerlink" href="#window-mapping" title="Permalink to this heading">#</a></h2>
 <p>With the splines and the windows information, we can now find optimal points along successive splines that minimize deformation defined according to a certain metric combining xy-displacement across frames and curvilinear distance between points in a given frame.</p>
 <p>It is important to mention here that the windows are <strong>not</strong> adjusted using that optimization. Windows are simply calculated based on splines that have been shift-corrected (x-y) and “curvilinear”-corrected so that they have matching positions. On the other hand the displacement is calculated by optimizing the location of points on the spline of frame = t+1 compared to <em>windows positions</em> at frame = t.</p>
 <div class="cell docutils container">
@@ -823,9 +721,9 @@ Hosting the HTTP server on port 57654 instead
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="extracting-signals">
-<h2>Extracting signals<a class="headerlink" href="#extracting-signals" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="extracting-signals">
+<h2>Extracting signals<a class="headerlink" href="#extracting-signals" title="Permalink to this heading">#</a></h2>
 <p>In a final step, we used calculate the mean and standard deviation of the signal present in all calculated windows. We can also now compute the actual “optimized” displacement between successive frames. All these results are saved in the <code class="docutils literal notranslate"><span class="pre">res</span></code> structure.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -838,7 +736,7 @@ Hosting the HTTP server on port 57654 instead
 <span class="n">res</span><span class="o">.</span><span class="n">displacement</span> <span class="o">=</span> <span class="n">compute_displacement</span><span class="p">(</span><span class="n">s_all</span><span class="p">,</span> <span class="n">t_all</span><span class="p">,</span> <span class="n">t0_all</span><span class="p">)</span>
 
 <span class="c1"># Save variables for archival</span>
-<span class="n">res</span><span class="o">.</span><span class="n">spline</span> <span class="o">=</span> <span class="p">[</span><span class="n">s_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">K</span><span class="p">)]</span>
+<span class="n">res</span><span class="o">.</span><span class="n">spline</span> <span class="o">=</span> <span class="p">[</span><span class="n">s_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">num_timepoints</span><span class="p">)]</span>
 <span class="n">res</span><span class="o">.</span><span class="n">param0</span> <span class="o">=</span> <span class="p">[</span><span class="n">t0_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">t0_all</span><span class="p">]</span>
 <span class="n">res</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="p">[</span><span class="n">t_all</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">t_all</span><span class="p">]</span>
 <span class="n">res</span><span class="o">.</span><span class="n">mean</span> <span class="o">=</span> <span class="n">mean_signal</span>
@@ -847,9 +745,9 @@ Hosting the HTTP server on port 57654 instead
 </div>
 </div>
 </div>
-</div>
-<div class="section" id="check-results">
-<h2>Check results<a class="headerlink" href="#check-results" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="check-results">
+<h2>Check results<a class="headerlink" href="#check-results" title="Permalink to this heading">#</a></h2>
 <p>We can have a look at the results to estimate if everything worked as expected.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -886,11 +784,11 @@ Hosting the HTTP server on port 57654 instead
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/usage_step_by_step_49_0.png" src="../_images/usage_step_by_step_49_0.png" />
+<img alt="../_images/542035fa1867ef191663850bded0528f89b9d4f006f6a2d4ee13dac40f8b88a1.png" src="../_images/542035fa1867ef191663850bded0528f89b9d4f006f6a2d4ee13dac40f8b88a1.png" />
 </div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
     <script type="text/x-thebe-config">
     {
@@ -904,7 +802,7 @@ Hosting the HTTP server on port 57654 instead
             mode: "python"
         },
         kernelOptions: {
-            kernelName: "python3",
+            name: "python3",
             path: "./mydocs"
         },
         predefinedOutput: true
@@ -912,44 +810,115 @@ Hosting the HTTP server on port 57654 instead
     </script>
     <script>kernelName = 'python3'</script>
 
-              </div>
+                </article>
               
-            
-                <!-- Previous / next buttons -->
-<div class='prev-next-area'> 
-    <a class='left-prev' id="prev-link" href="Postprocessing.html" title="previous page">
-        <i class="fas fa-angle-left"></i>
-        <div class="prev-next-info">
-            <p class="prev-next-subtitle">previous</p>
-            <p class="prev-next-title">Post-processing</p>
-        </div>
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="Data_analysis.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Data analysis</p>
+      </div>
     </a>
-    <a class='right-next' id="next-link" href="code_structure.html" title="next page">
-    <div class="prev-next-info">
+    <a class="right-next"
+       href="code_structure.html"
+       title="next page">
+      <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
         <p class="prev-next-title">General code structure</p>
-    </div>
-    <i class="fas fa-angle-right"></i>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
+                </footer>
+              
+            </div>
             
-        </div>
-    </div>
-    <footer class="footer">
-  <p>
-    
-      By Cédric Vonesch and Guillaume Witz<br/>
-    
-        &copy; Copyright 2021.<br/>
-  </p>
-</footer>
-</main>
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dataset">Dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#morphosegmentation-dataset">morphosegmentation.dataset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-folders">Set folders</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-parameters-for-analysis">Set-up parameters for analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calibrate-number-of-windows-and-cell-location">Calibrate number of windows and cell location</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-results-structure">Set-up results structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-dask">Start dask</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#segmentation">Segmentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracking">Tracking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#splining">Splining</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aligning-splines-and-creating-rasterized-images">Aligning splines and creating rasterized images</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-windows">Creating windows</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#window-mapping">Window mapping</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extracting-signals">Extracting signals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-results">Check results</a></li>
+</ul>
+  </nav></div>
 
-      </div>
-    </div>
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
   
-  <script src="../_static/js/index.be7d3bbb2ef33a8344ce.js"></script>
+  <div class="footer-item">
+    
+<p class="component-author">
+By Cédric Vonesch and Guillaume Witz
+</p>
 
+  </div>
+  
+  <div class="footer-item">
+    
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+
+  <footer class="bd-footer">
+  </footer>
   </body>
 </html>

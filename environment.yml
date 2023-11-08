@@ -3,8 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.9
-  - jupyter
-  - jupyterlab=3.2
+  - jupyterlab
   - ipywidgets
   - pip
   - ipympl
@@ -12,4 +11,3 @@ dependencies:
   - pip:
     - cellpose
     - morphodynamics
-    - bokeh>=0.13.0    

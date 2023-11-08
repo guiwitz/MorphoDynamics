@@ -6,9 +6,9 @@ parts:
     chapters:
     - file: mydocs/Installation
     - file: mydocs/Napari_Plugin
-    - file: mydocs/Analysis_with_morpho_segmentation
-    - file: mydocs/Analysis_without_UI
-    - file: mydocs/Postprocessing
+    - file: mydocs/Run_analysis
+    - file: mydocs/Output_structure
+    - file: mydocs/Data_analysis
   - caption: Code and algorithms
     chapters:
     - file: mydocs/usage_step_by_step

@@ -5,9 +5,10 @@ import numpy as np
 import skimage.io
 import pandas as pd
 from pathlib import Path
+import zarr
 
 from .store.parameters import Param
-from .store.dataset import TIFFSeries, MultipageTIFF, ND2, H5
+from .store.dataset import TIFFSeries, MultipageTIFF, ND2, H5, Nparray
 
 # https://stackoverflow.com/a/2121918
 import sys
@@ -18,9 +19,9 @@ sys.modules['morphodynamics.results'] = results
 def load_alldata(folder_path, load_results=False, param=None):
     """
     Given a folder, load the parameter information contained in
-    Parameters.yml and optionally load results from the
-    Results.yml file. If a Param object is given, it is not loaded
-    again.
+    Parameters.yml and return the parameters, data and and optionally 
+    the results loaded from the Results.yml file. If a Param object
+    is given, it is not loaded again.
 
     Parameters
     ----------
@@ -107,6 +108,18 @@ def load_alldata(folder_path, load_results=False, param=None):
             bad_frames=param.bad_frames,
             max_time=param.max_time,
         )
+
+    elif param.data_type == "zarr":
+        data = Nparray(
+            nparray=zarr.open(param.data_folder),
+            expdir=param.data_folder,
+            morpho_name=param.morpho_name,
+            signal_name=param.signal_name,
+            data_type=param.data_type,
+            step=param.step,
+            bad_frames=param.bad_frames,
+            max_time=param.max_time,
+        )
     else:
         raise ValueError("Unknown data type")
 
@@ -127,7 +140,10 @@ def export_results_parameters(param, res):
         if x[0] == "_":
             None
         elif (x == "analysis_folder") or (x == "data_folder") or (x == "seg_folder") or (x == "random_forest"):
-            dict_file[x] = getattr(param, x).as_posix()
+            if getattr(param, x) is not None:
+                dict_file[x] = Path(getattr(param, x)).as_posix()
+            else:
+                dict_file[x] = getattr(param, x)
         else:
             dict_file[x] = getattr(param, x)
 
@@ -143,8 +159,20 @@ def export_results_parameters(param, res):
 def dataset_from_param(param):
     """Given a param object, create the appropriate dataset."""
     
-    if os.path.isdir(os.path.join(param.data_folder, param.morpho_name)):
-            param.data_type = "series"
+    if param.data_type == "zarr":
+        data = zarr.open(param.data_folder)
+        data = Nparray(
+            nparray=data,
+            expdir=param.data_folder,
+            morpho_name=param.morpho_name,
+            signal_name=param.signal_name,
+            data_type=param.data_type,
+            step=param.step,
+            bad_frames=param.bad_frames,
+            max_time=param.max_time,
+        )
+
+    elif param.data_type == "series":
             data = TIFFSeries(
                 param.data_folder,
                 morpho_name=param.morpho_name,
@@ -154,8 +182,7 @@ def dataset_from_param(param):
                 bad_frames=param.bad_frames,
                 max_time=param.max_time,
             )
-    elif param.morpho_name.split(".")[-1].lower() in {"tif", "tiff"}:
-        param.data_type = "multi"
+    elif param.data_type == "multi":
         data = MultipageTIFF(
             param.data_folder,
             morpho_name=param.morpho_name,
@@ -166,8 +193,7 @@ def dataset_from_param(param):
             #switch_TZ=param.switch_TZ,
             max_time=param.max_time,
         )
-    elif param.morpho_name.split(".")[-1] == "nd2":
-        param.data_type = "nd2"
+    elif param.data_type == "nd2":
         data = ND2(
             param.data_folder,
             morpho_name=param.morpho_name,
@@ -177,8 +203,7 @@ def dataset_from_param(param):
             bad_frames=param.bad_frames,
             max_time=param.max_time,
         )
-    elif param.morpho_name.split(".")[-1] == "h5":
-        param.data_type = "h5"
+    elif param.data_type == "h5":
         data = H5(
             param.data_folder,
             morpho_name=param.morpho_name,
@@ -188,6 +213,7 @@ def dataset_from_param(param):
             bad_frames=param.bad_frames,
             max_time=param.max_time,
         )
+    
     return data, param
 
 
