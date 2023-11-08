@@ -335,3 +335,42 @@ def calculate_windows_index(w):
                 windows_pos.append([p[1], p[0], i])
 
     return windows_pos
+
+def _get_layer_indices(windows):
+        """Given a windows list of lists, create a dictionary where each entry i
+        contains the labels of all windows in layer i"""
+
+        layer_indices= {}
+        count=1
+        for i in range(len(windows)):
+            gather_indices=[]
+            for j in range(len(windows[i])):
+                gather_indices.append(count)
+                count+=1
+            layer_indices[i]=gather_indices
+        return layer_indices
+
+
+def create_window_cmap(window_indices):
+    """Create discrete colormap for windows alternating between layers"""
+
+    from cmap import Colormap
+    from matplotlib.colors import ListedColormap
+    from cmap import Color
+
+    cm = Colormap('colorbrewer:Paired')
+    cm2 = Colormap('colorbrewer:spectral_10')
+
+
+    col_dict = {0: Color([0,0,0,0])}
+    for key, val in window_indices.items():
+        if key % 2 == 0:
+            cmap = cm
+        else:
+            cmap = cm2
+        tomap = np.array_split(np.array(val), np.max([len(val) // 9, 1]))
+        for t in tomap:
+            cols = list(cmap.iter_colors(len(t)))
+            col_dict.update({x: col for x, col in zip(t, cols)})
+    cmap = ListedColormap(col_dict.values())
+    return cmap
