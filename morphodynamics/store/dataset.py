@@ -19,7 +19,16 @@ def load_frame_morpho(self, k):
         raise Exception(f"Sorry, no segmentation channel has been provided.")
         
 def load_frame_signal(self, m, k):
-    """Load index k of valid frames of channel index m in self.signal_name"""
+    """Load index k of valid frames of channel index m in self.signal_name
+    
+    Parameters
+    ----------
+    m : int
+        Index of the channel to load
+    k : int
+        Index of the frame to load
+        
+    """
 
     if self.signal_name is not None:
         time = self.valid_frames[k]
