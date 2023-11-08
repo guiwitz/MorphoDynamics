@@ -14,8 +14,9 @@ def correlate(x, y, normalization=None, removemean=True):
         c /= npcorrelate(np.ones(x.shape), np.ones(y.shape))
     elif normalization == "Pearson":
         if np.linalg.norm(x) * np.linalg.norm(y) == 0:
-            print("alert")
-        c /= np.linalg.norm(x) * np.linalg.norm(y)
+            pass
+        else:
+            c /= np.linalg.norm(x) * np.linalg.norm(y)
     elif normalization == "Pearson-unbiased":
         e = np.sqrt(
             npcorrelate(x ** 2, np.ones(y.shape))
