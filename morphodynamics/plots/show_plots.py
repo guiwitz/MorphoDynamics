@@ -1,5 +1,6 @@
-from ast import cmpop
 import os
+from pathlib import Path
+import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import imageio
@@ -9,6 +10,9 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 from scipy.interpolate import splev
 
 from .. import splineutils
+from ..correlation import get_extent, correlate_arrays
+from ..windowing import label_windows, _get_layer_indices, create_window_cmap
+
 
 out = ipw.Output()
 
@@ -803,9 +807,8 @@ def show_curvature(
     #return fig, ax
     return ax
 
-from ..correlation import get_extent
-def show_correlation_core(corr_signal, signal1, signal2, signal1_name, signal2_name,
-                          normalization, fig_ax=None, size=(16, 9)):
+def show_correlation_core(res, param, signal1_name, signal2_name, window_layer,
+                          normalization, percentile=1, fig_ax=None, size=(16, 9)):
     """Plot correlations between variables"""
 
     if fig_ax is None:
@@ -813,20 +816,25 @@ def show_correlation_core(corr_signal, signal1, signal2, signal1_name, signal2_n
     else:
         fig, ax = fig_ax
 
+    if percentile is None:
+        percentile = 0
+
     ax.set_title(
         "Correlation between " + signal1_name + " and \n " + signal2_name + " at layer " + str(0),
         fontsize=20,
     )
 
+    corr_signal = get_corr_signal(res, param, signal1_name, signal2_name, window_layer, normalization)
     cmax = np.max(np.abs(corr_signal))
     im = ax.imshow(
         corr_signal,
-        extent=get_extent(signal1.shape[1], signal2.shape[1], corr_signal.shape[0]),
+        #extent=get_extent(param.max_time, param.max_time, corr_signal.shape[0]),
         cmap="bwr",
         vmin=-cmax,
         vmax=cmax,
         interpolation="none",
     )
+    ax.images[0].set_clim(np.percentile(corr_signal, [percentile, 100-percentile]))
     plt.axis("auto")
     ax.set_xlabel("Time lag [frames]")
     ax.set_ylabel("Window index")
@@ -837,3 +845,47 @@ def show_correlation_core(corr_signal, signal1, signal2, signal1_name, signal2_n
         plt.colorbar(im, label="Correlation here3")"""
 
     return ax
+
+def show_windows(data, param, frame, signal_index, size=(16, 9), fig_ax=None):
+    """Show windows on top of image"""
+
+    if fig_ax is None:
+        fig, ax = plt.subplots(figsize=size)
+    else:
+        fig, ax = fig_ax
+
+    name = Path(param.analysis_folder).joinpath(
+            'segmented', "window_k_" + str(frame) + ".pkl")
+    windows = pickle.load(open(name, 'rb'))
+
+    window_indices = _get_layer_indices(windows)
+    cmap = create_window_cmap(window_indices)
+
+    w_image = label_windows(
+                shape=(data.dims[0], data.dims[1]), windows=windows)
+    
+    vmin = np.percentile(data.load_frame_signal(signal_index, frame), 1)
+    vmax = np.percentile(data.load_frame_signal(signal_index, frame), 99)
+    ax.imshow(data.load_frame_signal(signal_index, frame), cmap="gray",
+              vmin=vmin, vmax=vmax, interpolation="none")
+    ax.imshow(w_image, alpha=.5, cmap=cmap, interpolation="none")
+    ax.set_title("Frame " + str(frame))
+    plt.axis("auto")
+    plt.tight_layout()
+
+    return ax
+
+def get_corr_signal(res, param, signal_name1, signal_name2, window_layer, normalization):
+
+    if signal_name1 == 'displacement':
+        signal1 = res.displacement
+        signal2 = res.mean[param.signal_name.index(signal_name2), window_layer][0:res.I[window_layer],:-1]
+    elif signal_name2 == 'displacement':
+        signal1 = res.mean[param.signal_name.index(signal_name1), window_layer][0:res.I[window_layer],:-1]
+        signal2 = res.displacement
+    else:
+        signal2 = res.mean[param.signal_name.index(signal_name2), window_layer][0:res.I[window_layer]]
+        signal1 = res.mean[param.signal_name.index(signal_name1), window_layer][0:res.I[window_layer]]
+
+    corr_signal = correlate_arrays(signal1, signal2, normalization=normalization)
+    return corr_signal
