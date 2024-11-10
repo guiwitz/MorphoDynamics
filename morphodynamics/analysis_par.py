@@ -6,7 +6,7 @@ import numpy as np
 from scipy.ndimage import center_of_mass
 from scipy.interpolate import splev
 import skimage.io
-from napari_convpaint.conv_paint_utils import Classifier
+from napari_convpaint.conv_paint_classifier import Classifier
 
 from .segmentation import (
     segment_cellpose,
